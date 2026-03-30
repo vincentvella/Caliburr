@@ -4,6 +4,7 @@ import "react-native-url-polyfill/auto";
 import { useEffect, useState } from "react";
 import { Stack, router, useSegments } from "expo-router";
 import { StatusBar } from "expo-status-bar";
+import * as Linking from "expo-linking";
 import type { Session } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase";
 
@@ -23,6 +24,13 @@ function useAuthGate(session: Session | null, ready: boolean) {
   }, [session, ready, segments]);
 }
 
+async function handleDeepLink(url: string) {
+  // Supabase PKCE flow sends a `code` param — exchange it for a session
+  if (url.includes("code=")) {
+    await supabase.auth.exchangeCodeForSession(url);
+  }
+}
+
 export default function RootLayout() {
   const [session, setSession] = useState<Session | null>(null);
   const [ready, setReady] = useState(false);
@@ -37,7 +45,20 @@ export default function RootLayout() {
       (_event, session) => setSession(session)
     );
 
-    return () => subscription.unsubscribe();
+    // Handle URL when app is already open
+    const linkSub = Linking.addEventListener("url", ({ url }) => {
+      handleDeepLink(url);
+    });
+
+    // Handle URL that launched the app from cold start
+    Linking.getInitialURL().then((url) => {
+      if (url) handleDeepLink(url);
+    });
+
+    return () => {
+      subscription.unsubscribe();
+      linkSub.remove();
+    };
   }, []);
 
   useAuthGate(session, ready);

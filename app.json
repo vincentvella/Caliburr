@@ -17,7 +17,10 @@
       "bundleIdentifier": "coffee.caliburr",
       "associatedDomains": [
         "applinks:caliburr.coffee"
-      ]
+      ],
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "package": "coffee.caliburr",
