@@ -1,0 +1,14 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "coffee.caliburr",
+      "sha256_cert_fingerprints": [
+        "76:97:DE:FC:39:B2:FD:40:9C:FB:F3:BA:B8:19:66:54:5A:4F:68:81:29:7E:38:76:AE:62:B6:35:5B:40:A9:5D"
+      ]
+    }
+  }
+]

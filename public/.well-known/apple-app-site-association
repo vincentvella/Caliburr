@@ -1,0 +1,12 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": ["T7Z4ML4MH6.coffee.caliburr"],
+        "components": [
+          { "/": "/*" }
+        ]
+      }
+    ]
+  }
+}
