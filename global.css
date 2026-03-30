@@ -1,3 +1,110 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+@import 'uniwind';
+
+@theme {
+  /* latte — light mode base, cream backgrounds */
+  --color-latte-50: #fdf8f2;
+  --color-latte-100: #f9edde;
+  --color-latte-200: #f2d9bc;
+  --color-latte-300: #e8c090;
+  --color-latte-400: #dca164;
+  --color-latte-500: #c8824a;
+  --color-latte-600: #b5693a;
+  --color-latte-700: #935030;
+  --color-latte-800: #784230;
+  --color-latte-900: #62382a;
+  --color-latte-950: #3d1f14;
+
+  /* french-press — mid-dark surfaces */
+  --color-french-press-50: #f5f0eb;
+  --color-french-press-100: #e8ddd1;
+  --color-french-press-200: #d1bba3;
+  --color-french-press-300: #b89575;
+  --color-french-press-400: #9e7353;
+  --color-french-press-500: #7d5a3c;
+  --color-french-press-600: #624630;
+  --color-french-press-700: #4d3726;
+  --color-french-press-800: #2e2017;
+  --color-french-press-900: #1a120d;
+  --color-french-press-950: #0d0906;
+
+  /* ristretto — dark mode base */
+  --color-ristretto-50: #f2eeeb;
+  --color-ristretto-100: #ddd5cc;
+  --color-ristretto-200: #b8a898;
+  --color-ristretto-300: #8f7a68;
+  --color-ristretto-400: #6e5a47;
+  --color-ristretto-500: #4a3728;
+  --color-ristretto-600: #38291d;
+  --color-ristretto-700: #271d14;
+  --color-ristretto-800: #16100b;
+  --color-ristretto-900: #0e0b08;
+  --color-ristretto-950: #070503;
+
+  /* harvest — warm amber accent */
+  --color-harvest-50: #fff8ed;
+  --color-harvest-100: #ffefd4;
+  --color-harvest-200: #ffdba8;
+  --color-harvest-300: #ffc070;
+  --color-harvest-400: #ff9d37;
+  --color-harvest-500: #f97c0f;
+  --color-harvest-600: #e05f07;
+  --color-harvest-700: #b84409;
+  --color-harvest-800: #933510;
+  --color-harvest-900: #782d10;
+  --color-harvest-950: #411406;
+
+  /* crema — golden highlights, ratings */
+  --color-crema-50: #fefce8;
+  --color-crema-100: #fdf6c3;
+  --color-crema-200: #fcea8a;
+  --color-crema-300: #f9d84d;
+  --color-crema-400: #f4c020;
+  --color-crema-500: #e4a20d;
+  --color-crema-600: #c47c08;
+  --color-crema-700: #9c5a0a;
+  --color-crema-800: #81470f;
+  --color-crema-900: #6d3b12;
+  --color-crema-950: #3f1e06;
+
+  /* cold-brew — cool dark alternative surfaces */
+  --color-cold-brew-50: #f0f0f4;
+  --color-cold-brew-100: #dddde6;
+  --color-cold-brew-200: #b8b8cc;
+  --color-cold-brew-300: #8e8eac;
+  --color-cold-brew-400: #6b6b90;
+  --color-cold-brew-500: #525275;
+  --color-cold-brew-600: #3f3f5c;
+  --color-cold-brew-700: #2d2d42;
+  --color-cold-brew-800: #1a1a28;
+  --color-cold-brew-900: #0e0e16;
+  --color-cold-brew-950: #07070b;
+
+  /* oat — softest backgrounds, cards in light mode */
+  --color-oat-50: #fefdf9;
+  --color-oat-100: #fcf8ef;
+  --color-oat-200: #f7efda;
+  --color-oat-300: #f0e2be;
+  --color-oat-400: #e5cf9a;
+  --color-oat-500: #d4b372;
+  --color-oat-600: #b8904f;
+  --color-oat-700: #93703c;
+  --color-oat-800: #755932;
+  --color-oat-900: #614b2c;
+  --color-oat-950: #352716;
+
+  /* bloom — earthy green, roast/origin tags */
+  --color-bloom-50: #f4f7f0;
+  --color-bloom-100: #e5ecdb;
+  --color-bloom-200: #c9d9b8;
+  --color-bloom-300: #a5be8c;
+  --color-bloom-400: #82a265;
+  --color-bloom-500: #648649;
+  --color-bloom-600: #4e6a38;
+  --color-bloom-700: #3d532c;
+  --color-bloom-800: #334527;
+  --color-bloom-900: #2b3b22;
+  --color-bloom-950: #141f10;
+
+  --font-sans: System;
+}
