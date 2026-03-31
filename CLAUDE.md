@@ -7,6 +7,7 @@ Crowdsourced coffee dial-in app — grinder + bean + brew method recipe database
 - **Expo Router** (web + mobile from one codebase)
 - **NativeWind v4** (Tailwind CSS for React Native)
 - **Supabase** (Postgres + auth + realtime)
+- **TanStack Form v1** (`useForm`, `useStore` — `useStore` is a standalone import, not a form method)
 - **TypeScript**
 - **bun** — always use `bun`/`bunx`, never `npm`/`npx`
 
@@ -18,9 +19,16 @@ app/
   (tabs)/               — main tab navigation
   (auth)/               — sign in / sign up
   (admin)/              — moderation + analytics (role-gated, web + mobile)
+  recipe/new.tsx        — new recipe form
 lib/
   supabase.ts           — Supabase client
-components/             — shared UI components
+  types.ts              — shared TypeScript types + label maps
+components/
+  GrindTape.tsx         — horizontal ruler grind setting selector
+  equipment/
+    GrinderModal.tsx    — add/edit/review/view grinder modal
+    MachineModal.tsx    — add/review/view machine modal
+supabase/migrations/    — all schema changes live here
 ```
 
 ## Design System
@@ -40,20 +48,43 @@ Coffee-themed Tailwind color palette. Use these instead of generic grays/blacks:
 
 Default to dark mode using `ristretto` backgrounds with `latte` text.
 
+Always add `style={{ lineHeight: undefined }}` to `TextInput` to prevent iOS text clipping.
+
 ## Data Model
 
-- `grinders` — brand, model, burr_type, adjustment_type (stepped/stepless), `verified` bool
+### Equipment
+- `grinders` — brand, model, burr_type, adjustment_type (`stepped` | `stepless` | `micro_stepped`), steps_per_unit, range_min, range_max, verified, created_by
+- `brew_machines` — brand, model, machine_type (`espresso` | `super_automatic` | `drip` | `pod`), verified, created_by
+- `user_grinders` — user_id, grinder_id, is_default
+- `user_brew_machines` — user_id, brew_machine_id, is_default
+
+### Community Verification
+- `grinder_verifications` / `machine_verifications` — (equipment_id, user_id) unique pairs
+- 5 unique user confirmations trigger a DB function that flips `verified = true`
+- The user who created an entry (`created_by`) cannot verify their own entry
+- Verified equipment is **read-only** in the UI — users see a details card, not an edit form
+
+### Default equipment
+- `is_default` on `user_grinders` and `user_brew_machines` — one per user each
+- Starred in the profile screen; auto pre-selected in the new recipe form
+
+### Recipes
+- `recipes` — grinder_id, bean_id (optional), brew_machine_id (optional), brew_method, grind_setting (text), dose_g, yield_g, brew_time_s, water_temp_c, ratio, roast_date, roast_level, notes, user_id, upvotes
 - `beans` — name, roaster, origin, process, roast_level (optional)
-- `brew_methods` — enum: espresso, pour_over, aeropress, french_press, chemex, moka_pot, etc.
-- `recipes` — grinder_id, bean_id (optional), brew_method, grind_setting (text), dose_g, yield_g, brew_time_s, water_temp_c, ratio, roast_date, roast_level, notes, user_id, upvotes
 
 ## Key Product Decisions
 
-- **Grinder verification** is consensus-based (N unique recipe submissions) OR admin action — not blocking. Unverified grinders show a badge but are fully usable.
 - **Grind setting** is always stored as free text — normalization across grinder models is not attempted.
+- **GrindTape** renders a horizontal ruler for grind setting input. Three modes driven by `adjustment_type`:
+  - `stepped` — integer snapping, uses `range_min`/`range_max`
+  - `micro_stepped` — N sub-steps per unit (`steps_per_unit`), uses range
+  - `stepless` — smooth 0.1-precision, uses range
+  - No `snapToInterval` — snapping is done manually after momentum ends so the tape coasts freely
+  - Tape freezes updates while text input is focused; syncs on blur
 - **Bean is optional** on a recipe — grinder + brew method baselines are valid entries.
 - **Aggregation** uses median + IQR (not mean) for grind settings. Outliers flagged at 2 std deviations.
 - **Admin interface** is role-gated in Expo Router, not a separate app — works on mobile and web.
+- **Equipment modals** follow a search → review → add flow. Unverified items show a 5-step progress bar; verified items are read-only.
 
 ## Environment
 
@@ -66,9 +97,10 @@ EXPO_PUBLIC_SUPABASE_ANON_KEY=
 ## Commands
 
 ```bash
-bun start          # start dev server
-bun run ios        # run on iOS simulator
-bun run android    # run on Android emulator
-bun run web        # run in browser
-bun run tsc        # type check
+bun start                          # start dev server
+bun run ios                        # run on iOS simulator
+bun run android                    # run on Android emulator
+bun run web                        # run in browser
+bun run tsc                        # type check
+bunx supabase db push              # push migrations to remote Supabase
 ```
