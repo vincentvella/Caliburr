@@ -81,7 +81,7 @@ export interface Recipe {
 export interface RecipeWithJoins extends Recipe {
   grinder: Pick<Grinder, 'brand' | 'model' | 'verified'>;
   bean: Pick<Bean, 'name' | 'roaster'> | null;
-  brew_machine: Pick<BrewMachine, 'brand' | 'model'> | null;
+  brew_machine: Pick<BrewMachine, 'brand' | 'model' | 'machine_type'> | null;
 }
 
 export const MACHINE_TYPE_LABELS: Record<MachineType, string> = {

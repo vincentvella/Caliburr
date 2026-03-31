@@ -1,79 +1,406 @@
 import {
   View,
   Text,
+  TextInput,
   ScrollView,
+  FlatList,
   TouchableOpacity,
   RefreshControl,
   ActivityIndicator,
 } from "react-native";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
+import { useFocusEffect } from "expo-router";
 import { router } from "expo-router";
 import { supabase } from "@/lib/supabase";
 import {
   type RecipeWithJoins,
+  type BrewMethod,
   BREW_METHOD_LABELS,
+  MACHINE_TYPE_LABELS,
 } from "@/lib/types";
 
-function RecipeCard({ recipe }: { recipe: RecipeWithJoins }) {
+const BREW_METHODS = Object.keys(BREW_METHOD_LABELS) as BrewMethod[];
+
+// ─── Explore screen ───────────────────────────────────────────────────────────
+
+export default function ExploreScreen() {
+  const [recipes, setRecipes]         = useState<RecipeWithJoins[]>([]);
+  const [loading, setLoading]         = useState(true);
+  const [refreshing, setRefreshing]   = useState(false);
+  const [error, setError]             = useState<string | null>(null);
+
+  // Filters
+  const [search, setSearch]           = useState("");
+  const [methodFilter, setMethodFilter] = useState<BrewMethod | null>(null);
+  const [myGearOnly, setMyGearOnly]   = useState(false);
+  const [myGrinderId, setMyGrinderId] = useState<string[]>([]);
+
+  // Upvotes
+  const [upvotedIds, setUpvotedIds]   = useState<Set<string>>(new Set());
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+
+  // Debounce search
+  const searchTimer = useRef<ReturnType<typeof setTimeout>>();
+
+  // ── Load user context once ─────────────────────────────────────────────────
+
+  useEffect(() => {
+    supabase.auth.getUser().then(async ({ data: { user } }) => {
+      if (!user) return;
+      setCurrentUserId(user.id);
+
+      const [grindersRes, upvotesRes] = await Promise.all([
+        supabase.from("user_grinders").select("grinder_id").eq("user_id", user.id),
+        supabase.from("recipe_upvotes").select("recipe_id").eq("user_id", user.id),
+      ]);
+
+      setMyGrinderId((grindersRes.data ?? []).map((r: any) => r.grinder_id));
+      setUpvotedIds(new Set((upvotesRes.data ?? []).map((r: any) => r.recipe_id)));
+    });
+  }, []);
+
+  // ── Fetch recipes ──────────────────────────────────────────────────────────
+
+  const fetchRecipes = useCallback(async (searchText = search) => {
+    let q = supabase
+      .from("recipes")
+      .select(`
+        *,
+        grinder:grinders(brand, model, verified),
+        bean:beans(name, roaster),
+        brew_machine:brew_machines(brand, model, machine_type)
+      `)
+      .order("upvotes", { ascending: false })
+      .order("created_at", { ascending: false })
+      .limit(50);
+
+    if (methodFilter) {
+      q = q.eq("brew_method", methodFilter);
+    }
+
+    if (myGearOnly && myGrinderId.length) {
+      q = q.in("grinder_id", myGrinderId);
+    }
+
+    if (searchText.trim()) {
+      // Search across grinder brand/model and bean name via ilike on text fields
+      // We filter client-side after fetch since Supabase doesn't support OR across joins easily
+    }
+
+    const { data, error } = await q;
+
+    if (error) {
+      setError(error.message);
+      return;
+    }
+
+    let results = (data as RecipeWithJoins[]);
+
+    // Client-side search across joined fields
+    if (searchText.trim()) {
+      const term = searchText.toLowerCase();
+      results = results.filter((r) =>
+        `${r.grinder.brand} ${r.grinder.model}`.toLowerCase().includes(term) ||
+        r.bean?.name.toLowerCase().includes(term) ||
+        r.bean?.roaster.toLowerCase().includes(term) ||
+        BREW_METHOD_LABELS[r.brew_method].toLowerCase().includes(term) ||
+        (r.brew_machine && `${r.brew_machine.brand} ${r.brew_machine.model}`.toLowerCase().includes(term))
+      );
+    }
+
+    setRecipes(results);
+    setError(null);
+  }, [methodFilter, myGearOnly, myGrinderId, search]);
+
+  useEffect(() => {
+    setLoading(true);
+    fetchRecipes().finally(() => setLoading(false));
+  }, [fetchRecipes]);
+
+  // Re-fetch upvoted IDs when screen comes back into focus
+  useFocusEffect(useCallback(() => {
+    supabase.auth.getUser().then(async ({ data: { user } }) => {
+      if (!user) return;
+      const { data } = await supabase
+        .from("recipe_upvotes")
+        .select("recipe_id")
+        .eq("user_id", user.id);
+      setUpvotedIds(new Set((data ?? []).map((r: any) => r.recipe_id)));
+    });
+  }, []));
+
+  const handleRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await fetchRecipes();
+    setRefreshing(false);
+  }, [fetchRecipes]);
+
+  function handleSearchChange(text: string) {
+    setSearch(text);
+    clearTimeout(searchTimer.current);
+    searchTimer.current = setTimeout(() => fetchRecipes(text), 300);
+  }
+
+  // ── Upvote ─────────────────────────────────────────────────────────────────
+
+  async function toggleUpvote(recipeId: string) {
+    if (!currentUserId) return;
+
+    const hasUpvoted = upvotedIds.has(recipeId);
+
+    // Optimistic update
+    setUpvotedIds((prev) => {
+      const next = new Set(prev);
+      hasUpvoted ? next.delete(recipeId) : next.add(recipeId);
+      return next;
+    });
+    setRecipes((prev) =>
+      prev.map((r) =>
+        r.id === recipeId
+          ? { ...r, upvotes: r.upvotes + (hasUpvoted ? -1 : 1) }
+          : r
+      )
+    );
+
+    if (hasUpvoted) {
+      await supabase
+        .from("recipe_upvotes")
+        .delete()
+        .eq("recipe_id", recipeId)
+        .eq("user_id", currentUserId);
+    } else {
+      await supabase
+        .from("recipe_upvotes")
+        .insert({ recipe_id: recipeId, user_id: currentUserId });
+    }
+  }
+
+  // ── Render ─────────────────────────────────────────────────────────────────
+
+  return (
+    <View className="flex-1 bg-ristretto-900">
+      {/* Header */}
+      <View className="px-4 pt-16 pb-3 gap-3">
+        <View className="flex-row items-end justify-between">
+          <View>
+            <Text className="text-crema-300 text-3xl font-bold leading-tight">Caliburr</Text>
+            <Text className="text-latte-500 text-sm">Dial in your perfect cup.</Text>
+          </View>
+          <TouchableOpacity
+            onPress={() => setMyGearOnly((v) => !v)}
+            className={`px-3 py-2 rounded-xl border ${
+              myGearOnly
+                ? "bg-harvest-500 border-harvest-500"
+                : "border-ristretto-700"
+            }`}
+          >
+            <Text className={`text-xs font-semibold ${myGearOnly ? "text-white" : "text-latte-400"}`}>
+              My Gear
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Search */}
+        <TextInput
+          className="bg-ristretto-800 border border-ristretto-700 rounded-xl px-4 py-3 text-latte-100 text-sm"
+          style={{ lineHeight: undefined }}
+          placeholder="Search grinder, bean, method..."
+          placeholderTextColor="#6e5a47"
+          value={search}
+          onChangeText={handleSearchChange}
+          clearButtonMode="while-editing"
+        />
+
+        {/* Method filter chips */}
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ gap: 8 }}
+        >
+          <TouchableOpacity
+            onPress={() => setMethodFilter(null)}
+            className={`px-3 py-1.5 rounded-full border ${
+              methodFilter === null
+                ? "bg-harvest-500 border-harvest-500"
+                : "border-ristretto-700"
+            }`}
+          >
+            <Text className={`text-xs font-medium ${methodFilter === null ? "text-white" : "text-latte-400"}`}>
+              All
+            </Text>
+          </TouchableOpacity>
+          {BREW_METHODS.map((method) => (
+            <TouchableOpacity
+              key={method}
+              onPress={() => setMethodFilter(methodFilter === method ? null : method)}
+              className={`px-3 py-1.5 rounded-full border ${
+                methodFilter === method
+                  ? "bg-harvest-500 border-harvest-500"
+                  : "border-ristretto-700"
+              }`}
+            >
+              <Text className={`text-xs font-medium ${methodFilter === method ? "text-white" : "text-latte-400"}`}>
+                {BREW_METHOD_LABELS[method]}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      </View>
+
+      {/* Recipe list */}
+      {loading ? (
+        <View className="flex-1 items-center justify-center">
+          <ActivityIndicator color="#ff9d37" />
+        </View>
+      ) : error ? (
+        <View className="flex-1 items-center justify-center px-8">
+          <Text className="text-latte-500 text-sm text-center">{error}</Text>
+        </View>
+      ) : (
+        <FlatList
+          data={recipes}
+          keyExtractor={(r) => r.id}
+          contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 96 }}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor="#ff9d37" />
+          }
+          ListHeaderComponent={
+            recipes.length > 0 ? (
+              <Text className="text-latte-600 text-xs mb-3 mt-2">
+                {recipes.length} recipe{recipes.length !== 1 ? "s" : ""}
+              </Text>
+            ) : null
+          }
+          ListEmptyComponent={
+            <View className="items-center py-16">
+              <Text className="text-latte-500 text-sm text-center">
+                {myGearOnly && myGrinderId.length === 0
+                  ? "Add grinders in your profile to filter by gear."
+                  : "No recipes found. Be the first to submit one."}
+              </Text>
+            </View>
+          }
+          renderItem={({ item }) => (
+            <RecipeCard
+              recipe={item}
+              upvoted={upvotedIds.has(item.id)}
+              onUpvote={() => toggleUpvote(item.id)}
+            />
+          )}
+        />
+      )}
+
+      {/* FAB */}
+      <TouchableOpacity
+        onPress={() => router.push("/recipe/new")}
+        className="absolute bottom-8 right-6 w-14 h-14 rounded-full bg-harvest-500 items-center justify-center"
+        style={{ elevation: 6, shadowColor: "#000", shadowOpacity: 0.3, shadowRadius: 8, shadowOffset: { width: 0, height: 3 } }}
+      >
+        <Text className="text-white text-3xl font-light">+</Text>
+      </TouchableOpacity>
+    </View>
+  );
+}
+
+// ─── Recipe card ──────────────────────────────────────────────────────────────
+
+function RecipeCard({
+  recipe,
+  upvoted,
+  onUpvote,
+}: {
+  recipe: RecipeWithJoins;
+  upvoted: boolean;
+  onUpvote: () => void;
+}) {
   const grinderLabel = `${recipe.grinder.brand} ${recipe.grinder.model}`;
-  const methodLabel = BREW_METHOD_LABELS[recipe.brew_method];
+  const methodLabel  = BREW_METHOD_LABELS[recipe.brew_method];
 
   return (
     <View className="bg-ristretto-800 rounded-2xl p-4 mb-3 border border-ristretto-700">
-      <View className="flex-row items-start justify-between mb-1">
-        <View className="flex-1">
+      {/* Title row */}
+      <View className="flex-row items-start justify-between mb-2">
+        <View className="flex-1 mr-2">
           {recipe.bean ? (
             <Text className="text-latte-100 font-semibold text-base" numberOfLines={1}>
               {recipe.bean.name}
+              {recipe.bean.roaster ? (
+                <Text className="text-latte-500 font-normal text-sm"> · {recipe.bean.roaster}</Text>
+              ) : null}
             </Text>
           ) : (
-            <Text className="text-latte-300 font-semibold text-base">{grinderLabel}</Text>
+            <Text className="text-latte-100 font-semibold text-base" numberOfLines={1}>
+              {grinderLabel}
+            </Text>
           )}
-          <Text className="text-latte-500 text-sm mt-0.5">
-            {recipe.bean ? `${grinderLabel} · ` : ''}{methodLabel}
+          <Text className="text-latte-500 text-xs mt-0.5">
+            {recipe.bean ? `${grinderLabel} · ` : ""}{methodLabel}
+            {recipe.brew_machine
+              ? ` · ${recipe.brew_machine.brand} ${recipe.brew_machine.model}`
+              : ""}
           </Text>
         </View>
         {recipe.grinder.verified && (
-          <View className="bg-bloom-900 border border-bloom-700 rounded-full px-2 py-0.5 ml-2">
+          <View className="bg-bloom-900 border border-bloom-700 rounded-full px-2 py-0.5">
             <Text className="text-bloom-400 text-xs font-medium">Verified</Text>
           </View>
         )}
       </View>
 
-      <View className="flex-row mt-3 gap-5">
-        <Stat label="Grind" value={recipe.grind_setting} />
-        {recipe.dose_g != null && (
-          <Stat label="Dose" value={`${recipe.dose_g}g`} />
-        )}
-        {recipe.yield_g != null && (
-          <Stat label="Yield" value={`${recipe.yield_g}g`} />
-        )}
-        {recipe.ratio != null && (
-          <Stat label="Ratio" value={`1:${recipe.ratio}`} />
-        )}
-        {recipe.brew_time_s != null && (
-          <Stat label="Time" value={formatTime(recipe.brew_time_s)} />
-        )}
+      {/* Stats */}
+      <View className="flex-row flex-wrap gap-x-5 gap-y-2 mt-1">
+        <Stat label="Grind" value={recipe.grind_setting} highlight />
+        {recipe.dose_g != null && <Stat label="Dose" value={`${recipe.dose_g}g`} />}
+        {recipe.yield_g != null && <Stat label="Yield" value={`${recipe.yield_g}g`} />}
+        {recipe.ratio != null && <Stat label="Ratio" value={`1:${recipe.ratio}`} />}
+        {recipe.brew_time_s != null && <Stat label="Time" value={formatTime(recipe.brew_time_s)} />}
+        {recipe.water_temp_c != null && <Stat label="Temp" value={`${recipe.water_temp_c}°C`} />}
       </View>
 
-      {recipe.notes && (
+      {/* Notes */}
+      {recipe.notes ? (
         <Text className="text-latte-500 text-xs mt-3 leading-relaxed" numberOfLines={2}>
           {recipe.notes}
         </Text>
-      )}
+      ) : null}
 
-      <View className="flex-row justify-end mt-3">
-        <Text className="text-latte-600 text-xs">{recipe.upvotes} votes</Text>
+      {/* Footer: roast level + upvote */}
+      <View className="flex-row items-center justify-between mt-3">
+        <View className="flex-row gap-2">
+          {recipe.roast_level ? (
+            <View className="bg-ristretto-700 rounded-full px-2 py-0.5">
+              <Text className="text-latte-500 text-xs capitalize">{recipe.roast_level.replace("_", " ")}</Text>
+            </View>
+          ) : null}
+        </View>
+        <TouchableOpacity
+          onPress={onUpvote}
+          className="flex-row items-center gap-1.5 px-3 py-1.5 rounded-xl"
+          style={{ backgroundColor: upvoted ? "#7c3a1a" : "#2a1c14" }}
+        >
+          <Text style={{ color: upvoted ? "#ff9d37" : "#6e5a47", fontSize: 14 }}>▲</Text>
+          <Text
+            className="text-xs font-semibold"
+            style={{ color: upvoted ? "#ff9d37" : "#6e5a47" }}
+          >
+            {recipe.upvotes}
+          </Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
 }
 
-function Stat({ label, value }: { label: string; value: string }) {
+function Stat({ label, value, highlight }: { label: string; value: string; highlight?: boolean }) {
   return (
     <View>
-      <Text className="text-latte-500 text-xs">{label}</Text>
-      <Text className="text-harvest-400 font-semibold text-sm">{value}</Text>
+      <Text className="text-latte-600 text-xs">{label}</Text>
+      <Text
+        className="font-semibold text-sm"
+        style={{ color: highlight ? "#ff9d37" : "#c8b09a" }}
+      >
+        {value}
+      </Text>
     </View>
   );
 }
@@ -82,92 +409,4 @@ function formatTime(seconds: number) {
   const m = Math.floor(seconds / 60);
   const s = seconds % 60;
   return m > 0 ? `${m}m ${s}s` : `${s}s`;
-}
-
-export default function ExploreScreen() {
-  const [recipes, setRecipes] = useState<RecipeWithJoins[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const fetchRecipes = useCallback(async () => {
-    const { data, error } = await supabase
-      .from("recipes")
-      .select(`
-        *,
-        grinder:grinders(brand, model, verified),
-        bean:beans(name, roaster)
-      `)
-      .order("upvotes", { ascending: false })
-      .limit(50);
-
-    if (error) {
-      setError(error.message);
-    } else {
-      setRecipes(data as RecipeWithJoins[]);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchRecipes().finally(() => setLoading(false));
-  }, [fetchRecipes]);
-
-  const handleRefresh = useCallback(async () => {
-    setRefreshing(true);
-    await fetchRecipes();
-    setRefreshing(false);
-  }, [fetchRecipes]);
-
-  return (
-    <View className="flex-1 bg-ristretto-900">
-      <ScrollView
-        className="flex-1 px-4 pt-16"
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={handleRefresh}
-            tintColor="#ff9d37"
-          />
-        }
-      >
-        <Text className="text-crema-300 text-3xl font-bold mb-1">Caliburr</Text>
-        <Text className="text-latte-400 text-base mb-8">
-          Dial in your perfect cup.
-        </Text>
-
-        <Text className="text-latte-200 text-xl font-semibold mb-4">
-          Popular Recipes
-        </Text>
-
-        {loading ? (
-          <View className="items-center py-12">
-            <ActivityIndicator color="#ff9d37" />
-          </View>
-        ) : error ? (
-          <View className="items-center py-12">
-            <Text className="text-latte-500 text-sm">{error}</Text>
-          </View>
-        ) : recipes.length === 0 ? (
-          <View className="items-center py-12">
-            <Text className="text-latte-500 text-sm">No recipes yet. Be the first to submit one.</Text>
-          </View>
-        ) : (
-          recipes.map((recipe) => (
-            <RecipeCard key={recipe.id} recipe={recipe} />
-          ))
-        )}
-
-        <View className="h-24" />
-      </ScrollView>
-
-      {/* FAB */}
-      <TouchableOpacity
-        onPress={() => router.push("/recipe/new")}
-        className="absolute bottom-8 right-6 w-14 h-14 rounded-full bg-harvest-500 items-center justify-center shadow-lg"
-        style={{ elevation: 6 }}
-      >
-        <Text className="text-white text-3xl font-light">+</Text>
-      </TouchableOpacity>
-    </View>
-  );
 }
