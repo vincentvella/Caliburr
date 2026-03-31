@@ -18,7 +18,7 @@ export type RoastLevel =
   | 'dark';
 
 export type BurrType = 'flat' | 'conical' | 'hybrid';
-export type AdjustmentType = 'stepped' | 'stepless';
+export type AdjustmentType = 'stepped' | 'stepless' | 'micro_stepped';
 export type MachineType = 'espresso' | 'super_automatic' | 'drip' | 'pod';
 
 export interface Grinder {
@@ -27,6 +27,9 @@ export interface Grinder {
   model: string;
   burr_type: BurrType | null;
   adjustment_type: AdjustmentType | null;
+  steps_per_unit: number | null;
+  range_min: number | null;
+  range_max: number | null;
   verified: boolean;
   image_url: string | null;
   created_at: string;

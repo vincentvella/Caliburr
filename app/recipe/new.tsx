@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { useEffect, useState, useRef, useCallback } from "react";
 import { router } from "expo-router";
-import { useForm } from "@tanstack/react-form";
+import { useForm, useStore } from "@tanstack/react-form";
 import { supabase } from "@/lib/supabase";
 import {
   type Grinder,
@@ -20,6 +20,7 @@ import {
   BREW_METHOD_LABELS,
   ROAST_LEVEL_LABELS,
 } from "@/lib/types";
+import { GrindTape } from "@/components/GrindTape";
 
 const BREW_METHODS = Object.keys(BREW_METHOD_LABELS) as BrewMethod[];
 const ROAST_LEVELS = Object.keys(ROAST_LEVEL_LABELS) as RoastLevel[];
@@ -231,27 +232,7 @@ export default function NewRecipeScreen() {
             </form.Field>
 
             {/* Grind Setting */}
-            <form.Field
-              name="grind_setting"
-              validators={{ onBlur: ({ value }) => !value.trim() ? "Required" : undefined }}
-            >
-              {(field) => (
-                <View className="gap-1">
-                  <SectionLabel label="Grind Setting" required />
-                  <TextInput
-                    className="bg-ristretto-800 border border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-100 text-base"
-                    style={{ lineHeight: undefined }}
-                    placeholder="e.g. 3.2, click 8, 1:15pm..."
-                    placeholderTextColor="#6e5a47"
-                    value={field.state.value}
-                    onChangeText={field.handleChange}
-                    onBlur={field.handleBlur}
-                    returnKeyType="next"
-                  />
-                  <FieldError errors={field.state.meta.errors} />
-                </View>
-              )}
-            </form.Field>
+            <GrindSettingField form={form} grinders={grinders} />
 
             {/* Parameters */}
             <View className="gap-4">
@@ -520,6 +501,33 @@ function BrewTimer({ value, onChange }: { value: string; onChange: (v: string) =
         />
       </View>
     </View>
+  );
+}
+
+function GrindSettingField({ form, grinders }: { form: any; grinders: Grinder[] }) {
+  const grinderId = useStore(form.store, (s: any) => s.values.grinder_id);
+  const grinder = grinders.find((g) => g.id === grinderId);
+
+  return (
+    <form.Field
+      name="grind_setting"
+      validators={{ onSubmit: ({ value }: { value: string }) => !value.trim() ? "Required" : undefined }}
+    >
+      {(field: any) => (
+        <View className="gap-2">
+          <SectionLabel label="Grind Setting" required />
+          <GrindTape
+            value={field.state.value}
+            onChange={field.handleChange}
+            adjustmentType={grinder?.adjustment_type ?? null}
+            stepsPerUnit={grinder?.steps_per_unit}
+            rangeMin={grinder?.range_min}
+            rangeMax={grinder?.range_max}
+          />
+          <FieldError errors={field.state.meta.errors} />
+        </View>
+      )}
+    </form.Field>
   );
 }
 

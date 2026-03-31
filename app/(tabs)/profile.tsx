@@ -32,6 +32,7 @@ export default function ProfileScreen() {
   const [removingId, setRemovingId] = useState<string | null>(null);
   const [grinderModalOpen, setGrinderModalOpen] = useState(false);
   const [machineModalOpen, setMachineModalOpen] = useState(false);
+  const [editingGrinder, setEditingGrinder] = useState<Grinder | null>(null);
 
   const fetchEquipment = useCallback(async () => {
     const { data: { user } } = await supabase.auth.getUser();
@@ -126,8 +127,9 @@ export default function ProfileScreen() {
                 </TouchableOpacity>
               ) : (
                 grinders.map(({ grinder_id, grinder }) => (
-                  <View
+                  <TouchableOpacity
                     key={grinder_id}
+                    onPress={() => { setEditingGrinder(grinder); setGrinderModalOpen(true); }}
                     className="flex-row items-center justify-between bg-ristretto-800 border border-ristretto-700 rounded-2xl px-4 py-3.5 mb-2"
                   >
                     <View className="flex-row items-center gap-3 flex-1">
@@ -165,7 +167,7 @@ export default function ProfileScreen() {
                         </TouchableOpacity>
                       )}
                     </View>
-                  </View>
+                  </TouchableOpacity>
                 ))
               )}
             </View>
@@ -253,9 +255,10 @@ export default function ProfileScreen() {
 
       <GrinderModal
         visible={grinderModalOpen}
-        onClose={() => setGrinderModalOpen(false)}
+        onClose={() => { setGrinderModalOpen(false); setEditingGrinder(null); }}
         onAdded={fetchEquipment}
         existingIds={grinders.map((g) => g.grinder_id)}
+        editGrinder={editingGrinder ?? undefined}
       />
 
       <MachineModal

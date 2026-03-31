@@ -16,27 +16,30 @@ import { useForm } from "@tanstack/react-form";
 import { supabase } from "@/lib/supabase";
 import type { Grinder } from "@/lib/types";
 
-type View = "search" | "create";
+type ModalView = "search" | "create" | "edit";
 
 interface Props {
   visible: boolean;
   onClose: () => void;
   onAdded: () => void;
   existingIds: string[];
+  editGrinder?: Grinder;
 }
 
-export function GrinderModal({ visible, onClose, onAdded, existingIds }: Props) {
-  const [view, setView] = useState<View>("search");
+export function GrinderModal({ visible, onClose, onAdded, existingIds, editGrinder }: Props) {
+  const [view, setView] = useState<ModalView>(editGrinder ? "edit" : "search");
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<Grinder[]>([]);
   const [searching, setSearching] = useState(false);
   const [addingId, setAddingId] = useState<string | null>(null);
 
+  // Reset view whenever the modal opens
+  useEffect(() => {
+    if (visible) setView(editGrinder ? "edit" : "search");
+  }, [visible, editGrinder]);
+
   const search = useCallback(async (text: string) => {
-    if (!text.trim()) {
-      setResults([]);
-      return;
-    }
+    if (!text.trim()) { setResults([]); return; }
     setSearching(true);
     const { data } = await supabase
       .from("grinders")
@@ -71,21 +74,21 @@ export function GrinderModal({ visible, onClose, onAdded, existingIds }: Props) 
     onClose();
   }
 
+  const title = view === "edit" ? "Edit Grinder" : view === "create" ? "New Grinder" : "Add Grinder";
+  const rightLabel = view === "create" ? "Back" : "Cancel";
+  const rightAction = view === "create" ? () => setView("search") : handleClose;
+
   return (
     <Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={handleClose}>
       <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} className="flex-1 bg-ristretto-900">
         <View className="flex-row items-center justify-between px-6 pt-6 pb-4 border-b border-ristretto-700">
-          <Text className="text-latte-100 text-xl font-bold">
-            {view === "search" ? "Add Grinder" : "New Grinder"}
-          </Text>
-          <TouchableOpacity onPress={view === "create" ? () => setView("search") : handleClose}>
-            <Text className="text-harvest-400 font-semibold">
-              {view === "create" ? "Back" : "Cancel"}
-            </Text>
+          <Text className="text-latte-100 text-xl font-bold">{title}</Text>
+          <TouchableOpacity onPress={rightAction}>
+            <Text className="text-harvest-400 font-semibold">{rightLabel}</Text>
           </TouchableOpacity>
         </View>
 
-        {view === "search" ? (
+        {view === "search" && (
           <View className="flex-1 px-6 pt-4">
             <TextInput
               className="bg-ristretto-800 border border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-100 text-base mb-4"
@@ -96,7 +99,6 @@ export function GrinderModal({ visible, onClose, onAdded, existingIds }: Props) 
               onChangeText={setQuery}
               autoFocus
             />
-
             {searching ? (
               <ActivityIndicator color="#ff9d37" style={{ marginTop: 16 }} />
             ) : (
@@ -141,12 +143,19 @@ export function GrinderModal({ visible, onClose, onAdded, existingIds }: Props) 
               />
             )}
           </View>
-        ) : (
-          <CreateGrinderForm
+        )}
+
+        {view === "create" && (
+          <GrinderForm
             initialBrand={query}
-            onCreated={async (grinder) => {
-              await handleAdd(grinder);
-            }}
+            onDone={async (grinder) => { await handleAdd(grinder); }}
+          />
+        )}
+
+        {view === "edit" && editGrinder && (
+          <GrinderForm
+            editGrinder={editGrinder}
+            onDone={() => { onAdded(); handleClose(); }}
           />
         )}
       </KeyboardAvoidingView>
@@ -154,38 +163,69 @@ export function GrinderModal({ visible, onClose, onAdded, existingIds }: Props) 
   );
 }
 
-function CreateGrinderForm({
-  initialBrand,
-  onCreated,
+function GrinderForm({
+  initialBrand = "",
+  editGrinder,
+  onDone,
 }: {
-  initialBrand: string;
-  onCreated: (grinder: Grinder) => void;
+  initialBrand?: string;
+  editGrinder?: Grinder;
+  onDone: (grinder: Grinder) => void;
 }) {
   const BURR_TYPES = ["flat", "conical", "hybrid"] as const;
-  const ADJ_TYPES = ["stepped", "stepless"] as const;
+  const ADJ_TYPES  = ["stepped", "micro_stepped", "stepless"] as const;
+  const ADJ_LABELS: Record<string, string> = {
+    stepped:       "Stepped",
+    micro_stepped: "Micro-stepped",
+    stepless:      "Stepless",
+  };
 
   const form = useForm({
     defaultValues: {
-      brand: initialBrand,
-      model: "",
-      burr_type: "" as string,
-      adjustment_type: "" as string,
-      image_url: "",
+      brand:           editGrinder?.brand          ?? initialBrand,
+      model:           editGrinder?.model          ?? "",
+      burr_type:       editGrinder?.burr_type       ?? "" as string,
+      adjustment_type: editGrinder?.adjustment_type ?? "" as string,
+      steps_per_unit:  editGrinder?.steps_per_unit != null
+                         ? String(editGrinder.steps_per_unit)
+                         : "",
+      range_min:       editGrinder?.range_min != null ? String(editGrinder.range_min) : "",
+      range_max:       editGrinder?.range_max != null ? String(editGrinder.range_max) : "",
+      image_url:       editGrinder?.image_url       ?? "",
     },
     onSubmit: async ({ value }) => {
-      const { data, error } = await supabase
-        .from("grinders")
-        .insert({
-          brand: value.brand.trim(),
-          model: value.model.trim(),
-          burr_type: value.burr_type || null,
-          adjustment_type: value.adjustment_type || null,
-          image_url: value.image_url.trim() || null,
-        })
-        .select()
-        .single();
+      const stepsPerUnit =
+        value.adjustment_type === "micro_stepped" && value.steps_per_unit
+          ? parseInt(value.steps_per_unit, 10)
+          : null;
 
-      if (!error && data) onCreated(data as Grinder);
+      const payload = {
+        brand:           value.brand.trim(),
+        model:           value.model.trim(),
+        burr_type:       value.burr_type || null,
+        adjustment_type: value.adjustment_type || null,
+        steps_per_unit:  stepsPerUnit,
+        range_min:       value.range_min ? parseFloat(value.range_min) : null,
+        range_max:       value.range_max ? parseFloat(value.range_max) : null,
+        image_url:       value.image_url.trim() || null,
+      };
+
+      if (editGrinder) {
+        const { data, error } = await supabase
+          .from("grinders")
+          .update(payload)
+          .eq("id", editGrinder.id)
+          .select()
+          .single();
+        if (!error && data) onDone(data as Grinder);
+      } else {
+        const { data, error } = await supabase
+          .from("grinders")
+          .insert(payload)
+          .select()
+          .single();
+        if (!error && data) onDone(data as Grinder);
+      }
     },
   });
 
@@ -260,19 +300,19 @@ function CreateGrinderForm({
         {(field) => (
           <View className="gap-2">
             <Text className="text-latte-400 text-xs px-1">Adjustment</Text>
-            <View className="flex-row gap-2">
+            <View className="flex-row flex-wrap gap-2">
               {ADJ_TYPES.map((type) => (
                 <TouchableOpacity
                   key={type}
                   onPress={() => field.setValue(field.state.value === type ? "" : type)}
-                  className={`flex-1 py-3 rounded-xl border items-center ${
+                  className={`px-4 py-3 rounded-xl border items-center ${
                     field.state.value === type
                       ? "bg-harvest-500 border-harvest-500"
                       : "border-ristretto-700"
                   }`}
                 >
-                  <Text className={`text-sm font-medium capitalize ${field.state.value === type ? "text-white" : "text-latte-400"}`}>
-                    {type}
+                  <Text className={`text-sm font-medium ${field.state.value === type ? "text-white" : "text-latte-400"}`}>
+                    {ADJ_LABELS[type]}
                   </Text>
                 </TouchableOpacity>
               ))}
@@ -281,10 +321,83 @@ function CreateGrinderForm({
         )}
       </form.Field>
 
+      <form.Subscribe selector={(s) => s.values.adjustment_type}>
+        {(adjType) =>
+          adjType ? (
+            <View className="gap-3">
+              {adjType === "micro_stepped" && (
+                <form.Field name="steps_per_unit">
+                  {(field) => (
+                    <View className="gap-1">
+                      <Text className="text-latte-400 text-xs px-1 mb-1">
+                        Steps per number{" "}
+                        <Text className="text-latte-600">(e.g. 10 for 1Zpresso JX-Pro)</Text>
+                      </Text>
+                      <TextInput
+                        className="bg-ristretto-800 border border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-100 text-base"
+                        style={{ lineHeight: undefined }}
+                        placeholder="10"
+                        placeholderTextColor="#6e5a47"
+                        keyboardType="number-pad"
+                        value={field.state.value}
+                        onChangeText={field.handleChange}
+                      />
+                    </View>
+                  )}
+                </form.Field>
+              )}
+
+              <View className="gap-2">
+                <Text className="text-latte-400 text-xs px-1">Range</Text>
+                <View className="flex-row gap-3">
+                  <form.Field name="range_min">
+                    {(field) => (
+                      <View className="flex-1 gap-1">
+                        <Text className="text-latte-600 text-xs px-1">Min</Text>
+                        <TextInput
+                          className="bg-ristretto-800 border border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-100 text-base"
+                          style={{ lineHeight: undefined }}
+                          placeholder="0"
+                          placeholderTextColor="#6e5a47"
+                          keyboardType="decimal-pad"
+                          value={field.state.value}
+                          onChangeText={field.handleChange}
+                        />
+                      </View>
+                    )}
+                  </form.Field>
+                  <form.Field name="range_max">
+                    {(field) => (
+                      <View className="flex-1 gap-1">
+                        <Text className="text-latte-600 text-xs px-1">Max</Text>
+                        <TextInput
+                          className="bg-ristretto-800 border border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-100 text-base"
+                          style={{ lineHeight: undefined }}
+                          placeholder={
+                            adjType === "stepped" ? "40" :
+                            adjType === "micro_stepped" ? "10" : "10"
+                          }
+                          placeholderTextColor="#6e5a47"
+                          keyboardType="decimal-pad"
+                          value={field.state.value}
+                          onChangeText={field.handleChange}
+                        />
+                      </View>
+                    )}
+                  </form.Field>
+                </View>
+              </View>
+            </View>
+          ) : null
+        }
+      </form.Subscribe>
+
       <form.Field name="image_url">
         {(field) => (
           <View className="gap-1">
-            <Text className="text-latte-400 text-xs px-1 mb-1">Image URL <Text className="text-latte-600">(optional)</Text></Text>
+            <Text className="text-latte-400 text-xs px-1 mb-1">
+              Image URL <Text className="text-latte-600">(optional)</Text>
+            </Text>
             {field.state.value ? (
               <Image
                 source={{ uri: field.state.value }}
@@ -317,7 +430,9 @@ function CreateGrinderForm({
             {isSubmitting ? (
               <ActivityIndicator color="#fff" />
             ) : (
-              <Text className="text-white font-semibold">Add Grinder</Text>
+              <Text className="text-white font-semibold">
+                {editGrinder ? "Save Changes" : "Add Grinder"}
+              </Text>
             )}
           </TouchableOpacity>
         )}
