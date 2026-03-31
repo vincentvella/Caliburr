@@ -7,40 +7,34 @@ import {
   TouchableOpacity,
   RefreshControl,
   ActivityIndicator,
-} from "react-native";
-import { useEffect, useState, useCallback, useRef } from "react";
-import { useFocusEffect } from "expo-router";
-import { router } from "expo-router";
-import { supabase } from "@/lib/supabase";
-import {
-  type RecipeWithJoins,
-  type BrewMethod,
-  BREW_METHOD_LABELS,
-  MACHINE_TYPE_LABELS,
-} from "@/lib/types";
+} from 'react-native';
+import { useEffect, useState, useCallback, useRef } from 'react';
+import { useFocusEffect, router } from 'expo-router';
+import { supabase } from '@/lib/supabase';
+import { type RecipeWithJoins, type BrewMethod, BREW_METHOD_LABELS } from '@/lib/types';
 
 const BREW_METHODS = Object.keys(BREW_METHOD_LABELS) as BrewMethod[];
 
 // ─── Explore screen ───────────────────────────────────────────────────────────
 
 export default function ExploreScreen() {
-  const [recipes, setRecipes]         = useState<RecipeWithJoins[]>([]);
-  const [loading, setLoading]         = useState(true);
-  const [refreshing, setRefreshing]   = useState(false);
-  const [error, setError]             = useState<string | null>(null);
+  const [recipes, setRecipes] = useState<RecipeWithJoins[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   // Filters
-  const [search, setSearch]           = useState("");
+  const [search, setSearch] = useState('');
   const [methodFilter, setMethodFilter] = useState<BrewMethod | null>(null);
-  const [myGearOnly, setMyGearOnly]   = useState(false);
+  const [myGearOnly, setMyGearOnly] = useState(false);
   const [myGrinderId, setMyGrinderId] = useState<string[]>([]);
 
   // Upvotes
-  const [upvotedIds, setUpvotedIds]   = useState<Set<string>>(new Set());
+  const [upvotedIds, setUpvotedIds] = useState<Set<string>>(new Set());
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
   // Debounce search
-  const searchTimer = useRef<ReturnType<typeof setTimeout>>();
+  const searchTimer = useRef<ReturnType<typeof setTimeout>>(null);
 
   // ── Load user context once ─────────────────────────────────────────────────
 
@@ -50,8 +44,8 @@ export default function ExploreScreen() {
       setCurrentUserId(user.id);
 
       const [grindersRes, upvotesRes] = await Promise.all([
-        supabase.from("user_grinders").select("grinder_id").eq("user_id", user.id),
-        supabase.from("recipe_upvotes").select("recipe_id").eq("user_id", user.id),
+        supabase.from('user_grinders').select('grinder_id').eq('user_id', user.id),
+        supabase.from('recipe_upvotes').select('recipe_id').eq('user_id', user.id),
       ]);
 
       setMyGrinderId((grindersRes.data ?? []).map((r: any) => r.grinder_id));
@@ -61,56 +55,63 @@ export default function ExploreScreen() {
 
   // ── Fetch recipes ──────────────────────────────────────────────────────────
 
-  const fetchRecipes = useCallback(async (searchText = search) => {
-    let q = supabase
-      .from("recipes")
-      .select(`
+  const fetchRecipes = useCallback(
+    async (searchText = search) => {
+      let q = supabase
+        .from('recipes')
+        .select(
+          `
         *,
         grinder:grinders(brand, model, verified),
         bean:beans(name, roaster),
         brew_machine:brew_machines(brand, model, machine_type)
-      `)
-      .order("upvotes", { ascending: false })
-      .order("created_at", { ascending: false })
-      .limit(50);
+      `,
+        )
+        .order('upvotes', { ascending: false })
+        .order('created_at', { ascending: false })
+        .limit(50);
 
-    if (methodFilter) {
-      q = q.eq("brew_method", methodFilter);
-    }
+      if (methodFilter) {
+        q = q.eq('brew_method', methodFilter);
+      }
 
-    if (myGearOnly && myGrinderId.length) {
-      q = q.in("grinder_id", myGrinderId);
-    }
+      if (myGearOnly && myGrinderId.length) {
+        q = q.in('grinder_id', myGrinderId);
+      }
 
-    if (searchText.trim()) {
-      // Search across grinder brand/model and bean name via ilike on text fields
-      // We filter client-side after fetch since Supabase doesn't support OR across joins easily
-    }
+      if (searchText.trim()) {
+        // Search across grinder brand/model and bean name via ilike on text fields
+        // We filter client-side after fetch since Supabase doesn't support OR across joins easily
+      }
 
-    const { data, error } = await q;
+      const { data, error } = await q;
 
-    if (error) {
-      setError(error.message);
-      return;
-    }
+      if (error) {
+        setError(error.message);
+        return;
+      }
 
-    let results = (data as RecipeWithJoins[]);
+      let results = data as RecipeWithJoins[];
 
-    // Client-side search across joined fields
-    if (searchText.trim()) {
-      const term = searchText.toLowerCase();
-      results = results.filter((r) =>
-        `${r.grinder.brand} ${r.grinder.model}`.toLowerCase().includes(term) ||
-        r.bean?.name.toLowerCase().includes(term) ||
-        r.bean?.roaster.toLowerCase().includes(term) ||
-        BREW_METHOD_LABELS[r.brew_method].toLowerCase().includes(term) ||
-        (r.brew_machine && `${r.brew_machine.brand} ${r.brew_machine.model}`.toLowerCase().includes(term))
-      );
-    }
+      // Client-side search across joined fields
+      if (searchText.trim()) {
+        const term = searchText.toLowerCase();
+        results = results.filter(
+          (r) =>
+            `${r.grinder.brand} ${r.grinder.model}`.toLowerCase().includes(term) ||
+            r.bean?.name.toLowerCase().includes(term) ||
+            r.bean?.roaster.toLowerCase().includes(term) ||
+            BREW_METHOD_LABELS[r.brew_method].toLowerCase().includes(term) ||
+            (r.brew_machine &&
+              `${r.brew_machine.brand} ${r.brew_machine.model}`.toLowerCase().includes(term)),
+        );
+      }
 
-    setRecipes(results);
-    setError(null);
-  }, [methodFilter, myGearOnly, myGrinderId, search]);
+      setRecipes(results);
+      setError(null);
+    },
+    [methodFilter, myGearOnly, myGrinderId, search],
+  );
 
   useEffect(() => {
     setLoading(true);
@@ -118,16 +119,18 @@ export default function ExploreScreen() {
   }, [fetchRecipes]);
 
   // Re-fetch upvoted IDs when screen comes back into focus
-  useFocusEffect(useCallback(() => {
-    supabase.auth.getUser().then(async ({ data: { user } }) => {
-      if (!user) return;
-      const { data } = await supabase
-        .from("recipe_upvotes")
-        .select("recipe_id")
-        .eq("user_id", user.id);
-      setUpvotedIds(new Set((data ?? []).map((r: any) => r.recipe_id)));
-    });
-  }, []));
+  useFocusEffect(
+    useCallback(() => {
+      supabase.auth.getUser().then(async ({ data: { user } }) => {
+        if (!user) return;
+        const { data } = await supabase
+          .from('recipe_upvotes')
+          .select('recipe_id')
+          .eq('user_id', user.id);
+        setUpvotedIds(new Set((data ?? []).map((r: any) => r.recipe_id)));
+      });
+    }, []),
+  );
 
   const handleRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -137,7 +140,9 @@ export default function ExploreScreen() {
 
   function handleSearchChange(text: string) {
     setSearch(text);
-    clearTimeout(searchTimer.current);
+    if (searchTimer.current) {
+      clearTimeout(searchTimer.current);
+    }
     searchTimer.current = setTimeout(() => fetchRecipes(text), 300);
   }
 
@@ -151,27 +156,27 @@ export default function ExploreScreen() {
     // Optimistic update
     setUpvotedIds((prev) => {
       const next = new Set(prev);
-      hasUpvoted ? next.delete(recipeId) : next.add(recipeId);
+      if (hasUpvoted) {
+        next.delete(recipeId);
+      } else {
+        next.add(recipeId);
+      }
       return next;
     });
     setRecipes((prev) =>
       prev.map((r) =>
-        r.id === recipeId
-          ? { ...r, upvotes: r.upvotes + (hasUpvoted ? -1 : 1) }
-          : r
-      )
+        r.id === recipeId ? { ...r, upvotes: r.upvotes + (hasUpvoted ? -1 : 1) } : r,
+      ),
     );
 
     if (hasUpvoted) {
       await supabase
-        .from("recipe_upvotes")
+        .from('recipe_upvotes')
         .delete()
-        .eq("recipe_id", recipeId)
-        .eq("user_id", currentUserId);
+        .eq('recipe_id', recipeId)
+        .eq('user_id', currentUserId);
     } else {
-      await supabase
-        .from("recipe_upvotes")
-        .insert({ recipe_id: recipeId, user_id: currentUserId });
+      await supabase.from('recipe_upvotes').insert({ recipe_id: recipeId, user_id: currentUserId });
     }
   }
 
@@ -189,12 +194,10 @@ export default function ExploreScreen() {
           <TouchableOpacity
             onPress={() => setMyGearOnly((v) => !v)}
             className={`px-3 py-2 rounded-xl border ${
-              myGearOnly
-                ? "bg-harvest-500 border-harvest-500"
-                : "border-ristretto-700"
-            }`}
-          >
-            <Text className={`text-xs font-semibold ${myGearOnly ? "text-white" : "text-latte-400"}`}>
+              myGearOnly ? 'bg-harvest-500 border-harvest-500' : 'border-ristretto-700'
+            }`}>
+            <Text
+              className={`text-xs font-semibold ${myGearOnly ? 'text-white' : 'text-latte-400'}`}>
               My Gear
             </Text>
           </TouchableOpacity>
@@ -215,17 +218,14 @@ export default function ExploreScreen() {
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ gap: 8 }}
-        >
+          contentContainerStyle={{ gap: 8 }}>
           <TouchableOpacity
             onPress={() => setMethodFilter(null)}
             className={`px-3 py-1.5 rounded-full border ${
-              methodFilter === null
-                ? "bg-harvest-500 border-harvest-500"
-                : "border-ristretto-700"
-            }`}
-          >
-            <Text className={`text-xs font-medium ${methodFilter === null ? "text-white" : "text-latte-400"}`}>
+              methodFilter === null ? 'bg-harvest-500 border-harvest-500' : 'border-ristretto-700'
+            }`}>
+            <Text
+              className={`text-xs font-medium ${methodFilter === null ? 'text-white' : 'text-latte-400'}`}>
               All
             </Text>
           </TouchableOpacity>
@@ -235,11 +235,11 @@ export default function ExploreScreen() {
               onPress={() => setMethodFilter(methodFilter === method ? null : method)}
               className={`px-3 py-1.5 rounded-full border ${
                 methodFilter === method
-                  ? "bg-harvest-500 border-harvest-500"
-                  : "border-ristretto-700"
-              }`}
-            >
-              <Text className={`text-xs font-medium ${methodFilter === method ? "text-white" : "text-latte-400"}`}>
+                  ? 'bg-harvest-500 border-harvest-500'
+                  : 'border-ristretto-700'
+              }`}>
+              <Text
+                className={`text-xs font-medium ${methodFilter === method ? 'text-white' : 'text-latte-400'}`}>
                 {BREW_METHOD_LABELS[method]}
               </Text>
             </TouchableOpacity>
@@ -267,7 +267,7 @@ export default function ExploreScreen() {
           ListHeaderComponent={
             recipes.length > 0 ? (
               <Text className="text-latte-600 text-xs mb-3 mt-2">
-                {recipes.length} recipe{recipes.length !== 1 ? "s" : ""}
+                {recipes.length} recipe{recipes.length !== 1 ? 's' : ''}
               </Text>
             ) : null
           }
@@ -275,8 +275,8 @@ export default function ExploreScreen() {
             <View className="items-center py-16">
               <Text className="text-latte-500 text-sm text-center">
                 {myGearOnly && myGrinderId.length === 0
-                  ? "Add grinders in your profile to filter by gear."
-                  : "No recipes found. Be the first to submit one."}
+                  ? 'Add grinders in your profile to filter by gear.'
+                  : 'No recipes found. Be the first to submit one.'}
               </Text>
             </View>
           }
@@ -292,10 +292,15 @@ export default function ExploreScreen() {
 
       {/* FAB */}
       <TouchableOpacity
-        onPress={() => router.push("/recipe/new")}
+        onPress={() => router.push('/recipe/new')}
         className="absolute bottom-8 right-6 w-14 h-14 rounded-full bg-harvest-500 items-center justify-center"
-        style={{ elevation: 6, shadowColor: "#000", shadowOpacity: 0.3, shadowRadius: 8, shadowOffset: { width: 0, height: 3 } }}
-      >
+        style={{
+          elevation: 6,
+          shadowColor: '#000',
+          shadowOpacity: 0.3,
+          shadowRadius: 8,
+          shadowOffset: { width: 0, height: 3 },
+        }}>
         <Text className="text-white text-3xl font-light">+</Text>
       </TouchableOpacity>
     </View>
@@ -314,7 +319,7 @@ function RecipeCard({
   onUpvote: () => void;
 }) {
   const grinderLabel = `${recipe.grinder.brand} ${recipe.grinder.model}`;
-  const methodLabel  = BREW_METHOD_LABELS[recipe.brew_method];
+  const methodLabel = BREW_METHOD_LABELS[recipe.brew_method];
 
   return (
     <View className="bg-ristretto-800 rounded-2xl p-4 mb-3 border border-ristretto-700">
@@ -334,10 +339,11 @@ function RecipeCard({
             </Text>
           )}
           <Text className="text-latte-500 text-xs mt-0.5">
-            {recipe.bean ? `${grinderLabel} · ` : ""}{methodLabel}
+            {recipe.bean ? `${grinderLabel} · ` : ''}
+            {methodLabel}
             {recipe.brew_machine
               ? ` · ${recipe.brew_machine.brand} ${recipe.brew_machine.model}`
-              : ""}
+              : ''}
           </Text>
         </View>
         {recipe.grinder.verified && (
@@ -369,20 +375,20 @@ function RecipeCard({
         <View className="flex-row gap-2">
           {recipe.roast_level ? (
             <View className="bg-ristretto-700 rounded-full px-2 py-0.5">
-              <Text className="text-latte-500 text-xs capitalize">{recipe.roast_level.replace("_", " ")}</Text>
+              <Text className="text-latte-500 text-xs capitalize">
+                {recipe.roast_level.replace('_', ' ')}
+              </Text>
             </View>
           ) : null}
         </View>
         <TouchableOpacity
           onPress={onUpvote}
           className="flex-row items-center gap-1.5 px-3 py-1.5 rounded-xl"
-          style={{ backgroundColor: upvoted ? "#7c3a1a" : "#2a1c14" }}
-        >
-          <Text style={{ color: upvoted ? "#ff9d37" : "#6e5a47", fontSize: 14 }}>▲</Text>
+          style={{ backgroundColor: upvoted ? '#7c3a1a' : '#2a1c14' }}>
+          <Text style={{ color: upvoted ? '#ff9d37' : '#6e5a47', fontSize: 14 }}>▲</Text>
           <Text
             className="text-xs font-semibold"
-            style={{ color: upvoted ? "#ff9d37" : "#6e5a47" }}
-          >
+            style={{ color: upvoted ? '#ff9d37' : '#6e5a47' }}>
             {recipe.upvotes}
           </Text>
         </TouchableOpacity>
@@ -395,10 +401,7 @@ function Stat({ label, value, highlight }: { label: string; value: string; highl
   return (
     <View>
       <Text className="text-latte-600 text-xs">{label}</Text>
-      <Text
-        className="font-semibold text-sm"
-        style={{ color: highlight ? "#ff9d37" : "#c8b09a" }}
-      >
+      <Text className="font-semibold text-sm" style={{ color: highlight ? '#ff9d37' : '#c8b09a' }}>
         {value}
       </Text>
     </View>

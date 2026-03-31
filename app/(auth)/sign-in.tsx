@@ -7,19 +7,19 @@ import {
   ScrollView,
   Platform,
   ActivityIndicator,
-} from "react-native";
-import { useRef } from "react";
-import { Link, router } from "expo-router";
-import { useForm } from "@tanstack/react-form";
-import { supabase } from "@/lib/supabase";
+} from 'react-native';
+import { useRef } from 'react';
+import { Link, router } from 'expo-router';
+import { useForm } from '@tanstack/react-form';
+import { supabase } from '@/lib/supabase';
 
 export default function SignInScreen() {
   const passwordRef = useRef<TextInput>(null);
 
   const form = useForm({
     defaultValues: {
-      email: "",
-      password: "",
+      email: '',
+      password: '',
     },
     onSubmit: async ({ value }) => {
       const { error } = await supabase.auth.signInWithPassword({
@@ -27,35 +27,29 @@ export default function SignInScreen() {
         password: value.password,
       });
       if (error) {
-        form.setErrorMap({ onSubmit: error.message });
+        form.setErrorMap({ onSubmit: { form: error.message, fields: {} } });
       } else {
-        router.replace("/(tabs)");
+        router.replace('/(tabs)');
       }
     },
   });
 
   return (
     <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      className="flex-1 bg-ristretto-900"
-    >
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      className="flex-1 bg-ristretto-900">
       <ScrollView
         contentContainerClassName="flex-grow justify-center px-6"
-        keyboardShouldPersistTaps="handled"
-      >
+        keyboardShouldPersistTaps="handled">
         <Text className="text-crema-300 text-4xl font-bold mb-1">Caliburr</Text>
-        <Text className="text-latte-400 text-base mb-10">
-          Dial in your perfect cup.
-        </Text>
+        <Text className="text-latte-400 text-base mb-10">Dial in your perfect cup.</Text>
 
         <View className="gap-3 mb-4">
           <form.Field
             name="email"
             validators={{
-              onBlur: ({ value }) =>
-                !value.includes("@") ? "Enter a valid email" : undefined,
-            }}
-          >
+              onBlur: ({ value }) => (!value.includes('@') ? 'Enter a valid email' : undefined),
+            }}>
             {(field) => (
               <View className="gap-1">
                 <TextInput
@@ -75,9 +69,11 @@ export default function SignInScreen() {
                 />
                 <Text
                   className="text-xs px-1"
-                  style={{ color: "#f87171", opacity: field.state.meta.errors.length > 0 ? 1 : 0 }}
-                >
-                  {field.state.meta.errors[0] ?? " "}
+                  style={{
+                    color: '#f87171',
+                    opacity: field.state.meta.errors.length > 0 ? 1 : 0,
+                  }}>
+                  {field.state.meta.errors[0] ?? ' '}
                 </Text>
               </View>
             )}
@@ -87,9 +83,8 @@ export default function SignInScreen() {
             name="password"
             validators={{
               onBlur: ({ value }) =>
-                value.length < 6 ? "Password must be at least 6 characters" : undefined,
-            }}
-          >
+                value.length < 6 ? 'Password must be at least 6 characters' : undefined,
+            }}>
             {(field) => (
               <View className="gap-1">
                 <TextInput
@@ -109,9 +104,11 @@ export default function SignInScreen() {
                 />
                 <Text
                   className="text-xs px-1"
-                  style={{ color: "#f87171", opacity: field.state.meta.errors.length > 0 ? 1 : 0 }}
-                >
-                  {field.state.meta.errors[0] ?? " "}
+                  style={{
+                    color: '#f87171',
+                    opacity: field.state.meta.errors.length > 0 ? 1 : 0,
+                  }}>
+                  {field.state.meta.errors[0] ?? ' '}
                 </Text>
               </View>
             )}
@@ -121,7 +118,7 @@ export default function SignInScreen() {
         <form.Subscribe selector={(s) => s.errorMap.onSubmit}>
           {(submitError) =>
             submitError ? (
-              <Text className="text-sm mb-4" style={{ color: "#f87171" }}>
+              <Text className="text-sm mb-4" style={{ color: '#f87171' }}>
                 {String(submitError)}
               </Text>
             ) : null
@@ -133,8 +130,7 @@ export default function SignInScreen() {
             <TouchableOpacity
               onPress={form.handleSubmit}
               disabled={isSubmitting}
-              className="bg-harvest-500 rounded-xl py-4 items-center mb-6"
-            >
+              className="bg-harvest-500 rounded-xl py-4 items-center mb-6">
               {isSubmitting ? (
                 <ActivityIndicator color="#fff" />
               ) : (
@@ -145,7 +141,7 @@ export default function SignInScreen() {
         </form.Subscribe>
 
         <View className="flex-row justify-center gap-1">
-          <Text className="text-latte-500">Don't have an account?</Text>
+          <Text className="text-latte-500">{`Don't have an account?`}</Text>
           <Link href="/(auth)/sign-up">
             <Text className="text-harvest-400 font-semibold">Sign Up</Text>
           </Link>

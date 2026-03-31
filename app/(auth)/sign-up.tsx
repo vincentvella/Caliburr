@@ -29,7 +29,10 @@ export default function SignUpScreen() {
       if (error) {
         form.setErrorMap({ onSubmit: error.message });
       } else {
-        router.replace({ pathname: "/(auth)/verify-email", params: { email: value.email } });
+        router.replace({
+          pathname: "/(auth)/verify-email",
+          params: { email: value.email },
+        });
       }
     },
   });
@@ -75,7 +78,10 @@ export default function SignUpScreen() {
                 />
                 <Text
                   className="text-xs px-1"
-                  style={{ color: "#f87171", opacity: field.state.meta.errors.length > 0 ? 1 : 0 }}
+                  style={{
+                    color: "#f87171",
+                    opacity: field.state.meta.errors.length > 0 ? 1 : 0,
+                  }}
                 >
                   {field.state.meta.errors[0] ?? " "}
                 </Text>
@@ -87,7 +93,9 @@ export default function SignUpScreen() {
             name="password"
             validators={{
               onBlur: ({ value }) =>
-                value.length < 6 ? "Password must be at least 6 characters" : undefined,
+                value.length < 6
+                  ? "Password must be at least 6 characters"
+                  : undefined,
             }}
           >
             {(field) => (
@@ -110,7 +118,10 @@ export default function SignUpScreen() {
                 />
                 <Text
                   className="text-xs px-1"
-                  style={{ color: "#f87171", opacity: field.state.meta.errors.length > 0 ? 1 : 0 }}
+                  style={{
+                    color: "#f87171",
+                    opacity: field.state.meta.errors.length > 0 ? 1 : 0,
+                  }}
                 >
                   {field.state.meta.errors[0] ?? " "}
                 </Text>

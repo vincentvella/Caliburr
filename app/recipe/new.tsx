@@ -7,11 +7,11 @@ import {
   ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
-} from "react-native";
-import { useEffect, useState, useRef, useCallback } from "react";
-import { router } from "expo-router";
-import { useForm, useStore } from "@tanstack/react-form";
-import { supabase } from "@/lib/supabase";
+} from 'react-native';
+import { useEffect, useState, useRef, useCallback } from 'react';
+import { router } from 'expo-router';
+import { useForm, useStore } from '@tanstack/react-form';
+import { supabase } from '@/lib/supabase';
 import {
   type Grinder,
   type BrewMachine,
@@ -19,8 +19,8 @@ import {
   type RoastLevel,
   BREW_METHOD_LABELS,
   ROAST_LEVEL_LABELS,
-} from "@/lib/types";
-import { GrindTape } from "@/components/GrindTape";
+} from '@/lib/types';
+import { GrindTape } from '@/components/GrindTape';
 
 const BREW_METHODS = Object.keys(BREW_METHOD_LABELS) as BrewMethod[];
 const ROAST_LEVELS = Object.keys(ROAST_LEVEL_LABELS) as RoastLevel[];
@@ -32,34 +32,36 @@ export default function NewRecipeScreen() {
 
   useEffect(() => {
     async function load() {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) return;
 
       const [grindersRes, machinesRes] = await Promise.all([
         supabase
-          .from("user_grinders")
-          .select("is_default, grinder:grinders(*)")
-          .eq("user_id", user.id),
+          .from('user_grinders')
+          .select('is_default, grinder:grinders(*)')
+          .eq('user_id', user.id),
         supabase
-          .from("user_brew_machines")
-          .select("is_default, brew_machine:brew_machines(*)")
-          .eq("user_id", user.id),
+          .from('user_brew_machines')
+          .select('is_default, brew_machine:brew_machines(*)')
+          .eq('user_id', user.id),
       ]);
 
-      setGrinders(
-        (grindersRes.data ?? []).map((r: any) => r.grinder) as Grinder[]
-      );
+      setGrinders((grindersRes.data ?? []).map((r: any) => r.grinder) as Grinder[]);
 
       const defaultGrinder = (grindersRes.data ?? []).find((r: any) => r.is_default);
       if (defaultGrinder) {
-        form.setFieldValue("grinder_id", defaultGrinder.grinder.id);
+        form.setFieldValue('grinder_id', defaultGrinder.grinder.id);
       }
-      const loadedMachines = (machinesRes.data ?? []).map((r: any) => r.brew_machine) as BrewMachine[];
+      const loadedMachines = (machinesRes.data ?? []).map(
+        (r: any) => r.brew_machine,
+      ) as BrewMachine[];
       setMachines(loadedMachines);
 
       const defaultMachine = (machinesRes.data ?? []).find((r: any) => r.is_default);
       if (defaultMachine) {
-        form.setFieldValue("brew_machine_id", defaultMachine.brew_machine.id);
+        form.setFieldValue('brew_machine_id', defaultMachine.brew_machine.id);
       }
 
       setLoadingEquipment(false);
@@ -69,23 +71,25 @@ export default function NewRecipeScreen() {
 
   const form = useForm({
     defaultValues: {
-      grinder_id: "",
-      brew_machine_id: "",
-      brew_method: "" as BrewMethod | "",
-      grind_setting: "",
-      dose_g: "",
-      yield_g: "",
-      brew_time_s: "",
-      water_temp_c: "",
-      ratio: "",
-      roast_level: "" as RoastLevel | "",
-      notes: "",
+      grinder_id: '',
+      brew_machine_id: '',
+      brew_method: '' as BrewMethod | '',
+      grind_setting: '',
+      dose_g: '',
+      yield_g: '',
+      brew_time_s: '',
+      water_temp_c: '',
+      ratio: '',
+      roast_level: '' as RoastLevel | '',
+      notes: '',
     },
     onSubmit: async ({ value }) => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) return;
 
-      const { error } = await supabase.from("recipes").insert({
+      const { error } = await supabase.from('recipes').insert({
         user_id: user.id,
         grinder_id: value.grinder_id,
         brew_machine_id: value.brew_machine_id || null,
@@ -107,9 +111,8 @@ export default function NewRecipeScreen() {
 
   return (
     <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      className="flex-1 bg-ristretto-900"
-    >
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      className="flex-1 bg-ristretto-900">
       {/* Header */}
       <View className="flex-row items-center justify-between px-6 pt-14 pb-4 border-b border-ristretto-700">
         <TouchableOpacity onPress={() => router.back()}>
@@ -132,8 +135,7 @@ export default function NewRecipeScreen() {
       <ScrollView
         className="flex-1"
         contentContainerClassName="px-6 pt-6 pb-16 gap-6"
-        keyboardShouldPersistTaps="handled"
-      >
+        keyboardShouldPersistTaps="handled">
         {loadingEquipment ? (
           <ActivityIndicator color="#ff9d37" />
         ) : (
@@ -141,17 +143,19 @@ export default function NewRecipeScreen() {
             {/* Grinder */}
             <form.Field
               name="grinder_id"
-              validators={{ onSubmit: ({ value }) => !value ? "Select a grinder" : undefined }}
-            >
+              validators={{
+                onSubmit: ({ value }) => (!value ? 'Select a grinder' : undefined),
+              }}>
               {(field) => (
                 <View className="gap-2">
                   <SectionLabel label="Grinder" required />
                   {grinders.length === 0 ? (
                     <TouchableOpacity
                       onPress={() => router.back()}
-                      className="border border-dashed border-ristretto-700 rounded-2xl py-5 items-center"
-                    >
-                      <Text className="text-latte-500 text-sm">Add grinders in your Profile first</Text>
+                      className="border border-dashed border-ristretto-700 rounded-2xl py-5 items-center">
+                      <Text className="text-latte-500 text-sm">
+                        Add grinders in your Profile first
+                      </Text>
                     </TouchableOpacity>
                   ) : (
                     <View className="gap-2">
@@ -161,16 +165,14 @@ export default function NewRecipeScreen() {
                           onPress={() => field.setValue(g.id)}
                           className={`flex-row items-center justify-between px-4 py-3.5 rounded-2xl border ${
                             field.state.value === g.id
-                              ? "bg-harvest-500 border-harvest-500"
-                              : "bg-ristretto-800 border-ristretto-700"
-                          }`}
-                        >
-                          <Text className={`font-medium ${field.state.value === g.id ? "text-white" : "text-latte-100"}`}>
+                              ? 'bg-harvest-500 border-harvest-500'
+                              : 'bg-ristretto-800 border-ristretto-700'
+                          }`}>
+                          <Text
+                            className={`font-medium ${field.state.value === g.id ? 'text-white' : 'text-latte-100'}`}>
                             {g.brand} {g.model}
                           </Text>
-                          {field.state.value === g.id && (
-                            <Text className="text-white">✓</Text>
-                          )}
+                          {field.state.value === g.id && <Text className="text-white">✓</Text>}
                         </TouchableOpacity>
                       ))}
                     </View>
@@ -190,19 +192,17 @@ export default function NewRecipeScreen() {
                       {machines.map((m) => (
                         <TouchableOpacity
                           key={m.id}
-                          onPress={() => field.setValue(field.state.value === m.id ? "" : m.id)}
+                          onPress={() => field.setValue(field.state.value === m.id ? '' : m.id)}
                           className={`flex-row items-center justify-between px-4 py-3.5 rounded-2xl border ${
                             field.state.value === m.id
-                              ? "bg-harvest-500 border-harvest-500"
-                              : "bg-ristretto-800 border-ristretto-700"
-                          }`}
-                        >
-                          <Text className={`font-medium ${field.state.value === m.id ? "text-white" : "text-latte-100"}`}>
+                              ? 'bg-harvest-500 border-harvest-500'
+                              : 'bg-ristretto-800 border-ristretto-700'
+                          }`}>
+                          <Text
+                            className={`font-medium ${field.state.value === m.id ? 'text-white' : 'text-latte-100'}`}>
                             {m.brand} {m.model}
                           </Text>
-                          {field.state.value === m.id && (
-                            <Text className="text-white">✓</Text>
-                          )}
+                          {field.state.value === m.id && <Text className="text-white">✓</Text>}
                         </TouchableOpacity>
                       ))}
                     </View>
@@ -214,8 +214,9 @@ export default function NewRecipeScreen() {
             {/* Brew Method */}
             <form.Field
               name="brew_method"
-              validators={{ onSubmit: ({ value }) => !value ? "Select a brew method" : undefined }}
-            >
+              validators={{
+                onSubmit: ({ value }) => (!value ? 'Select a brew method' : undefined),
+              }}>
               {(field) => (
                 <View className="gap-2">
                   <SectionLabel label="Brew Method" required />
@@ -226,11 +227,11 @@ export default function NewRecipeScreen() {
                         onPress={() => field.setValue(method)}
                         className={`px-4 py-2.5 rounded-full border ${
                           field.state.value === method
-                            ? "bg-harvest-500 border-harvest-500"
-                            : "border-ristretto-700"
-                        }`}
-                      >
-                        <Text className={`text-sm font-medium ${field.state.value === method ? "text-white" : "text-latte-400"}`}>
+                            ? 'bg-harvest-500 border-harvest-500'
+                            : 'border-ristretto-700'
+                        }`}>
+                        <Text
+                          className={`text-sm font-medium ${field.state.value === method ? 'text-white' : 'text-latte-400'}`}>
                           {BREW_METHOD_LABELS[method]}
                         </Text>
                       </TouchableOpacity>
@@ -263,10 +264,10 @@ export default function NewRecipeScreen() {
                         value={field.state.value}
                         onChangeText={(v) => {
                           field.handleChange(v);
-                          const yield_g = form.getFieldValue("yield_g");
+                          const yield_g = form.getFieldValue('yield_g');
                           if (v && yield_g) {
                             const r = parseFloat(yield_g) / parseFloat(v);
-                            if (!isNaN(r)) form.setFieldValue("ratio", r.toFixed(2));
+                            if (!isNaN(r)) form.setFieldValue('ratio', r.toFixed(2));
                           }
                         }}
                       />
@@ -287,10 +288,10 @@ export default function NewRecipeScreen() {
                         value={field.state.value}
                         onChangeText={(v) => {
                           field.handleChange(v);
-                          const dose_g = form.getFieldValue("dose_g");
+                          const dose_g = form.getFieldValue('dose_g');
                           if (v && dose_g) {
                             const r = parseFloat(v) / parseFloat(dose_g);
-                            if (!isNaN(r)) form.setFieldValue("ratio", r.toFixed(2));
+                            if (!isNaN(r)) form.setFieldValue('ratio', r.toFixed(2));
                           }
                         }}
                       />
@@ -302,8 +303,8 @@ export default function NewRecipeScreen() {
               {/* Ratio (auto or manual) */}
               <form.Field name="ratio">
                 {(field) => {
-                  const dose = form.getFieldValue("dose_g");
-                  const yld = form.getFieldValue("yield_g");
+                  const dose = form.getFieldValue('dose_g');
+                  const yld = form.getFieldValue('yield_g');
                   const isAuto = !!(dose && yld && field.state.value);
                   return (
                     <View className="gap-1">
@@ -334,10 +335,7 @@ export default function NewRecipeScreen() {
                 {(field) => (
                   <View className="gap-1">
                     <Text className="text-latte-400 text-xs px-1">Brew Time</Text>
-                    <BrewTimer
-                      value={field.state.value}
-                      onChange={field.handleChange}
-                    />
+                    <BrewTimer value={field.state.value} onChange={field.handleChange} />
                   </View>
                 )}
               </form.Field>
@@ -355,14 +353,14 @@ export default function NewRecipeScreen() {
                     {ROAST_LEVELS.map((level) => (
                       <TouchableOpacity
                         key={level}
-                        onPress={() => field.setValue(field.state.value === level ? "" : level)}
+                        onPress={() => field.setValue(field.state.value === level ? '' : level)}
                         className={`px-4 py-2.5 rounded-full border ${
                           field.state.value === level
-                            ? "bg-harvest-500 border-harvest-500"
-                            : "border-ristretto-700"
-                        }`}
-                      >
-                        <Text className={`text-sm font-medium ${field.state.value === level ? "text-white" : "text-latte-400"}`}>
+                            ? 'bg-harvest-500 border-harvest-500'
+                            : 'border-ristretto-700'
+                        }`}>
+                        <Text
+                          className={`text-sm font-medium ${field.state.value === level ? 'text-white' : 'text-latte-400'}`}>
                           {ROAST_LEVEL_LABELS[level]}
                         </Text>
                       </TouchableOpacity>
@@ -395,7 +393,7 @@ export default function NewRecipeScreen() {
             <form.Subscribe selector={(s) => s.errorMap.onSubmit}>
               {(err) =>
                 err ? (
-                  <Text style={{ color: "#f87171" }} className="text-sm">
+                  <Text style={{ color: '#f87171' }} className="text-sm">
                     {String(err)}
                   </Text>
                 ) : null
@@ -407,8 +405,7 @@ export default function NewRecipeScreen() {
                 <TouchableOpacity
                   onPress={form.handleSubmit}
                   disabled={isSubmitting}
-                  className="bg-harvest-500 rounded-2xl py-4 items-center"
-                >
+                  className="bg-harvest-500 rounded-2xl py-4 items-center">
                   {isSubmitting ? (
                     <ActivityIndicator color="#fff" />
                   ) : (
@@ -444,7 +441,7 @@ function BrewTimer({ value, onChange }: { value: string; onChange: (v: string) =
   const reset = useCallback(() => {
     stop();
     setElapsed(0);
-    onChange("");
+    onChange('');
   }, [stop, onChange]);
 
   // Write to form when stopped with a non-zero value
@@ -452,10 +449,15 @@ function BrewTimer({ value, onChange }: { value: string; onChange: (v: string) =
     if (!running && elapsed > 0) onChange(String(elapsed));
   }, [running, elapsed, onChange]);
 
-  useEffect(() => () => { if (intervalRef.current) clearInterval(intervalRef.current); }, []);
+  useEffect(
+    () => () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    },
+    [],
+  );
 
-  const mm = String(Math.floor(elapsed / 60)).padStart(2, "0");
-  const ss = String(elapsed % 60).padStart(2, "0");
+  const mm = String(Math.floor(elapsed / 60)).padStart(2, '0');
+  const ss = String(elapsed % 60).padStart(2, '0');
 
   return (
     <View className="bg-ristretto-800 border border-ristretto-700 rounded-xl px-4 py-3 gap-3">
@@ -471,23 +473,20 @@ function BrewTimer({ value, onChange }: { value: string; onChange: (v: string) =
         {!running ? (
           <TouchableOpacity
             onPress={start}
-            className="flex-1 bg-harvest-500 rounded-xl py-3 items-center"
-          >
-            <Text className="text-white font-semibold">{elapsed > 0 ? "Resume" : "Start"}</Text>
+            className="flex-1 bg-harvest-500 rounded-xl py-3 items-center">
+            <Text className="text-white font-semibold">{elapsed > 0 ? 'Resume' : 'Start'}</Text>
           </TouchableOpacity>
         ) : (
           <TouchableOpacity
             onPress={stop}
-            className="flex-1 bg-ristretto-700 rounded-xl py-3 items-center"
-          >
+            className="flex-1 bg-ristretto-700 rounded-xl py-3 items-center">
             <Text className="text-latte-100 font-semibold">Stop</Text>
           </TouchableOpacity>
         )}
         {elapsed > 0 && (
           <TouchableOpacity
             onPress={reset}
-            className="px-5 border border-ristretto-700 rounded-xl py-3 items-center"
-          >
+            className="px-5 border border-ristretto-700 rounded-xl py-3 items-center">
             <Text className="text-latte-500 font-semibold">Reset</Text>
           </TouchableOpacity>
         )}
@@ -502,11 +501,16 @@ function BrewTimer({ value, onChange }: { value: string; onChange: (v: string) =
           placeholder="e.g. 28"
           placeholderTextColor="#4a3728"
           keyboardType="number-pad"
-          value={elapsed > 0 ? String(elapsed) : ""}
+          value={elapsed > 0 ? String(elapsed) : ''}
           onChangeText={(v) => {
             const n = parseInt(v, 10);
-            if (!isNaN(n)) { setElapsed(n); stop(); }
-            else if (!v) { setElapsed(0); onChange(""); }
+            if (!isNaN(n)) {
+              setElapsed(n);
+              stop();
+            } else if (!v) {
+              setElapsed(0);
+              onChange('');
+            }
           }}
         />
       </View>
@@ -516,21 +520,22 @@ function BrewTimer({ value, onChange }: { value: string; onChange: (v: string) =
 
 function GrindSettingField({ form, grinders }: { form: any; grinders: Grinder[] }) {
   const grinderId = useStore(form.store, (s: any) => s.values.grinder_id);
-  const grinder   = grinders.find((g) => g.id === grinderId);
-  const prevGrinderIdRef = useRef<string>("");
+  const grinder = grinders.find((g) => g.id === grinderId);
+  const prevGrinderIdRef = useRef<string>('');
 
   useEffect(() => {
     if (grinderId && grinderId !== prevGrinderIdRef.current) {
-      form.setFieldValue("grind_setting", "");
+      form.setFieldValue('grind_setting', '');
     }
-    prevGrinderIdRef.current = grinderId ?? "";
+    prevGrinderIdRef.current = grinderId ?? '';
   }, [grinderId]);
 
   return (
     <form.Field
       name="grind_setting"
-      validators={{ onSubmit: ({ value }: { value: string }) => !value.trim() ? "Required" : undefined }}
-    >
+      validators={{
+        onSubmit: ({ value }: { value: string }) => (!value.trim() ? 'Required' : undefined),
+      }}>
       {(field: any) => (
         <View className="gap-2">
           <SectionLabel label="Grind Setting" required />
@@ -560,8 +565,8 @@ function SectionLabel({ label, required }: { label: string; required?: boolean }
 
 function FieldError({ errors }: { errors: (string | undefined)[] }) {
   return (
-    <Text className="text-xs px-1" style={{ color: "#f87171", opacity: errors.length > 0 ? 1 : 0 }}>
-      {errors[0] ?? " "}
+    <Text className="text-xs px-1" style={{ color: '#f87171', opacity: errors.length > 0 ? 1 : 0 }}>
+      {errors[0] ?? ' '}
     </Text>
   );
 }

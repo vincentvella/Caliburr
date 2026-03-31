@@ -10,16 +10,16 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-} from "react-native";
-import { useState, useEffect, useCallback } from "react";
-import { useForm } from "@tanstack/react-form";
-import { supabase } from "@/lib/supabase";
-import type { BrewMachine, MachineType } from "@/lib/types";
-import { MACHINE_TYPE_LABELS } from "@/lib/types";
+} from 'react-native';
+import { useState, useEffect, useCallback } from 'react';
+import { useForm } from '@tanstack/react-form';
+import { supabase } from '@/lib/supabase';
+import type { BrewMachine, MachineType } from '@/lib/types';
+import { MACHINE_TYPE_LABELS } from '@/lib/types';
 
 const VERIFICATION_THRESHOLD = 5;
 
-type ModalView = "search" | "create" | "review" | "view";
+type ModalView = 'search' | 'create' | 'review' | 'view';
 
 interface Props {
   visible: boolean;
@@ -29,8 +29,8 @@ interface Props {
 }
 
 export function MachineModal({ visible, onClose, onAdded, existingIds }: Props) {
-  const [view, setView] = useState<ModalView>("search");
-  const [query, setQuery] = useState("");
+  const [view, setView] = useState<ModalView>('search');
+  const [query, setQuery] = useState('');
   const [results, setResults] = useState<BrewMachine[]>([]);
   const [defaults, setDefaults] = useState<BrewMachine[]>([]);
   const [searching, setSearching] = useState(false);
@@ -41,7 +41,9 @@ export function MachineModal({ visible, onClose, onAdded, existingIds }: Props) 
 
   useEffect(() => {
     if (visible) {
-      setView("search"); setQuery(""); setResults([]);
+      setView('search');
+      setQuery('');
+      setResults([]);
       supabase.auth.getUser().then(({ data: { user } }) => setCurrentUserId(user?.id ?? null));
     }
   }, [visible]);
@@ -49,29 +51,37 @@ export function MachineModal({ visible, onClose, onAdded, existingIds }: Props) 
   // Load defaults: verified first, then most recent
   useEffect(() => {
     async function loadDefaults() {
-      let q = supabase.from("brew_machines").select("*")
-        .order("verified", { ascending: false })
-        .order("created_at", { ascending: false })
+      let q = supabase
+        .from('brew_machines')
+        .select('*')
+        .order('verified', { ascending: false })
+        .order('created_at', { ascending: false })
         .limit(25);
-      if (existingIds.length) q = q.not("id", "in", `(${existingIds.join(",")})`);
+      if (existingIds.length) q = q.not('id', 'in', `(${existingIds.join(',')})`);
       const { data } = await q;
       setDefaults((data as BrewMachine[]) ?? []);
     }
     loadDefaults();
   }, [existingIds]);
 
-  const search = useCallback(async (text: string) => {
-    if (!text.trim()) { setResults([]); return; }
-    setSearching(true);
-    let q = supabase
-      .from("brew_machines")
-      .select("*")
-      .or(`brand.ilike.%${text}%,model.ilike.%${text}%`);
-    if (existingIds.length) q = q.not("id", "in", `(${existingIds.join(",")})`);
-    const { data } = await q.limit(10);
-    setResults((data as BrewMachine[]) ?? []);
-    setSearching(false);
-  }, [existingIds]);
+  const search = useCallback(
+    async (text: string) => {
+      if (!text.trim()) {
+        setResults([]);
+        return;
+      }
+      setSearching(true);
+      let q = supabase
+        .from('brew_machines')
+        .select('*')
+        .or(`brand.ilike.%${text}%,model.ilike.%${text}%`);
+      if (existingIds.length) q = q.not('id', 'in', `(${existingIds.join(',')})`);
+      const { data } = await q.limit(10);
+      setResults((data as BrewMachine[]) ?? []);
+      setSearching(false);
+    },
+    [existingIds],
+  );
 
   useEffect(() => {
     const t = setTimeout(() => search(query), 300);
@@ -79,12 +89,14 @@ export function MachineModal({ visible, onClose, onAdded, existingIds }: Props) 
   }, [query, search]);
 
   async function openMachine(machine: BrewMachine) {
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
     // Verified machines are read-only
     if (machine.verified) {
       setSelectedMachine(machine);
-      setView("view");
+      setView('view');
       return;
     }
 
@@ -96,19 +108,21 @@ export function MachineModal({ visible, onClose, onAdded, existingIds }: Props) 
 
     setSelectedMachine(machine);
     const { count } = await supabase
-      .from("machine_verifications")
-      .select("*", { count: "exact", head: true })
-      .eq("brew_machine_id", machine.id);
+      .from('machine_verifications')
+      .select('*', { count: 'exact', head: true })
+      .eq('brew_machine_id', machine.id);
     setVerificationCount(count ?? 0);
-    setView("review");
+    setView('review');
   }
 
   async function handleAdd(machine: BrewMachine) {
     setAdding(true);
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (user) {
       await supabase
-        .from("user_brew_machines")
+        .from('user_brew_machines')
         .insert({ user_id: user.id, brew_machine_id: machine.id });
     }
     setAdding(false);
@@ -117,26 +131,32 @@ export function MachineModal({ visible, onClose, onAdded, existingIds }: Props) 
   }
 
   function handleClose() {
-    setView("search");
-    setQuery("");
+    setView('search');
+    setQuery('');
     setResults([]);
     setSelectedMachine(null);
     onClose();
   }
 
   const titles: Record<ModalView, string> = {
-    search: "Add Machine",
-    create: "New Machine",
-    review: "Confirm Details",
-    view:   "Machine Details",
+    search: 'Add Machine',
+    create: 'New Machine',
+    review: 'Confirm Details',
+    view: 'Machine Details',
   };
 
-  const rightLabel = view === "search" ? "Cancel" : "Back";
-  const rightAction = view === "search" ? handleClose : () => setView("search");
+  const rightLabel = view === 'search' ? 'Cancel' : 'Back';
+  const rightAction = view === 'search' ? handleClose : () => setView('search');
 
   return (
-    <Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={handleClose}>
-      <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} className="flex-1 bg-ristretto-900">
+    <Modal
+      visible={visible}
+      animationType="slide"
+      presentationStyle="pageSheet"
+      onRequestClose={handleClose}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        className="flex-1 bg-ristretto-900">
         <View className="flex-row items-center justify-between px-6 pt-6 pb-4 border-b border-ristretto-700">
           <Text className="text-latte-100 text-xl font-bold">{titles[view]}</Text>
           <TouchableOpacity onPress={rightAction}>
@@ -144,7 +164,7 @@ export function MachineModal({ visible, onClose, onAdded, existingIds }: Props) 
           </TouchableOpacity>
         </View>
 
-        {view === "search" && (
+        {view === 'search' && (
           <View className="flex-1 px-6 pt-4">
             <TextInput
               className="bg-ristretto-800 border border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-100 text-base mb-4"
@@ -170,10 +190,11 @@ export function MachineModal({ visible, onClose, onAdded, existingIds }: Props) 
                 renderItem={({ item }) => (
                   <TouchableOpacity
                     onPress={() => openMachine(item)}
-                    className="flex-row items-center justify-between py-4 border-b border-ristretto-800"
-                  >
+                    className="flex-row items-center justify-between py-4 border-b border-ristretto-800">
                     <View>
-                      <Text className="text-latte-100 font-medium">{item.brand} {item.model}</Text>
+                      <Text className="text-latte-100 font-medium">
+                        {item.brand} {item.model}
+                      </Text>
                       <Text className="text-latte-500 text-xs mt-0.5">
                         {MACHINE_TYPE_LABELS[item.machine_type]}
                       </Text>
@@ -192,13 +213,12 @@ export function MachineModal({ visible, onClose, onAdded, existingIds }: Props) 
                 ListEmptyComponent={
                   query.trim() ? (
                     <TouchableOpacity
-                      onPress={() => setView("create")}
-                      className="flex-row items-center gap-3 py-4"
-                    >
+                      onPress={() => setView('create')}
+                      className="flex-row items-center gap-3 py-4">
                       <View className="w-8 h-8 rounded-full bg-harvest-500 items-center justify-center">
                         <Text className="text-white font-bold text-lg">+</Text>
                       </View>
-                      <Text className="text-latte-300">Add "{query}" as new machine</Text>
+                      <Text className="text-latte-300">{`Add "${query}" as new machine`}</Text>
                     </TouchableOpacity>
                   ) : null
                 }
@@ -207,22 +227,26 @@ export function MachineModal({ visible, onClose, onAdded, existingIds }: Props) 
           </View>
         )}
 
-        {view === "create" && (
+        {view === 'create' && (
           <MachineForm
             initialBrand={query}
-            onDone={async (machine) => { await handleAdd(machine); }}
+            onDone={async (machine) => {
+              await handleAdd(machine);
+            }}
           />
         )}
 
-        {view === "review" && selectedMachine && (
+        {view === 'review' && selectedMachine && (
           <MachineForm
             reviewMachine={selectedMachine}
             verificationCount={verificationCount}
-            onDone={async (machine) => { await handleAdd(machine); }}
+            onDone={async (machine) => {
+              await handleAdd(machine);
+            }}
           />
         )}
 
-        {view === "view" && selectedMachine && (
+        {view === 'view' && selectedMachine && (
           <MachineReadOnly
             machine={selectedMachine}
             adding={adding}
@@ -268,8 +292,7 @@ function MachineReadOnly({
       <TouchableOpacity
         onPress={onAdd}
         disabled={adding}
-        className="bg-harvest-500 rounded-xl py-4 items-center mt-2"
-      >
+        className="bg-harvest-500 rounded-xl py-4 items-center mt-2">
         {adding ? (
           <ActivityIndicator color="#fff" />
         ) : (
@@ -292,7 +315,7 @@ function Row({ label, value }: { label: string; value: string }) {
 // ─── Shared form (create + review) ───────────────────────────────────────────
 
 function MachineForm({
-  initialBrand = "",
+  initialBrand = '',
   reviewMachine,
   verificationCount = 0,
   onDone,
@@ -307,22 +330,22 @@ function MachineForm({
 
   const form = useForm({
     defaultValues: {
-      brand:        reviewMachine?.brand        ?? initialBrand,
-      model:        reviewMachine?.model        ?? "",
-      machine_type: reviewMachine?.machine_type ?? "" as string,
-      image_url:    reviewMachine?.image_url    ?? "",
+      brand: reviewMachine?.brand ?? initialBrand,
+      model: reviewMachine?.model ?? '',
+      machine_type: reviewMachine?.machine_type ?? ('' as string),
+      image_url: reviewMachine?.image_url ?? '',
     },
     onSubmit: async ({ value }) => {
       if (!value.machine_type) {
-        form.setErrorMap({ onSubmit: "Select a machine type" });
+        form.setErrorMap({ onSubmit: { fields: { machine_type: 'Select a machine type' } } });
         return;
       }
 
       const payload = {
-        brand:        value.brand.trim(),
-        model:        value.model.trim(),
+        brand: value.brand.trim(),
+        model: value.model.trim(),
         machine_type: value.machine_type as MachineType,
-        image_url:    value.image_url.trim() || null,
+        image_url: value.image_url.trim() || null,
       };
 
       let machine: BrewMachine;
@@ -330,27 +353,31 @@ function MachineForm({
       if (isReview) {
         // Update details if anything changed, then record this user's verification
         const { data, error } = await supabase
-          .from("brew_machines")
+          .from('brew_machines')
           .update(payload)
-          .eq("id", reviewMachine.id)
+          .eq('id', reviewMachine.id)
           .select()
           .single();
         if (error || !data) return;
         machine = data as BrewMachine;
 
-        const { data: { user } } = await supabase.auth.getUser();
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
         if (user) {
           await supabase
-            .from("machine_verifications")
+            .from('machine_verifications')
             .upsert(
               { brew_machine_id: machine.id, user_id: user.id },
-              { onConflict: "brew_machine_id,user_id", ignoreDuplicates: true }
+              { onConflict: 'brew_machine_id,user_id', ignoreDuplicates: true },
             );
         }
       } else {
-        const { data: { user } } = await supabase.auth.getUser();
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
         const { data, error } = await supabase
-          .from("brew_machines")
+          .from('brew_machines')
           .insert({ ...payload, created_by: user?.id ?? null })
           .select()
           .single();
@@ -369,8 +396,7 @@ function MachineForm({
     <ScrollView
       className="flex-1 px-6 pt-4"
       contentContainerClassName="gap-3 pb-8"
-      keyboardShouldPersistTaps="handled"
-    >
+      keyboardShouldPersistTaps="handled">
       {/* Verification progress banner */}
       {isReview && (
         <View className="bg-ristretto-800 border border-ristretto-700 rounded-xl px-4 py-3 gap-2">
@@ -381,7 +407,7 @@ function MachineForm({
                 className="flex-1 rounded-full"
                 style={{
                   height: 4,
-                  backgroundColor: i < verificationCount ? "#22c55e" : "#3a2a1c",
+                  backgroundColor: i < verificationCount ? '#22c55e' : '#3a2a1c',
                 }}
               />
             ))}
@@ -390,8 +416,8 @@ function MachineForm({
             {verificationCount === 0
               ? `Be the first to confirm these details — ${VERIFICATION_THRESHOLD} confirmations needed to verify`
               : remaining === 0
-              ? "Fully confirmed by the community"
-              : `${verificationCount} of ${VERIFICATION_THRESHOLD} confirmed · ${remaining} more needed`}
+                ? 'Fully confirmed by the community'
+                : `${verificationCount} of ${VERIFICATION_THRESHOLD} confirmed · ${remaining} more needed`}
           </Text>
         </View>
       )}
@@ -399,13 +425,17 @@ function MachineForm({
       <View className="gap-1">
         <Text className="text-latte-400 text-xs px-1">
           {isReview
-            ? "Review and correct any details below, then confirm."
-            : "Fill in the machine details."}
+            ? 'Review and correct any details below, then confirm.'
+            : 'Fill in the machine details.'}
         </Text>
       </View>
 
       {/* Brand */}
-      <form.Field name="brand" validators={{ onBlur: ({ value }) => !value.trim() ? "Required" : undefined }}>
+      <form.Field
+        name="brand"
+        validators={{
+          onBlur: ({ value }) => (!value.trim() ? 'Required' : undefined),
+        }}>
         {(field) => (
           <View className="gap-1">
             <Text className="text-latte-400 text-xs px-1 mb-1">Brand</Text>
@@ -418,15 +448,24 @@ function MachineForm({
               onChangeText={field.handleChange}
               onBlur={field.handleBlur}
             />
-            <Text className="text-xs px-1" style={{ color: "#f87171", opacity: field.state.meta.errors.length > 0 ? 1 : 0 }}>
-              {field.state.meta.errors[0] ?? " "}
+            <Text
+              className="text-xs px-1"
+              style={{
+                color: '#f87171',
+                opacity: field.state.meta.errors.length > 0 ? 1 : 0,
+              }}>
+              {field.state.meta.errors[0] ?? ' '}
             </Text>
           </View>
         )}
       </form.Field>
 
       {/* Model */}
-      <form.Field name="model" validators={{ onBlur: ({ value }) => !value.trim() ? "Required" : undefined }}>
+      <form.Field
+        name="model"
+        validators={{
+          onBlur: ({ value }) => (!value.trim() ? 'Required' : undefined),
+        }}>
         {(field) => (
           <View className="gap-1">
             <Text className="text-latte-400 text-xs px-1 mb-1">Model</Text>
@@ -439,8 +478,13 @@ function MachineForm({
               onChangeText={field.handleChange}
               onBlur={field.handleBlur}
             />
-            <Text className="text-xs px-1" style={{ color: "#f87171", opacity: field.state.meta.errors.length > 0 ? 1 : 0 }}>
-              {field.state.meta.errors[0] ?? " "}
+            <Text
+              className="text-xs px-1"
+              style={{
+                color: '#f87171',
+                opacity: field.state.meta.errors.length > 0 ? 1 : 0,
+              }}>
+              {field.state.meta.errors[0] ?? ' '}
             </Text>
           </View>
         )}
@@ -455,14 +499,14 @@ function MachineForm({
               {MACHINE_TYPES.map((type) => (
                 <TouchableOpacity
                   key={type}
-                  onPress={() => field.setValue(field.state.value === type ? "" : type)}
+                  onPress={() => field.setValue(field.state.value === type ? '' : type)}
                   className={`px-4 py-3 rounded-xl border ${
                     field.state.value === type
-                      ? "bg-harvest-500 border-harvest-500"
-                      : "border-ristretto-700"
-                  }`}
-                >
-                  <Text className={`text-sm font-medium ${field.state.value === type ? "text-white" : "text-latte-400"}`}>
+                      ? 'bg-harvest-500 border-harvest-500'
+                      : 'border-ristretto-700'
+                  }`}>
+                  <Text
+                    className={`text-sm font-medium ${field.state.value === type ? 'text-white' : 'text-latte-400'}`}>
                     {MACHINE_TYPE_LABELS[type]}
                   </Text>
                 </TouchableOpacity>
@@ -496,13 +540,21 @@ function MachineForm({
               value={field.state.value}
               onChangeText={field.handleChange}
             />
-            <Text className="text-latte-600 text-xs px-1">Only link to images you have rights to use.</Text>
+            <Text className="text-latte-600 text-xs px-1">
+              Only link to images you have rights to use.
+            </Text>
           </View>
         )}
       </form.Field>
 
       <form.Subscribe selector={(s) => s.errorMap.onSubmit}>
-        {(err) => err ? <Text style={{ color: "#f87171" }} className="text-sm">{String(err)}</Text> : null}
+        {(err) =>
+          err ? (
+            <Text style={{ color: '#f87171' }} className="text-sm">
+              {String(err)}
+            </Text>
+          ) : null
+        }
       </form.Subscribe>
 
       <form.Subscribe selector={(s) => s.isSubmitting}>
@@ -510,13 +562,12 @@ function MachineForm({
           <TouchableOpacity
             onPress={form.handleSubmit}
             disabled={isSubmitting}
-            className="bg-harvest-500 rounded-xl py-4 items-center mt-2"
-          >
+            className="bg-harvest-500 rounded-xl py-4 items-center mt-2">
             {isSubmitting ? (
               <ActivityIndicator color="#fff" />
             ) : (
               <Text className="text-white font-semibold">
-                {isReview ? "Confirm & Add to My Gear" : "Add Machine"}
+                {isReview ? 'Confirm & Add to My Gear' : 'Add Machine'}
               </Text>
             )}
           </TouchableOpacity>

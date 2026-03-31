@@ -10,16 +10,16 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-} from "react-native";
-import { useState, useEffect, useCallback } from "react";
-import { useForm } from "@tanstack/react-form";
-import { supabase } from "@/lib/supabase";
-import type { Grinder } from "@/lib/types";
-import { BURR_TYPE_LABELS, ADJUSTMENT_TYPE_LABELS } from "@/lib/types";
+} from 'react-native';
+import { useState, useEffect, useCallback } from 'react';
+import { useForm } from '@tanstack/react-form';
+import { supabase } from '@/lib/supabase';
+import type { Grinder } from '@/lib/types';
+import { BURR_TYPE_LABELS, ADJUSTMENT_TYPE_LABELS } from '@/lib/types';
 
 const VERIFICATION_THRESHOLD = 5;
 
-type ModalView = "search" | "create" | "edit" | "review" | "view";
+type ModalView = 'search' | 'create' | 'edit' | 'review' | 'view';
 
 interface Props {
   visible: boolean;
@@ -30,8 +30,8 @@ interface Props {
 }
 
 export function GrinderModal({ visible, onClose, onAdded, existingIds, editGrinder }: Props) {
-  const [view, setView] = useState<ModalView>(editGrinder ? "edit" : "search");
-  const [query, setQuery] = useState("");
+  const [view, setView] = useState<ModalView>(editGrinder ? 'edit' : 'search');
+  const [query, setQuery] = useState('');
   const [defaults, setDefaults] = useState<Grinder[]>([]);
   const [results, setResults] = useState<Grinder[]>([]);
   const [searching, setSearching] = useState(false);
@@ -43,7 +43,7 @@ export function GrinderModal({ visible, onClose, onAdded, existingIds, editGrind
   // Reset view whenever the modal opens
   useEffect(() => {
     if (visible) {
-      setView(editGrinder ? "edit" : "search");
+      setView(editGrinder ? 'edit' : 'search');
       supabase.auth.getUser().then(({ data: { user } }) => setCurrentUserId(user?.id ?? null));
     }
   }, [visible, editGrinder]);
@@ -51,27 +51,37 @@ export function GrinderModal({ visible, onClose, onAdded, existingIds, editGrind
   // Load default list: verified first, then most recent
   useEffect(() => {
     async function loadDefaults() {
-      let q = supabase.from("grinders").select("*")
-        .order("verified", { ascending: false })
-        .order("created_at", { ascending: false })
+      let q = supabase
+        .from('grinders')
+        .select('*')
+        .order('verified', { ascending: false })
+        .order('created_at', { ascending: false })
         .limit(25);
-      if (existingIds.length) q = q.not("id", "in", `(${existingIds.join(",")})`);
+      if (existingIds.length) q = q.not('id', 'in', `(${existingIds.join(',')})`);
       const { data } = await q;
       setDefaults((data as Grinder[]) ?? []);
     }
     loadDefaults();
   }, [existingIds]);
 
-  const search = useCallback(async (text: string) => {
-    if (!text.trim()) { setResults([]); return; }
-    setSearching(true);
-    let q = supabase.from("grinders").select("*")
-      .or(`brand.ilike.%${text}%,model.ilike.%${text}%`);
-    if (existingIds.length) q = q.not("id", "in", `(${existingIds.join(",")})`)
-    const { data } = await q.limit(10);
-    setResults((data as Grinder[]) ?? []);
-    setSearching(false);
-  }, [existingIds]);
+  const search = useCallback(
+    async (text: string) => {
+      if (!text.trim()) {
+        setResults([]);
+        return;
+      }
+      setSearching(true);
+      let q = supabase
+        .from('grinders')
+        .select('*')
+        .or(`brand.ilike.%${text}%,model.ilike.%${text}%`);
+      if (existingIds.length) q = q.not('id', 'in', `(${existingIds.join(',')})`);
+      const { data } = await q.limit(10);
+      setResults((data as Grinder[]) ?? []);
+      setSearching(false);
+    },
+    [existingIds],
+  );
 
   useEffect(() => {
     const t = setTimeout(() => search(query), 300);
@@ -79,12 +89,14 @@ export function GrinderModal({ visible, onClose, onAdded, existingIds, editGrind
   }, [query, search]);
 
   async function openGrinder(grinder: Grinder) {
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
     // Verified grinders are read-only
     if (grinder.verified) {
       setSelectedGrinder(grinder);
-      setView("view");
+      setView('view');
       return;
     }
 
@@ -96,18 +108,20 @@ export function GrinderModal({ visible, onClose, onAdded, existingIds, editGrind
 
     setSelectedGrinder(grinder);
     const { count } = await supabase
-      .from("grinder_verifications")
-      .select("*", { count: "exact", head: true })
-      .eq("grinder_id", grinder.id);
+      .from('grinder_verifications')
+      .select('*', { count: 'exact', head: true })
+      .eq('grinder_id', grinder.id);
     setVerificationCount(count ?? 0);
-    setView("review");
+    setView('review');
   }
 
   async function handleAdd(grinder: Grinder) {
     setAddingId(grinder.id);
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (user) {
-      await supabase.from("user_grinders").insert({ user_id: user.id, grinder_id: grinder.id });
+      await supabase.from('user_grinders').insert({ user_id: user.id, grinder_id: grinder.id });
     }
     setAddingId(null);
     onAdded();
@@ -115,26 +129,32 @@ export function GrinderModal({ visible, onClose, onAdded, existingIds, editGrind
   }
 
   function handleClose() {
-    setView("search");
-    setQuery("");
+    setView('search');
+    setQuery('');
     setResults([]);
     setSelectedGrinder(null);
     onClose();
   }
 
   const titles: Record<ModalView, string> = {
-    search: "Add Grinder",
-    create: "New Grinder",
-    edit:   "Edit Grinder",
-    review: "Confirm Details",
-    view:   "Grinder Details",
+    search: 'Add Grinder',
+    create: 'New Grinder',
+    edit: 'Edit Grinder',
+    review: 'Confirm Details',
+    view: 'Grinder Details',
   };
-  const rightLabel = view === "search" || view === "edit" ? "Cancel" : "Back";
-  const rightAction = view === "search" || view === "edit" ? handleClose : () => setView("search");
+  const rightLabel = view === 'search' || view === 'edit' ? 'Cancel' : 'Back';
+  const rightAction = view === 'search' || view === 'edit' ? handleClose : () => setView('search');
 
   return (
-    <Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={handleClose}>
-      <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} className="flex-1 bg-ristretto-900">
+    <Modal
+      visible={visible}
+      animationType="slide"
+      presentationStyle="pageSheet"
+      onRequestClose={handleClose}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        className="flex-1 bg-ristretto-900">
         <View className="flex-row items-center justify-between px-6 pt-6 pb-4 border-b border-ristretto-700">
           <Text className="text-latte-100 text-xl font-bold">{titles[view]}</Text>
           <TouchableOpacity onPress={rightAction}>
@@ -142,7 +162,7 @@ export function GrinderModal({ visible, onClose, onAdded, existingIds, editGrind
           </TouchableOpacity>
         </View>
 
-        {view === "search" && (
+        {view === 'search' && (
           <View className="flex-1 px-6 pt-4">
             <TextInput
               className="bg-ristretto-800 border border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-100 text-base mb-4"
@@ -169,12 +189,13 @@ export function GrinderModal({ visible, onClose, onAdded, existingIds, editGrind
                   <TouchableOpacity
                     onPress={() => openGrinder(item)}
                     disabled={addingId === item.id}
-                    className="flex-row items-center justify-between py-4 border-b border-ristretto-800"
-                  >
+                    className="flex-row items-center justify-between py-4 border-b border-ristretto-800">
                     <View>
-                      <Text className="text-latte-100 font-medium">{item.brand} {item.model}</Text>
+                      <Text className="text-latte-100 font-medium">
+                        {item.brand} {item.model}
+                      </Text>
                       <Text className="text-latte-500 text-xs mt-0.5 capitalize">
-                        {item.burr_type ?? "—"} · {item.adjustment_type ?? "—"}
+                        {item.burr_type ?? '—'} · {item.adjustment_type ?? '—'}
                       </Text>
                     </View>
                     {addingId === item.id ? (
@@ -193,13 +214,12 @@ export function GrinderModal({ visible, onClose, onAdded, existingIds, editGrind
                 ListEmptyComponent={
                   query.trim() ? (
                     <TouchableOpacity
-                      onPress={() => setView("create")}
-                      className="flex-row items-center gap-3 py-4"
-                    >
+                      onPress={() => setView('create')}
+                      className="flex-row items-center gap-3 py-4">
                       <View className="w-8 h-8 rounded-full bg-harvest-500 items-center justify-center">
                         <Text className="text-white font-bold text-lg">+</Text>
                       </View>
-                      <Text className="text-latte-300">Add "{query}" as new grinder</Text>
+                      <Text className="text-latte-300">{`Add "${query}" as new grinder`}</Text>
                     </TouchableOpacity>
                   ) : null
                 }
@@ -208,22 +228,26 @@ export function GrinderModal({ visible, onClose, onAdded, existingIds, editGrind
           </View>
         )}
 
-        {view === "create" && (
+        {view === 'create' && (
           <GrinderForm
             initialBrand={query}
-            onDone={async (grinder) => { await handleAdd(grinder); }}
+            onDone={async (grinder) => {
+              await handleAdd(grinder);
+            }}
           />
         )}
 
-        {view === "review" && selectedGrinder && (
+        {view === 'review' && selectedGrinder && (
           <GrinderForm
             reviewGrinder={selectedGrinder}
             verificationCount={verificationCount}
-            onDone={async (grinder) => { await handleAdd(grinder); }}
+            onDone={async (grinder) => {
+              await handleAdd(grinder);
+            }}
           />
         )}
 
-        {view === "view" && selectedGrinder && (
+        {view === 'view' && selectedGrinder && (
           <GrinderReadOnly
             grinder={selectedGrinder}
             addingId={addingId}
@@ -231,10 +255,13 @@ export function GrinderModal({ visible, onClose, onAdded, existingIds, editGrind
           />
         )}
 
-        {view === "edit" && editGrinder && (
+        {view === 'edit' && editGrinder && (
           <GrinderForm
             editGrinder={editGrinder}
-            onDone={() => { onAdded(); handleClose(); }}
+            onDone={() => {
+              onAdded();
+              handleClose();
+            }}
           />
         )}
       </KeyboardAvoidingView>
@@ -284,8 +311,7 @@ function GrinderReadOnly({
       <TouchableOpacity
         onPress={onAdd}
         disabled={addingId === grinder.id}
-        className="bg-harvest-500 rounded-xl py-4 items-center mt-2"
-      >
+        className="bg-harvest-500 rounded-xl py-4 items-center mt-2">
         {addingId === grinder.id ? (
           <ActivityIndicator color="#fff" />
         ) : (
@@ -308,7 +334,7 @@ function Row({ label, value }: { label: string; value: string }) {
 // ─── Shared form (create + edit + review) ────────────────────────────────────
 
 function GrinderForm({
-  initialBrand = "",
+  initialBrand = '',
   editGrinder,
   reviewGrinder,
   verificationCount = 0,
@@ -321,73 +347,77 @@ function GrinderForm({
   onDone: (grinder: Grinder) => void;
 }) {
   const isReview = !!reviewGrinder;
-  const source   = reviewGrinder ?? editGrinder;
-  const BURR_TYPES = ["flat", "conical", "hybrid"] as const;
-  const ADJ_TYPES  = ["stepped", "micro_stepped", "stepless"] as const;
+  const source = reviewGrinder ?? editGrinder;
+  const BURR_TYPES = ['flat', 'conical', 'hybrid'] as const;
+  const ADJ_TYPES = ['stepped', 'micro_stepped', 'stepless'] as const;
   const ADJ_LABELS: Record<string, string> = {
-    stepped:       "Stepped",
-    micro_stepped: "Micro-stepped",
-    stepless:      "Stepless",
+    stepped: 'Stepped',
+    micro_stepped: 'Micro-stepped',
+    stepless: 'Stepless',
   };
 
   const form = useForm({
     defaultValues: {
-      brand:           source?.brand          ?? initialBrand,
-      model:           source?.model          ?? "",
-      burr_type:       source?.burr_type       ?? "" as string,
-      adjustment_type: source?.adjustment_type ?? "" as string,
-      steps_per_unit:  source?.steps_per_unit != null ? String(source.steps_per_unit) : "",
-      range_min:       source?.range_min != null ? String(source.range_min) : "",
-      range_max:       source?.range_max != null ? String(source.range_max) : "",
-      image_url:       source?.image_url       ?? "",
+      brand: source?.brand ?? initialBrand,
+      model: source?.model ?? '',
+      burr_type: source?.burr_type ?? ('' as string),
+      adjustment_type: source?.adjustment_type ?? ('' as string),
+      steps_per_unit: source?.steps_per_unit != null ? String(source.steps_per_unit) : '',
+      range_min: source?.range_min != null ? String(source.range_min) : '',
+      range_max: source?.range_max != null ? String(source.range_max) : '',
+      image_url: source?.image_url ?? '',
     },
     onSubmit: async ({ value }) => {
       const stepsPerUnit =
-        value.adjustment_type === "micro_stepped" && value.steps_per_unit
+        value.adjustment_type === 'micro_stepped' && value.steps_per_unit
           ? parseInt(value.steps_per_unit, 10)
           : null;
 
       const payload = {
-        brand:           value.brand.trim(),
-        model:           value.model.trim(),
-        burr_type:       value.burr_type || null,
+        brand: value.brand.trim(),
+        model: value.model.trim(),
+        burr_type: value.burr_type || null,
         adjustment_type: value.adjustment_type || null,
-        steps_per_unit:  stepsPerUnit,
-        range_min:       value.range_min ? parseFloat(value.range_min) : null,
-        range_max:       value.range_max ? parseFloat(value.range_max) : null,
-        image_url:       value.image_url.trim() || null,
+        steps_per_unit: stepsPerUnit,
+        range_min: value.range_min ? parseFloat(value.range_min) : null,
+        range_max: value.range_max ? parseFloat(value.range_max) : null,
+        image_url: value.image_url.trim() || null,
       };
 
       if (isReview) {
         const { data, error } = await supabase
-          .from("grinders")
+          .from('grinders')
           .update(payload)
-          .eq("id", reviewGrinder!.id)
+          .eq('id', reviewGrinder!.id)
           .select()
           .single();
         if (error || !data) return;
-        const { data: { user } } = await supabase.auth.getUser();
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
         if (user) {
           await supabase
-            .from("grinder_verifications")
+            .from('grinder_verifications')
             .upsert(
               { grinder_id: reviewGrinder!.id, user_id: user.id },
-              { onConflict: "grinder_id,user_id", ignoreDuplicates: true }
+              { onConflict: 'grinder_id,user_id', ignoreDuplicates: true },
             );
         }
         onDone(data as Grinder);
       } else if (editGrinder) {
         const { data, error } = await supabase
-          .from("grinders")
+          .from('grinders')
           .update(payload)
-          .eq("id", editGrinder.id)
+          .eq('id', editGrinder.id)
           .select()
           .single();
         if (!error && data) onDone(data as Grinder);
       } else {
-        const { data: { user } } = await supabase.auth.getUser();
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
         const { data, error } = await supabase
-          .from("grinders")
+          .from('grinders')
           .insert({ ...payload, created_by: user?.id ?? null })
           .select()
           .single();
@@ -400,8 +430,10 @@ function GrinderForm({
   const DOT_COUNT = VERIFICATION_THRESHOLD;
 
   return (
-    <ScrollView className="flex-1 px-6 pt-4" contentContainerClassName="gap-3 pb-8" keyboardShouldPersistTaps="handled">
-
+    <ScrollView
+      className="flex-1 px-6 pt-4"
+      contentContainerClassName="gap-3 pb-8"
+      keyboardShouldPersistTaps="handled">
       {/* Verification progress banner (review mode only) */}
       {isReview && !reviewGrinder!.verified && (
         <View className="bg-ristretto-800 border border-ristretto-700 rounded-xl px-4 py-3 gap-2">
@@ -410,7 +442,10 @@ function GrinderForm({
               <View
                 key={i}
                 className="flex-1 rounded-full"
-                style={{ height: 4, backgroundColor: i < verificationCount ? "#22c55e" : "#3a2a1c" }}
+                style={{
+                  height: 4,
+                  backgroundColor: i < verificationCount ? '#22c55e' : '#3a2a1c',
+                }}
               />
             ))}
           </View>
@@ -418,8 +453,8 @@ function GrinderForm({
             {verificationCount === 0
               ? `Be the first to confirm these details — ${VERIFICATION_THRESHOLD} confirmations needed to verify`
               : remaining === 0
-              ? "Fully confirmed by the community"
-              : `${verificationCount} of ${VERIFICATION_THRESHOLD} confirmed · ${remaining} more needed`}
+                ? 'Fully confirmed by the community'
+                : `${verificationCount} of ${VERIFICATION_THRESHOLD} confirmed · ${remaining} more needed`}
           </Text>
         </View>
       )}
@@ -432,7 +467,11 @@ function GrinderForm({
         </View>
       )}
 
-      <form.Field name="brand" validators={{ onBlur: ({ value }) => !value.trim() ? "Required" : undefined }}>
+      <form.Field
+        name="brand"
+        validators={{
+          onBlur: ({ value }) => (!value.trim() ? 'Required' : undefined),
+        }}>
         {(field) => (
           <View className="gap-1">
             <Text className="text-latte-400 text-xs px-1 mb-1">Brand</Text>
@@ -445,14 +484,23 @@ function GrinderForm({
               onChangeText={field.handleChange}
               onBlur={field.handleBlur}
             />
-            <Text className="text-xs px-1" style={{ color: "#f87171", opacity: field.state.meta.errors.length > 0 ? 1 : 0 }}>
-              {field.state.meta.errors[0] ?? " "}
+            <Text
+              className="text-xs px-1"
+              style={{
+                color: '#f87171',
+                opacity: field.state.meta.errors.length > 0 ? 1 : 0,
+              }}>
+              {field.state.meta.errors[0] ?? ' '}
             </Text>
           </View>
         )}
       </form.Field>
 
-      <form.Field name="model" validators={{ onBlur: ({ value }) => !value.trim() ? "Required" : undefined }}>
+      <form.Field
+        name="model"
+        validators={{
+          onBlur: ({ value }) => (!value.trim() ? 'Required' : undefined),
+        }}>
         {(field) => (
           <View className="gap-1">
             <Text className="text-latte-400 text-xs px-1 mb-1">Model</Text>
@@ -465,8 +513,13 @@ function GrinderForm({
               onChangeText={field.handleChange}
               onBlur={field.handleBlur}
             />
-            <Text className="text-xs px-1" style={{ color: "#f87171", opacity: field.state.meta.errors.length > 0 ? 1 : 0 }}>
-              {field.state.meta.errors[0] ?? " "}
+            <Text
+              className="text-xs px-1"
+              style={{
+                color: '#f87171',
+                opacity: field.state.meta.errors.length > 0 ? 1 : 0,
+              }}>
+              {field.state.meta.errors[0] ?? ' '}
             </Text>
           </View>
         )}
@@ -480,14 +533,14 @@ function GrinderForm({
               {BURR_TYPES.map((type) => (
                 <TouchableOpacity
                   key={type}
-                  onPress={() => field.setValue(field.state.value === type ? "" : type)}
+                  onPress={() => field.setValue(field.state.value === type ? '' : type)}
                   className={`flex-1 py-3 rounded-xl border items-center ${
                     field.state.value === type
-                      ? "bg-harvest-500 border-harvest-500"
-                      : "border-ristretto-700"
-                  }`}
-                >
-                  <Text className={`text-sm font-medium capitalize ${field.state.value === type ? "text-white" : "text-latte-400"}`}>
+                      ? 'bg-harvest-500 border-harvest-500'
+                      : 'border-ristretto-700'
+                  }`}>
+                  <Text
+                    className={`text-sm font-medium capitalize ${field.state.value === type ? 'text-white' : 'text-latte-400'}`}>
                     {type}
                   </Text>
                 </TouchableOpacity>
@@ -505,14 +558,14 @@ function GrinderForm({
               {ADJ_TYPES.map((type) => (
                 <TouchableOpacity
                   key={type}
-                  onPress={() => field.setValue(field.state.value === type ? "" : type)}
+                  onPress={() => field.setValue(field.state.value === type ? '' : type)}
                   className={`px-4 py-3 rounded-xl border items-center ${
                     field.state.value === type
-                      ? "bg-harvest-500 border-harvest-500"
-                      : "border-ristretto-700"
-                  }`}
-                >
-                  <Text className={`text-sm font-medium ${field.state.value === type ? "text-white" : "text-latte-400"}`}>
+                      ? 'bg-harvest-500 border-harvest-500'
+                      : 'border-ristretto-700'
+                  }`}>
+                  <Text
+                    className={`text-sm font-medium ${field.state.value === type ? 'text-white' : 'text-latte-400'}`}>
                     {ADJ_LABELS[type]}
                   </Text>
                 </TouchableOpacity>
@@ -526,12 +579,12 @@ function GrinderForm({
         {(adjType) =>
           adjType ? (
             <View className="gap-3">
-              {adjType === "micro_stepped" && (
+              {adjType === 'micro_stepped' && (
                 <form.Field name="steps_per_unit">
                   {(field) => (
                     <View className="gap-1">
                       <Text className="text-latte-400 text-xs px-1 mb-1">
-                        Steps per number{" "}
+                        Steps per number{' '}
                         <Text className="text-latte-600">(e.g. 10 for 1Zpresso JX-Pro)</Text>
                       </Text>
                       <TextInput
@@ -575,8 +628,7 @@ function GrinderForm({
                           className="bg-ristretto-800 border border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-100 text-base"
                           style={{ lineHeight: undefined }}
                           placeholder={
-                            adjType === "stepped" ? "40" :
-                            adjType === "micro_stepped" ? "10" : "10"
+                            adjType === 'stepped' ? '40' : adjType === 'micro_stepped' ? '10' : '10'
                           }
                           placeholderTextColor="#6e5a47"
                           keyboardType="decimal-pad"
@@ -616,7 +668,9 @@ function GrinderForm({
               value={field.state.value}
               onChangeText={field.handleChange}
             />
-            <Text className="text-latte-600 text-xs px-1">Only link to images you have rights to use.</Text>
+            <Text className="text-latte-600 text-xs px-1">
+              Only link to images you have rights to use.
+            </Text>
           </View>
         )}
       </form.Field>
@@ -626,13 +680,16 @@ function GrinderForm({
           <TouchableOpacity
             onPress={form.handleSubmit}
             disabled={isSubmitting}
-            className="bg-harvest-500 rounded-xl py-4 items-center mt-2"
-          >
+            className="bg-harvest-500 rounded-xl py-4 items-center mt-2">
             {isSubmitting ? (
               <ActivityIndicator color="#fff" />
             ) : (
               <Text className="text-white font-semibold">
-                {isReview ? "Confirm & Add to My Gear" : editGrinder ? "Save Changes" : "Add Grinder"}
+                {isReview
+                  ? 'Confirm & Add to My Gear'
+                  : editGrinder
+                    ? 'Save Changes'
+                    : 'Add Grinder'}
               </Text>
             )}
           </TouchableOpacity>

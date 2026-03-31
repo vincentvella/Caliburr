@@ -41,8 +41,10 @@ export default function RootLayout() {
       setReady(true);
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, session) => setSession(session)
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) =>
+      setSession(session),
     );
 
     // Handle URL when app is already open
