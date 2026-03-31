@@ -2,10 +2,12 @@ import {
   View,
   Text,
   ScrollView,
+  TouchableOpacity,
   RefreshControl,
   ActivityIndicator,
 } from "react-native";
 import { useEffect, useState, useCallback } from "react";
+import { router } from "expo-router";
 import { supabase } from "@/lib/supabase";
 import {
   type RecipeWithJoins,
@@ -155,8 +157,17 @@ export default function ExploreScreen() {
           ))
         )}
 
-        <View className="h-8" />
+        <View className="h-24" />
       </ScrollView>
+
+      {/* FAB */}
+      <TouchableOpacity
+        onPress={() => router.push("/recipe/new")}
+        className="absolute bottom-8 right-6 w-14 h-14 rounded-full bg-harvest-500 items-center justify-center shadow-lg"
+        style={{ elevation: 6 }}
+      >
+        <Text className="text-white text-3xl font-light">+</Text>
+      </TouchableOpacity>
     </View>
   );
 }

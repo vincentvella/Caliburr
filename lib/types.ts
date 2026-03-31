@@ -28,6 +28,7 @@ export interface Grinder {
   burr_type: BurrType | null;
   adjustment_type: AdjustmentType | null;
   verified: boolean;
+  image_url: string | null;
   created_at: string;
 }
 
@@ -37,6 +38,7 @@ export interface BrewMachine {
   model: string;
   machine_type: MachineType;
   verified: boolean;
+  image_url: string | null;
   created_at: string;
 }
 
