@@ -17,7 +17,9 @@ import { supabase } from "@/lib/supabase";
 import type { BrewMachine, MachineType } from "@/lib/types";
 import { MACHINE_TYPE_LABELS } from "@/lib/types";
 
-type View = "search" | "create";
+const VERIFICATION_THRESHOLD = 5;
+
+type ModalView = "search" | "create" | "review" | "view";
 
 interface Props {
   visible: boolean;
@@ -27,24 +29,46 @@ interface Props {
 }
 
 export function MachineModal({ visible, onClose, onAdded, existingIds }: Props) {
-  const [view, setView] = useState<View>("search");
+  const [view, setView] = useState<ModalView>("search");
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<BrewMachine[]>([]);
+  const [defaults, setDefaults] = useState<BrewMachine[]>([]);
   const [searching, setSearching] = useState(false);
-  const [addingId, setAddingId] = useState<string | null>(null);
+  const [selectedMachine, setSelectedMachine] = useState<BrewMachine | null>(null);
+  const [verificationCount, setVerificationCount] = useState(0);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [adding, setAdding] = useState(false);
+
+  useEffect(() => {
+    if (visible) {
+      setView("search"); setQuery(""); setResults([]);
+      supabase.auth.getUser().then(({ data: { user } }) => setCurrentUserId(user?.id ?? null));
+    }
+  }, [visible]);
+
+  // Load defaults: verified first, then most recent
+  useEffect(() => {
+    async function loadDefaults() {
+      let q = supabase.from("brew_machines").select("*")
+        .order("verified", { ascending: false })
+        .order("created_at", { ascending: false })
+        .limit(25);
+      if (existingIds.length) q = q.not("id", "in", `(${existingIds.join(",")})`);
+      const { data } = await q;
+      setDefaults((data as BrewMachine[]) ?? []);
+    }
+    loadDefaults();
+  }, [existingIds]);
 
   const search = useCallback(async (text: string) => {
-    if (!text.trim()) {
-      setResults([]);
-      return;
-    }
+    if (!text.trim()) { setResults([]); return; }
     setSearching(true);
-    const { data } = await supabase
+    let q = supabase
       .from("brew_machines")
       .select("*")
-      .or(`brand.ilike.%${text}%,model.ilike.%${text}%`)
-      .not("id", "in", existingIds.length ? `(${existingIds.join(",")})` : "(null)")
-      .limit(10);
+      .or(`brand.ilike.%${text}%,model.ilike.%${text}%`);
+    if (existingIds.length) q = q.not("id", "in", `(${existingIds.join(",")})`);
+    const { data } = await q.limit(10);
     setResults((data as BrewMachine[]) ?? []);
     setSearching(false);
   }, [existingIds]);
@@ -54,13 +78,40 @@ export function MachineModal({ visible, onClose, onAdded, existingIds }: Props) 
     return () => clearTimeout(t);
   }, [query, search]);
 
+  async function openMachine(machine: BrewMachine) {
+    const { data: { user } } = await supabase.auth.getUser();
+
+    // Verified machines are read-only
+    if (machine.verified) {
+      setSelectedMachine(machine);
+      setView("view");
+      return;
+    }
+
+    // Creator can't verify their own entry — just add it directly
+    if (user && machine.created_by === user.id) {
+      await handleAdd(machine);
+      return;
+    }
+
+    setSelectedMachine(machine);
+    const { count } = await supabase
+      .from("machine_verifications")
+      .select("*", { count: "exact", head: true })
+      .eq("brew_machine_id", machine.id);
+    setVerificationCount(count ?? 0);
+    setView("review");
+  }
+
   async function handleAdd(machine: BrewMachine) {
-    setAddingId(machine.id);
+    setAdding(true);
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
-      await supabase.from("user_brew_machines").insert({ user_id: user.id, brew_machine_id: machine.id });
+      await supabase
+        .from("user_brew_machines")
+        .insert({ user_id: user.id, brew_machine_id: machine.id });
     }
-    setAddingId(null);
+    setAdding(false);
     onAdded();
     handleClose();
   }
@@ -69,24 +120,31 @@ export function MachineModal({ visible, onClose, onAdded, existingIds }: Props) 
     setView("search");
     setQuery("");
     setResults([]);
+    setSelectedMachine(null);
     onClose();
   }
+
+  const titles: Record<ModalView, string> = {
+    search: "Add Machine",
+    create: "New Machine",
+    review: "Confirm Details",
+    view:   "Machine Details",
+  };
+
+  const rightLabel = view === "search" ? "Cancel" : "Back";
+  const rightAction = view === "search" ? handleClose : () => setView("search");
 
   return (
     <Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={handleClose}>
       <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} className="flex-1 bg-ristretto-900">
         <View className="flex-row items-center justify-between px-6 pt-6 pb-4 border-b border-ristretto-700">
-          <Text className="text-latte-100 text-xl font-bold">
-            {view === "search" ? "Add Machine" : "New Machine"}
-          </Text>
-          <TouchableOpacity onPress={view === "create" ? () => setView("search") : handleClose}>
-            <Text className="text-harvest-400 font-semibold">
-              {view === "create" ? "Back" : "Cancel"}
-            </Text>
+          <Text className="text-latte-100 text-xl font-bold">{titles[view]}</Text>
+          <TouchableOpacity onPress={rightAction}>
+            <Text className="text-harvest-400 font-semibold">{rightLabel}</Text>
           </TouchableOpacity>
         </View>
 
-        {view === "search" ? (
+        {view === "search" && (
           <View className="flex-1 px-6 pt-4">
             <TextInput
               className="bg-ristretto-800 border border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-100 text-base mb-4"
@@ -97,18 +155,21 @@ export function MachineModal({ visible, onClose, onAdded, existingIds }: Props) 
               onChangeText={setQuery}
               autoFocus
             />
-
             {searching ? (
               <ActivityIndicator color="#ff9d37" style={{ marginTop: 16 }} />
             ) : (
               <FlatList
-                data={results}
+                data={query.trim() ? results : defaults}
                 keyExtractor={(item) => item.id}
                 keyboardShouldPersistTaps="handled"
+                ListHeaderComponent={
+                  !query.trim() && defaults.length > 0 ? (
+                    <Text className="text-latte-600 text-xs mb-2">Popular machines</Text>
+                  ) : null
+                }
                 renderItem={({ item }) => (
                   <TouchableOpacity
-                    onPress={() => handleAdd(item)}
-                    disabled={addingId === item.id}
+                    onPress={() => openMachine(item)}
                     className="flex-row items-center justify-between py-4 border-b border-ristretto-800"
                   >
                     <View>
@@ -117,13 +178,15 @@ export function MachineModal({ visible, onClose, onAdded, existingIds }: Props) 
                         {MACHINE_TYPE_LABELS[item.machine_type]}
                       </Text>
                     </View>
-                    {addingId === item.id ? (
-                      <ActivityIndicator size="small" color="#ff9d37" />
-                    ) : item.verified ? (
+                    {item.verified ? (
                       <View className="bg-bloom-900 border border-bloom-700 rounded-full px-2 py-0.5">
                         <Text className="text-bloom-400 text-xs">Verified</Text>
                       </View>
-                    ) : null}
+                    ) : currentUserId && item.created_by === currentUserId ? (
+                      <Text className="text-latte-600 text-xs">Add →</Text>
+                    ) : (
+                      <Text className="text-latte-600 text-xs">Review →</Text>
+                    )}
                   </TouchableOpacity>
                 )}
                 ListEmptyComponent={
@@ -142,12 +205,28 @@ export function MachineModal({ visible, onClose, onAdded, existingIds }: Props) 
               />
             )}
           </View>
-        ) : (
-          <CreateMachineForm
+        )}
+
+        {view === "create" && (
+          <MachineForm
             initialBrand={query}
-            onCreated={async (machine) => {
-              await handleAdd(machine);
-            }}
+            onDone={async (machine) => { await handleAdd(machine); }}
+          />
+        )}
+
+        {view === "review" && selectedMachine && (
+          <MachineForm
+            reviewMachine={selectedMachine}
+            verificationCount={verificationCount}
+            onDone={async (machine) => { await handleAdd(machine); }}
+          />
+        )}
+
+        {view === "view" && selectedMachine && (
+          <MachineReadOnly
+            machine={selectedMachine}
+            adding={adding}
+            onAdd={() => handleAdd(selectedMachine)}
           />
         )}
       </KeyboardAvoidingView>
@@ -155,44 +234,177 @@ export function MachineModal({ visible, onClose, onAdded, existingIds }: Props) 
   );
 }
 
-function CreateMachineForm({
-  initialBrand,
-  onCreated,
+// ─── Read-only view for verified machines ────────────────────────────────────
+
+function MachineReadOnly({
+  machine,
+  adding,
+  onAdd,
 }: {
-  initialBrand: string;
-  onCreated: (machine: BrewMachine) => void;
+  machine: BrewMachine;
+  adding: boolean;
+  onAdd: () => void;
+}) {
+  return (
+    <ScrollView className="flex-1 px-6 pt-4" contentContainerClassName="gap-4 pb-8">
+      <View className="bg-bloom-900 border border-bloom-700 rounded-xl px-4 py-3">
+        <Text className="text-bloom-400 text-sm font-medium">✓ Community verified</Text>
+      </View>
+
+      {machine.image_url ? (
+        <Image
+          source={{ uri: machine.image_url }}
+          className="w-full h-48 rounded-xl bg-ristretto-800"
+          resizeMode="contain"
+        />
+      ) : null}
+
+      <View className="bg-ristretto-800 border border-ristretto-700 rounded-xl px-4 py-4 gap-3">
+        <Row label="Brand" value={machine.brand} />
+        <Row label="Model" value={machine.model} />
+        <Row label="Type" value={MACHINE_TYPE_LABELS[machine.machine_type]} />
+      </View>
+
+      <TouchableOpacity
+        onPress={onAdd}
+        disabled={adding}
+        className="bg-harvest-500 rounded-xl py-4 items-center mt-2"
+      >
+        {adding ? (
+          <ActivityIndicator color="#fff" />
+        ) : (
+          <Text className="text-white font-semibold">Add to My Gear</Text>
+        )}
+      </TouchableOpacity>
+    </ScrollView>
+  );
+}
+
+function Row({ label, value }: { label: string; value: string }) {
+  return (
+    <View className="flex-row justify-between items-center">
+      <Text className="text-latte-500 text-sm">{label}</Text>
+      <Text className="text-latte-100 text-sm font-medium">{value}</Text>
+    </View>
+  );
+}
+
+// ─── Shared form (create + review) ───────────────────────────────────────────
+
+function MachineForm({
+  initialBrand = "",
+  reviewMachine,
+  verificationCount = 0,
+  onDone,
+}: {
+  initialBrand?: string;
+  reviewMachine?: BrewMachine;
+  verificationCount?: number;
+  onDone: (machine: BrewMachine) => void;
 }) {
   const MACHINE_TYPES = Object.keys(MACHINE_TYPE_LABELS) as MachineType[];
+  const isReview = !!reviewMachine;
 
   const form = useForm({
     defaultValues: {
-      brand: initialBrand,
-      model: "",
-      machine_type: "" as string,
-      image_url: "",
+      brand:        reviewMachine?.brand        ?? initialBrand,
+      model:        reviewMachine?.model        ?? "",
+      machine_type: reviewMachine?.machine_type ?? "" as string,
+      image_url:    reviewMachine?.image_url    ?? "",
     },
     onSubmit: async ({ value }) => {
       if (!value.machine_type) {
         form.setErrorMap({ onSubmit: "Select a machine type" });
         return;
       }
-      const { data, error } = await supabase
-        .from("brew_machines")
-        .insert({
-          brand: value.brand.trim(),
-          model: value.model.trim(),
-          machine_type: value.machine_type,
-          image_url: value.image_url.trim() || null,
-        })
-        .select()
-        .single();
 
-      if (!error && data) onCreated(data as BrewMachine);
+      const payload = {
+        brand:        value.brand.trim(),
+        model:        value.model.trim(),
+        machine_type: value.machine_type as MachineType,
+        image_url:    value.image_url.trim() || null,
+      };
+
+      let machine: BrewMachine;
+
+      if (isReview) {
+        // Update details if anything changed, then record this user's verification
+        const { data, error } = await supabase
+          .from("brew_machines")
+          .update(payload)
+          .eq("id", reviewMachine.id)
+          .select()
+          .single();
+        if (error || !data) return;
+        machine = data as BrewMachine;
+
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          await supabase
+            .from("machine_verifications")
+            .upsert(
+              { brew_machine_id: machine.id, user_id: user.id },
+              { onConflict: "brew_machine_id,user_id", ignoreDuplicates: true }
+            );
+        }
+      } else {
+        const { data: { user } } = await supabase.auth.getUser();
+        const { data, error } = await supabase
+          .from("brew_machines")
+          .insert({ ...payload, created_by: user?.id ?? null })
+          .select()
+          .single();
+        if (error || !data) return;
+        machine = data as BrewMachine;
+      }
+
+      onDone(machine);
     },
   });
 
+  const remaining = Math.max(0, VERIFICATION_THRESHOLD - verificationCount);
+  const DOT_COUNT = VERIFICATION_THRESHOLD;
+
   return (
-    <ScrollView className="flex-1 px-6 pt-4" contentContainerClassName="gap-3 pb-8" keyboardShouldPersistTaps="handled">
+    <ScrollView
+      className="flex-1 px-6 pt-4"
+      contentContainerClassName="gap-3 pb-8"
+      keyboardShouldPersistTaps="handled"
+    >
+      {/* Verification progress banner */}
+      {isReview && (
+        <View className="bg-ristretto-800 border border-ristretto-700 rounded-xl px-4 py-3 gap-2">
+          <View className="flex-row gap-1.5">
+            {Array.from({ length: DOT_COUNT }, (_, i) => (
+              <View
+                key={i}
+                className="flex-1 rounded-full"
+                style={{
+                  height: 4,
+                  backgroundColor: i < verificationCount ? "#22c55e" : "#3a2a1c",
+                }}
+              />
+            ))}
+          </View>
+          <Text className="text-latte-500 text-xs">
+            {verificationCount === 0
+              ? `Be the first to confirm these details — ${VERIFICATION_THRESHOLD} confirmations needed to verify`
+              : remaining === 0
+              ? "Fully confirmed by the community"
+              : `${verificationCount} of ${VERIFICATION_THRESHOLD} confirmed · ${remaining} more needed`}
+          </Text>
+        </View>
+      )}
+
+      <View className="gap-1">
+        <Text className="text-latte-400 text-xs px-1">
+          {isReview
+            ? "Review and correct any details below, then confirm."
+            : "Fill in the machine details."}
+        </Text>
+      </View>
+
+      {/* Brand */}
       <form.Field name="brand" validators={{ onBlur: ({ value }) => !value.trim() ? "Required" : undefined }}>
         {(field) => (
           <View className="gap-1">
@@ -213,6 +425,7 @@ function CreateMachineForm({
         )}
       </form.Field>
 
+      {/* Model */}
       <form.Field name="model" validators={{ onBlur: ({ value }) => !value.trim() ? "Required" : undefined }}>
         {(field) => (
           <View className="gap-1">
@@ -233,6 +446,7 @@ function CreateMachineForm({
         )}
       </form.Field>
 
+      {/* Machine type */}
       <form.Field name="machine_type">
         {(field) => (
           <View className="gap-2">
@@ -258,10 +472,13 @@ function CreateMachineForm({
         )}
       </form.Field>
 
+      {/* Image URL */}
       <form.Field name="image_url">
         {(field) => (
           <View className="gap-1">
-            <Text className="text-latte-400 text-xs px-1 mb-1">Image URL <Text className="text-latte-600">(optional)</Text></Text>
+            <Text className="text-latte-400 text-xs px-1 mb-1">
+              Image URL <Text className="text-latte-600">(optional)</Text>
+            </Text>
             {field.state.value ? (
               <Image
                 source={{ uri: field.state.value }}
@@ -298,7 +515,9 @@ function CreateMachineForm({
             {isSubmitting ? (
               <ActivityIndicator color="#fff" />
             ) : (
-              <Text className="text-white font-semibold">Add Machine</Text>
+              <Text className="text-white font-semibold">
+                {isReview ? "Confirm & Add to My Gear" : "Add Machine"}
+              </Text>
             )}
           </TouchableOpacity>
         )}

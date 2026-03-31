@@ -32,6 +32,7 @@ export interface Grinder {
   range_max: number | null;
   verified: boolean;
   image_url: string | null;
+  created_by: string | null;
   created_at: string;
 }
 
@@ -42,6 +43,7 @@ export interface BrewMachine {
   machine_type: MachineType;
   verified: boolean;
   image_url: string | null;
+  created_by: string | null;
   created_at: string;
 }
 
@@ -87,6 +89,18 @@ export const MACHINE_TYPE_LABELS: Record<MachineType, string> = {
   super_automatic: 'Super Automatic',
   drip:            'Drip Machine',
   pod:             'Pod Machine',
+};
+
+export const BURR_TYPE_LABELS: Record<BurrType, string> = {
+  flat:     'Flat',
+  conical:  'Conical',
+  hybrid:   'Hybrid',
+};
+
+export const ADJUSTMENT_TYPE_LABELS: Record<AdjustmentType, string> = {
+  stepped:      'Stepped',
+  stepless:     'Stepless',
+  micro_stepped: 'Micro Stepped',
 };
 
 export const BREW_METHOD_LABELS: Record<BrewMethod, string> = {

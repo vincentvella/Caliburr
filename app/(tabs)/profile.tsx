@@ -16,11 +16,13 @@ import { MACHINE_TYPE_LABELS } from "@/lib/types";
 interface UserGrinder {
   grinder_id: string;
   grinder: Grinder;
+  is_default: boolean;
 }
 
 interface UserMachine {
   brew_machine_id: string;
   brew_machine: BrewMachine;
+  is_default: boolean;
 }
 
 export default function ProfileScreen() {
@@ -43,12 +45,12 @@ export default function ProfileScreen() {
     const [grindersRes, machinesRes] = await Promise.all([
       supabase
         .from("user_grinders")
-        .select("grinder_id, grinder:grinders(*)")
+        .select("grinder_id, is_default, grinder:grinders(*)")
         .eq("user_id", user.id)
         .order("created_at", { ascending: false }),
       supabase
         .from("user_brew_machines")
-        .select("brew_machine_id, brew_machine:brew_machines(*)")
+        .select("brew_machine_id, is_default, brew_machine:brew_machines(*)")
         .eq("user_id", user.id)
         .order("created_at", { ascending: false }),
     ]);
@@ -90,6 +92,78 @@ export default function ProfileScreen() {
     setRemovingId(null);
   }
 
+  async function toggleDefaultGrinder(grinderId: string) {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const isAlreadyDefault = grinders.find(
+      (g) => g.grinder_id === grinderId
+    )?.is_default ?? false;
+
+    if (isAlreadyDefault) {
+      await supabase
+        .from("user_grinders")
+        .update({ is_default: false })
+        .eq("user_id", user.id)
+        .eq("grinder_id", grinderId);
+      setGrinders((prev) =>
+        prev.map((g) =>
+          g.grinder_id === grinderId ? { ...g, is_default: false } : g
+        )
+      );
+    } else {
+      await supabase
+        .from("user_grinders")
+        .update({ is_default: false })
+        .eq("user_id", user.id);
+      await supabase
+        .from("user_grinders")
+        .update({ is_default: true })
+        .eq("user_id", user.id)
+        .eq("grinder_id", grinderId);
+      setGrinders((prev) =>
+        prev.map((g) => ({ ...g, is_default: g.grinder_id === grinderId }))
+      );
+    }
+  }
+
+  async function toggleDefaultMachine(machineId: string) {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const isAlreadyDefault = machines.find(
+      (m) => m.brew_machine_id === machineId
+    )?.is_default ?? false;
+
+    if (isAlreadyDefault) {
+      // Deselect
+      await supabase
+        .from("user_brew_machines")
+        .update({ is_default: false })
+        .eq("user_id", user.id)
+        .eq("brew_machine_id", machineId);
+      setMachines((prev) =>
+        prev.map((m) =>
+          m.brew_machine_id === machineId ? { ...m, is_default: false } : m
+        )
+      );
+    } else {
+      // Clear any existing default, then set this one
+      await supabase
+        .from("user_brew_machines")
+        .update({ is_default: false })
+        .eq("user_id", user.id);
+      await supabase
+        .from("user_brew_machines")
+        .update({ is_default: true })
+        .eq("user_id", user.id)
+        .eq("brew_machine_id", machineId);
+      setMachines((prev) =>
+        prev.map((m) => ({ ...m, is_default: m.brew_machine_id === machineId }))
+      );
+    }
+  }
+
   async function handleSignOut() {
     setSigningOut(true);
     await supabase.auth.signOut();
@@ -126,49 +200,59 @@ export default function ProfileScreen() {
                   <Text className="text-latte-600 text-sm">Add your first grinder</Text>
                 </TouchableOpacity>
               ) : (
-                grinders.map(({ grinder_id, grinder }) => (
-                  <TouchableOpacity
-                    key={grinder_id}
-                    onPress={() => { setEditingGrinder(grinder); setGrinderModalOpen(true); }}
-                    className="flex-row items-center justify-between bg-ristretto-800 border border-ristretto-700 rounded-2xl px-4 py-3.5 mb-2"
-                  >
-                    <View className="flex-row items-center gap-3 flex-1">
-                      {grinder.image_url ? (
-                        <Image
-                          source={{ uri: grinder.image_url }}
-                          className="w-12 h-12 rounded-lg bg-ristretto-700"
-                          resizeMode="contain"
-                        />
-                      ) : (
-                        <View className="w-12 h-12 rounded-lg bg-ristretto-700 items-center justify-center">
-                          <Text className="text-latte-600 text-xl">⚙</Text>
+                <>
+                  {grinders.map(({ grinder_id, grinder, is_default }) => (
+                    <TouchableOpacity
+                      key={grinder_id}
+                      onPress={() => { setEditingGrinder(grinder); setGrinderModalOpen(true); }}
+                      className="flex-row items-center justify-between bg-ristretto-800 border border-ristretto-700 rounded-2xl px-4 py-3.5 mb-2"
+                    >
+                      <View className="flex-row items-center gap-3 flex-1">
+                        {grinder.image_url ? (
+                          <Image
+                            source={{ uri: grinder.image_url }}
+                            className="w-12 h-12 rounded-lg bg-ristretto-700"
+                            resizeMode="contain"
+                          />
+                        ) : (
+                          <View className="w-12 h-12 rounded-lg bg-ristretto-700 items-center justify-center">
+                            <Text className="text-latte-600 text-xl">⚙</Text>
+                          </View>
+                        )}
+                        <View className="flex-1">
+                          <Text className="text-latte-100 font-medium">
+                            {grinder.brand} {grinder.model}
+                          </Text>
+                          <Text className="text-latte-500 text-xs mt-0.5 capitalize">
+                            {grinder.burr_type ?? "—"} · {grinder.adjustment_type ?? "—"}
+                          </Text>
                         </View>
-                      )}
-                      <View className="flex-1">
-                        <Text className="text-latte-100 font-medium">
-                          {grinder.brand} {grinder.model}
-                        </Text>
-                        <Text className="text-latte-500 text-xs mt-0.5 capitalize">
-                          {grinder.burr_type ?? "—"} · {grinder.adjustment_type ?? "—"}
-                        </Text>
                       </View>
-                    </View>
-                    <View className="flex-row items-center gap-3">
-                      {grinder.verified && (
-                        <View className="bg-bloom-900 border border-bloom-700 rounded-full px-2 py-0.5">
-                          <Text className="text-bloom-400 text-xs">Verified</Text>
-                        </View>
-                      )}
-                      {removingId === grinder_id ? (
-                        <ActivityIndicator size="small" color="#6e5a47" />
-                      ) : (
-                        <TouchableOpacity onPress={() => removeGrinder(grinder_id)}>
-                          <Text className="text-latte-600 text-lg">×</Text>
+                      <View className="flex-row items-center gap-3">
+                        {grinder.verified && (
+                          <View className="bg-bloom-900 border border-bloom-700 rounded-full px-2 py-0.5">
+                            <Text className="text-bloom-400 text-xs">Verified</Text>
+                          </View>
+                        )}
+                        <TouchableOpacity onPress={() => toggleDefaultGrinder(grinder_id)}>
+                          <Text style={{ fontSize: 18, color: is_default ? "#ff9d37" : "#4a3728" }}>★</Text>
                         </TouchableOpacity>
-                      )}
-                    </View>
-                  </TouchableOpacity>
-                ))
+                        {removingId === grinder_id ? (
+                          <ActivityIndicator size="small" color="#6e5a47" />
+                        ) : (
+                          <TouchableOpacity onPress={() => removeGrinder(grinder_id)}>
+                            <Text className="text-latte-600 text-lg">×</Text>
+                          </TouchableOpacity>
+                        )}
+                      </View>
+                    </TouchableOpacity>
+                  ))}
+                  {grinders.some((g) => g.is_default) && (
+                    <Text className="text-latte-600 text-xs px-1 mt-1">
+                      ★ Pre-selected when creating a recipe
+                    </Text>
+                  )}
+                </>
               )}
             </View>
 
@@ -192,48 +276,58 @@ export default function ProfileScreen() {
                   <Text className="text-latte-600 text-sm">Add your first machine</Text>
                 </TouchableOpacity>
               ) : (
-                machines.map(({ brew_machine_id, brew_machine }) => (
-                  <View
-                    key={brew_machine_id}
-                    className="flex-row items-center justify-between bg-ristretto-800 border border-ristretto-700 rounded-2xl px-4 py-3.5 mb-2"
-                  >
-                    <View className="flex-row items-center gap-3 flex-1">
-                      {brew_machine.image_url ? (
-                        <Image
-                          source={{ uri: brew_machine.image_url }}
-                          className="w-12 h-12 rounded-lg bg-ristretto-700"
-                          resizeMode="contain"
-                        />
-                      ) : (
-                        <View className="w-12 h-12 rounded-lg bg-ristretto-700 items-center justify-center">
-                          <Text className="text-latte-600 text-xl">☕</Text>
+                <>
+                  {machines.map(({ brew_machine_id, brew_machine, is_default }) => (
+                    <View
+                      key={brew_machine_id}
+                      className="flex-row items-center justify-between bg-ristretto-800 border border-ristretto-700 rounded-2xl px-4 py-3.5 mb-2"
+                    >
+                      <View className="flex-row items-center gap-3 flex-1">
+                        {brew_machine.image_url ? (
+                          <Image
+                            source={{ uri: brew_machine.image_url }}
+                            className="w-12 h-12 rounded-lg bg-ristretto-700"
+                            resizeMode="contain"
+                          />
+                        ) : (
+                          <View className="w-12 h-12 rounded-lg bg-ristretto-700 items-center justify-center">
+                            <Text className="text-latte-600 text-xl">☕</Text>
+                          </View>
+                        )}
+                        <View className="flex-1">
+                          <Text className="text-latte-100 font-medium">
+                            {brew_machine.brand} {brew_machine.model}
+                          </Text>
+                          <Text className="text-latte-500 text-xs mt-0.5">
+                            {MACHINE_TYPE_LABELS[brew_machine.machine_type]}
+                          </Text>
                         </View>
-                      )}
-                      <View className="flex-1">
-                        <Text className="text-latte-100 font-medium">
-                          {brew_machine.brand} {brew_machine.model}
-                        </Text>
-                        <Text className="text-latte-500 text-xs mt-0.5">
-                          {MACHINE_TYPE_LABELS[brew_machine.machine_type]}
-                        </Text>
+                      </View>
+                      <View className="flex-row items-center gap-3">
+                        {brew_machine.verified && (
+                          <View className="bg-bloom-900 border border-bloom-700 rounded-full px-2 py-0.5">
+                            <Text className="text-bloom-400 text-xs">Verified</Text>
+                          </View>
+                        )}
+                        <TouchableOpacity onPress={() => toggleDefaultMachine(brew_machine_id)}>
+                          <Text style={{ fontSize: 18, color: is_default ? "#ff9d37" : "#4a3728" }}>★</Text>
+                        </TouchableOpacity>
+                        {removingId === brew_machine_id ? (
+                          <ActivityIndicator size="small" color="#6e5a47" />
+                        ) : (
+                          <TouchableOpacity onPress={() => removeMachine(brew_machine_id)}>
+                            <Text className="text-latte-600 text-lg">×</Text>
+                          </TouchableOpacity>
+                        )}
                       </View>
                     </View>
-                    <View className="flex-row items-center gap-3">
-                      {brew_machine.verified && (
-                        <View className="bg-bloom-900 border border-bloom-700 rounded-full px-2 py-0.5">
-                          <Text className="text-bloom-400 text-xs">Verified</Text>
-                        </View>
-                      )}
-                      {removingId === brew_machine_id ? (
-                        <ActivityIndicator size="small" color="#6e5a47" />
-                      ) : (
-                        <TouchableOpacity onPress={() => removeMachine(brew_machine_id)}>
-                          <Text className="text-latte-600 text-lg">×</Text>
-                        </TouchableOpacity>
-                      )}
-                    </View>
-                  </View>
-                ))
+                  ))}
+                  {machines.some((m) => m.is_default) && (
+                    <Text className="text-latte-600 text-xs px-1 mt-1">
+                      ★ Pre-selected when creating a recipe
+                    </Text>
+                  )}
+                </>
               )}
             </View>
           </>

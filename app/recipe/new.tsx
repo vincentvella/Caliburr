@@ -38,20 +38,30 @@ export default function NewRecipeScreen() {
       const [grindersRes, machinesRes] = await Promise.all([
         supabase
           .from("user_grinders")
-          .select("grinder:grinders(*)")
+          .select("is_default, grinder:grinders(*)")
           .eq("user_id", user.id),
         supabase
           .from("user_brew_machines")
-          .select("brew_machine:brew_machines(*)")
+          .select("is_default, brew_machine:brew_machines(*)")
           .eq("user_id", user.id),
       ]);
 
       setGrinders(
         (grindersRes.data ?? []).map((r: any) => r.grinder) as Grinder[]
       );
-      setMachines(
-        (machinesRes.data ?? []).map((r: any) => r.brew_machine) as BrewMachine[]
-      );
+
+      const defaultGrinder = (grindersRes.data ?? []).find((r: any) => r.is_default);
+      if (defaultGrinder) {
+        form.setFieldValue("grinder_id", defaultGrinder.grinder.id);
+      }
+      const loadedMachines = (machinesRes.data ?? []).map((r: any) => r.brew_machine) as BrewMachine[];
+      setMachines(loadedMachines);
+
+      const defaultMachine = (machinesRes.data ?? []).find((r: any) => r.is_default);
+      if (defaultMachine) {
+        form.setFieldValue("brew_machine_id", defaultMachine.brew_machine.id);
+      }
+
       setLoadingEquipment(false);
     }
     load();
@@ -506,7 +516,15 @@ function BrewTimer({ value, onChange }: { value: string; onChange: (v: string) =
 
 function GrindSettingField({ form, grinders }: { form: any; grinders: Grinder[] }) {
   const grinderId = useStore(form.store, (s: any) => s.values.grinder_id);
-  const grinder = grinders.find((g) => g.id === grinderId);
+  const grinder   = grinders.find((g) => g.id === grinderId);
+  const prevGrinderIdRef = useRef<string>("");
+
+  useEffect(() => {
+    if (grinderId && grinderId !== prevGrinderIdRef.current) {
+      form.setFieldValue("grind_setting", "");
+    }
+    prevGrinderIdRef.current = grinderId ?? "";
+  }, [grinderId]);
 
   return (
     <form.Field
