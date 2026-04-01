@@ -78,10 +78,28 @@ export interface Recipe {
   updated_at: string;
 }
 
+export interface RecipeHistory {
+  id: string;
+  recipe_id: string;
+  edited_by: string;
+  edited_at: string;
+  grind_setting: string;
+  dose_g: number | null;
+  yield_g: number | null;
+  brew_time_s: number | null;
+  water_temp_c: number | null;
+  ratio: number | null;
+  roast_level: RoastLevel | null;
+  roast_date: string | null;
+  notes: string | null;
+  bean_id: string | null;
+  brew_machine_id: string | null;
+}
+
 export interface RecipeWithJoins extends Recipe {
-  grinder: Pick<Grinder, 'brand' | 'model' | 'verified'>;
-  bean: Pick<Bean, 'name' | 'roaster'> | null;
-  brew_machine: Pick<BrewMachine, 'brand' | 'model' | 'machine_type'> | null;
+  grinder: Pick<Grinder, 'brand' | 'model' | 'verified' | 'burr_type' | 'adjustment_type'>;
+  bean: Pick<Bean, 'name' | 'roaster' | 'origin' | 'process' | 'roast_level'> | null;
+  brew_machine: Pick<BrewMachine, 'brand' | 'model' | 'machine_type' | 'verified'> | null;
 }
 
 export const MACHINE_TYPE_LABELS: Record<MachineType, string> = {
