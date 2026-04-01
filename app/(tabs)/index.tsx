@@ -62,9 +62,9 @@ export default function ExploreScreen() {
         .select(
           `
         *,
-        grinder:grinders(brand, model, verified),
-        bean:beans(name, roaster),
-        brew_machine:brew_machines(brand, model, machine_type)
+        grinder:grinders(brand, model, verified, burr_type, adjustment_type),
+        bean:beans(name, roaster, origin, process, roast_level),
+        brew_machine:brew_machines(brand, model, machine_type, verified)
       `,
         )
         .order('upvotes', { ascending: false })
@@ -281,11 +281,16 @@ export default function ExploreScreen() {
             </View>
           }
           renderItem={({ item }) => (
-            <RecipeCard
-              recipe={item}
-              upvoted={upvotedIds.has(item.id)}
-              onUpvote={() => toggleUpvote(item.id)}
-            />
+            <TouchableOpacity
+              activeOpacity={0.85}
+              onPress={() => router.push(`/recipe/${item.id}`)}
+            >
+              <RecipeCard
+                recipe={item}
+                upvoted={upvotedIds.has(item.id)}
+                onUpvote={() => toggleUpvote(item.id)}
+              />
+            </TouchableOpacity>
           )}
         />
       )}

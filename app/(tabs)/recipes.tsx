@@ -112,8 +112,9 @@ export default function RecipesScreen() {
       .select(
         `
         *,
-        grinder:grinders(brand, model, verified),
-        bean:beans(name, roaster)
+        grinder:grinders(brand, model, verified, burr_type, adjustment_type),
+        bean:beans(name, roaster, origin, process, roast_level),
+        brew_machine:brew_machines(brand, model, machine_type, verified)
       `,
       )
       .eq('user_id', user.id)
@@ -181,7 +182,13 @@ export default function RecipesScreen() {
           </View>
         ) : (
           recipes.map((recipe) => (
-            <RecipeCard key={recipe.id} recipe={recipe} onDelete={handleDelete} />
+            <TouchableOpacity
+              key={recipe.id}
+              activeOpacity={0.85}
+              onPress={() => router.push(`/recipe/${recipe.id}`)}
+            >
+              <RecipeCard recipe={recipe} onDelete={handleDelete} />
+            </TouchableOpacity>
           ))
         )}
 
