@@ -15,12 +15,14 @@ import { supabase } from '@/lib/supabase';
 import {
   type Grinder,
   type BrewMachine,
+  type Bean,
   type BrewMethod,
   type RoastLevel,
   BREW_METHOD_LABELS,
   ROAST_LEVEL_LABELS,
 } from '@/lib/types';
 import { GrindTape } from '@/components/GrindTape';
+import { BeanModal } from '@/components/BeanModal';
 
 const BREW_METHODS = Object.keys(BREW_METHOD_LABELS) as BrewMethod[];
 const ROAST_LEVELS = Object.keys(ROAST_LEVEL_LABELS) as RoastLevel[];
@@ -29,6 +31,8 @@ export default function NewRecipeScreen() {
   const [grinders, setGrinders] = useState<Grinder[]>([]);
   const [machines, setMachines] = useState<BrewMachine[]>([]);
   const [loadingEquipment, setLoadingEquipment] = useState(true);
+  const [selectedBean, setSelectedBean] = useState<Bean | null>(null);
+  const [beanModalOpen, setBeanModalOpen] = useState(false);
 
   useEffect(() => {
     async function load() {
@@ -52,7 +56,7 @@ export default function NewRecipeScreen() {
 
       const defaultGrinder = (grindersRes.data ?? []).find((r: any) => r.is_default);
       if (defaultGrinder) {
-        form.setFieldValue('grinder_id', defaultGrinder.grinder.id);
+        form.setFieldValue('grinder_id', (defaultGrinder.grinder as any).id);
       }
       const loadedMachines = (machinesRes.data ?? []).map(
         (r: any) => r.brew_machine,
@@ -61,7 +65,7 @@ export default function NewRecipeScreen() {
 
       const defaultMachine = (machinesRes.data ?? []).find((r: any) => r.is_default);
       if (defaultMachine) {
-        form.setFieldValue('brew_machine_id', defaultMachine.brew_machine.id);
+        form.setFieldValue('brew_machine_id', (defaultMachine.brew_machine as any).id);
       }
 
       setLoadingEquipment(false);
@@ -73,6 +77,7 @@ export default function NewRecipeScreen() {
     defaultValues: {
       grinder_id: '',
       brew_machine_id: '',
+      bean_id: '',
       brew_method: '' as BrewMethod | '',
       grind_setting: '',
       dose_g: '',
@@ -93,6 +98,7 @@ export default function NewRecipeScreen() {
         user_id: user.id,
         grinder_id: value.grinder_id,
         brew_machine_id: value.brew_machine_id || null,
+        bean_id: value.bean_id || null,
         brew_method: value.brew_method as BrewMethod,
         grind_setting: value.grind_setting.trim(),
         dose_g: value.dose_g ? parseFloat(value.dose_g) : null,
@@ -210,6 +216,33 @@ export default function NewRecipeScreen() {
                 )}
               </form.Field>
             )}
+
+            {/* Bean (optional) */}
+            <form.Field name="bean_id">
+              {(field: any) => (
+                <View className="gap-2">
+                  <SectionLabel label="Bean" />
+                  {selectedBean ? (
+                    <View className="flex-row items-center justify-between bg-ristretto-800 border border-ristretto-700 rounded-2xl px-4 py-3.5">
+                      <View className="flex-1">
+                        <Text className="text-latte-100 font-medium">{selectedBean.name}</Text>
+                        <Text className="text-latte-500 text-xs mt-0.5">{selectedBean.roaster}</Text>
+                      </View>
+                      <TouchableOpacity onPress={() => { setSelectedBean(null); field.setValue(''); }}>
+                        <Text className="text-latte-600 text-lg">×</Text>
+                      </TouchableOpacity>
+                    </View>
+                  ) : (
+                    <TouchableOpacity
+                      onPress={() => setBeanModalOpen(true)}
+                      className="border border-dashed border-ristretto-700 rounded-2xl py-4 items-center"
+                    >
+                      <Text className="text-latte-500 text-sm">+ Add bean (optional)</Text>
+                    </TouchableOpacity>
+                  )}
+                </View>
+              )}
+            </form.Field>
 
             {/* Brew Method */}
             <form.Field
@@ -417,6 +450,17 @@ export default function NewRecipeScreen() {
           </>
         )}
       </ScrollView>
+
+      <BeanModal
+        visible={beanModalOpen}
+        onClose={() => setBeanModalOpen(false)}
+        onSelected={(bean) => {
+          setSelectedBean(bean);
+          form.setFieldValue('bean_id', bean.id);
+          setBeanModalOpen(false);
+        }}
+        selectedId={selectedBean?.id}
+      />
     </KeyboardAvoidingView>
   );
 }
