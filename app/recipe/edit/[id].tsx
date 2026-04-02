@@ -24,6 +24,7 @@ import {
 import { Constants } from '@/lib/database.types';
 import { GrindTape } from '@/components/GrindTape';
 import { BeanModal } from '@/components/BeanModal';
+import { DateInput } from '@/components/DateInput';
 
 const BREW_METHODS = [...Constants.public.Enums.brew_method];
 const ROAST_LEVELS = [...Constants.public.Enums.roast_level];
@@ -478,6 +479,13 @@ export default function EditRecipeScreen() {
                 ))}
               </View>
             </View>
+          )}
+        </form.Field>
+
+        {/* Roast Date */}
+        <form.Field name="roast_date">
+          {(field) => (
+            <DateInput label="Roast Date" value={field.state.value} onChange={field.handleChange} />
           )}
         </form.Field>
 

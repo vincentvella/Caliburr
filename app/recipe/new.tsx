@@ -23,6 +23,7 @@ import {
 import { Constants } from '@/lib/database.types';
 import { GrindTape } from '@/components/GrindTape';
 import { BeanModal } from '@/components/BeanModal';
+import { DateInput } from '@/components/DateInput';
 
 const BREW_METHODS = [...Constants.public.Enums.brew_method];
 const ROAST_LEVELS = [...Constants.public.Enums.roast_level];
@@ -52,6 +53,7 @@ export default function NewRecipeScreen() {
       water_temp_c: '',
       ratio: '',
       roast_level: '' as RoastLevel | '',
+      roast_date: '',
       notes: '',
     },
     onSubmit: async ({ value }) => {
@@ -74,6 +76,7 @@ export default function NewRecipeScreen() {
         water_temp_c: value.water_temp_c ? parseFloat(value.water_temp_c) : null,
         ratio: value.ratio ? parseFloat(value.ratio) : null,
         roast_level: value.roast_level || null,
+        roast_date: value.roast_date || null,
         notes: value.notes.trim() || null,
       });
 
@@ -470,6 +473,17 @@ export default function NewRecipeScreen() {
                     ))}
                   </View>
                 </View>
+              )}
+            </form.Field>
+
+            {/* Roast Date */}
+            <form.Field name="roast_date">
+              {(field) => (
+                <DateInput
+                  label="Roast Date"
+                  value={field.state.value}
+                  onChange={field.handleChange}
+                />
               )}
             </form.Field>
 
