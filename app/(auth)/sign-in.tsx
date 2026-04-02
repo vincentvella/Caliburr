@@ -37,10 +37,12 @@ export default function SignInScreen() {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      className="flex-1 bg-ristretto-900">
+      className="flex-1 bg-ristretto-900"
+    >
       <ScrollView
         contentContainerClassName="flex-grow justify-center px-6"
-        keyboardShouldPersistTaps="handled">
+        keyboardShouldPersistTaps="handled"
+      >
         <Text className="text-crema-300 text-4xl font-bold mb-1">Caliburr</Text>
         <Text className="text-latte-400 text-base mb-10">Dial in your perfect cup.</Text>
 
@@ -49,7 +51,8 @@ export default function SignInScreen() {
             name="email"
             validators={{
               onBlur: ({ value }) => (!value.includes('@') ? 'Enter a valid email' : undefined),
-            }}>
+            }}
+          >
             {(field) => (
               <View className="gap-1">
                 <TextInput
@@ -72,7 +75,8 @@ export default function SignInScreen() {
                   style={{
                     color: '#f87171',
                     opacity: field.state.meta.errors.length > 0 ? 1 : 0,
-                  }}>
+                  }}
+                >
                   {field.state.meta.errors[0] ?? ' '}
                 </Text>
               </View>
@@ -84,7 +88,8 @@ export default function SignInScreen() {
             validators={{
               onBlur: ({ value }) =>
                 value.length < 6 ? 'Password must be at least 6 characters' : undefined,
-            }}>
+            }}
+          >
             {(field) => (
               <View className="gap-1">
                 <TextInput
@@ -107,7 +112,8 @@ export default function SignInScreen() {
                   style={{
                     color: '#f87171',
                     opacity: field.state.meta.errors.length > 0 ? 1 : 0,
-                  }}>
+                  }}
+                >
                   {field.state.meta.errors[0] ?? ' '}
                 </Text>
               </View>
@@ -130,7 +136,8 @@ export default function SignInScreen() {
             <TouchableOpacity
               onPress={form.handleSubmit}
               disabled={isSubmitting}
-              className="bg-harvest-500 rounded-xl py-4 items-center mb-6">
+              className="bg-harvest-500 rounded-xl py-4 items-center mb-6"
+            >
               {isSubmitting ? (
                 <ActivityIndicator color="#fff" />
               ) : (

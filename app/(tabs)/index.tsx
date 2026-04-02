@@ -8,7 +8,7 @@ import {
   RefreshControl,
   ActivityIndicator,
 } from 'react-native';
-import { useEffect, useState, useCallback, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { useFocusEffect, router } from 'expo-router';
 import { supabase } from '@/lib/supabase';
 import { type RecipeWithJoins, type BrewMethod, BREW_METHOD_LABELS } from '@/lib/types';
@@ -120,24 +120,22 @@ export default function ExploreScreen() {
   }, [fetchRecipes]);
 
   // Re-fetch upvoted IDs when screen comes back into focus
-  useFocusEffect(
-    useCallback(() => {
-      supabase.auth.getUser().then(async ({ data: { user } }) => {
-        if (!user) return;
-        const { data } = await supabase
-          .from('recipe_upvotes')
-          .select('recipe_id')
-          .eq('user_id', user.id);
-        setUpvotedIds(new Set((data ?? []).map((r) => r.recipe_id)));
-      });
-    }, []),
-  );
+  useFocusEffect(() => {
+    supabase.auth.getUser().then(async ({ data: { user } }) => {
+      if (!user) return;
+      const { data } = await supabase
+        .from('recipe_upvotes')
+        .select('recipe_id')
+        .eq('user_id', user.id);
+      setUpvotedIds(new Set((data ?? []).map((r) => r.recipe_id)));
+    });
+  });
 
-  const handleRefresh = useCallback(async () => {
+  async function handleRefresh() {
     setRefreshing(true);
     await fetchRecipes();
     setRefreshing(false);
-  }, [fetchRecipes]);
+  }
 
   function handleSearchChange(text: string) {
     setSearch(text);
@@ -196,9 +194,11 @@ export default function ExploreScreen() {
             onPress={() => setMyGearOnly((v) => !v)}
             className={`px-3 py-2 rounded-xl border ${
               myGearOnly ? 'bg-harvest-500 border-harvest-500' : 'border-ristretto-700'
-            }`}>
+            }`}
+          >
             <Text
-              className={`text-xs font-semibold ${myGearOnly ? 'text-white' : 'text-latte-400'}`}>
+              className={`text-xs font-semibold ${myGearOnly ? 'text-white' : 'text-latte-400'}`}
+            >
               My Gear
             </Text>
           </TouchableOpacity>
@@ -219,14 +219,17 @@ export default function ExploreScreen() {
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ gap: 8 }}>
+          contentContainerStyle={{ gap: 8 }}
+        >
           <TouchableOpacity
             onPress={() => setMethodFilter(null)}
             className={`px-3 py-1.5 rounded-full border ${
               methodFilter === null ? 'bg-harvest-500 border-harvest-500' : 'border-ristretto-700'
-            }`}>
+            }`}
+          >
             <Text
-              className={`text-xs font-medium ${methodFilter === null ? 'text-white' : 'text-latte-400'}`}>
+              className={`text-xs font-medium ${methodFilter === null ? 'text-white' : 'text-latte-400'}`}
+            >
               All
             </Text>
           </TouchableOpacity>
@@ -238,9 +241,11 @@ export default function ExploreScreen() {
                 methodFilter === method
                   ? 'bg-harvest-500 border-harvest-500'
                   : 'border-ristretto-700'
-              }`}>
+              }`}
+            >
               <Text
-                className={`text-xs font-medium ${methodFilter === method ? 'text-white' : 'text-latte-400'}`}>
+                className={`text-xs font-medium ${methodFilter === method ? 'text-white' : 'text-latte-400'}`}
+              >
                 {BREW_METHOD_LABELS[method]}
               </Text>
             </TouchableOpacity>
@@ -306,7 +311,8 @@ export default function ExploreScreen() {
           shadowOpacity: 0.3,
           shadowRadius: 8,
           shadowOffset: { width: 0, height: 3 },
-        }}>
+        }}
+      >
         <Text className="text-white text-3xl font-light">+</Text>
       </TouchableOpacity>
     </View>
@@ -390,11 +396,13 @@ function RecipeCard({
         <TouchableOpacity
           onPress={onUpvote}
           className="flex-row items-center gap-1.5 px-3 py-1.5 rounded-xl"
-          style={{ backgroundColor: upvoted ? '#7c3a1a' : '#2a1c14' }}>
+          style={{ backgroundColor: upvoted ? '#7c3a1a' : '#2a1c14' }}
+        >
           <Text style={{ color: upvoted ? '#ff9d37' : '#6e5a47', fontSize: 14 }}>▲</Text>
           <Text
             className="text-xs font-semibold"
-            style={{ color: upvoted ? '#ff9d37' : '#6e5a47' }}>
+            style={{ color: upvoted ? '#ff9d37' : '#6e5a47' }}
+          >
             {recipe.upvotes}
           </Text>
         </TouchableOpacity>

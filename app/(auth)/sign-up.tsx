@@ -7,11 +7,11 @@ import {
   ScrollView,
   Platform,
   ActivityIndicator,
-} from "react-native";
-import { useRef, useState } from "react";
-import { Link, router } from "expo-router";
-import { useForm } from "@tanstack/react-form";
-import { supabase } from "@/lib/supabase";
+} from 'react-native';
+import { useRef, useState } from 'react';
+import { Link, router } from 'expo-router';
+import { useForm } from '@tanstack/react-form';
+import { supabase } from '@/lib/supabase';
 
 export default function SignUpScreen() {
   const passwordRef = useRef<TextInput>(null);
@@ -19,8 +19,8 @@ export default function SignUpScreen() {
 
   const form = useForm({
     defaultValues: {
-      email: "",
-      password: "",
+      email: '',
+      password: '',
     },
     onSubmit: async ({ value }) => {
       const { error } = await supabase.auth.signUp({
@@ -31,7 +31,7 @@ export default function SignUpScreen() {
         setSubmitError(error.message);
       } else {
         router.replace({
-          pathname: "/(auth)/verify-email",
+          pathname: '/(auth)/verify-email',
           params: { email: value.email },
         });
       }
@@ -40,7 +40,7 @@ export default function SignUpScreen() {
 
   return (
     <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       className="flex-1 bg-ristretto-900"
     >
       <ScrollView
@@ -56,8 +56,7 @@ export default function SignUpScreen() {
           <form.Field
             name="email"
             validators={{
-              onBlur: ({ value }) =>
-                !value.includes("@") ? "Enter a valid email" : undefined,
+              onBlur: ({ value }) => (!value.includes('@') ? 'Enter a valid email' : undefined),
             }}
           >
             {(field) => (
@@ -80,11 +79,11 @@ export default function SignUpScreen() {
                 <Text
                   className="text-xs px-1"
                   style={{
-                    color: "#f87171",
+                    color: '#f87171',
                     opacity: field.state.meta.errors.length > 0 ? 1 : 0,
                   }}
                 >
-                  {field.state.meta.errors[0] ?? " "}
+                  {field.state.meta.errors[0] ?? ' '}
                 </Text>
               </View>
             )}
@@ -94,9 +93,7 @@ export default function SignUpScreen() {
             name="password"
             validators={{
               onBlur: ({ value }) =>
-                value.length < 6
-                  ? "Password must be at least 6 characters"
-                  : undefined,
+                value.length < 6 ? 'Password must be at least 6 characters' : undefined,
             }}
           >
             {(field) => (
@@ -120,11 +117,11 @@ export default function SignUpScreen() {
                 <Text
                   className="text-xs px-1"
                   style={{
-                    color: "#f87171",
+                    color: '#f87171',
                     opacity: field.state.meta.errors.length > 0 ? 1 : 0,
                   }}
                 >
-                  {field.state.meta.errors[0] ?? " "}
+                  {field.state.meta.errors[0] ?? ' '}
                 </Text>
               </View>
             )}
@@ -132,7 +129,9 @@ export default function SignUpScreen() {
         </View>
 
         {submitError && (
-          <Text className="text-sm mb-4" style={{ color: "#f87171" }}>{submitError}</Text>
+          <Text className="text-sm mb-4" style={{ color: '#f87171' }}>
+            {submitError}
+          </Text>
         )}
 
         <form.Subscribe selector={(s) => s.isSubmitting}>
@@ -145,9 +144,7 @@ export default function SignUpScreen() {
               {isSubmitting ? (
                 <ActivityIndicator color="#fff" />
               ) : (
-                <Text className="text-white font-semibold text-base">
-                  Create Account
-                </Text>
+                <Text className="text-white font-semibold text-base">Create Account</Text>
               )}
             </TouchableOpacity>
           )}

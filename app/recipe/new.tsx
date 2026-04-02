@@ -8,7 +8,7 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import { useEffect, useState, useRef, useCallback } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { router } from 'expo-router';
 import { useForm, useStore } from '@tanstack/react-form';
 import { supabase } from '@/lib/supabase';
@@ -27,47 +27,17 @@ import { BeanModal } from '@/components/BeanModal';
 const BREW_METHODS = [...Constants.public.Enums.brew_method];
 const ROAST_LEVELS = [...Constants.public.Enums.roast_level];
 
-
 export default function NewRecipeScreen() {
   const [grinders, setGrinders] = useState<Grinder[]>([]);
   const [machines, setMachines] = useState<BrewMachine[]>([]);
   const [loadingEquipment, setLoadingEquipment] = useState(true);
-  const [selectedBean, setSelectedBean] = useState<{ id: string; name: string; roaster: string } | null>(null);
+  const [selectedBean, setSelectedBean] = useState<{
+    id: string;
+    name: string;
+    roaster: string;
+  } | null>(null);
   const [beanModalOpen, setBeanModalOpen] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
-
-  useEffect(() => {
-    async function load() {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) return;
-
-      const [userGrindersRes, userMachinesRes] = await Promise.all([
-        supabase.from('user_grinders').select('grinder_id, is_default').eq('user_id', user.id),
-        supabase.from('user_brew_machines').select('brew_machine_id, is_default').eq('user_id', user.id),
-      ]);
-
-      const grinderIds = (userGrindersRes.data ?? []).map((r) => r.grinder_id);
-      const machineIds = (userMachinesRes.data ?? []).map((r) => r.brew_machine_id);
-
-      const [grindersRes, machinesRes] = await Promise.all([
-        supabase.from('grinders').select('*').in('id', grinderIds),
-        supabase.from('brew_machines').select('*').in('id', machineIds),
-      ]);
-      setGrinders(grindersRes.data ?? []);
-      setMachines(machinesRes.data ?? []);
-
-      const defaultGrinderRow = (userGrindersRes.data ?? []).find((r) => r.is_default);
-      if (defaultGrinderRow) form.setFieldValue('grinder_id', defaultGrinderRow.grinder_id);
-
-      const defaultMachineRow = (userMachinesRes.data ?? []).find((r) => r.is_default);
-      if (defaultMachineRow) form.setFieldValue('brew_machine_id', defaultMachineRow.brew_machine_id);
-
-      setLoadingEquipment(false);
-    }
-    load();
-  }, []);
 
   const form = useForm({
     defaultValues: {
@@ -112,6 +82,43 @@ export default function NewRecipeScreen() {
     },
   });
 
+  useEffect(() => {
+    async function load() {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const [userGrindersRes, userMachinesRes] = await Promise.all([
+        supabase.from('user_grinders').select('grinder_id, is_default').eq('user_id', user.id),
+        supabase
+          .from('user_brew_machines')
+          .select('brew_machine_id, is_default')
+          .eq('user_id', user.id),
+      ]);
+
+      const grinderIds = (userGrindersRes.data ?? []).map((r) => r.grinder_id);
+      const machineIds = (userMachinesRes.data ?? []).map((r) => r.brew_machine_id);
+
+      const [grindersRes, machinesRes] = await Promise.all([
+        supabase.from('grinders').select('*').in('id', grinderIds),
+        supabase.from('brew_machines').select('*').in('id', machineIds),
+      ]);
+      setGrinders(grindersRes.data ?? []);
+      setMachines(machinesRes.data ?? []);
+
+      const defaultGrinderRow = (userGrindersRes.data ?? []).find((r) => r.is_default);
+      if (defaultGrinderRow) form.setFieldValue('grinder_id', defaultGrinderRow.grinder_id);
+
+      const defaultMachineRow = (userMachinesRes.data ?? []).find((r) => r.is_default);
+      if (defaultMachineRow)
+        form.setFieldValue('brew_machine_id', defaultMachineRow.brew_machine_id);
+
+      setLoadingEquipment(false);
+    }
+    load();
+  }, [form]);
+
   const grinderId = useStore(form.store, (s) => s.values.grinder_id);
   const grinder = grinders.find((g) => g.id === grinderId) ?? null;
   const prevGrinderIdRef = useRef('');
@@ -121,12 +128,13 @@ export default function NewRecipeScreen() {
       form.setFieldValue('grind_setting', '');
     }
     prevGrinderIdRef.current = grinderId ?? '';
-  }, [grinderId]);
+  }, [grinderId, form]);
 
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      className="flex-1 bg-ristretto-900">
+      className="flex-1 bg-ristretto-900"
+    >
       {/* Header */}
       <View className="flex-row items-center justify-between px-6 pt-14 pb-4 border-b border-ristretto-700">
         <TouchableOpacity onPress={() => router.back()}>
@@ -149,7 +157,8 @@ export default function NewRecipeScreen() {
       <ScrollView
         className="flex-1"
         contentContainerClassName="px-6 pt-6 pb-16 gap-6"
-        keyboardShouldPersistTaps="handled">
+        keyboardShouldPersistTaps="handled"
+      >
         {loadingEquipment ? (
           <ActivityIndicator color="#ff9d37" />
         ) : (
@@ -159,14 +168,16 @@ export default function NewRecipeScreen() {
               name="grinder_id"
               validators={{
                 onSubmit: ({ value }) => (!value ? 'Select a grinder' : undefined),
-              }}>
+              }}
+            >
               {(field) => (
                 <View className="gap-2">
                   <SectionLabel label="Grinder" required />
                   {grinders.length === 0 ? (
                     <TouchableOpacity
                       onPress={() => router.back()}
-                      className="border border-dashed border-ristretto-700 rounded-2xl py-5 items-center">
+                      className="border border-dashed border-ristretto-700 rounded-2xl py-5 items-center"
+                    >
                       <Text className="text-latte-500 text-sm">
                         Add grinders in your Profile first
                       </Text>
@@ -181,9 +192,11 @@ export default function NewRecipeScreen() {
                             field.state.value === g.id
                               ? 'bg-harvest-500 border-harvest-500'
                               : 'bg-ristretto-800 border-ristretto-700'
-                          }`}>
+                          }`}
+                        >
                           <Text
-                            className={`font-medium ${field.state.value === g.id ? 'text-white' : 'text-latte-100'}`}>
+                            className={`font-medium ${field.state.value === g.id ? 'text-white' : 'text-latte-100'}`}
+                          >
                             {g.brand} {g.model}
                           </Text>
                           {field.state.value === g.id && <Text className="text-white">✓</Text>}
@@ -211,9 +224,11 @@ export default function NewRecipeScreen() {
                             field.state.value === m.id
                               ? 'bg-harvest-500 border-harvest-500'
                               : 'bg-ristretto-800 border-ristretto-700'
-                          }`}>
+                          }`}
+                        >
                           <Text
-                            className={`font-medium ${field.state.value === m.id ? 'text-white' : 'text-latte-100'}`}>
+                            className={`font-medium ${field.state.value === m.id ? 'text-white' : 'text-latte-100'}`}
+                          >
                             {m.brand} {m.model}
                           </Text>
                           {field.state.value === m.id && <Text className="text-white">✓</Text>}
@@ -234,9 +249,16 @@ export default function NewRecipeScreen() {
                     <View className="flex-row items-center justify-between bg-ristretto-800 border border-ristretto-700 rounded-2xl px-4 py-3.5">
                       <View className="flex-1">
                         <Text className="text-latte-100 font-medium">{selectedBean.name}</Text>
-                        <Text className="text-latte-500 text-xs mt-0.5">{selectedBean.roaster}</Text>
+                        <Text className="text-latte-500 text-xs mt-0.5">
+                          {selectedBean.roaster}
+                        </Text>
                       </View>
-                      <TouchableOpacity onPress={() => { setSelectedBean(null); field.setValue(''); }}>
+                      <TouchableOpacity
+                        onPress={() => {
+                          setSelectedBean(null);
+                          field.setValue('');
+                        }}
+                      >
                         <Text className="text-latte-600 text-lg">×</Text>
                       </TouchableOpacity>
                     </View>
@@ -257,7 +279,8 @@ export default function NewRecipeScreen() {
               name="brew_method"
               validators={{
                 onSubmit: ({ value }) => (!value ? 'Select a brew method' : undefined),
-              }}>
+              }}
+            >
               {(field) => (
                 <View className="gap-2">
                   <SectionLabel label="Brew Method" required />
@@ -270,9 +293,11 @@ export default function NewRecipeScreen() {
                           field.state.value === method
                             ? 'bg-harvest-500 border-harvest-500'
                             : 'border-ristretto-700'
-                        }`}>
+                        }`}
+                      >
                         <Text
-                          className={`text-sm font-medium ${field.state.value === method ? 'text-white' : 'text-latte-400'}`}>
+                          className={`text-sm font-medium ${field.state.value === method ? 'text-white' : 'text-latte-400'}`}
+                        >
                           {BREW_METHOD_LABELS[method]}
                         </Text>
                       </TouchableOpacity>
@@ -288,7 +313,8 @@ export default function NewRecipeScreen() {
               name="grind_setting"
               validators={{
                 onSubmit: ({ value }) => (!value.trim() ? 'Required' : undefined),
-              }}>
+              }}
+            >
               {(field) => (
                 <View className="gap-2">
                   <SectionLabel label="Grind Setting" required />
@@ -433,9 +459,11 @@ export default function NewRecipeScreen() {
                           field.state.value === level
                             ? 'bg-harvest-500 border-harvest-500'
                             : 'border-ristretto-700'
-                        }`}>
+                        }`}
+                      >
                         <Text
-                          className={`text-sm font-medium ${field.state.value === level ? 'text-white' : 'text-latte-400'}`}>
+                          className={`text-sm font-medium ${field.state.value === level ? 'text-white' : 'text-latte-400'}`}
+                        >
                           {ROAST_LEVEL_LABELS[level]}
                         </Text>
                       </TouchableOpacity>
@@ -466,7 +494,9 @@ export default function NewRecipeScreen() {
             </form.Field>
 
             {submitError && (
-              <Text style={{ color: '#f87171' }} className="text-sm">{submitError}</Text>
+              <Text style={{ color: '#f87171' }} className="text-sm">
+                {submitError}
+              </Text>
             )}
 
             <form.Subscribe selector={(s) => s.isSubmitting}>
@@ -474,7 +504,8 @@ export default function NewRecipeScreen() {
                 <TouchableOpacity
                   onPress={form.handleSubmit}
                   disabled={isSubmitting}
-                  className="bg-harvest-500 rounded-2xl py-4 items-center">
+                  className="bg-harvest-500 rounded-2xl py-4 items-center"
+                >
                   {isSubmitting ? (
                     <ActivityIndicator color="#fff" />
                   ) : (
@@ -506,23 +537,23 @@ function BrewTimer({ value, onChange }: { value: string; onChange: (v: string) =
   const [elapsed, setElapsed] = useState(value ? parseInt(value, 10) : 0);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const start = useCallback(() => {
+  function start() {
     setRunning(true);
     intervalRef.current = setInterval(() => {
       setElapsed((s) => s + 1);
     }, 1000);
-  }, []);
+  }
 
-  const stop = useCallback(() => {
+  function stop() {
     setRunning(false);
     if (intervalRef.current) clearInterval(intervalRef.current);
-  }, []);
+  }
 
-  const reset = useCallback(() => {
+  function reset() {
     stop();
     setElapsed(0);
     onChange('');
-  }, [stop, onChange]);
+  }
 
   // Write to form when stopped with a non-zero value
   useEffect(() => {
@@ -553,20 +584,23 @@ function BrewTimer({ value, onChange }: { value: string; onChange: (v: string) =
         {!running ? (
           <TouchableOpacity
             onPress={start}
-            className="flex-1 bg-harvest-500 rounded-xl py-3 items-center">
+            className="flex-1 bg-harvest-500 rounded-xl py-3 items-center"
+          >
             <Text className="text-white font-semibold">{elapsed > 0 ? 'Resume' : 'Start'}</Text>
           </TouchableOpacity>
         ) : (
           <TouchableOpacity
             onPress={stop}
-            className="flex-1 bg-ristretto-700 rounded-xl py-3 items-center">
+            className="flex-1 bg-ristretto-700 rounded-xl py-3 items-center"
+          >
             <Text className="text-latte-100 font-semibold">Stop</Text>
           </TouchableOpacity>
         )}
         {elapsed > 0 && (
           <TouchableOpacity
             onPress={reset}
-            className="px-5 border border-ristretto-700 rounded-xl py-3 items-center">
+            className="px-5 border border-ristretto-700 rounded-xl py-3 items-center"
+          >
             <Text className="text-latte-500 font-semibold">Reset</Text>
           </TouchableOpacity>
         )}
@@ -614,4 +648,3 @@ function FieldError({ errors }: { errors: (string | undefined)[] }) {
     </Text>
   );
 }
-

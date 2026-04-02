@@ -7,7 +7,7 @@ import {
   ActivityIndicator,
   Alert,
 } from 'react-native';
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
 import { router, useFocusEffect } from 'expo-router';
 import { supabase } from '@/lib/supabase';
 import { type RecipeWithJoins, BREW_METHOD_LABELS } from '@/lib/types';
@@ -101,7 +101,7 @@ export default function RecipesScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchRecipes = useCallback(async () => {
+  async function fetchRecipes() {
     const {
       data: { user },
     } = await supabase.auth.getUser();
@@ -125,20 +125,18 @@ export default function RecipesScreen() {
     } else {
       setRecipes(data as RecipeWithJoins[]);
     }
-  }, []);
+  }
 
-  useFocusEffect(
-    useCallback(() => {
-      setLoading(true);
-      fetchRecipes().finally(() => setLoading(false));
-    }, [fetchRecipes]),
-  );
+  useFocusEffect(() => {
+    setLoading(true);
+    fetchRecipes().finally(() => setLoading(false));
+  });
 
-  const handleRefresh = useCallback(async () => {
+  async function handleRefresh() {
     setRefreshing(true);
     await fetchRecipes();
     setRefreshing(false);
-  }, [fetchRecipes]);
+  }
 
   async function handleDelete(id: string) {
     const {
@@ -159,7 +157,8 @@ export default function RecipesScreen() {
         className="flex-1 px-4 pt-16"
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor="#ff9d37" />
-        }>
+        }
+      >
         <Text className="text-latte-100 text-2xl font-bold mb-1">My Recipes</Text>
         <Text className="text-latte-500 text-sm mb-8">Your submitted dials.</Text>
 
@@ -176,7 +175,8 @@ export default function RecipesScreen() {
             <Text className="text-latte-500 text-sm">No recipes yet.</Text>
             <TouchableOpacity
               onPress={() => router.push('/recipe/new')}
-              className="bg-harvest-500 rounded-xl px-6 py-3">
+              className="bg-harvest-500 rounded-xl px-6 py-3"
+            >
               <Text className="text-white font-semibold">Submit your first recipe</Text>
             </TouchableOpacity>
           </View>
@@ -199,7 +199,8 @@ export default function RecipesScreen() {
       <TouchableOpacity
         onPress={() => router.push('/recipe/new')}
         className="absolute bottom-8 right-6 w-14 h-14 rounded-full bg-harvest-500 items-center justify-center shadow-lg"
-        style={{ elevation: 6 }}>
+        style={{ elevation: 6 }}
+      >
         <Text className="text-white text-3xl font-light">+</Text>
       </TouchableOpacity>
     </View>
