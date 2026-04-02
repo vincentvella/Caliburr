@@ -88,41 +88,41 @@ export interface RecipeWithJoins extends Recipe {
 }
 
 export const MACHINE_TYPE_LABELS: Record<MachineType, string> = {
-  espresso:        'Espresso Machine',
+  espresso: 'Espresso Machine',
   super_automatic: 'Super Automatic',
-  drip:            'Drip Machine',
-  pod:             'Pod Machine',
+  drip: 'Drip Machine',
+  pod: 'Pod Machine',
 };
 
 export const BURR_TYPE_LABELS: Record<BurrType, string> = {
-  flat:     'Flat',
-  conical:  'Conical',
-  hybrid:   'Hybrid',
+  flat: 'Flat',
+  conical: 'Conical',
+  hybrid: 'Hybrid',
 };
 
 export const ADJUSTMENT_TYPE_LABELS: Record<AdjustmentType, string> = {
-  stepped:      'Stepped',
-  stepless:     'Stepless',
+  stepped: 'Stepped',
+  stepless: 'Stepless',
   micro_stepped: 'Micro Stepped',
 };
 
 export const BREW_METHOD_LABELS: Record<BrewMethod, string> = {
-  espresso:    'Espresso',
-  pour_over:   'Pour Over',
-  aeropress:   'AeroPress',
-  french_press:'French Press',
-  chemex:      'Chemex',
-  moka_pot:    'Moka Pot',
-  cold_brew:   'Cold Brew',
-  drip:        'Drip',
-  siphon:      'Siphon',
-  turkish:     'Turkish',
+  espresso: 'Espresso',
+  pour_over: 'Pour Over',
+  aeropress: 'AeroPress',
+  french_press: 'French Press',
+  chemex: 'Chemex',
+  moka_pot: 'Moka Pot',
+  cold_brew: 'Cold Brew',
+  drip: 'Drip',
+  siphon: 'Siphon',
+  turkish: 'Turkish',
 };
 
 export const ROAST_LEVEL_LABELS: Record<RoastLevel, string> = {
-  light:       'Light',
-  medium_light:'Medium Light',
-  medium:      'Medium',
+  light: 'Light',
+  medium_light: 'Medium Light',
+  medium: 'Medium',
   medium_dark: 'Medium Dark',
-  dark:        'Dark',
+  dark: 'Dark',
 };

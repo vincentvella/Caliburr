@@ -1,5 +1,5 @@
 import { View, Text, ScrollView, TextInput, useWindowDimensions } from 'react-native';
-import { useRef, useCallback, useEffect, useState } from 'react';
+import { useRef, useEffect, useState, useCallback, useMemo } from 'react';
 import type { AdjustmentType } from '@/lib/types';
 
 interface GrindTapeProps {
@@ -74,6 +74,13 @@ export function GrindTape({
   const scrolling = useRef(false);
   const hasMomentum = useRef(false);
   const inputFocused = useRef(false);
+  const prevConfigRef = useRef<{
+    adjustmentType: AdjustmentType | null;
+    rMin: number;
+    rMax: number;
+    n: number;
+  } | null>(null);
+  const prevSyncValueRef = useRef(value);
   const [displayValue, setDisplayValue] = useState(value);
 
   const n = stepsPerUnit ?? 10;
@@ -84,25 +91,34 @@ export function GrindTape({
       : adjustmentType === 'micro_stepped'
         ? (rangeMax ?? 10)
         : (rangeMax ?? 15);
-  const cfg = getTapeConfig(adjustmentType, n, rMin, rMax);
+  const cfg = useMemo(
+    () => getTapeConfig(adjustmentType, n, rMin, rMax),
+    [adjustmentType, n, rMin, rMax],
+  );
   const TICKS = Math.round((cfg.max - cfg.min) / cfg.step);
   const SIDE = Math.round(SCREEN_WIDTH / 2);
   const snap = adjustmentType === 'stepped' || adjustmentType === 'micro_stepped';
 
   // ── Coordinate helpers ──────────────────────────────────────────────────────
 
-  function valueToOffset(v: number): number {
-    const ticks =
-      adjustmentType === 'micro_stepped'
-        ? Math.round((v - rMin) * n)
-        : Math.round((v - rMin) / cfg.step);
-    return Math.max(0, Math.min(TICKS, ticks)) * cfg.pxPerTick;
-  }
+  const valueToOffset = useCallback(
+    (v: number): number => {
+      const ticks =
+        adjustmentType === 'micro_stepped'
+          ? Math.round((v - rMin) * n)
+          : Math.round((v - rMin) / cfg.step);
+      return Math.max(0, Math.min(TICKS, ticks)) * cfg.pxPerTick;
+    },
+    [adjustmentType, rMin, n, cfg, TICKS],
+  );
 
-  function offsetToValue(offset: number): string {
-    const ticks = Math.max(0, Math.min(TICKS, Math.round(offset / cfg.pxPerTick)));
-    return cfg.formatValue(ticks);
-  }
+  const offsetToValue = useCallback(
+    (offset: number): string => {
+      const ticks = Math.max(0, Math.min(TICKS, Math.round(offset / cfg.pxPerTick)));
+      return cfg.formatValue(ticks);
+    },
+    [TICKS, cfg],
+  );
 
   // Nearest snapped pixel offset — used to correct position after momentum ends
   function snapOffset(offset: number): number {
@@ -112,6 +128,16 @@ export function GrindTape({
   // ── Re-initialise when grinder config changes ───────────────────────────────
 
   useEffect(() => {
+    const prev = prevConfigRef.current;
+    if (
+      prev !== null &&
+      prev.adjustmentType === adjustmentType &&
+      prev.rMin === rMin &&
+      prev.rMax === rMax &&
+      prev.n === n
+    )
+      return;
+    prevConfigRef.current = { adjustmentType, rMin, rMax, n };
     scrolling.current = false;
     hasMomentum.current = false;
     const parsed = parseFloat(value);
@@ -124,46 +150,38 @@ export function GrindTape({
       scrollRef.current?.scrollTo({ x: offset, animated: false });
     }, 50);
     return () => clearTimeout(t);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [adjustmentType, rMin, rMax, n]);
+  }, [adjustmentType, rMin, rMax, n, value, valueToOffset, offsetToValue]);
 
   // ── Sync tape when value changes externally (text input) ───────────────────
 
   useEffect(() => {
     if (scrolling.current || inputFocused.current) return;
+    if (value === prevSyncValueRef.current) return;
+    prevSyncValueRef.current = value;
     const v = parseFloat(value);
     if (!isNaN(v)) {
       setDisplayValue(value);
       scrollRef.current?.scrollTo({ x: valueToOffset(v), animated: true });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [value]);
+  }, [value, valueToOffset]);
 
   // ── Scroll handlers ─────────────────────────────────────────────────────────
 
-  const handleScroll = useCallback(
-    (offset: number) => {
-      setDisplayValue(offsetToValue(offset));
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [adjustmentType, cfg.pxPerTick, TICKS, n],
-  );
+  function handleScroll(offset: number) {
+    setDisplayValue(offsetToValue(offset));
+  }
 
-  const handleScrollEnd = useCallback(
-    (offset: number) => {
-      scrolling.current = false;
-      // For stepped modes, correct to the exact tick boundary after momentum
-      const corrected = snap ? snapOffset(offset) : offset;
-      const v = offsetToValue(corrected);
-      setDisplayValue(v);
-      onChange(v);
-      if (snap && Math.abs(corrected - offset) > 1) {
-        scrollRef.current?.scrollTo({ x: corrected, animated: true });
-      }
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [onChange, adjustmentType, cfg.pxPerTick, TICKS, n, snap],
-  );
+  function handleScrollEnd(offset: number) {
+    scrolling.current = false;
+    // For stepped modes, correct to the exact tick boundary after momentum
+    const corrected = snap ? snapOffset(offset) : offset;
+    const v = offsetToValue(corrected);
+    setDisplayValue(v);
+    onChange(v);
+    if (snap && Math.abs(corrected - offset) > 1) {
+      scrollRef.current?.scrollTo({ x: corrected, animated: true });
+    }
+  }
 
   // ── Tick geometry ───────────────────────────────────────────────────────────
 
@@ -192,7 +210,8 @@ export function GrindTape({
     <View className="gap-2">
       <View
         className="bg-ristretto-800 border border-ristretto-700 rounded-xl overflow-hidden"
-        style={{ height: 72 }}>
+        style={{ height: 72 }}
+      >
         {/* Fixed centre cursor */}
         <View
           pointerEvents="none"
@@ -227,13 +246,15 @@ export function GrindTape({
           onScrollEndDrag={(e) => {
             if (!hasMomentum.current) handleScrollEnd(e.nativeEvent.contentOffset.x);
           }}
-          contentContainerStyle={{ paddingHorizontal: SIDE }}>
+          contentContainerStyle={{ paddingHorizontal: SIDE }}
+        >
           <View
             style={{
               width: TICKS * cfg.pxPerTick,
               height: 72,
               position: 'relative',
-            }}>
+            }}
+          >
             {ticks.map(({ i, isMajor, isMedium, height, label }) => (
               <View
                 key={i}
@@ -241,7 +262,8 @@ export function GrindTape({
                   position: 'absolute',
                   left: i * cfg.pxPerTick - (isMajor ? 1 : 0),
                   top: 8,
-                }}>
+                }}
+              >
                 <View
                   style={{
                     width: isMajor ? 2 : 1,
@@ -259,7 +281,8 @@ export function GrindTape({
                       width: 28,
                       textAlign: 'center',
                       transform: [{ translateX: -13 }],
-                    }}>
+                    }}
+                  >
                     {label}
                   </Text>
                 )}

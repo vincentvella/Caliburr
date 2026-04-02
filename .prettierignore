@@ -1,0 +1,4 @@
+node_modules
+uniwind-types.d.ts
+expo-env.d.ts
+lib/database.types.ts

@@ -11,7 +11,7 @@ import {
   Platform,
   ScrollView,
 } from 'react-native';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from '@tanstack/react-form';
 import { supabase } from '@/lib/supabase';
 import type { Grinder, BurrType, AdjustmentType } from '@/lib/types';
@@ -64,9 +64,9 @@ export function GrinderModal({ visible, onClose, onAdded, existingIds, editGrind
     loadDefaults();
   }, [existingIds]);
 
-  const search = useCallback(
-    async (text: string) => {
-      if (!text.trim()) {
+  useEffect(() => {
+    const t = setTimeout(async () => {
+      if (!query.trim()) {
         setResults([]);
         return;
       }
@@ -74,19 +74,14 @@ export function GrinderModal({ visible, onClose, onAdded, existingIds, editGrind
       let q = supabase
         .from('grinders')
         .select('*')
-        .or(`brand.ilike.%${text}%,model.ilike.%${text}%`);
+        .or(`brand.ilike.%${query}%,model.ilike.%${query}%`);
       if (existingIds.length) q = q.not('id', 'in', `(${existingIds.join(',')})`);
       const { data } = await q.limit(10);
       setResults((data as Grinder[]) ?? []);
       setSearching(false);
-    },
-    [existingIds],
-  );
-
-  useEffect(() => {
-    const t = setTimeout(() => search(query), 300);
+    }, 300);
     return () => clearTimeout(t);
-  }, [query, search]);
+  }, [query, existingIds]);
 
   async function openGrinder(grinder: Grinder) {
     const {
@@ -151,10 +146,12 @@ export function GrinderModal({ visible, onClose, onAdded, existingIds, editGrind
       visible={visible}
       animationType="slide"
       presentationStyle="pageSheet"
-      onRequestClose={handleClose}>
+      onRequestClose={handleClose}
+    >
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        className="flex-1 bg-ristretto-900">
+        className="flex-1 bg-ristretto-900"
+      >
         <View className="flex-row items-center justify-between px-6 pt-6 pb-4 border-b border-ristretto-700">
           <Text className="text-latte-100 text-xl font-bold">{titles[view]}</Text>
           <TouchableOpacity onPress={rightAction}>
@@ -189,7 +186,8 @@ export function GrinderModal({ visible, onClose, onAdded, existingIds, editGrind
                   <TouchableOpacity
                     onPress={() => openGrinder(item)}
                     disabled={addingId === item.id}
-                    className="flex-row items-center justify-between py-4 border-b border-ristretto-800">
+                    className="flex-row items-center justify-between py-4 border-b border-ristretto-800"
+                  >
                     <View>
                       <Text className="text-latte-100 font-medium">
                         {item.brand} {item.model}
@@ -215,7 +213,8 @@ export function GrinderModal({ visible, onClose, onAdded, existingIds, editGrind
                   query.trim() ? (
                     <TouchableOpacity
                       onPress={() => setView('create')}
-                      className="flex-row items-center gap-3 py-4">
+                      className="flex-row items-center gap-3 py-4"
+                    >
                       <View className="w-8 h-8 rounded-full bg-harvest-500 items-center justify-center">
                         <Text className="text-white font-bold text-lg">+</Text>
                       </View>
@@ -311,7 +310,8 @@ function GrinderReadOnly({
       <TouchableOpacity
         onPress={onAdd}
         disabled={addingId === grinder.id}
-        className="bg-harvest-500 rounded-xl py-4 items-center mt-2">
+        className="bg-harvest-500 rounded-xl py-4 items-center mt-2"
+      >
         {addingId === grinder.id ? (
           <ActivityIndicator color="#fff" />
         ) : (
@@ -360,8 +360,8 @@ function GrinderForm({
     defaultValues: {
       brand: source?.brand ?? initialBrand,
       model: source?.model ?? '',
-      burr_type: source?.burr_type ?? '' as BurrType | '',
-      adjustment_type: source?.adjustment_type ?? '' as AdjustmentType | '',
+      burr_type: source?.burr_type ?? ('' as BurrType | ''),
+      adjustment_type: source?.adjustment_type ?? ('' as AdjustmentType | ''),
       steps_per_unit: source?.steps_per_unit != null ? String(source.steps_per_unit) : '',
       range_min: source?.range_min != null ? String(source.range_min) : '',
       range_max: source?.range_max != null ? String(source.range_max) : '',
@@ -433,7 +433,8 @@ function GrinderForm({
     <ScrollView
       className="flex-1 px-6 pt-4"
       contentContainerClassName="gap-3 pb-8"
-      keyboardShouldPersistTaps="handled">
+      keyboardShouldPersistTaps="handled"
+    >
       {/* Verification progress banner (review mode only) */}
       {isReview && !reviewGrinder!.verified && (
         <View className="bg-ristretto-800 border border-ristretto-700 rounded-xl px-4 py-3 gap-2">
@@ -471,7 +472,8 @@ function GrinderForm({
         name="brand"
         validators={{
           onBlur: ({ value }) => (!value.trim() ? 'Required' : undefined),
-        }}>
+        }}
+      >
         {(field) => (
           <View className="gap-1">
             <Text className="text-latte-400 text-xs px-1 mb-1">Brand</Text>
@@ -489,7 +491,8 @@ function GrinderForm({
               style={{
                 color: '#f87171',
                 opacity: field.state.meta.errors.length > 0 ? 1 : 0,
-              }}>
+              }}
+            >
               {field.state.meta.errors[0] ?? ' '}
             </Text>
           </View>
@@ -500,7 +503,8 @@ function GrinderForm({
         name="model"
         validators={{
           onBlur: ({ value }) => (!value.trim() ? 'Required' : undefined),
-        }}>
+        }}
+      >
         {(field) => (
           <View className="gap-1">
             <Text className="text-latte-400 text-xs px-1 mb-1">Model</Text>
@@ -518,7 +522,8 @@ function GrinderForm({
               style={{
                 color: '#f87171',
                 opacity: field.state.meta.errors.length > 0 ? 1 : 0,
-              }}>
+              }}
+            >
               {field.state.meta.errors[0] ?? ' '}
             </Text>
           </View>
@@ -538,9 +543,11 @@ function GrinderForm({
                     field.state.value === type
                       ? 'bg-harvest-500 border-harvest-500'
                       : 'border-ristretto-700'
-                  }`}>
+                  }`}
+                >
                   <Text
-                    className={`text-sm font-medium capitalize ${field.state.value === type ? 'text-white' : 'text-latte-400'}`}>
+                    className={`text-sm font-medium capitalize ${field.state.value === type ? 'text-white' : 'text-latte-400'}`}
+                  >
                     {type}
                   </Text>
                 </TouchableOpacity>
@@ -563,9 +570,11 @@ function GrinderForm({
                     field.state.value === type
                       ? 'bg-harvest-500 border-harvest-500'
                       : 'border-ristretto-700'
-                  }`}>
+                  }`}
+                >
                   <Text
-                    className={`text-sm font-medium ${field.state.value === type ? 'text-white' : 'text-latte-400'}`}>
+                    className={`text-sm font-medium ${field.state.value === type ? 'text-white' : 'text-latte-400'}`}
+                  >
                     {ADJ_LABELS[type]}
                   </Text>
                 </TouchableOpacity>
@@ -680,7 +689,8 @@ function GrinderForm({
           <TouchableOpacity
             onPress={form.handleSubmit}
             disabled={isSubmitting}
-            className="bg-harvest-500 rounded-xl py-4 items-center mt-2">
+            className="bg-harvest-500 rounded-xl py-4 items-center mt-2"
+          >
             {isSubmitting ? (
               <ActivityIndicator color="#fff" />
             ) : (

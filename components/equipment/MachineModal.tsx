@@ -11,7 +11,7 @@ import {
   Platform,
   ScrollView,
 } from 'react-native';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from '@tanstack/react-form';
 import { supabase } from '@/lib/supabase';
 import type { BrewMachine, MachineType } from '@/lib/types';
@@ -64,9 +64,9 @@ export function MachineModal({ visible, onClose, onAdded, existingIds }: Props) 
     loadDefaults();
   }, [existingIds]);
 
-  const search = useCallback(
-    async (text: string) => {
-      if (!text.trim()) {
+  useEffect(() => {
+    const t = setTimeout(async () => {
+      if (!query.trim()) {
         setResults([]);
         return;
       }
@@ -74,19 +74,14 @@ export function MachineModal({ visible, onClose, onAdded, existingIds }: Props) 
       let q = supabase
         .from('brew_machines')
         .select('*')
-        .or(`brand.ilike.%${text}%,model.ilike.%${text}%`);
+        .or(`brand.ilike.%${query}%,model.ilike.%${query}%`);
       if (existingIds.length) q = q.not('id', 'in', `(${existingIds.join(',')})`);
       const { data } = await q.limit(10);
       setResults((data as BrewMachine[]) ?? []);
       setSearching(false);
-    },
-    [existingIds],
-  );
-
-  useEffect(() => {
-    const t = setTimeout(() => search(query), 300);
+    }, 300);
     return () => clearTimeout(t);
-  }, [query, search]);
+  }, [query, existingIds]);
 
   async function openMachine(machine: BrewMachine) {
     const {
@@ -153,10 +148,12 @@ export function MachineModal({ visible, onClose, onAdded, existingIds }: Props) 
       visible={visible}
       animationType="slide"
       presentationStyle="pageSheet"
-      onRequestClose={handleClose}>
+      onRequestClose={handleClose}
+    >
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        className="flex-1 bg-ristretto-900">
+        className="flex-1 bg-ristretto-900"
+      >
         <View className="flex-row items-center justify-between px-6 pt-6 pb-4 border-b border-ristretto-700">
           <Text className="text-latte-100 text-xl font-bold">{titles[view]}</Text>
           <TouchableOpacity onPress={rightAction}>
@@ -190,7 +187,8 @@ export function MachineModal({ visible, onClose, onAdded, existingIds }: Props) 
                 renderItem={({ item }) => (
                   <TouchableOpacity
                     onPress={() => openMachine(item)}
-                    className="flex-row items-center justify-between py-4 border-b border-ristretto-800">
+                    className="flex-row items-center justify-between py-4 border-b border-ristretto-800"
+                  >
                     <View>
                       <Text className="text-latte-100 font-medium">
                         {item.brand} {item.model}
@@ -214,7 +212,8 @@ export function MachineModal({ visible, onClose, onAdded, existingIds }: Props) 
                   query.trim() ? (
                     <TouchableOpacity
                       onPress={() => setView('create')}
-                      className="flex-row items-center gap-3 py-4">
+                      className="flex-row items-center gap-3 py-4"
+                    >
                       <View className="w-8 h-8 rounded-full bg-harvest-500 items-center justify-center">
                         <Text className="text-white font-bold text-lg">+</Text>
                       </View>
@@ -292,7 +291,8 @@ function MachineReadOnly({
       <TouchableOpacity
         onPress={onAdd}
         disabled={adding}
-        className="bg-harvest-500 rounded-xl py-4 items-center mt-2">
+        className="bg-harvest-500 rounded-xl py-4 items-center mt-2"
+      >
         {adding ? (
           <ActivityIndicator color="#fff" />
         ) : (
@@ -396,7 +396,8 @@ function MachineForm({
     <ScrollView
       className="flex-1 px-6 pt-4"
       contentContainerClassName="gap-3 pb-8"
-      keyboardShouldPersistTaps="handled">
+      keyboardShouldPersistTaps="handled"
+    >
       {/* Verification progress banner */}
       {isReview && (
         <View className="bg-ristretto-800 border border-ristretto-700 rounded-xl px-4 py-3 gap-2">
@@ -435,7 +436,8 @@ function MachineForm({
         name="brand"
         validators={{
           onBlur: ({ value }) => (!value.trim() ? 'Required' : undefined),
-        }}>
+        }}
+      >
         {(field) => (
           <View className="gap-1">
             <Text className="text-latte-400 text-xs px-1 mb-1">Brand</Text>
@@ -453,7 +455,8 @@ function MachineForm({
               style={{
                 color: '#f87171',
                 opacity: field.state.meta.errors.length > 0 ? 1 : 0,
-              }}>
+              }}
+            >
               {field.state.meta.errors[0] ?? ' '}
             </Text>
           </View>
@@ -465,7 +468,8 @@ function MachineForm({
         name="model"
         validators={{
           onBlur: ({ value }) => (!value.trim() ? 'Required' : undefined),
-        }}>
+        }}
+      >
         {(field) => (
           <View className="gap-1">
             <Text className="text-latte-400 text-xs px-1 mb-1">Model</Text>
@@ -483,7 +487,8 @@ function MachineForm({
               style={{
                 color: '#f87171',
                 opacity: field.state.meta.errors.length > 0 ? 1 : 0,
-              }}>
+              }}
+            >
               {field.state.meta.errors[0] ?? ' '}
             </Text>
           </View>
@@ -504,9 +509,11 @@ function MachineForm({
                     field.state.value === type
                       ? 'bg-harvest-500 border-harvest-500'
                       : 'border-ristretto-700'
-                  }`}>
+                  }`}
+                >
                   <Text
-                    className={`text-sm font-medium ${field.state.value === type ? 'text-white' : 'text-latte-400'}`}>
+                    className={`text-sm font-medium ${field.state.value === type ? 'text-white' : 'text-latte-400'}`}
+                  >
                     {MACHINE_TYPE_LABELS[type]}
                   </Text>
                 </TouchableOpacity>
@@ -562,7 +569,8 @@ function MachineForm({
           <TouchableOpacity
             onPress={form.handleSubmit}
             disabled={isSubmitting}
-            className="bg-harvest-500 rounded-xl py-4 items-center mt-2">
+            className="bg-harvest-500 rounded-xl py-4 items-center mt-2"
+          >
             {isSubmitting ? (
               <ActivityIndicator color="#fff" />
             ) : (
