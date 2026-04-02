@@ -340,7 +340,10 @@ export default function NewRecipeScreen() {
 
               {/* Dose + Yield → auto ratio */}
               <View className="flex-row gap-3">
-                <form.Field name="dose_g">
+                <form.Field
+                  name="dose_g"
+                  validators={{ onSubmit: ({ value }) => validateNum(value) }}
+                >
                   {(field) => (
                     <View className="flex-1 gap-1">
                       <Text className="text-latte-400 text-xs px-1">Dose (g)</Text>
@@ -360,11 +363,15 @@ export default function NewRecipeScreen() {
                           }
                         }}
                       />
+                      <FieldError errors={field.state.meta.errors} />
                     </View>
                   )}
                 </form.Field>
 
-                <form.Field name="yield_g">
+                <form.Field
+                  name="yield_g"
+                  validators={{ onSubmit: ({ value }) => validateNum(value) }}
+                >
                   {(field) => (
                     <View className="flex-1 gap-1">
                       <Text className="text-latte-400 text-xs px-1">Yield (g)</Text>
@@ -384,13 +391,14 @@ export default function NewRecipeScreen() {
                           }
                         }}
                       />
+                      <FieldError errors={field.state.meta.errors} />
                     </View>
                   )}
                 </form.Field>
               </View>
 
               {/* Ratio (auto or manual) */}
-              <form.Field name="ratio">
+              <form.Field name="ratio" validators={{ onSubmit: ({ value }) => validateNum(value) }}>
                 {(field) => {
                   const dose = form.getFieldValue('dose_g');
                   const yld = form.getFieldValue('yield_g');
@@ -414,6 +422,7 @@ export default function NewRecipeScreen() {
                         value={field.state.value}
                         onChangeText={field.handleChange}
                       />
+                      <FieldError errors={field.state.meta.errors} />
                     </View>
                   );
                 }}
@@ -430,7 +439,10 @@ export default function NewRecipeScreen() {
               </form.Field>
 
               {/* Temp */}
-              <form.Field name="water_temp_c">
+              <form.Field
+                name="water_temp_c"
+                validators={{ onSubmit: ({ value }) => validateNum(value) }}
+              >
                 {(field) => (
                   <View className="gap-1">
                     <Text className="text-latte-400 text-xs px-1">Temp (°C)</Text>
@@ -443,6 +455,7 @@ export default function NewRecipeScreen() {
                       value={field.state.value}
                       onChangeText={field.handleChange}
                     />
+                    <FieldError errors={field.state.meta.errors} />
                   </View>
                 )}
               </form.Field>
@@ -644,6 +657,11 @@ function BrewTimer({ value, onChange }: { value: string; onChange: (v: string) =
       </View>
     </View>
   );
+}
+
+function validateNum(value: string) {
+  if (!value) return undefined;
+  return isNaN(parseFloat(value)) ? 'Must be a valid number' : undefined;
 }
 
 function SectionLabel({ label, required }: { label: string; required?: boolean }) {

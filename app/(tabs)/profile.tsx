@@ -217,7 +217,11 @@ export default function ProfileScreen() {
 
   async function handleSignOut() {
     setSigningOut(true);
-    await supabase.auth.signOut();
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      setSigningOut(false);
+      Alert.alert('Error', 'Failed to sign out. Please try again.');
+    }
   }
 
   return (

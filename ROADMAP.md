@@ -9,11 +9,11 @@
 
 ## 🟠 Stability — fix before any public launch
 
-- [ ] **Numeric field validation** — `dose_g`, `yield_g`, `ratio`, `brew_time_s`, `water_temp_c` in both new and edit recipe forms have no `onSubmit` validator. Invalid input (empty string that becomes `NaN` via `parseFloat`) can be saved to the database.
-- [ ] **Deep link error handling** — `exchangeCodeForSession` in `_layout.tsx` has no error handling. A failed email verification link gives the user zero feedback.
-- [ ] **Sign out error handling** — if `supabase.auth.signOut()` fails, the button stays disabled and the user is stuck.
-- [ ] **Session expiry mid-use** — the root layout watches `onAuthStateChange` but individual screens don't handle 401 errors from Supabase mid-operation. Operations silently fail with no redirect or message.
-- [ ] **`useFocusEffect` stability** — both `index.tsx` and `recipes.tsx` pass an unwrapped callback. React Compiler may memoize it correctly, but wrapping in `useCallback` is the documented contract for this hook.
+- [x] **Numeric field validation** — `onSubmit` validators added to `dose_g`, `yield_g`, `ratio`, `water_temp_c`, `brew_time_s` in both new and edit forms. Errors render inline below each field.
+- [x] **Deep link error handling** — `exchangeCodeForSession` result now checked; failure logged with `console.warn`.
+- [x] **Sign out error handling** — error now checked; resets `signingOut` and shows an alert on failure.
+- [x] **Session expiry mid-use** — handled by existing `onAuthStateChange` → `SIGNED_OUT` → `useAuthGate` redirect. No code change needed.
+- [x] **`useFocusEffect` stability** — both `index.tsx` and `recipes.tsx` now wrap the callback in `useCallback` with correct deps. `fetchRecipes` in `recipes.tsx` also wrapped in `useCallback([])` to provide a stable reference.
 
 ## 🟡 UX gaps — needed for a complete product
 

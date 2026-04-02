@@ -27,7 +27,10 @@ function useAuthGate(session: Session | null, ready: boolean, isRecovery: boolea
 async function handleDeepLink(url: string) {
   // Supabase PKCE flow sends a `code` param — exchange it for a session
   if (url.includes('code=')) {
-    await supabase.auth.exchangeCodeForSession(url);
+    const { error } = await supabase.auth.exchangeCodeForSession(url);
+    if (error) {
+      console.warn('Failed to exchange auth code:', error.message);
+    }
   }
 }
 

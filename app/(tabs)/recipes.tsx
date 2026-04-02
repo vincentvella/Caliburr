@@ -7,7 +7,7 @@ import {
   ActivityIndicator,
   Alert,
 } from 'react-native';
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { router, useFocusEffect } from 'expo-router';
 import { supabase } from '@/lib/supabase';
 import { type RecipeWithJoins, BREW_METHOD_LABELS } from '@/lib/types';
@@ -101,7 +101,7 @@ export default function RecipesScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function fetchRecipes() {
+  const fetchRecipes = useCallback(async () => {
     const {
       data: { user },
     } = await supabase.auth.getUser();
@@ -125,12 +125,14 @@ export default function RecipesScreen() {
     } else {
       setRecipes(data as RecipeWithJoins[]);
     }
-  }
+  }, []);
 
-  useFocusEffect(() => {
-    setLoading(true);
-    fetchRecipes().finally(() => setLoading(false));
-  });
+  useFocusEffect(
+    useCallback(() => {
+      setLoading(true);
+      fetchRecipes().finally(() => setLoading(false));
+    }, [fetchRecipes]),
+  );
 
   async function handleRefresh() {
     setRefreshing(true);

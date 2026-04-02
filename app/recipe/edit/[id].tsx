@@ -378,28 +378,30 @@ export default function EditRecipeScreen() {
         <View className="gap-4">
           <SectionLabel label="Parameters" />
           <View className="flex-row gap-3">
-            <form.Field name="dose_g">
+            <form.Field name="dose_g" validators={{ onSubmit: ({ value }) => validateNum(value) }}>
               {(field) => (
                 <NumericField
                   value={field.state.value}
                   onChange={field.handleChange}
                   label="Dose (g)"
                   placeholder="18"
+                  errors={field.state.meta.errors}
                 />
               )}
             </form.Field>
-            <form.Field name="yield_g">
+            <form.Field name="yield_g" validators={{ onSubmit: ({ value }) => validateNum(value) }}>
               {(field) => (
                 <NumericField
                   value={field.state.value}
                   onChange={field.handleChange}
                   label="Yield (g)"
                   placeholder="36"
+                  errors={field.state.meta.errors}
                 />
               )}
             </form.Field>
           </View>
-          <form.Field name="ratio">
+          <form.Field name="ratio" validators={{ onSubmit: ({ value }) => validateNum(value) }}>
             {(field) => {
               const dose = form.getFieldValue('dose_g');
               const yld = form.getFieldValue('yield_g');
@@ -428,27 +430,36 @@ export default function EditRecipeScreen() {
                         form.setFieldValue('yield_g', (parseFloat(v) * parseFloat(d)).toFixed(1));
                     }}
                   />
+                  <FieldError errors={field.state.meta.errors} />
                 </View>
               );
             }}
           </form.Field>
-          <form.Field name="water_temp_c">
+          <form.Field
+            name="water_temp_c"
+            validators={{ onSubmit: ({ value }) => validateNum(value) }}
+          >
             {(field) => (
               <NumericField
                 value={field.state.value}
                 onChange={field.handleChange}
                 label="Temp (°C)"
                 placeholder="93"
+                errors={field.state.meta.errors}
               />
             )}
           </form.Field>
-          <form.Field name="brew_time_s">
+          <form.Field
+            name="brew_time_s"
+            validators={{ onSubmit: ({ value }) => validateNum(value) }}
+          >
             {(field) => (
               <NumericField
                 value={field.state.value}
                 onChange={field.handleChange}
                 label="Brew Time (s)"
                 placeholder="28"
+                errors={field.state.meta.errors}
               />
             )}
           </form.Field>
@@ -563,16 +574,23 @@ function FieldError({ errors }: { errors: (string | undefined)[] }) {
   );
 }
 
+function validateNum(value: string) {
+  if (!value) return undefined;
+  return isNaN(parseFloat(value)) ? 'Must be a valid number' : undefined;
+}
+
 function NumericField({
   value,
   onChange,
   label,
   placeholder,
+  errors,
 }: {
   value: string;
   onChange: (v: string) => void;
   label: string;
   placeholder: string;
+  errors?: (string | undefined)[];
 }) {
   return (
     <View className="flex-1 gap-1">
@@ -586,6 +604,7 @@ function NumericField({
         value={value}
         onChangeText={onChange}
       />
+      {errors && <FieldError errors={errors} />}
     </View>
   );
 }

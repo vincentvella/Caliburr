@@ -120,16 +120,18 @@ export default function ExploreScreen() {
   }, [fetchRecipes]);
 
   // Re-fetch upvoted IDs when screen comes back into focus
-  useFocusEffect(() => {
-    supabase.auth.getUser().then(async ({ data: { user } }) => {
-      if (!user) return;
-      const { data } = await supabase
-        .from('recipe_upvotes')
-        .select('recipe_id')
-        .eq('user_id', user.id);
-      setUpvotedIds(new Set((data ?? []).map((r) => r.recipe_id)));
-    });
-  });
+  useFocusEffect(
+    useCallback(() => {
+      supabase.auth.getUser().then(async ({ data: { user } }) => {
+        if (!user) return;
+        const { data } = await supabase
+          .from('recipe_upvotes')
+          .select('recipe_id')
+          .eq('user_id', user.id);
+        setUpvotedIds(new Set((data ?? []).map((r) => r.recipe_id)));
+      });
+    }, []),
+  );
 
   async function handleRefresh() {
     setRefreshing(true);
