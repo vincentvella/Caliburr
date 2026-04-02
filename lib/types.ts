@@ -1,25 +1,10 @@
-export type BrewMethod =
-  | 'espresso'
-  | 'pour_over'
-  | 'aeropress'
-  | 'french_press'
-  | 'chemex'
-  | 'moka_pot'
-  | 'cold_brew'
-  | 'drip'
-  | 'siphon'
-  | 'turkish';
+import type { Enums } from './database.types';
 
-export type RoastLevel =
-  | 'light'
-  | 'medium_light'
-  | 'medium'
-  | 'medium_dark'
-  | 'dark';
-
-export type BurrType = 'flat' | 'conical' | 'hybrid';
-export type AdjustmentType = 'stepped' | 'stepless' | 'micro_stepped';
-export type MachineType = 'espresso' | 'super_automatic' | 'drip' | 'pod';
+export type BrewMethod = Enums<'brew_method'>;
+export type RoastLevel = Enums<'roast_level'>;
+export type BurrType = Enums<'burr_type'>;
+export type AdjustmentType = Enums<'adjustment_type'>;
+export type MachineType = Enums<'machine_type'>;
 
 export interface Grinder {
   id: string;

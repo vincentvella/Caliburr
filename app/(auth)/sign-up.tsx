@@ -8,13 +8,14 @@ import {
   Platform,
   ActivityIndicator,
 } from "react-native";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { Link, router } from "expo-router";
 import { useForm } from "@tanstack/react-form";
 import { supabase } from "@/lib/supabase";
 
 export default function SignUpScreen() {
   const passwordRef = useRef<TextInput>(null);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const form = useForm({
     defaultValues: {
@@ -27,7 +28,7 @@ export default function SignUpScreen() {
         password: value.password,
       });
       if (error) {
-        form.setErrorMap({ onSubmit: error.message });
+        setSubmitError(error.message);
       } else {
         router.replace({
           pathname: "/(auth)/verify-email",
@@ -130,15 +131,9 @@ export default function SignUpScreen() {
           </form.Field>
         </View>
 
-        <form.Subscribe selector={(s) => s.errorMap.onSubmit}>
-          {(submitError) =>
-            submitError ? (
-              <Text className="text-sm mb-4" style={{ color: "#f87171" }}>
-                {String(submitError)}
-              </Text>
-            ) : null
-          }
-        </form.Subscribe>
+        {submitError && (
+          <Text className="text-sm mb-4" style={{ color: "#f87171" }}>{submitError}</Text>
+        )}
 
         <form.Subscribe selector={(s) => s.isSubmitting}>
           {(isSubmitting) => (

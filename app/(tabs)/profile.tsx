@@ -44,21 +44,44 @@ export default function ProfileScreen() {
 
     setEmail(user.email ?? null);
 
-    const [grindersRes, machinesRes] = await Promise.all([
+    const [userGrindersRes, userMachinesRes] = await Promise.all([
       supabase
         .from("user_grinders")
-        .select("grinder_id, is_default, grinder:grinders(*)")
+        .select("grinder_id, is_default")
         .eq("user_id", user.id)
         .order("created_at", { ascending: false }),
       supabase
         .from("user_brew_machines")
-        .select("brew_machine_id, is_default, brew_machine:brew_machines(*)")
+        .select("brew_machine_id, is_default")
         .eq("user_id", user.id)
         .order("created_at", { ascending: false }),
     ]);
 
-    setGrinders((grindersRes.data as UserGrinder[]) ?? []);
-    setMachines((machinesRes.data as UserMachine[]) ?? []);
+    const grinderIds = (userGrindersRes.data ?? []).map((r) => r.grinder_id);
+    const machineIds = (userMachinesRes.data ?? []).map((r) => r.brew_machine_id);
+
+    const [grindersRes, machinesRes] = await Promise.all([
+      supabase.from("grinders").select("*").in("id", grinderIds),
+      supabase.from("brew_machines").select("*").in("id", machineIds),
+    ]);
+
+    const grindersById = new Map((grindersRes.data ?? []).map((g) => [g.id, g]));
+    const machinesById = new Map((machinesRes.data ?? []).map((m) => [m.id, m]));
+
+    setGrinders(
+      (userGrindersRes.data ?? []).flatMap((row) => {
+        const grinder = grindersById.get(row.grinder_id);
+        if (!grinder) return [];
+        return [{ grinder_id: row.grinder_id, is_default: row.is_default, grinder }];
+      }),
+    );
+    setMachines(
+      (userMachinesRes.data ?? []).flatMap((row) => {
+        const brew_machine = machinesById.get(row.brew_machine_id);
+        if (!brew_machine) return [];
+        return [{ brew_machine_id: row.brew_machine_id, is_default: row.is_default, brew_machine }];
+      }),
+    );
     setLoadingEquipment(false);
   }, []);
 

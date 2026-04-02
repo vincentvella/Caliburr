@@ -15,8 +15,9 @@ import { useForm } from "@tanstack/react-form";
 import { supabase } from "@/lib/supabase";
 import type { Bean, RoastLevel } from "@/lib/types";
 import { ROAST_LEVEL_LABELS } from "@/lib/types";
+import { Constants } from "@/lib/database.types";
 
-const ROAST_LEVELS = Object.keys(ROAST_LEVEL_LABELS) as RoastLevel[];
+const ROAST_LEVELS = [...Constants.public.Enums.roast_level];
 
 type ModalView = "search" | "create";
 
@@ -45,7 +46,7 @@ export function BeanModal({ visible, onClose, onSelected, selectedId }: Props) {
         .select("*")
         .order("created_at", { ascending: false })
         .limit(25);
-      setDefaults((data as Bean[]) ?? []);
+      setDefaults(data ?? []);
     }
     loadDefaults();
   }, []);
@@ -58,7 +59,7 @@ export function BeanModal({ visible, onClose, onSelected, selectedId }: Props) {
       .select("*")
       .or(`name.ilike.%${text}%,roaster.ilike.%${text}%`)
       .limit(15);
-    setResults((data as Bean[]) ?? []);
+    setResults(data ?? []);
     setSearching(false);
   }, []);
 
@@ -170,6 +171,7 @@ function BeanForm({
   initialName?: string;
   onDone: (bean: Bean) => void;
 }) {
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const form = useForm({
     defaultValues: {
       name:        initialName,
@@ -192,10 +194,10 @@ function BeanForm({
         .single();
 
       if (error || !data) {
-        form.setErrorMap({ onSubmit: error?.message ?? "Failed to save" });
+        setSubmitError(error?.message ?? "Failed to save");
         return;
       }
-      onDone(data as Bean);
+      onDone(data);
     },
   });
 
@@ -205,10 +207,18 @@ function BeanForm({
       contentContainerClassName="gap-3 pb-8"
       keyboardShouldPersistTaps="handled"
     >
-      <FormField form={form} name="name" label="Name" placeholder="e.g. Ethiopia Yirgacheffe" required />
-      <FormField form={form} name="roaster" label="Roaster" placeholder="e.g. Blue Bottle" required />
-      <FormField form={form} name="origin" label="Origin" placeholder="e.g. Ethiopia" />
-      <FormField form={form} name="process" label="Process" placeholder="e.g. Washed, Natural" />
+      <form.Field name="name" validators={{ onBlur: ({ value }) => !value.trim() ? "Required" : undefined }}>
+        {(field) => <FormField field={field} label="Name" placeholder="e.g. Ethiopia Yirgacheffe" required />}
+      </form.Field>
+      <form.Field name="roaster" validators={{ onBlur: ({ value }) => !value.trim() ? "Required" : undefined }}>
+        {(field) => <FormField field={field} label="Roaster" placeholder="e.g. Blue Bottle" required />}
+      </form.Field>
+      <form.Field name="origin">
+        {(field) => <FormField field={field} label="Origin" placeholder="e.g. Ethiopia" />}
+      </form.Field>
+      <form.Field name="process">
+        {(field) => <FormField field={field} label="Process" placeholder="e.g. Washed, Natural" />}
+      </form.Field>
 
       {/* Roast level */}
       <form.Field name="roast_level">
@@ -236,9 +246,9 @@ function BeanForm({
         )}
       </form.Field>
 
-      <form.Subscribe selector={(s) => s.errorMap.onSubmit}>
-        {(err) => err ? <Text style={{ color: "#f87171" }} className="text-sm">{String(err)}</Text> : null}
-      </form.Subscribe>
+      {submitError && (
+        <Text style={{ color: "#f87171" }} className="text-sm">{submitError}</Text>
+      )}
 
       <form.Subscribe selector={(s) => s.isSubmitting}>
         {(isSubmitting) => (
@@ -258,44 +268,41 @@ function BeanForm({
   );
 }
 
+type StringFieldApi = {
+  state: { value: string; meta: { errors: (string | undefined)[] } };
+  handleChange: (v: string) => void;
+  handleBlur: () => void;
+};
+
 function FormField({
-  form,
-  name,
+  field,
   label,
   placeholder,
   required,
 }: {
-  form: any;
-  name: string;
+  field: StringFieldApi;
   label: string;
   placeholder: string;
   required?: boolean;
 }) {
   return (
-    <form.Field
-      name={name}
-      validators={required ? { onBlur: ({ value }: any) => !value.trim() ? "Required" : undefined } : undefined}
-    >
-      {(field: any) => (
-        <View className="gap-1">
-          <Text className="text-latte-400 text-xs px-1 mb-1">
-            {label}
-            {!required && <Text className="text-latte-600"> (optional)</Text>}
-          </Text>
-          <TextInput
-            className="bg-ristretto-800 border border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-100 text-base"
-            style={{ lineHeight: undefined }}
-            placeholder={placeholder}
-            placeholderTextColor="#6e5a47"
-            value={field.state.value}
-            onChangeText={field.handleChange}
-            onBlur={field.handleBlur}
-          />
-          <Text className="text-xs px-1" style={{ color: "#f87171", opacity: field.state.meta.errors.length > 0 ? 1 : 0 }}>
-            {field.state.meta.errors[0] ?? " "}
-          </Text>
-        </View>
-      )}
-    </form.Field>
+    <View className="gap-1">
+      <Text className="text-latte-400 text-xs px-1 mb-1">
+        {label}
+        {!required && <Text className="text-latte-600"> (optional)</Text>}
+      </Text>
+      <TextInput
+        className="bg-ristretto-800 border border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-100 text-base"
+        style={{ lineHeight: undefined }}
+        placeholder={placeholder}
+        placeholderTextColor="#6e5a47"
+        value={field.state.value}
+        onChangeText={field.handleChange}
+        onBlur={field.handleBlur}
+      />
+      <Text className="text-xs px-1" style={{ color: "#f87171", opacity: field.state.meta.errors.length > 0 ? 1 : 0 }}>
+        {field.state.meta.errors[0] ?? " "}
+      </Text>
+    </View>
   );
 }

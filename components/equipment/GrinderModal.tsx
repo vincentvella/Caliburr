@@ -14,7 +14,7 @@ import {
 import { useState, useEffect, useCallback } from 'react';
 import { useForm } from '@tanstack/react-form';
 import { supabase } from '@/lib/supabase';
-import type { Grinder } from '@/lib/types';
+import type { Grinder, BurrType, AdjustmentType } from '@/lib/types';
 import { BURR_TYPE_LABELS, ADJUSTMENT_TYPE_LABELS } from '@/lib/types';
 
 const VERIFICATION_THRESHOLD = 5;
@@ -360,8 +360,8 @@ function GrinderForm({
     defaultValues: {
       brand: source?.brand ?? initialBrand,
       model: source?.model ?? '',
-      burr_type: source?.burr_type ?? ('' as string),
-      adjustment_type: source?.adjustment_type ?? ('' as string),
+      burr_type: source?.burr_type ?? '' as BurrType | '',
+      adjustment_type: source?.adjustment_type ?? '' as AdjustmentType | '',
       steps_per_unit: source?.steps_per_unit != null ? String(source.steps_per_unit) : '',
       range_min: source?.range_min != null ? String(source.range_min) : '',
       range_max: source?.range_max != null ? String(source.range_max) : '',

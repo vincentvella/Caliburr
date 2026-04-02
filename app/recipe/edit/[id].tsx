@@ -15,18 +15,18 @@ import { supabase } from "@/lib/supabase";
 import {
   type Grinder,
   type BrewMachine,
-  type Bean,
   type BrewMethod,
   type RoastLevel,
   type RecipeWithJoins,
   BREW_METHOD_LABELS,
   ROAST_LEVEL_LABELS,
 } from "@/lib/types";
+import { Constants } from "@/lib/database.types";
 import { GrindTape } from "@/components/GrindTape";
 import { BeanModal } from "@/components/BeanModal";
 
-const BREW_METHODS = Object.keys(BREW_METHOD_LABELS) as BrewMethod[];
-const ROAST_LEVELS = Object.keys(ROAST_LEVEL_LABELS) as RoastLevel[];
+const BREW_METHODS = [...Constants.public.Enums.brew_method];
+const ROAST_LEVELS = [...Constants.public.Enums.roast_level];
 
 export default function EditRecipeScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -34,8 +34,9 @@ export default function EditRecipeScreen() {
   const [grinders, setGrinders] = useState<Grinder[]>([]);
   const [machines, setMachines] = useState<BrewMachine[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedBean, setSelectedBean] = useState<Bean | null>(null);
+  const [selectedBean, setSelectedBean] = useState<{ id: string; name: string; roaster: string } | null>(null);
   const [beanModalOpen, setBeanModalOpen] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const form = useForm({
     defaultValues: {
@@ -57,6 +58,7 @@ export default function EditRecipeScreen() {
       if (!recipe) return;
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
+      if (!value.brew_method) return;
 
       // 1. Snapshot the current state into history before overwriting
       await supabase.from("recipe_history").insert({
@@ -82,7 +84,7 @@ export default function EditRecipeScreen() {
           grinder_id:      value.grinder_id,
           brew_machine_id: value.brew_machine_id || null,
           bean_id:         value.bean_id || null,
-          brew_method:     value.brew_method as BrewMethod,
+          brew_method:     value.brew_method,
           grind_setting:   value.grind_setting.trim(),
           dose_g:          value.dose_g ? parseFloat(value.dose_g) : null,
           yield_g:         value.yield_g ? parseFloat(value.yield_g) : null,
@@ -98,7 +100,7 @@ export default function EditRecipeScreen() {
         .eq("user_id", user.id);
 
       if (!error) router.back();
-      else form.setErrorMap({ onSubmit: error.message });
+      else setSubmitError(error.message);
     },
   });
 
@@ -107,7 +109,7 @@ export default function EditRecipeScreen() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      const [recipeRes, grindersRes, machinesRes] = await Promise.all([
+      const [recipeRes, userGrindersRes, userMachinesRes] = await Promise.all([
         supabase
           .from("recipes")
           .select(`
@@ -119,18 +121,23 @@ export default function EditRecipeScreen() {
           .eq("id", id)
           .eq("user_id", user.id)
           .single(),
-        supabase.from("user_grinders").select("grinder:grinders(*)").eq("user_id", user.id),
-        supabase.from("user_brew_machines").select("brew_machine:brew_machines(*)").eq("user_id", user.id),
+        supabase.from("user_grinders").select("grinder_id").eq("user_id", user.id),
+        supabase.from("user_brew_machines").select("brew_machine_id").eq("user_id", user.id),
       ]);
 
       if (!recipeRes.data) { router.back(); return; }
-      const r = recipeRes.data as RecipeWithJoins;
-      setRecipe(r);
+      setRecipe(recipeRes.data as RecipeWithJoins);
+      const r = recipeRes.data;
 
-      const loadedGrinders = (grindersRes.data ?? []).map((g: any) => g.grinder) as Grinder[];
-      const loadedMachines = (machinesRes.data ?? []).map((m: any) => m.brew_machine) as BrewMachine[];
-      setGrinders(loadedGrinders);
-      setMachines(loadedMachines);
+      const grinderIds = (userGrindersRes.data ?? []).map((row) => row.grinder_id);
+      const machineIds = (userMachinesRes.data ?? []).map((row) => row.brew_machine_id);
+
+      const [grindersRes, machinesRes] = await Promise.all([
+        supabase.from("grinders").select("*").in("id", grinderIds),
+        supabase.from("brew_machines").select("*").in("id", machineIds),
+      ]);
+      setGrinders(grindersRes.data ?? []);
+      setMachines(machinesRes.data ?? []);
 
       // Pre-populate form from existing recipe
       form.setFieldValue("grinder_id",      r.grinder_id);
@@ -147,12 +154,25 @@ export default function EditRecipeScreen() {
       form.setFieldValue("roast_date",       r.roast_date ?? "");
       form.setFieldValue("notes",            r.notes ?? "");
 
-      if (r.bean) setSelectedBean({ id: r.bean_id!, ...(r.bean as any) });
+      if (r.bean && r.bean_id) {
+        setSelectedBean({ id: r.bean_id, name: r.bean.name, roaster: r.bean.roaster });
+      }
 
       setLoading(false);
     }
     load();
   }, [id]);
+
+  const grinderId = useStore(form.store, (s) => s.values.grinder_id);
+  const grinder = grinders.find((g) => g.id === grinderId) ?? null;
+  const prevGrinderIdRef = useRef("");
+
+  useEffect(() => {
+    if (grinderId && grinderId !== prevGrinderIdRef.current && prevGrinderIdRef.current !== "") {
+      form.setFieldValue("grind_setting", "");
+    }
+    prevGrinderIdRef.current = grinderId ?? "";
+  }, [grinderId]);
 
   if (loading) {
     return (
@@ -308,14 +328,36 @@ export default function EditRecipeScreen() {
         </form.Field>
 
         {/* Grind Setting */}
-        <GrindSettingField form={form} grinders={grinders} />
+        <form.Field
+          name="grind_setting"
+          validators={{ onSubmit: ({ value }) => !value.trim() ? "Required" : undefined }}
+        >
+          {(field) => (
+            <View className="gap-2">
+              <SectionLabel label="Grind Setting" required />
+              <GrindTape
+                value={field.state.value}
+                onChange={field.handleChange}
+                adjustmentType={grinder?.adjustment_type ?? null}
+                stepsPerUnit={grinder?.steps_per_unit}
+                rangeMin={grinder?.range_min}
+                rangeMax={grinder?.range_max}
+              />
+              <FieldError errors={field.state.meta.errors} />
+            </View>
+          )}
+        </form.Field>
 
         {/* Parameters */}
         <View className="gap-4">
           <SectionLabel label="Parameters" />
           <View className="flex-row gap-3">
-            <NumericField form={form} name="dose_g" label="Dose (g)" placeholder="18" />
-            <NumericField form={form} name="yield_g" label="Yield (g)" placeholder="36" />
+            <form.Field name="dose_g">
+              {(field) => <NumericField value={field.state.value} onChange={field.handleChange} label="Dose (g)" placeholder="18" />}
+            </form.Field>
+            <form.Field name="yield_g">
+              {(field) => <NumericField value={field.state.value} onChange={field.handleChange} label="Yield (g)" placeholder="36" />}
+            </form.Field>
           </View>
           <form.Field name="ratio">
             {(field) => {
@@ -350,8 +392,12 @@ export default function EditRecipeScreen() {
               );
             }}
           </form.Field>
-          <NumericField form={form} name="water_temp_c" label="Temp (°C)" placeholder="93" />
-          <NumericField form={form} name="brew_time_s" label="Brew Time (s)" placeholder="28" />
+          <form.Field name="water_temp_c">
+            {(field) => <NumericField value={field.state.value} onChange={field.handleChange} label="Temp (°C)" placeholder="93" />}
+          </form.Field>
+          <form.Field name="brew_time_s">
+            {(field) => <NumericField value={field.state.value} onChange={field.handleChange} label="Brew Time (s)" placeholder="28" />}
+          </form.Field>
         </View>
 
         {/* Roast */}
@@ -400,9 +446,9 @@ export default function EditRecipeScreen() {
           )}
         </form.Field>
 
-        <form.Subscribe selector={(s) => s.errorMap.onSubmit}>
-          {(err) => err ? <Text style={{ color: "#f87171" }} className="text-sm">{String(err)}</Text> : null}
-        </form.Subscribe>
+        {submitError && (
+          <Text style={{ color: "#f87171" }} className="text-sm">{submitError}</Text>
+        )}
 
         <form.Subscribe selector={(s) => s.isSubmitting}>
           {(isSubmitting) => (
@@ -424,48 +470,13 @@ export default function EditRecipeScreen() {
         visible={beanModalOpen}
         onClose={() => setBeanModalOpen(false)}
         onSelected={(bean) => {
-          setSelectedBean(bean);
+          setSelectedBean({ id: bean.id, name: bean.name, roaster: bean.roaster });
           form.setFieldValue("bean_id", bean.id);
           setBeanModalOpen(false);
         }}
         selectedId={selectedBean?.id}
       />
     </KeyboardAvoidingView>
-  );
-}
-
-function GrindSettingField({ form, grinders }: { form: any; grinders: Grinder[] }) {
-  const grinderId = useStore(form.store, (s: any) => s.values.grinder_id);
-  const grinder   = grinders.find((g) => g.id === grinderId);
-  const prevGrinderIdRef = useRef<string>("");
-
-  useEffect(() => {
-    if (grinderId && grinderId !== prevGrinderIdRef.current && prevGrinderIdRef.current !== "") {
-      form.setFieldValue("grind_setting", "");
-    }
-    prevGrinderIdRef.current = grinderId ?? "";
-  }, [grinderId]);
-
-  return (
-    <form.Field
-      name="grind_setting"
-      validators={{ onSubmit: ({ value }: { value: string }) => !value.trim() ? "Required" : undefined }}
-    >
-      {(field: any) => (
-        <View className="gap-2">
-          <SectionLabel label="Grind Setting" required />
-          <GrindTape
-            value={field.state.value}
-            onChange={field.handleChange}
-            adjustmentType={grinder?.adjustment_type ?? null}
-            stepsPerUnit={grinder?.steps_per_unit}
-            rangeMin={grinder?.range_min}
-            rangeMax={grinder?.range_max}
-          />
-          <FieldError errors={field.state.meta.errors} />
-        </View>
-      )}
-    </form.Field>
   );
 }
 
@@ -485,23 +496,24 @@ function FieldError({ errors }: { errors: (string | undefined)[] }) {
   );
 }
 
-function NumericField({ form, name, label, placeholder }: { form: any; name: string; label: string; placeholder: string }) {
+function NumericField({ value, onChange, label, placeholder }: {
+  value: string;
+  onChange: (v: string) => void;
+  label: string;
+  placeholder: string;
+}) {
   return (
-    <form.Field name={name}>
-      {(field: any) => (
-        <View className="flex-1 gap-1">
-          <Text className="text-latte-400 text-xs px-1">{label}</Text>
-          <TextInput
-            className="bg-ristretto-800 border border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-100 text-base"
-            style={{ lineHeight: undefined }}
-            placeholder={placeholder}
-            placeholderTextColor="#6e5a47"
-            keyboardType="decimal-pad"
-            value={field.state.value}
-            onChangeText={field.handleChange}
-          />
-        </View>
-      )}
-    </form.Field>
+    <View className="flex-1 gap-1">
+      <Text className="text-latte-400 text-xs px-1">{label}</Text>
+      <TextInput
+        className="bg-ristretto-800 border border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-100 text-base"
+        style={{ lineHeight: undefined }}
+        placeholder={placeholder}
+        placeholderTextColor="#6e5a47"
+        keyboardType="decimal-pad"
+        value={value}
+        onChangeText={onChange}
+      />
+    </View>
   );
 }

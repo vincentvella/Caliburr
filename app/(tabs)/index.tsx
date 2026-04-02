@@ -12,8 +12,9 @@ import { useEffect, useState, useCallback, useRef } from 'react';
 import { useFocusEffect, router } from 'expo-router';
 import { supabase } from '@/lib/supabase';
 import { type RecipeWithJoins, type BrewMethod, BREW_METHOD_LABELS } from '@/lib/types';
+import { Constants } from '@/lib/database.types';
 
-const BREW_METHODS = Object.keys(BREW_METHOD_LABELS) as BrewMethod[];
+const BREW_METHODS = [...Constants.public.Enums.brew_method];
 
 // ─── Explore screen ───────────────────────────────────────────────────────────
 
@@ -48,8 +49,8 @@ export default function ExploreScreen() {
         supabase.from('recipe_upvotes').select('recipe_id').eq('user_id', user.id),
       ]);
 
-      setMyGrinderId((grindersRes.data ?? []).map((r: any) => r.grinder_id));
-      setUpvotedIds(new Set((upvotesRes.data ?? []).map((r: any) => r.recipe_id)));
+      setMyGrinderId((grindersRes.data ?? []).map((r) => r.grinder_id));
+      setUpvotedIds(new Set((upvotesRes.data ?? []).map((r) => r.recipe_id)));
     });
   }, []);
 
@@ -127,7 +128,7 @@ export default function ExploreScreen() {
           .from('recipe_upvotes')
           .select('recipe_id')
           .eq('user_id', user.id);
-        setUpvotedIds(new Set((data ?? []).map((r: any) => r.recipe_id)));
+        setUpvotedIds(new Set((data ?? []).map((r) => r.recipe_id)));
       });
     }, []),
   );
