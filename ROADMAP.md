@@ -2,10 +2,10 @@
 
 ## 🔴 Blockers — must fix before shipping
 
-- [ ] **Password reset flow** — no forgot-password screen or link on sign-in. Users who forget their password are permanently locked out.
-- [ ] **Equipment removal confirmation** — tapping × on a grinder or machine in Profile deletes immediately with no `Alert.alert`. Recipes screen has a confirmation; Profile doesn't.
-- [ ] **Error handling on destructive operations** — `removeGrinder`, `removeMachine`, and recipe delete all optimistically update the UI without checking whether the Supabase call succeeded. If the call fails the UI and DB are out of sync.
-- [ ] **Upvote rollback** — optimistic update applies immediately but there's no rollback if the insert/delete fails. Wrong count is shown permanently until next reload.
+- [x] **Password reset flow** — forgot-password screen + reset-password screen; `PASSWORD_RECOVERY` event routes through `_layout.tsx`; sign-in has "Forgot password?" link.
+- [x] **Equipment removal confirmation** — `removeGrinder` and `removeMachine` in Profile now show `Alert.alert` with destructive confirm before deleting.
+- [x] **Error handling on destructive operations** — `removeGrinder`, `removeMachine`, and recipe delete now check the Supabase error and show an alert on failure without mutating local state.
+- [x] **Upvote rollback** — both `index.tsx` and `recipe/[id].tsx` now roll back the optimistic update if the insert/delete fails.
 
 ## 🟠 Stability — fix before any public launch
 

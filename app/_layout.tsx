@@ -8,11 +8,11 @@ import * as Linking from 'expo-linking';
 import type { Session } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase';
 
-function useAuthGate(session: Session | null, ready: boolean) {
+function useAuthGate(session: Session | null, ready: boolean, isRecovery: boolean) {
   const segments = useSegments();
 
   useEffect(() => {
-    if (!ready) return;
+    if (!ready || isRecovery) return;
 
     const inAuth = segments[0] === '(auth)';
 
@@ -21,7 +21,7 @@ function useAuthGate(session: Session | null, ready: boolean) {
     } else if (session && inAuth) {
       router.replace('/(tabs)');
     }
-  }, [session, ready, segments]);
+  }, [session, ready, segments, isRecovery]);
 }
 
 async function handleDeepLink(url: string) {
@@ -34,6 +34,7 @@ async function handleDeepLink(url: string) {
 export default function RootLayout() {
   const [session, setSession] = useState<Session | null>(null);
   const [ready, setReady] = useState(false);
+  const [isRecovery, setIsRecovery] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -43,7 +44,15 @@ export default function RootLayout() {
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => setSession(session));
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      setSession(session);
+      if (event === 'PASSWORD_RECOVERY') {
+        setIsRecovery(true);
+        router.replace('/(auth)/reset-password');
+      } else if (event === 'USER_UPDATED') {
+        setIsRecovery(false);
+      }
+    });
 
     // Handle URL when app is already open
     const linkSub = Linking.addEventListener('url', ({ url }) => {
@@ -61,7 +70,7 @@ export default function RootLayout() {
     };
   }, []);
 
-  useAuthGate(session, ready);
+  useAuthGate(session, ready, isRecovery);
 
   return (
     <>

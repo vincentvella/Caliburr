@@ -78,15 +78,23 @@ export default function RecipeDetailScreen() {
     setRecipe((r) => (r ? { ...r, upvotes: r.upvotes + (upvoted ? -1 : 1) } : r));
 
     if (upvoted) {
-      await supabase
+      const { error } = await supabase
         .from('recipe_upvotes')
         .delete()
         .eq('recipe_id', recipe.id)
         .eq('user_id', currentUserId);
+      if (error) {
+        setUpvoted(true);
+        setRecipe((r) => (r ? { ...r, upvotes: r.upvotes + 1 } : r));
+      }
     } else {
-      await supabase
+      const { error } = await supabase
         .from('recipe_upvotes')
         .insert({ recipe_id: recipe.id, user_id: currentUserId });
+      if (error) {
+        setUpvoted(false);
+        setRecipe((r) => (r ? { ...r, upvotes: r.upvotes - 1 } : r));
+      }
     }
   }
 
@@ -99,8 +107,17 @@ export default function RecipeDetailScreen() {
         style: 'destructive',
         onPress: async () => {
           setDeleting(true);
-          await supabase.from('recipes').delete().eq('id', recipe.id).eq('user_id', currentUserId!);
-          router.back();
+          const { error } = await supabase
+            .from('recipes')
+            .delete()
+            .eq('id', recipe.id)
+            .eq('user_id', currentUserId!);
+          if (error) {
+            setDeleting(false);
+            Alert.alert('Error', 'Failed to delete recipe. Please try again.');
+          } else {
+            router.back();
+          }
         },
       },
     ]);

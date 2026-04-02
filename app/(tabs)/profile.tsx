@@ -1,4 +1,12 @@
-import { View, Text, Image, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
+import {
+  View,
+  Text,
+  Image,
+  ScrollView,
+  TouchableOpacity,
+  ActivityIndicator,
+  Alert,
+} from 'react-native';
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { GrinderModal } from '@/components/equipment/GrinderModal';
@@ -82,36 +90,62 @@ export default function ProfileScreen() {
     fetchEquipment();
   }, []);
 
-  async function removeGrinder(grinderId: string) {
-    setRemovingId(grinderId);
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (user) {
-      await supabase
-        .from('user_grinders')
-        .delete()
-        .eq('user_id', user.id)
-        .eq('grinder_id', grinderId);
-      setGrinders((prev) => prev.filter((g) => g.grinder_id !== grinderId));
-    }
-    setRemovingId(null);
+  function removeGrinder(grinderId: string) {
+    Alert.alert('Remove Grinder', 'Remove this grinder from your gear?', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Remove',
+        style: 'destructive',
+        onPress: async () => {
+          setRemovingId(grinderId);
+          const {
+            data: { user },
+          } = await supabase.auth.getUser();
+          if (user) {
+            const { error } = await supabase
+              .from('user_grinders')
+              .delete()
+              .eq('user_id', user.id)
+              .eq('grinder_id', grinderId);
+            if (error) {
+              Alert.alert('Error', 'Failed to remove grinder. Please try again.');
+            } else {
+              setGrinders((prev) => prev.filter((g) => g.grinder_id !== grinderId));
+            }
+          }
+          setRemovingId(null);
+        },
+      },
+    ]);
   }
 
-  async function removeMachine(machineId: string) {
-    setRemovingId(machineId);
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (user) {
-      await supabase
-        .from('user_brew_machines')
-        .delete()
-        .eq('user_id', user.id)
-        .eq('brew_machine_id', machineId);
-      setMachines((prev) => prev.filter((m) => m.brew_machine_id !== machineId));
-    }
-    setRemovingId(null);
+  function removeMachine(machineId: string) {
+    Alert.alert('Remove Machine', 'Remove this machine from your gear?', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Remove',
+        style: 'destructive',
+        onPress: async () => {
+          setRemovingId(machineId);
+          const {
+            data: { user },
+          } = await supabase.auth.getUser();
+          if (user) {
+            const { error } = await supabase
+              .from('user_brew_machines')
+              .delete()
+              .eq('user_id', user.id)
+              .eq('brew_machine_id', machineId);
+            if (error) {
+              Alert.alert('Error', 'Failed to remove machine. Please try again.');
+            } else {
+              setMachines((prev) => prev.filter((m) => m.brew_machine_id !== machineId));
+            }
+          }
+          setRemovingId(null);
+        },
+      },
+    ]);
   }
 
   async function toggleDefaultGrinder(grinderId: string) {

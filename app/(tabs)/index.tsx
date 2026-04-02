@@ -169,13 +169,31 @@ export default function ExploreScreen() {
     );
 
     if (hasUpvoted) {
-      await supabase
+      const { error } = await supabase
         .from('recipe_upvotes')
         .delete()
         .eq('recipe_id', recipeId)
         .eq('user_id', currentUserId);
+      if (error) {
+        setUpvotedIds((prev) => new Set(prev).add(recipeId));
+        setRecipes((prev) =>
+          prev.map((r) => (r.id === recipeId ? { ...r, upvotes: r.upvotes + 1 } : r)),
+        );
+      }
     } else {
-      await supabase.from('recipe_upvotes').insert({ recipe_id: recipeId, user_id: currentUserId });
+      const { error } = await supabase
+        .from('recipe_upvotes')
+        .insert({ recipe_id: recipeId, user_id: currentUserId });
+      if (error) {
+        setUpvotedIds((prev) => {
+          const next = new Set(prev);
+          next.delete(recipeId);
+          return next;
+        });
+        setRecipes((prev) =>
+          prev.map((r) => (r.id === recipeId ? { ...r, upvotes: r.upvotes - 1 } : r)),
+        );
+      }
     }
   }
 

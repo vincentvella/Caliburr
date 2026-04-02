@@ -147,10 +147,16 @@ export default function SignInScreen() {
           )}
         </form.Subscribe>
 
-        <View className="flex-row justify-center gap-1">
+        <View className="flex-row justify-center gap-1 mb-4">
           <Text className="text-latte-500">{`Don't have an account?`}</Text>
           <Link href="/(auth)/sign-up">
             <Text className="text-harvest-400 font-semibold">Sign Up</Text>
+          </Link>
+        </View>
+
+        <View className="flex-row justify-center">
+          <Link href="/(auth)/forgot-password">
+            <Text className="text-latte-500 text-sm">Forgot password?</Text>
           </Link>
         </View>
       </ScrollView>
