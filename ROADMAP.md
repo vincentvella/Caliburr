@@ -17,10 +17,10 @@
 
 ## 🟡 UX gaps — needed for a complete product
 
-- [ ] **Roast date validation** — `DateInput` formats the string but doesn't verify the date is real (e.g. `2026-02-30` passes through to the DB).
-- [ ] **Explore search at scale** — currently fetches 50 recipes then filters client-side. Works now but breaks as data grows. Needs server-side `ilike` filtering or Postgres full-text search.
-- [ ] **Recipe sharing** — no way to share a recipe link externally.
-- [ ] **Copy-to-clipboard on recipe detail** — useful for sharing parameters with non-app users.
+- [x] **Roast date validation** — `onSubmit` validator in both new and edit forms checks `YYYY-MM-DD` format and rejects impossible dates like `2026-02-30`.
+- [x] **Explore search at scale** — server-side `ilike` lookups for grinder/bean/machine IDs + `OR` filter on recipes; client-side filtering removed.
+- [x] **Recipe sharing** — Share button in recipe detail header uses `Share.share()` with formatted recipe text.
+- [x] **Copy-to-clipboard on recipe detail** — "Copy params" button copies grind + numeric parameters; shows "Copied!" feedback for 2s.
 
 ## 🟢 Features — post-launch
 

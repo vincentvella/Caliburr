@@ -81,8 +81,34 @@ export default function ExploreScreen() {
       }
 
       if (searchText.trim()) {
-        // Search across grinder brand/model and bean name via ilike on text fields
-        // We filter client-side after fetch since Supabase doesn't support OR across joins easily
+        const term = `%${searchText.trim()}%`;
+        const [grindersRes, beansRes, machinesRes] = await Promise.all([
+          supabase.from('grinders').select('id').or(`brand.ilike.${term},model.ilike.${term}`),
+          supabase.from('beans').select('id').or(`name.ilike.${term},roaster.ilike.${term}`),
+          supabase.from('brew_machines').select('id').or(`brand.ilike.${term},model.ilike.${term}`),
+        ]);
+
+        const grinderIds = (grindersRes.data ?? []).map((r) => r.id);
+        const beanIds = (beansRes.data ?? []).map((r) => r.id);
+        const machineIds = (machinesRes.data ?? []).map((r) => r.id);
+
+        const orFilters: string[] = [];
+        if (grinderIds.length) orFilters.push(`grinder_id.in.(${grinderIds.join(',')})`);
+        if (beanIds.length) orFilters.push(`bean_id.in.(${beanIds.join(',')})`);
+        if (machineIds.length) orFilters.push(`brew_machine_id.in.(${machineIds.join(',')})`);
+
+        const matchingMethods = BREW_METHODS.filter((m) =>
+          BREW_METHOD_LABELS[m].toLowerCase().includes(searchText.toLowerCase()),
+        );
+        if (matchingMethods.length) orFilters.push(`brew_method.in.(${matchingMethods.join(',')})`);
+
+        if (!orFilters.length) {
+          setRecipes([]);
+          setError(null);
+          return;
+        }
+
+        q = q.or(orFilters.join(','));
       }
 
       const { data, error } = await q;
@@ -92,23 +118,7 @@ export default function ExploreScreen() {
         return;
       }
 
-      let results = data as RecipeWithJoins[];
-
-      // Client-side search across joined fields
-      if (searchText.trim()) {
-        const term = searchText.toLowerCase();
-        results = results.filter(
-          (r) =>
-            `${r.grinder.brand} ${r.grinder.model}`.toLowerCase().includes(term) ||
-            r.bean?.name.toLowerCase().includes(term) ||
-            r.bean?.roaster.toLowerCase().includes(term) ||
-            BREW_METHOD_LABELS[r.brew_method].toLowerCase().includes(term) ||
-            (r.brew_machine &&
-              `${r.brew_machine.brand} ${r.brew_machine.model}`.toLowerCase().includes(term)),
-        );
-      }
-
-      setRecipes(results);
+      setRecipes(data as RecipeWithJoins[]);
       setError(null);
     },
     [methodFilter, myGearOnly, myGrinderId, search],

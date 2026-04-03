@@ -490,13 +490,19 @@ export default function NewRecipeScreen() {
             </form.Field>
 
             {/* Roast Date */}
-            <form.Field name="roast_date">
+            <form.Field
+              name="roast_date"
+              validators={{ onSubmit: ({ value }) => validateDate(value) }}
+            >
               {(field) => (
-                <DateInput
-                  label="Roast Date"
-                  value={field.state.value}
-                  onChange={field.handleChange}
-                />
+                <View className="gap-1">
+                  <DateInput
+                    label="Roast Date"
+                    value={field.state.value}
+                    onChange={field.handleChange}
+                  />
+                  <FieldError errors={field.state.meta.errors} />
+                </View>
               )}
             </form.Field>
 
@@ -662,6 +668,17 @@ function BrewTimer({ value, onChange }: { value: string; onChange: (v: string) =
 function validateNum(value: string) {
   if (!value) return undefined;
   return isNaN(parseFloat(value)) ? 'Must be a valid number' : undefined;
+}
+
+function validateDate(value: string) {
+  if (!value) return undefined;
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return 'Use YYYY-MM-DD format';
+  const [y, m, d] = value.split('-').map(Number);
+  const date = new Date(y, m - 1, d);
+  if (date.getFullYear() !== y || date.getMonth() !== m - 1 || date.getDate() !== d) {
+    return 'Invalid date';
+  }
+  return undefined;
 }
 
 function SectionLabel({ label, required }: { label: string; required?: boolean }) {

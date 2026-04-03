@@ -1,6 +1,15 @@
-import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
+import {
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  ActivityIndicator,
+  Alert,
+  Share,
+} from 'react-native';
 import { useEffect, useState } from 'react';
 import { useLocalSearchParams, router } from 'expo-router';
+import * as Clipboard from 'expo-clipboard';
 import { supabase } from '@/lib/supabase';
 import {
   type RecipeWithJoins,
@@ -24,6 +33,7 @@ export default function RecipeDetailScreen() {
   const [upvoted, setUpvoted] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [history, setHistory] = useState<RecipeHistory[]>([]);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     async function load() {
@@ -98,6 +108,45 @@ export default function RecipeDetailScreen() {
     }
   }
 
+  async function handleShare() {
+    if (!recipe) return;
+    const title = recipe.bean
+      ? `${recipe.bean.name} — ${recipe.bean.roaster}`
+      : `${recipe.grinder.brand} ${recipe.grinder.model}`;
+    const lines = [
+      title,
+      `Brew: ${BREW_METHOD_LABELS[recipe.brew_method]}`,
+      `Grinder: ${recipe.grinder.brand} ${recipe.grinder.model}`,
+      `Grind: ${recipe.grind_setting}`,
+      recipe.dose_g != null ? `Dose: ${recipe.dose_g}g` : null,
+      recipe.yield_g != null ? `Yield: ${recipe.yield_g}g` : null,
+      recipe.ratio != null ? `Ratio: 1:${recipe.ratio}` : null,
+      recipe.brew_time_s != null ? `Time: ${formatTime(recipe.brew_time_s)}` : null,
+      recipe.water_temp_c != null ? `Temp: ${recipe.water_temp_c}°C` : null,
+      recipe.notes ? `\nNotes: ${recipe.notes}` : null,
+    ]
+      .filter(Boolean)
+      .join('\n');
+    await Share.share({ message: lines });
+  }
+
+  async function handleCopy() {
+    if (!recipe) return;
+    const params = [
+      `Grind: ${recipe.grind_setting}`,
+      recipe.dose_g != null ? `Dose: ${recipe.dose_g}g` : null,
+      recipe.yield_g != null ? `Yield: ${recipe.yield_g}g` : null,
+      recipe.ratio != null ? `Ratio: 1:${recipe.ratio}` : null,
+      recipe.brew_time_s != null ? `Time: ${formatTime(recipe.brew_time_s)}` : null,
+      recipe.water_temp_c != null ? `Temp: ${recipe.water_temp_c}°C` : null,
+    ]
+      .filter(Boolean)
+      .join(' | ');
+    await Clipboard.setStringAsync(params);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }
+
   async function handleDelete() {
     if (!recipe) return;
     Alert.alert('Delete Recipe', 'This cannot be undone.', [
@@ -152,20 +201,25 @@ export default function RecipeDetailScreen() {
         <TouchableOpacity onPress={() => router.back()}>
           <Text className="text-harvest-400 font-semibold">← Back</Text>
         </TouchableOpacity>
-        {isOwner && (
-          <View className="flex-row items-center gap-4">
-            <TouchableOpacity onPress={() => router.push(`/recipe/edit/${recipe.id}`)}>
-              <Text className="text-harvest-400 font-semibold">Edit</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={handleDelete} disabled={deleting}>
-              {deleting ? (
-                <ActivityIndicator size="small" color="#f87171" />
-              ) : (
-                <Text className="text-red-400 font-semibold">Delete</Text>
-              )}
-            </TouchableOpacity>
-          </View>
-        )}
+        <View className="flex-row items-center gap-4">
+          <TouchableOpacity onPress={handleShare}>
+            <Text className="text-latte-400 font-semibold">Share</Text>
+          </TouchableOpacity>
+          {isOwner && (
+            <>
+              <TouchableOpacity onPress={() => router.push(`/recipe/edit/${recipe.id}`)}>
+                <Text className="text-harvest-400 font-semibold">Edit</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={handleDelete} disabled={deleting}>
+                {deleting ? (
+                  <ActivityIndicator size="small" color="#f87171" />
+                ) : (
+                  <Text className="text-red-400 font-semibold">Delete</Text>
+                )}
+              </TouchableOpacity>
+            </>
+          )}
+        </View>
       </View>
 
       <ScrollView className="flex-1" contentContainerClassName="px-6 pt-6 pb-24 gap-6">
@@ -193,23 +247,30 @@ export default function RecipeDetailScreen() {
         </View>
 
         {/* Parameters */}
-        <View className="flex-row flex-wrap gap-3">
-          {recipe.dose_g != null && <StatCard label="Dose" value={`${recipe.dose_g}g`} />}
-          {recipe.yield_g != null && <StatCard label="Yield" value={`${recipe.yield_g}g`} />}
-          {recipe.ratio != null && <StatCard label="Ratio" value={`1:${recipe.ratio}`} />}
-          {recipe.brew_time_s != null && (
-            <StatCard label="Brew Time" value={formatTime(recipe.brew_time_s)} />
-          )}
-          {recipe.water_temp_c != null && (
-            <StatCard label="Temp" value={`${recipe.water_temp_c}°C`} />
-          )}
-          {(recipe.roast_level ?? recipe.bean?.roast_level) && (
-            <StatCard
-              label="Roast"
-              value={ROAST_LEVEL_LABELS[(recipe.roast_level ?? recipe.bean!.roast_level)!]}
-            />
-          )}
-          {recipe.roast_date && <StatCard label="Roast Date" value={recipe.roast_date} />}
+        <View className="gap-3">
+          <TouchableOpacity onPress={handleCopy} className="self-end">
+            <Text className="text-xs font-medium" style={{ color: copied ? '#4ade80' : '#6e5a47' }}>
+              {copied ? 'Copied!' : 'Copy params'}
+            </Text>
+          </TouchableOpacity>
+          <View className="flex-row flex-wrap gap-3">
+            {recipe.dose_g != null && <StatCard label="Dose" value={`${recipe.dose_g}g`} />}
+            {recipe.yield_g != null && <StatCard label="Yield" value={`${recipe.yield_g}g`} />}
+            {recipe.ratio != null && <StatCard label="Ratio" value={`1:${recipe.ratio}`} />}
+            {recipe.brew_time_s != null && (
+              <StatCard label="Brew Time" value={formatTime(recipe.brew_time_s)} />
+            )}
+            {recipe.water_temp_c != null && (
+              <StatCard label="Temp" value={`${recipe.water_temp_c}°C`} />
+            )}
+            {(recipe.roast_level ?? recipe.bean?.roast_level) && (
+              <StatCard
+                label="Roast"
+                value={ROAST_LEVEL_LABELS[(recipe.roast_level ?? recipe.bean!.roast_level)!]}
+              />
+            )}
+            {recipe.roast_date && <StatCard label="Roast Date" value={recipe.roast_date} />}
+          </View>
         </View>
 
         {/* Notes */}
