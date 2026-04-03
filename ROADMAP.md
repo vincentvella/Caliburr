@@ -6,6 +6,8 @@
 - [x] **Equipment removal confirmation** — `removeGrinder` and `removeMachine` in Profile now show `Alert.alert` with destructive confirm before deleting.
 - [x] **Error handling on destructive operations** — `removeGrinder`, `removeMachine`, and recipe delete now check the Supabase error and show an alert on failure without mutating local state.
 - [x] **Upvote rollback** — both `index.tsx` and `recipe/[id].tsx` now roll back the optimistic update if the insert/delete fails.
+- [ ] **App assets** — `icon.png`, `splash-icon.png`, `adaptive-icon.png`, and `favicon.png` are deleted; custom assets required before EAS build.
+- [ ] **Account deletion** — Apple App Store guideline 5.1.1 requires an in-app account deletion flow. No such screen exists.
 
 ## 🟠 Stability — fix before any public launch
 
@@ -14,6 +16,9 @@
 - [x] **Sign out error handling** — error now checked; resets `signingOut` and shows an alert on failure.
 - [x] **Session expiry mid-use** — handled by existing `onAuthStateChange` → `SIGNED_OUT` → `useAuthGate` redirect. No code change needed.
 - [x] **`useFocusEffect` stability** — both `index.tsx` and `recipes.tsx` now wrap the callback in `useCallback` with correct deps. `fetchRecipes` in `recipes.tsx` also wrapped in `useCallback([])` to provide a stable reference.
+- [ ] **Recipe card delete tap propagation** — the × button in `recipes.tsx` sits inside a full-card `TouchableOpacity`; tapping near it may also trigger navigation to the detail screen.
+- [ ] **React error boundary** — an unhandled render error currently crashes the whole app with no recovery UI.
+- [ ] **Accessibility labels** — interactive elements (upvote button, filter chips, grind tape, equipment selectors) have no `accessibilityLabel` props.
 
 ## 🟡 UX gaps — needed for a complete product
 
@@ -21,6 +26,9 @@
 - [x] **Explore search at scale** — server-side `ilike` lookups for grinder/bean/machine IDs + `OR` filter on recipes; client-side filtering removed.
 - [x] **Recipe sharing** — Share button in recipe detail header uses `Share.share()` with formatted recipe text.
 - [x] **Copy-to-clipboard on recipe detail** — "Copy params" button copies grind + numeric parameters; shows "Copied!" feedback for 2s.
+- [ ] **Explore feed pagination** — 50-recipe hard cap with no load-more or infinite scroll; recipes beyond the first 50 are silently hidden.
+- [ ] **My Recipes edit shortcut** — recipe cards in the My Recipes tab have no Edit button; editing requires tapping into the detail screen first.
+- [ ] **Profile account info** — no email or username displayed; password can only be changed via the forgot-password email flow, not from within the app.
 
 ## 🟢 Features — post-launch
 
