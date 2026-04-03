@@ -7,6 +7,7 @@ import { StatusBar } from 'expo-status-bar';
 import * as Linking from 'expo-linking';
 import type { Session } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 
 function useAuthGate(session: Session | null, ready: boolean, isRecovery: boolean) {
   const segments = useSegments();
@@ -76,7 +77,7 @@ export default function RootLayout() {
   useAuthGate(session, ready, isRecovery);
 
   return (
-    <>
+    <ErrorBoundary>
       <StatusBar style="light" />
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="(tabs)" />
@@ -84,6 +85,6 @@ export default function RootLayout() {
         <Stack.Screen name="recipe/new" options={{ presentation: 'modal' }} />
         <Stack.Screen name="+not-found" />
       </Stack>
-    </>
+    </ErrorBoundary>
   );
 }

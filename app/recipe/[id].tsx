@@ -338,6 +338,8 @@ export default function RecipeDetailScreen() {
       <View className="absolute bottom-0 left-0 right-0 px-6 pb-8 pt-4 bg-ristretto-900 border-t border-ristretto-800">
         <TouchableOpacity
           onPress={toggleUpvote}
+          accessibilityLabel={`${recipe.upvotes} ${recipe.upvotes === 1 ? 'upvote' : 'upvotes'}. ${upvoted ? 'Remove upvote' : 'Upvote'}`}
+          accessibilityRole="button"
           className="flex-row items-center justify-center gap-2 rounded-2xl py-4"
           style={{ backgroundColor: upvoted ? '#7c3a1a' : '#2a1c14' }}
         >

@@ -22,6 +22,8 @@ export default function ExploreScreen() {
   const [recipes, setRecipes] = useState<RecipeWithJoins[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   // Filters
@@ -56,8 +58,10 @@ export default function ExploreScreen() {
 
   // ── Fetch recipes ──────────────────────────────────────────────────────────
 
-  const fetchRecipes = useCallback(
-    async (searchText = search) => {
+  const PAGE_SIZE = 50;
+
+  const buildQuery = useCallback(
+    async (searchText: string, offset: number) => {
       let q = supabase
         .from('recipes')
         .select(
@@ -70,15 +74,10 @@ export default function ExploreScreen() {
         )
         .order('upvotes', { ascending: false })
         .order('created_at', { ascending: false })
-        .limit(50);
+        .range(offset, offset + PAGE_SIZE - 1);
 
-      if (methodFilter) {
-        q = q.eq('brew_method', methodFilter);
-      }
-
-      if (myGearOnly && myGrinderId.length) {
-        q = q.in('grinder_id', myGrinderId);
-      }
+      if (methodFilter) q = q.eq('brew_method', methodFilter);
+      if (myGearOnly && myGrinderId.length) q = q.in('grinder_id', myGrinderId);
 
       if (searchText.trim()) {
         const term = `%${searchText.trim()}%`;
@@ -102,29 +101,54 @@ export default function ExploreScreen() {
         );
         if (matchingMethods.length) orFilters.push(`brew_method.in.(${matchingMethods.join(',')})`);
 
-        if (!orFilters.length) {
-          setRecipes([]);
-          setError(null);
-          return;
-        }
-
+        if (!orFilters.length) return null;
         q = q.or(orFilters.join(','));
       }
 
-      const { data, error } = await q;
+      return q;
+    },
+    [methodFilter, myGearOnly, myGrinderId],
+  );
 
+  const fetchRecipes = useCallback(
+    async (searchText = search) => {
+      const q = await buildQuery(searchText, 0);
+      if (!q) {
+        setRecipes([]);
+        setHasMore(false);
+        setError(null);
+        return;
+      }
+      const { data, error } = await q;
       if (error) {
         setError(error.message);
         return;
       }
-
-      setRecipes(data as RecipeWithJoins[]);
+      const results = data as RecipeWithJoins[];
+      setRecipes(results);
+      setHasMore(results.length === PAGE_SIZE);
       setError(null);
     },
-    [methodFilter, myGearOnly, myGrinderId, search],
+    [buildQuery, search],
   );
 
+  const fetchMore = useCallback(async () => {
+    if (loadingMore || !hasMore) return;
+    setLoadingMore(true);
+    const q = await buildQuery(search, recipes.length);
+    if (q) {
+      const { data } = await q;
+      if (data) {
+        const next = data as RecipeWithJoins[];
+        setRecipes((prev) => [...prev, ...next]);
+        setHasMore(next.length === PAGE_SIZE);
+      }
+    }
+    setLoadingMore(false);
+  }, [buildQuery, search, recipes.length, loadingMore, hasMore]);
+
   useEffect(() => {
+    setHasMore(true);
     setLoading(true);
     fetchRecipes().finally(() => setLoading(false));
   }, [fetchRecipes]);
@@ -222,6 +246,8 @@ export default function ExploreScreen() {
           </View>
           <TouchableOpacity
             onPress={() => setMyGearOnly((v) => !v)}
+            accessibilityLabel={myGearOnly ? 'My Gear filter on' : 'My Gear filter off'}
+            accessibilityRole="button"
             className={`px-3 py-2 rounded-xl border ${
               myGearOnly ? 'bg-harvest-500 border-harvest-500' : 'border-ristretto-700'
             }`}
@@ -253,6 +279,8 @@ export default function ExploreScreen() {
         >
           <TouchableOpacity
             onPress={() => setMethodFilter(null)}
+            accessibilityLabel={methodFilter === null ? 'All methods, selected' : 'All methods'}
+            accessibilityRole="button"
             className={`px-3 py-1.5 rounded-full border ${
               methodFilter === null ? 'bg-harvest-500 border-harvest-500' : 'border-ristretto-700'
             }`}
@@ -267,6 +295,12 @@ export default function ExploreScreen() {
             <TouchableOpacity
               key={method}
               onPress={() => setMethodFilter(methodFilter === method ? null : method)}
+              accessibilityLabel={
+                methodFilter === method
+                  ? `${BREW_METHOD_LABELS[method]}, selected`
+                  : BREW_METHOD_LABELS[method]
+              }
+              accessibilityRole="button"
               className={`px-3 py-1.5 rounded-full border ${
                 methodFilter === method
                   ? 'bg-harvest-500 border-harvest-500'
@@ -300,11 +334,20 @@ export default function ExploreScreen() {
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor="#ff9d37" />
           }
+          onEndReached={fetchMore}
+          onEndReachedThreshold={0.3}
           ListHeaderComponent={
             recipes.length > 0 ? (
               <Text className="text-latte-600 text-xs mb-3 mt-2">
                 {recipes.length} recipe{recipes.length !== 1 ? 's' : ''}
               </Text>
+            ) : null
+          }
+          ListFooterComponent={
+            loadingMore ? (
+              <View className="py-4 items-center">
+                <ActivityIndicator color="#ff9d37" />
+              </View>
             ) : null
           }
           ListEmptyComponent={
@@ -425,6 +468,8 @@ function RecipeCard({
         </View>
         <TouchableOpacity
           onPress={onUpvote}
+          accessibilityLabel={`${recipe.upvotes} upvote${recipe.upvotes !== 1 ? 's' : ''}. ${upvoted ? 'Remove upvote' : 'Upvote'}`}
+          accessibilityRole="button"
           className="flex-row items-center gap-1.5 px-3 py-1.5 rounded-xl"
           style={{ backgroundColor: upvoted ? '#7c3a1a' : '#2a1c14' }}
         >

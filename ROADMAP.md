@@ -16,9 +16,9 @@
 - [x] **Sign out error handling** — error now checked; resets `signingOut` and shows an alert on failure.
 - [x] **Session expiry mid-use** — handled by existing `onAuthStateChange` → `SIGNED_OUT` → `useAuthGate` redirect. No code change needed.
 - [x] **`useFocusEffect` stability** — both `index.tsx` and `recipes.tsx` now wrap the callback in `useCallback` with correct deps. `fetchRecipes` in `recipes.tsx` also wrapped in `useCallback([])` to provide a stable reference.
-- [ ] **Recipe card delete tap propagation** — the × button in `recipes.tsx` sits inside a full-card `TouchableOpacity`; tapping near it may also trigger navigation to the detail screen.
-- [ ] **React error boundary** — an unhandled render error currently crashes the whole app with no recovery UI.
-- [ ] **Accessibility labels** — interactive elements (upvote button, filter chips, grind tape, equipment selectors) have no `accessibilityLabel` props.
+- [x] **Recipe card delete tap propagation** — `RecipeCard` in `recipes.tsx` restructured so the navigation area and action buttons (Edit, ×) are siblings, not nested touchables; `hitSlop` added to action buttons.
+- [x] **React error boundary** — `components/ErrorBoundary.tsx` class component wraps the root `Stack`; shows "Something went wrong" with a Try again button on unhandled render errors.
+- [x] **Accessibility labels** — `accessibilityLabel` + `accessibilityRole` added to upvote buttons, filter chips, My Gear toggle, Edit/Delete buttons in recipe cards.
 
 ## 🟡 UX gaps — needed for a complete product
 
@@ -26,9 +26,9 @@
 - [x] **Explore search at scale** — server-side `ilike` lookups for grinder/bean/machine IDs + `OR` filter on recipes; client-side filtering removed.
 - [x] **Recipe sharing** — Share button in recipe detail header uses `Share.share()` with formatted recipe text.
 - [x] **Copy-to-clipboard on recipe detail** — "Copy params" button copies grind + numeric parameters; shows "Copied!" feedback for 2s.
-- [ ] **Explore feed pagination** — 50-recipe hard cap with no load-more or infinite scroll; recipes beyond the first 50 are silently hidden.
-- [ ] **My Recipes edit shortcut** — recipe cards in the My Recipes tab have no Edit button; editing requires tapping into the detail screen first.
-- [ ] **Profile account info** — no email or username displayed; password can only be changed via the forgot-password email flow, not from within the app.
+- [x] **Explore feed pagination** — `FlatList` uses `.range()` with `onEndReached` to load 50 more recipes at a time; spinner shown while loading next page.
+- [x] **My Recipes edit shortcut** — `RecipeCard` in My Recipes now has an Edit button in the action row that navigates directly to the edit screen.
+- [x] **Profile account info** — email displayed in profile header; inline Change Password form added (new + confirm fields, calls `supabase.auth.updateUser`).
 
 ## 🟢 Features — post-launch
 

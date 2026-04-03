@@ -29,9 +29,13 @@ function Stat({ label, value }: { label: string; value: string }) {
 
 function RecipeCard({
   recipe,
+  onNavigate,
+  onEdit,
   onDelete,
 }: {
   recipe: RecipeWithJoins;
+  onNavigate: () => void;
+  onEdit: () => void;
   onDelete: (id: string) => void;
 }) {
   const grinderLabel = `${recipe.grinder.brand} ${recipe.grinder.model}`;
@@ -53,43 +57,64 @@ function RecipeCard({
   }
 
   return (
-    <View className="bg-ristretto-800 rounded-2xl p-4 mb-3 border border-ristretto-700">
-      <View className="flex-row items-start justify-between mb-1">
-        <View className="flex-1">
-          {recipe.bean ? (
-            <Text className="text-latte-100 font-semibold text-base" numberOfLines={1}>
-              {recipe.bean.name}
+    <View className="bg-ristretto-800 rounded-2xl mb-3 border border-ristretto-700 overflow-hidden">
+      {/* Tappable content area — separated from action buttons to avoid propagation */}
+      <TouchableOpacity activeOpacity={0.85} onPress={onNavigate} className="p-4">
+        <View className="flex-row items-start justify-between mb-1">
+          <View className="flex-1">
+            {recipe.bean ? (
+              <Text className="text-latte-100 font-semibold text-base" numberOfLines={1}>
+                {recipe.bean.name}
+              </Text>
+            ) : (
+              <Text className="text-latte-300 font-semibold text-base">{grinderLabel}</Text>
+            )}
+            <Text className="text-latte-500 text-sm mt-0.5">
+              {recipe.bean ? `${grinderLabel} · ` : ''}
+              {methodLabel}
             </Text>
-          ) : (
-            <Text className="text-latte-300 font-semibold text-base">{grinderLabel}</Text>
-          )}
-          <Text className="text-latte-500 text-sm mt-0.5">
-            {recipe.bean ? `${grinderLabel} · ` : ''}
-            {methodLabel}
-          </Text>
+          </View>
         </View>
-        <TouchableOpacity onPress={confirmDelete} className="ml-3 p-1">
-          <Text className="text-latte-600 text-lg">×</Text>
-        </TouchableOpacity>
-      </View>
 
-      <View className="flex-row mt-3 gap-5">
-        <Stat label="Grind" value={recipe.grind_setting} />
-        {recipe.dose_g != null && <Stat label="Dose" value={`${recipe.dose_g}g`} />}
-        {recipe.yield_g != null && <Stat label="Yield" value={`${recipe.yield_g}g`} />}
-        {recipe.ratio != null && <Stat label="Ratio" value={`1:${recipe.ratio}`} />}
-        {recipe.brew_time_s != null && <Stat label="Time" value={formatTime(recipe.brew_time_s)} />}
-        {recipe.water_temp_c != null && <Stat label="Temp" value={`${recipe.water_temp_c}°C`} />}
-      </View>
+        <View className="flex-row mt-3 gap-5">
+          <Stat label="Grind" value={recipe.grind_setting} />
+          {recipe.dose_g != null && <Stat label="Dose" value={`${recipe.dose_g}g`} />}
+          {recipe.yield_g != null && <Stat label="Yield" value={`${recipe.yield_g}g`} />}
+          {recipe.ratio != null && <Stat label="Ratio" value={`1:${recipe.ratio}`} />}
+          {recipe.brew_time_s != null && (
+            <Stat label="Time" value={formatTime(recipe.brew_time_s)} />
+          )}
+          {recipe.water_temp_c != null && <Stat label="Temp" value={`${recipe.water_temp_c}°C`} />}
+        </View>
 
-      {recipe.notes && (
-        <Text className="text-latte-500 text-xs mt-3 leading-relaxed" numberOfLines={3}>
-          {recipe.notes}
-        </Text>
-      )}
+        {recipe.notes && (
+          <Text className="text-latte-500 text-xs mt-3 leading-relaxed" numberOfLines={3}>
+            {recipe.notes}
+          </Text>
+        )}
+      </TouchableOpacity>
 
-      <View className="flex-row justify-end mt-3">
+      {/* Action row — outside the nav touchable so taps never bleed through */}
+      <View className="flex-row items-center justify-between px-4 pb-3">
         <Text className="text-latte-600 text-xs">{recipe.upvotes} votes</Text>
+        <View className="flex-row gap-4">
+          <TouchableOpacity
+            onPress={onEdit}
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            accessibilityLabel="Edit recipe"
+            accessibilityRole="button"
+          >
+            <Text className="text-harvest-400 text-sm font-medium">Edit</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={confirmDelete}
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            accessibilityLabel="Delete recipe"
+            accessibilityRole="button"
+          >
+            <Text className="text-latte-600 text-lg leading-none">×</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </View>
   );
@@ -184,13 +209,13 @@ export default function RecipesScreen() {
           </View>
         ) : (
           recipes.map((recipe) => (
-            <TouchableOpacity
+            <RecipeCard
               key={recipe.id}
-              activeOpacity={0.85}
-              onPress={() => router.push(`/recipe/${recipe.id}`)}
-            >
-              <RecipeCard recipe={recipe} onDelete={handleDelete} />
-            </TouchableOpacity>
+              recipe={recipe}
+              onNavigate={() => router.push(`/recipe/${recipe.id}`)}
+              onEdit={() => router.push(`/recipe/edit/${recipe.id}`)}
+              onDelete={handleDelete}
+            />
           ))
         )}
 

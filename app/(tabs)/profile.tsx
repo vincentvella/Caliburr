@@ -4,6 +4,7 @@ import {
   Image,
   ScrollView,
   TouchableOpacity,
+  TextInput,
   ActivityIndicator,
   Alert,
 } from 'react-native';
@@ -33,6 +34,11 @@ export default function ProfileScreen() {
   const [loadingEquipment, setLoadingEquipment] = useState(true);
   const [signingOut, setSigningOut] = useState(false);
   const [deletingAccount, setDeletingAccount] = useState(false);
+  const [changingPassword, setChangingPassword] = useState(false);
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [passwordError, setPasswordError] = useState<string | null>(null);
+  const [passwordSuccess, setPasswordSuccess] = useState(false);
   const [removingId, setRemovingId] = useState<string | null>(null);
   const [grinderModalOpen, setGrinderModalOpen] = useState(false);
   const [machineModalOpen, setMachineModalOpen] = useState(false);
@@ -222,6 +228,29 @@ export default function ProfileScreen() {
     if (error) {
       setSigningOut(false);
       Alert.alert('Error', 'Failed to sign out. Please try again.');
+    }
+  }
+
+  async function handleChangePassword() {
+    setPasswordError(null);
+    setPasswordSuccess(false);
+    if (newPassword.length < 6) {
+      setPasswordError('Password must be at least 6 characters.');
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      setPasswordError('Passwords do not match.');
+      return;
+    }
+    setChangingPassword(true);
+    const { error } = await supabase.auth.updateUser({ password: newPassword });
+    setChangingPassword(false);
+    if (error) {
+      setPasswordError(error.message);
+    } else {
+      setPasswordSuccess(true);
+      setNewPassword('');
+      setConfirmPassword('');
     }
   }
 
@@ -438,6 +467,68 @@ export default function ProfileScreen() {
             </View>
           </>
         )}
+
+        {/* Change password */}
+        <View className="mb-6">
+          <Text className="text-latte-200 text-lg font-semibold mb-3">Account</Text>
+          <TouchableOpacity
+            onPress={() => {
+              setChangingPassword((v) => !v);
+              setPasswordError(null);
+              setPasswordSuccess(false);
+              setNewPassword('');
+              setConfirmPassword('');
+            }}
+            className="flex-row items-center justify-between bg-ristretto-800 border border-ristretto-700 rounded-2xl px-4 py-3.5"
+          >
+            <Text className="text-latte-100 font-medium">Change Password</Text>
+            <Text className="text-latte-600">{changingPassword ? '▲' : '▼'}</Text>
+          </TouchableOpacity>
+
+          {changingPassword && (
+            <View className="mt-2 gap-2">
+              <TextInput
+                className="bg-ristretto-800 border border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-100"
+                style={{ lineHeight: undefined }}
+                placeholder="New password"
+                placeholderTextColor="#6e5a47"
+                secureTextEntry
+                value={newPassword}
+                onChangeText={setNewPassword}
+              />
+              <TextInput
+                className="bg-ristretto-800 border border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-100"
+                style={{ lineHeight: undefined }}
+                placeholder="Confirm new password"
+                placeholderTextColor="#6e5a47"
+                secureTextEntry
+                value={confirmPassword}
+                onChangeText={setConfirmPassword}
+              />
+              {passwordError && (
+                <Text className="text-xs px-1" style={{ color: '#f87171' }}>
+                  {passwordError}
+                </Text>
+              )}
+              {passwordSuccess && (
+                <Text className="text-xs px-1" style={{ color: '#4ade80' }}>
+                  Password updated.
+                </Text>
+              )}
+              <TouchableOpacity
+                onPress={handleChangePassword}
+                disabled={changingPassword}
+                className="bg-harvest-500 rounded-xl py-3.5 items-center mt-1"
+              >
+                {changingPassword ? (
+                  <ActivityIndicator color="#fff" />
+                ) : (
+                  <Text className="text-white font-semibold">Update Password</Text>
+                )}
+              </TouchableOpacity>
+            </View>
+          )}
+        </View>
 
         {/* Sign out */}
         <TouchableOpacity
