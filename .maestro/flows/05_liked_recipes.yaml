@@ -1,0 +1,15 @@
+appId: coffee.caliburr
+name: "Screenshot — Liked Recipes tab"
+---
+- launchApp:
+    clearState: true
+- runFlow: flows/_sign_in.yaml
+- waitForAnimationToEnd
+- tapOn:
+    text: "My Recipes"
+- waitForAnimationToEnd
+# Switch to Liked tab
+- tapOn:
+    accessibilityLabel: "Liked Recipes tab"
+- waitForAnimationToEnd
+- takeScreenshot: screenshots/05_liked_recipes

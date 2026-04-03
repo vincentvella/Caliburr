@@ -1,0 +1,11 @@
+appId: coffee.caliburr
+name: "Screenshot — Profile with gear"
+---
+- launchApp:
+    clearState: true
+- runFlow: flows/_sign_in.yaml
+- waitForAnimationToEnd
+- tapOn:
+    text: "Profile"
+- waitForAnimationToEnd
+- takeScreenshot: screenshots/06_profile

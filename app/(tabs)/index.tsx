@@ -361,6 +361,7 @@ export default function ExploreScreen() {
           }
           renderItem={({ item }) => (
             <TouchableOpacity
+              testID="recipe-item"
               activeOpacity={0.85}
               onPress={() => router.push(`/recipe/${item.id}`)}
             >
@@ -377,6 +378,8 @@ export default function ExploreScreen() {
       {/* FAB */}
       <TouchableOpacity
         onPress={() => router.push('/recipe/new')}
+        accessibilityLabel="New recipe"
+        accessibilityRole="button"
         className="absolute bottom-8 right-6 w-14 h-14 rounded-full bg-harvest-500 items-center justify-center"
         style={{
           elevation: 6,

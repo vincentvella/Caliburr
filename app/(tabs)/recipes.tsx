@@ -57,7 +57,7 @@ function RecipeCard({
   }
 
   return (
-    <View className="bg-ristretto-800 rounded-2xl mb-3 border border-ristretto-700 overflow-hidden">
+    <View testID="recipe-item" className="bg-ristretto-800 rounded-2xl mb-3 border border-ristretto-700 overflow-hidden">
       {/* Tappable content area — separated from action buttons to avoid propagation */}
       <TouchableOpacity activeOpacity={0.85} onPress={onNavigate} className="p-4">
         <View className="flex-row items-start justify-between mb-1">

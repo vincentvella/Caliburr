@@ -1,0 +1,11 @@
+appId: coffee.caliburr
+name: "Screenshot — My Recipes (Mine tab)"
+---
+- launchApp:
+    clearState: true
+- runFlow: flows/_sign_in.yaml
+- waitForAnimationToEnd
+- tapOn:
+    text: "My Recipes"
+- waitForAnimationToEnd
+- takeScreenshot: screenshots/04_my_recipes

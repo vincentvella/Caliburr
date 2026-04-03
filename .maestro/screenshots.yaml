@@ -1,0 +1,10 @@
+appId: coffee.caliburr
+name: "All App Store screenshots"
+---
+- runFlow: flows/01_explore.yaml
+- runFlow: flows/02_explore_filter.yaml
+- runFlow: flows/03_recipe_detail.yaml
+- runFlow: flows/04_my_recipes.yaml
+- runFlow: flows/05_liked_recipes.yaml
+- runFlow: flows/06_profile.yaml
+- runFlow: flows/07_new_recipe.yaml
