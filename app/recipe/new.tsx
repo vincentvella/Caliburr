@@ -9,7 +9,7 @@ import {
   Platform,
 } from 'react-native';
 import { useEffect, useState, useRef } from 'react';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { useForm, useStore } from '@tanstack/react-form';
 import { supabase } from '@/lib/supabase';
 import {
@@ -29,6 +29,7 @@ const BREW_METHODS = [...Constants.public.Enums.brew_method];
 const ROAST_LEVELS = [...Constants.public.Enums.roast_level];
 
 export default function NewRecipeScreen() {
+  const { templateId } = useLocalSearchParams<{ templateId?: string }>();
   const [grinders, setGrinders] = useState<Grinder[]>([]);
   const [machines, setMachines] = useState<BrewMachine[]>([]);
   const [loadingEquipment, setLoadingEquipment] = useState(true);
@@ -117,10 +118,45 @@ export default function NewRecipeScreen() {
       if (defaultMachineRow)
         form.setFieldValue('brew_machine_id', defaultMachineRow.brew_machine_id);
 
+      // Pre-fill from a cloned recipe if templateId was passed
+      if (templateId) {
+        const { data: tpl } = await supabase
+          .from('recipes')
+          .select('*, bean:beans(id, name, roaster)')
+          .eq('id', templateId)
+          .single();
+
+        if (tpl) {
+          form.setFieldValue('brew_method', tpl.brew_method);
+          form.setFieldValue('grind_setting', tpl.grind_setting);
+          form.setFieldValue('dose_g', tpl.dose_g?.toString() ?? '');
+          form.setFieldValue('yield_g', tpl.yield_g?.toString() ?? '');
+          form.setFieldValue('brew_time_s', tpl.brew_time_s?.toString() ?? '');
+          form.setFieldValue('water_temp_c', tpl.water_temp_c?.toString() ?? '');
+          form.setFieldValue('ratio', tpl.ratio?.toString() ?? '');
+          form.setFieldValue('roast_level', tpl.roast_level ?? '');
+          form.setFieldValue('notes', tpl.notes ?? '');
+
+          // Use the same grinder only if the user owns it
+          if (tpl.grinder_id && grinderIds.includes(tpl.grinder_id)) {
+            form.setFieldValue('grinder_id', tpl.grinder_id);
+          }
+          // Use the same machine only if the user owns it
+          if (tpl.brew_machine_id && machineIds.includes(tpl.brew_machine_id)) {
+            form.setFieldValue('brew_machine_id', tpl.brew_machine_id);
+          }
+          // Carry the bean across if it exists
+          if (tpl.bean && tpl.bean_id) {
+            form.setFieldValue('bean_id', tpl.bean_id);
+            setSelectedBean({ id: tpl.bean_id, name: tpl.bean.name, roaster: tpl.bean.roaster });
+          }
+        }
+      }
+
       setLoadingEquipment(false);
     }
     load();
-  }, [form]);
+  }, [form, templateId]);
 
   const grinderId = useStore(form.store, (s) => s.values.grinder_id);
   const grinder = grinders.find((g) => g.id === grinderId) ?? null;
@@ -143,7 +179,9 @@ export default function NewRecipeScreen() {
         <TouchableOpacity onPress={() => router.back()}>
           <Text className="text-harvest-400 font-semibold">Cancel</Text>
         </TouchableOpacity>
-        <Text className="text-latte-100 text-lg font-bold">New Recipe</Text>
+        <Text className="text-latte-100 text-lg font-bold">
+          {templateId ? 'Clone Recipe' : 'New Recipe'}
+        </Text>
         <form.Subscribe selector={(s) => s.isSubmitting}>
           {(isSubmitting) => (
             <TouchableOpacity onPress={form.handleSubmit} disabled={isSubmitting}>

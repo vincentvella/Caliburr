@@ -205,6 +205,9 @@ export default function RecipeDetailScreen() {
           <TouchableOpacity onPress={handleShare}>
             <Text className="text-latte-400 font-semibold">Share</Text>
           </TouchableOpacity>
+          <TouchableOpacity onPress={() => router.push(`/recipe/new?templateId=${recipe.id}`)}>
+            <Text className="text-latte-400 font-semibold">Clone</Text>
+          </TouchableOpacity>
           {isOwner && (
             <>
               <TouchableOpacity onPress={() => router.push(`/recipe/edit/${recipe.id}`)}>

@@ -35,8 +35,8 @@ function RecipeCard({
 }: {
   recipe: RecipeWithJoins;
   onNavigate: () => void;
-  onEdit: () => void;
-  onDelete: (id: string) => void;
+  onEdit?: () => void;
+  onDelete?: (id: string) => void;
 }) {
   const grinderLabel = `${recipe.grinder.brand} ${recipe.grinder.model}`;
   const methodLabel = BREW_METHOD_LABELS[recipe.brew_method];
@@ -50,7 +50,7 @@ function RecipeCard({
         {
           text: 'Delete',
           style: 'destructive',
-          onPress: () => onDelete(recipe.id),
+          onPress: () => onDelete!(recipe.id),
         },
       ],
     );
@@ -94,39 +94,49 @@ function RecipeCard({
         )}
       </TouchableOpacity>
 
-      {/* Action row — outside the nav touchable so taps never bleed through */}
+      {/* Action row */}
       <View className="flex-row items-center justify-between px-4 pb-3">
         <Text className="text-latte-600 text-xs">{recipe.upvotes} votes</Text>
-        <View className="flex-row gap-4">
-          <TouchableOpacity
-            onPress={onEdit}
-            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-            accessibilityLabel="Edit recipe"
-            accessibilityRole="button"
-          >
-            <Text className="text-harvest-400 text-sm font-medium">Edit</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={confirmDelete}
-            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-            accessibilityLabel="Delete recipe"
-            accessibilityRole="button"
-          >
-            <Text className="text-latte-600 text-lg leading-none">×</Text>
-          </TouchableOpacity>
-        </View>
+        {(onEdit || onDelete) && (
+          <View className="flex-row gap-4">
+            {onEdit && (
+              <TouchableOpacity
+                onPress={onEdit}
+                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                accessibilityLabel="Edit recipe"
+                accessibilityRole="button"
+              >
+                <Text className="text-harvest-400 text-sm font-medium">Edit</Text>
+              </TouchableOpacity>
+            )}
+            {onDelete && (
+              <TouchableOpacity
+                onPress={confirmDelete}
+                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                accessibilityLabel="Delete recipe"
+                accessibilityRole="button"
+              >
+                <Text className="text-latte-600 text-lg leading-none">×</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+        )}
       </View>
     </View>
   );
 }
 
 export default function RecipesScreen() {
+  const [tab, setTab] = useState<'mine' | 'liked'>('mine');
   const [recipes, setRecipes] = useState<RecipeWithJoins[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchRecipes = useCallback(async () => {
+  const SELECT =
+    '*, grinder:grinders(brand, model, verified, burr_type, adjustment_type), bean:beans(name, roaster, origin, process, roast_level), brew_machine:brew_machines(brand, model, machine_type, verified)';
+
+  const fetchMine = useCallback(async () => {
     const {
       data: { user },
     } = await supabase.auth.getUser();
@@ -134,23 +144,46 @@ export default function RecipesScreen() {
 
     const { data, error } = await supabase
       .from('recipes')
-      .select(
-        `
-        *,
-        grinder:grinders(brand, model, verified, burr_type, adjustment_type),
-        bean:beans(name, roaster, origin, process, roast_level),
-        brew_machine:brew_machines(brand, model, machine_type, verified)
-      `,
-      )
+      .select(SELECT)
       .eq('user_id', user.id)
       .order('created_at', { ascending: false });
 
-    if (error) {
-      setError(error.message);
-    } else {
-      setRecipes(data as RecipeWithJoins[]);
+    if (error) setError(error.message);
+    else setRecipes(data as RecipeWithJoins[]);
+  }, []);
+
+  const fetchLiked = useCallback(async () => {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { data: upvoteRows } = await supabase
+      .from('recipe_upvotes')
+      .select('recipe_id')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false });
+
+    const ids = (upvoteRows ?? []).map((r) => r.recipe_id);
+    if (!ids.length) {
+      setRecipes([]);
+      return;
+    }
+
+    const { data, error } = await supabase.from('recipes').select(SELECT).in('id', ids);
+
+    if (error) setError(error.message);
+    else {
+      // Preserve upvote order
+      const byId = new Map((data as RecipeWithJoins[]).map((r) => [r.id, r]));
+      setRecipes(ids.flatMap((id) => (byId.has(id) ? [byId.get(id)!] : [])));
     }
   }, []);
+
+  const fetchRecipes = useCallback(async () => {
+    if (tab === 'mine') await fetchMine();
+    else await fetchLiked();
+  }, [tab, fetchMine, fetchLiked]);
 
   useFocusEffect(
     useCallback(() => {
@@ -187,7 +220,35 @@ export default function RecipesScreen() {
         }
       >
         <Text className="text-latte-100 text-2xl font-bold mb-1">My Recipes</Text>
-        <Text className="text-latte-500 text-sm mb-8">Your submitted dials.</Text>
+        <Text className="text-latte-500 text-sm mb-5">Your submitted dials.</Text>
+
+        {/* Tab toggle */}
+        <View className="flex-row bg-ristretto-800 rounded-xl p-1 mb-6">
+          <TouchableOpacity
+            onPress={() => setTab('mine')}
+            className={`flex-1 py-2 rounded-lg items-center ${tab === 'mine' ? 'bg-ristretto-700' : ''}`}
+            accessibilityRole="button"
+            accessibilityLabel="My Recipes tab"
+          >
+            <Text
+              className={`text-sm font-medium ${tab === 'mine' ? 'text-latte-100' : 'text-latte-500'}`}
+            >
+              My Recipes
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => setTab('liked')}
+            className={`flex-1 py-2 rounded-lg items-center ${tab === 'liked' ? 'bg-ristretto-700' : ''}`}
+            accessibilityRole="button"
+            accessibilityLabel="Liked Recipes tab"
+          >
+            <Text
+              className={`text-sm font-medium ${tab === 'liked' ? 'text-latte-100' : 'text-latte-500'}`}
+            >
+              Liked
+            </Text>
+          </TouchableOpacity>
+        </View>
 
         {loading ? (
           <View className="items-center py-12">
@@ -199,13 +260,19 @@ export default function RecipesScreen() {
           </View>
         ) : recipes.length === 0 ? (
           <View className="items-center py-12 gap-3">
-            <Text className="text-latte-500 text-sm">No recipes yet.</Text>
-            <TouchableOpacity
-              onPress={() => router.push('/recipe/new')}
-              className="bg-harvest-500 rounded-xl px-6 py-3"
-            >
-              <Text className="text-white font-semibold">Submit your first recipe</Text>
-            </TouchableOpacity>
+            {tab === 'mine' ? (
+              <>
+                <Text className="text-latte-500 text-sm">No recipes yet.</Text>
+                <TouchableOpacity
+                  onPress={() => router.push('/recipe/new')}
+                  className="bg-harvest-500 rounded-xl px-6 py-3"
+                >
+                  <Text className="text-white font-semibold">Submit your first recipe</Text>
+                </TouchableOpacity>
+              </>
+            ) : (
+              <Text className="text-latte-500 text-sm">No liked recipes yet.</Text>
+            )}
           </View>
         ) : (
           recipes.map((recipe) => (
@@ -213,8 +280,8 @@ export default function RecipesScreen() {
               key={recipe.id}
               recipe={recipe}
               onNavigate={() => router.push(`/recipe/${recipe.id}`)}
-              onEdit={() => router.push(`/recipe/edit/${recipe.id}`)}
-              onDelete={handleDelete}
+              onEdit={tab === 'mine' ? () => router.push(`/recipe/edit/${recipe.id}`) : undefined}
+              onDelete={tab === 'mine' ? handleDelete : undefined}
             />
           ))
         )}
@@ -222,14 +289,16 @@ export default function RecipesScreen() {
         <View className="h-24" />
       </ScrollView>
 
-      {/* FAB */}
-      <TouchableOpacity
-        onPress={() => router.push('/recipe/new')}
-        className="absolute bottom-8 right-6 w-14 h-14 rounded-full bg-harvest-500 items-center justify-center shadow-lg"
-        style={{ elevation: 6 }}
-      >
-        <Text className="text-white text-3xl font-light">+</Text>
-      </TouchableOpacity>
+      {/* FAB — only on Mine tab */}
+      {tab === 'mine' && (
+        <TouchableOpacity
+          onPress={() => router.push('/recipe/new')}
+          className="absolute bottom-8 right-6 w-14 h-14 rounded-full bg-harvest-500 items-center justify-center shadow-lg"
+          style={{ elevation: 6 }}
+        >
+          <Text className="text-white text-3xl font-light">+</Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 }

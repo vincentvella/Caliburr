@@ -34,7 +34,8 @@ export default function ProfileScreen() {
   const [loadingEquipment, setLoadingEquipment] = useState(true);
   const [signingOut, setSigningOut] = useState(false);
   const [deletingAccount, setDeletingAccount] = useState(false);
-  const [changingPassword, setChangingPassword] = useState(false);
+  const [showPasswordForm, setShowPasswordForm] = useState(false);
+  const [savingPassword, setSavingPassword] = useState(false);
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [passwordError, setPasswordError] = useState<string | null>(null);
@@ -242,9 +243,9 @@ export default function ProfileScreen() {
       setPasswordError('Passwords do not match.');
       return;
     }
-    setChangingPassword(true);
+    setSavingPassword(true);
     const { error } = await supabase.auth.updateUser({ password: newPassword });
-    setChangingPassword(false);
+    setSavingPassword(false);
     if (error) {
       setPasswordError(error.message);
     } else {
@@ -473,7 +474,7 @@ export default function ProfileScreen() {
           <Text className="text-latte-200 text-lg font-semibold mb-3">Account</Text>
           <TouchableOpacity
             onPress={() => {
-              setChangingPassword((v) => !v);
+              setShowPasswordForm((v) => !v);
               setPasswordError(null);
               setPasswordSuccess(false);
               setNewPassword('');
@@ -482,10 +483,10 @@ export default function ProfileScreen() {
             className="flex-row items-center justify-between bg-ristretto-800 border border-ristretto-700 rounded-2xl px-4 py-3.5"
           >
             <Text className="text-latte-100 font-medium">Change Password</Text>
-            <Text className="text-latte-600">{changingPassword ? '▲' : '▼'}</Text>
+            <Text className="text-latte-600">{showPasswordForm ? '▲' : '▼'}</Text>
           </TouchableOpacity>
 
-          {changingPassword && (
+          {showPasswordForm && (
             <View className="mt-2 gap-2">
               <TextInput
                 className="bg-ristretto-800 border border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-100"
@@ -517,10 +518,10 @@ export default function ProfileScreen() {
               )}
               <TouchableOpacity
                 onPress={handleChangePassword}
-                disabled={changingPassword}
+                disabled={savingPassword}
                 className="bg-harvest-500 rounded-xl py-3.5 items-center mt-1"
               >
-                {changingPassword ? (
+                {savingPassword ? (
                   <ActivityIndicator color="#fff" />
                 ) : (
                   <Text className="text-white font-semibold">Update Password</Text>
