@@ -6,8 +6,8 @@
 - [x] **Equipment removal confirmation** — `removeGrinder` and `removeMachine` in Profile now show `Alert.alert` with destructive confirm before deleting.
 - [x] **Error handling on destructive operations** — `removeGrinder`, `removeMachine`, and recipe delete now check the Supabase error and show an alert on failure without mutating local state.
 - [x] **Upvote rollback** — both `index.tsx` and `recipe/[id].tsx` now roll back the optimistic update if the insert/delete fails.
-- [ ] **App assets** — `icon.png`, `splash-icon.png`, `adaptive-icon.png`, and `favicon.png` are deleted; custom assets required before EAS build.
-- [ ] **Account deletion** — Apple App Store guideline 5.1.1 requires an in-app account deletion flow. No such screen exists.
+- [x] **App assets** — custom `icon.png`, `splash-icon.png`, `adaptive-icon.png`, `favicon.png`, and `splash.png` are in place; `app.json` fully configured with bundle IDs and EAS project ID.
+- [x] **Account deletion** — "Delete Account" button in Profile calls `supabase/functions/delete-account` Edge Function; JWT verified server-side so only the authenticated user can delete their own account; recipes are anonymised (`user_id → NULL`) rather than deleted so community data is preserved; all personal data (gear, upvotes, verifications) is removed via FK cascades.
 
 ## 🟠 Stability — fix before any public launch
 

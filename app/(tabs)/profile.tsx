@@ -32,6 +32,7 @@ export default function ProfileScreen() {
   const [machines, setMachines] = useState<UserMachine[]>([]);
   const [loadingEquipment, setLoadingEquipment] = useState(true);
   const [signingOut, setSigningOut] = useState(false);
+  const [deletingAccount, setDeletingAccount] = useState(false);
   const [removingId, setRemovingId] = useState<string | null>(null);
   const [grinderModalOpen, setGrinderModalOpen] = useState(false);
   const [machineModalOpen, setMachineModalOpen] = useState(false);
@@ -224,6 +225,39 @@ export default function ProfileScreen() {
     }
   }
 
+  function handleDeleteAccount() {
+    Alert.alert(
+      'Delete Account',
+      'This will permanently delete your account and all your recipes. This cannot be undone.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete Account',
+          style: 'destructive',
+          onPress: async () => {
+            setDeletingAccount(true);
+            const {
+              data: { session },
+            } = await supabase.auth.getSession();
+            if (!session) {
+              setDeletingAccount(false);
+              return;
+            }
+            const { error } = await supabase.functions.invoke('delete-account', {
+              headers: { Authorization: `Bearer ${session.access_token}` },
+            });
+            if (error) {
+              setDeletingAccount(false);
+              Alert.alert('Error', 'Failed to delete account. Please try again.');
+            } else {
+              await supabase.auth.signOut();
+            }
+          },
+        },
+      ],
+    );
+  }
+
   return (
     <View className="flex-1 bg-ristretto-900">
       <ScrollView className="flex-1 px-6 pt-16">
@@ -409,12 +443,25 @@ export default function ProfileScreen() {
         <TouchableOpacity
           onPress={handleSignOut}
           disabled={signingOut}
-          className="border border-ristretto-700 rounded-xl py-4 items-center mb-12"
+          className="border border-ristretto-700 rounded-xl py-4 items-center mb-3"
         >
           {signingOut ? (
             <ActivityIndicator color="#ff9d37" />
           ) : (
             <Text className="text-harvest-400 font-semibold">Sign Out</Text>
+          )}
+        </TouchableOpacity>
+
+        {/* Delete account */}
+        <TouchableOpacity
+          onPress={handleDeleteAccount}
+          disabled={deletingAccount}
+          className="rounded-xl py-4 items-center mb-12"
+        >
+          {deletingAccount ? (
+            <ActivityIndicator color="#f87171" />
+          ) : (
+            <Text className="text-red-400 text-sm">Delete Account</Text>
           )}
         </TouchableOpacity>
       </ScrollView>
