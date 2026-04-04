@@ -1,12 +1,11 @@
-appId: coffee.caliburr
-name: "Screenshot — Explore with filter active"
+appId: coffee.caliburr.app
+name: 'Screenshot — Explore with filter active'
 ---
-- launchApp:
-    clearState: true
-- runFlow: flows/_sign_in.yaml
+- launchApp
+- runFlow: _sign_in.yaml
 - waitForAnimationToEnd
 # Tap the espresso filter chip
 - tapOn:
-    text: "Espresso"
+    text: 'Espresso'
 - waitForAnimationToEnd
 - takeScreenshot: screenshots/02_explore_filter

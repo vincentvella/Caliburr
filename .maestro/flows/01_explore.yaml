@@ -1,9 +1,8 @@
-appId: coffee.caliburr
-name: "Screenshot — Explore feed"
+appId: coffee.caliburr.app
+name: 'Screenshot — Explore feed'
 ---
-- launchApp:
-    clearState: true
-- runFlow: flows/_sign_in.yaml
+- launchApp
+- runFlow: _sign_in.yaml
 # Let the feed load
 - waitForAnimationToEnd
 - takeScreenshot: screenshots/01_explore

@@ -1,13 +1,12 @@
-appId: coffee.caliburr
-name: "Screenshot — Recipe detail"
+appId: coffee.caliburr.app
+name: 'Screenshot — Recipe detail'
 ---
-- launchApp:
-    clearState: true
-- runFlow: flows/_sign_in.yaml
+- launchApp
+- runFlow: _sign_in.yaml
 - waitForAnimationToEnd
 # Tap the first recipe card
 - tapOn:
-    id: "recipe-item"
+    id: 'recipe-item'
     index: 0
 - waitForAnimationToEnd
 - takeScreenshot: screenshots/03_recipe_detail

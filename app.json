@@ -14,7 +14,7 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "coffee.caliburr",
+      "bundleIdentifier": "coffee.caliburr.app",
       "associatedDomains": [
         "applinks:caliburr.coffee"
       ],
@@ -23,7 +23,7 @@
       }
     },
     "android": {
-      "package": "coffee.caliburr",
+      "package": "coffee.caliburr.app",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#0f0300"

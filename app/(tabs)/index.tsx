@@ -380,6 +380,7 @@ export default function ExploreScreen() {
         onPress={() => router.push('/recipe/new')}
         accessibilityLabel="New recipe"
         accessibilityRole="button"
+        testID="fab-new-recipe"
         className="absolute bottom-8 right-6 w-14 h-14 rounded-full bg-harvest-500 items-center justify-center"
         style={{
           elevation: 6,

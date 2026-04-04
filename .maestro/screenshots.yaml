@@ -1,5 +1,7 @@
 appId: coffee.caliburr
-name: "All App Store screenshots"
+name: "App Store screenshots — main screens"
+# Requires a seeded account with gear and recipes.
+# Run: MAESTRO_EMAIL=you@email.com MAESTRO_PASSWORD=pass maestro test .maestro/screenshots.yaml
 ---
 - runFlow: flows/01_explore.yaml
 - runFlow: flows/02_explore_filter.yaml
@@ -7,4 +9,5 @@ name: "All App Store screenshots"
 - runFlow: flows/04_my_recipes.yaml
 - runFlow: flows/05_liked_recipes.yaml
 - runFlow: flows/06_profile.yaml
+- runFlow: flows/06b_account_settings.yaml
 - runFlow: flows/07_new_recipe.yaml

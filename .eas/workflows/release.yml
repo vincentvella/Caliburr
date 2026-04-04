@@ -1,0 +1,29 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  # iOS build and web deploy run in parallel
+  build_ios:
+    name: Build iOS (production)
+    type: build
+    params:
+      platform: ios
+      profile: production
+
+  deploy_web:
+    name: Deploy web to EAS Hosting
+    type: deploy
+    params:
+      prod: true
+
+  # Submission waits for the build to finish
+  submit_ios:
+    name: Submit to App Store Connect
+    type: submit
+    needs: [build_ios]
+    params:
+      build_id: ${{ needs.build_ios.outputs.build_id }}
+      profile: production

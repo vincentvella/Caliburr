@@ -1,11 +1,15 @@
-appId: coffee.caliburr
-name: "Screenshot — Profile with gear"
+appId: coffee.caliburr.app
+name: 'Screenshot — Profile (My Gear)'
 ---
-- launchApp:
-    clearState: true
-- runFlow: flows/_sign_in.yaml
+- launchApp
+- runFlow: _sign_in.yaml
 - waitForAnimationToEnd
-- tapOn:
-    text: "Profile"
+- openLink: 'caliburr:///(tabs)/profile?screenshot=1'
+- runFlow:
+    when:
+      visible: 'Open'
+    commands:
+      - tapOn:
+          text: 'Open'
 - waitForAnimationToEnd
 - takeScreenshot: screenshots/06_profile

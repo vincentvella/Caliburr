@@ -1,14 +1,50 @@
+appId: coffee.caliburr.app
 # Shared sign-in sub-flow. Expects MAESTRO_EMAIL and MAESTRO_PASSWORD env vars.
-# Usage: runFlow: flows/_sign_in.yaml
-- tapOn:
-    text: "Email"
-- inputText: ${MAESTRO_EMAIL}
-- tapOn:
-    text: "Password"
-- inputText: ${MAESTRO_PASSWORD}
-- tapOn:
-    text: "Sign In"
+# If already signed in, skips sign-in entirely.
+# Usage: runFlow: _sign_in.yaml
+---
+# Wait for the app to finish loading
 - waitForAnimationToEnd
-# Wait until the Explore tab is visible (auth gate redirected)
+# Dismiss any lingering "Open in Caliburr?" system dialog from a prior openLink
+# then tap the Explore tab to ensure we're in the right place
+- runFlow:
+    when:
+      visible: 'Open'
+    commands:
+      - tapOn:
+          text: 'Open'
+      - waitForAnimationToEnd
+      - tapOn:
+          point: '17%,95%'
+      - waitForAnimationToEnd
+# Only sign in if we're on the sign-in screen
+- runFlow:
+    when:
+      visible: 'Email'
+    commands:
+      - tapOn:
+          text: 'Email'
+      - inputText: ${MAESTRO_EMAIL}
+      - tapOn:
+          text: 'Password'
+      - inputText: ${MAESTRO_PASSWORD}
+      - tapOn:
+          text: 'Sign In'
+      - waitForAnimationToEnd
+      # Skip onboarding if it appears
+      - runFlow:
+          when:
+            visible: 'Get started'
+          commands:
+            - tapOn:
+                text: 'Get started'
+            - tapOn:
+                text: 'Skip for now →'
+            - tapOn:
+                text: 'Skip for now →'
+            - tapOn:
+                text: 'Explore recipes'
+            - waitForAnimationToEnd
+# Assert we're on the main app (search bar only exists on Explore tab)
 - assertVisible:
-    text: "Explore"
+    text: 'Search grinder, bean, method...'

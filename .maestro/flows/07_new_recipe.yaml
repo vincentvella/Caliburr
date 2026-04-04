@@ -1,12 +1,11 @@
-appId: coffee.caliburr
-name: "Screenshot — New recipe form"
+appId: coffee.caliburr.app
+name: 'Screenshot — New recipe form'
 ---
-- launchApp:
-    clearState: true
-- runFlow: flows/_sign_in.yaml
+- launchApp
+- runFlow: _sign_in.yaml
 - waitForAnimationToEnd
 # Open the new recipe form via the FAB
 - tapOn:
-    accessibilityLabel: "New recipe"
+    id: 'fab-new-recipe'
 - waitForAnimationToEnd
 - takeScreenshot: screenshots/07_new_recipe

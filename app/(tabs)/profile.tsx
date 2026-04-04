@@ -4,11 +4,12 @@ import {
   Image,
   ScrollView,
   TouchableOpacity,
-  TextInput,
   ActivityIndicator,
   Alert,
 } from 'react-native';
 import { useState, useEffect } from 'react';
+import { router } from 'expo-router';
+import { useScreenshotMode } from '@/lib/useScreenshotMode';
 import { supabase } from '@/lib/supabase';
 import { GrinderModal } from '@/components/equipment/GrinderModal';
 import { MachineModal } from '@/components/equipment/MachineModal';
@@ -28,18 +29,11 @@ interface UserMachine {
 }
 
 export default function ProfileScreen() {
+  const screenshotMode = useScreenshotMode();
   const [email, setEmail] = useState<string | null>(null);
   const [grinders, setGrinders] = useState<UserGrinder[]>([]);
   const [machines, setMachines] = useState<UserMachine[]>([]);
   const [loadingEquipment, setLoadingEquipment] = useState(true);
-  const [signingOut, setSigningOut] = useState(false);
-  const [deletingAccount, setDeletingAccount] = useState(false);
-  const [showPasswordForm, setShowPasswordForm] = useState(false);
-  const [savingPassword, setSavingPassword] = useState(false);
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [passwordError, setPasswordError] = useState<string | null>(null);
-  const [passwordSuccess, setPasswordSuccess] = useState(false);
   const [removingId, setRemovingId] = useState<string | null>(null);
   const [grinderModalOpen, setGrinderModalOpen] = useState(false);
   const [machineModalOpen, setMachineModalOpen] = useState(false);
@@ -223,77 +217,14 @@ export default function ProfileScreen() {
     }
   }
 
-  async function handleSignOut() {
-    setSigningOut(true);
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      setSigningOut(false);
-      Alert.alert('Error', 'Failed to sign out. Please try again.');
-    }
-  }
-
-  async function handleChangePassword() {
-    setPasswordError(null);
-    setPasswordSuccess(false);
-    if (newPassword.length < 6) {
-      setPasswordError('Password must be at least 6 characters.');
-      return;
-    }
-    if (newPassword !== confirmPassword) {
-      setPasswordError('Passwords do not match.');
-      return;
-    }
-    setSavingPassword(true);
-    const { error } = await supabase.auth.updateUser({ password: newPassword });
-    setSavingPassword(false);
-    if (error) {
-      setPasswordError(error.message);
-    } else {
-      setPasswordSuccess(true);
-      setNewPassword('');
-      setConfirmPassword('');
-    }
-  }
-
-  function handleDeleteAccount() {
-    Alert.alert(
-      'Delete Account',
-      'This will permanently delete your account and all your recipes. This cannot be undone.',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Delete Account',
-          style: 'destructive',
-          onPress: async () => {
-            setDeletingAccount(true);
-            const {
-              data: { session },
-            } = await supabase.auth.getSession();
-            if (!session) {
-              setDeletingAccount(false);
-              return;
-            }
-            const { error } = await supabase.functions.invoke('delete-account', {
-              headers: { Authorization: `Bearer ${session.access_token}` },
-            });
-            if (error) {
-              setDeletingAccount(false);
-              Alert.alert('Error', 'Failed to delete account. Please try again.');
-            } else {
-              await supabase.auth.signOut();
-            }
-          },
-        },
-      ],
-    );
-  }
-
   return (
     <View className="flex-1 bg-ristretto-900">
       <ScrollView className="flex-1 px-6 pt-16">
         {/* Header */}
         <Text className="text-latte-100 text-2xl font-bold mb-0.5">My Gear</Text>
-        {email && <Text className="text-latte-500 text-sm mb-8">{email}</Text>}
+        {email && !screenshotMode && (
+          <Text className="text-latte-500 text-sm mb-8">{email}</Text>
+        )}
 
         {loadingEquipment ? (
           <ActivityIndicator color="#ff9d37" style={{ marginTop: 32 }} />
@@ -469,92 +400,14 @@ export default function ProfileScreen() {
           </>
         )}
 
-        {/* Change password */}
-        <View className="mb-6">
-          <Text className="text-latte-200 text-lg font-semibold mb-3">Account</Text>
-          <TouchableOpacity
-            onPress={() => {
-              setShowPasswordForm((v) => !v);
-              setPasswordError(null);
-              setPasswordSuccess(false);
-              setNewPassword('');
-              setConfirmPassword('');
-            }}
-            className="flex-row items-center justify-between bg-ristretto-800 border border-ristretto-700 rounded-2xl px-4 py-3.5"
-          >
-            <Text className="text-latte-100 font-medium">Change Password</Text>
-            <Text className="text-latte-600">{showPasswordForm ? '▲' : '▼'}</Text>
-          </TouchableOpacity>
-
-          {showPasswordForm && (
-            <View className="mt-2 gap-2">
-              <TextInput
-                className="bg-ristretto-800 border border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-100"
-                style={{ lineHeight: undefined }}
-                placeholder="New password"
-                placeholderTextColor="#6e5a47"
-                secureTextEntry
-                value={newPassword}
-                onChangeText={setNewPassword}
-              />
-              <TextInput
-                className="bg-ristretto-800 border border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-100"
-                style={{ lineHeight: undefined }}
-                placeholder="Confirm new password"
-                placeholderTextColor="#6e5a47"
-                secureTextEntry
-                value={confirmPassword}
-                onChangeText={setConfirmPassword}
-              />
-              {passwordError && (
-                <Text className="text-xs px-1" style={{ color: '#f87171' }}>
-                  {passwordError}
-                </Text>
-              )}
-              {passwordSuccess && (
-                <Text className="text-xs px-1" style={{ color: '#4ade80' }}>
-                  Password updated.
-                </Text>
-              )}
-              <TouchableOpacity
-                onPress={handleChangePassword}
-                disabled={savingPassword}
-                className="bg-harvest-500 rounded-xl py-3.5 items-center mt-1"
-              >
-                {savingPassword ? (
-                  <ActivityIndicator color="#fff" />
-                ) : (
-                  <Text className="text-white font-semibold">Update Password</Text>
-                )}
-              </TouchableOpacity>
-            </View>
-          )}
-        </View>
-
-        {/* Sign out */}
+        {/* Account Settings */}
         <TouchableOpacity
-          onPress={handleSignOut}
-          disabled={signingOut}
-          className="border border-ristretto-700 rounded-xl py-4 items-center mb-3"
+          onPress={() => router.push('/account')}
+          testID="account-settings-row"
+          className="flex-row items-center justify-between bg-ristretto-800 border border-ristretto-700 rounded-2xl px-4 py-3.5 mb-12"
         >
-          {signingOut ? (
-            <ActivityIndicator color="#ff9d37" />
-          ) : (
-            <Text className="text-harvest-400 font-semibold">Sign Out</Text>
-          )}
-        </TouchableOpacity>
-
-        {/* Delete account */}
-        <TouchableOpacity
-          onPress={handleDeleteAccount}
-          disabled={deletingAccount}
-          className="rounded-xl py-4 items-center mb-12"
-        >
-          {deletingAccount ? (
-            <ActivityIndicator color="#f87171" />
-          ) : (
-            <Text className="text-red-400 text-sm">Delete Account</Text>
-          )}
+          <Text className="text-latte-100 font-medium">Account Settings</Text>
+          <Text className="text-latte-500 text-lg">›</Text>
         </TouchableOpacity>
       </ScrollView>
 

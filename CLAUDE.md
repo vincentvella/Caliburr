@@ -104,3 +104,31 @@ bun run web                        # run in browser
 bun run tsc                        # type check
 bunx supabase db push              # push migrations to remote Supabase
 ```
+
+## Deployment
+
+EAS Workflows run automatically on push to `main` (release) and on pull requests (preview).
+Workflow files live in `.eas/workflows/`.
+
+| Workflow | Trigger | Jobs |
+|---|---|---|
+| `release.yml` | push → main | iOS build + App Store submit (sequential); web deploy (parallel) |
+| `preview.yml` | pull request | iOS simulator build + web preview URL (parallel) |
+
+**Before first release** — set `ascAppId` in `eas.json`:
+1. Create the app in [App Store Connect](https://appstoreconnect.apple.com)
+2. Apps → Caliburr → App Information → **Apple ID** (numeric, e.g. `6745678901`)
+3. Paste into `eas.json` → `submit.production.ios.ascAppId`
+
+**Manual workflow trigger:**
+```bash
+bunx eas-cli@latest workflow:run release.yml    # trigger release manually
+bunx eas-cli@latest workflow:run preview.yml    # trigger preview manually
+```
+
+**Manual one-off commands:**
+```bash
+bunx eas-cli@latest build -p ios --profile production          # iOS build only
+bunx eas-cli@latest build -p ios --profile production --submit # build + submit
+bunx expo export --platform web && bunx eas-cli@latest deploy --prod  # web deploy only
+```

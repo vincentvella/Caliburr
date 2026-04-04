@@ -16,11 +16,13 @@ function useAuthGate(session: Session | null, ready: boolean, isRecovery: boolea
     if (!ready || isRecovery) return;
 
     const inAuth = segments[0] === '(auth)';
+    const inPublic = segments[0] === 'privacy'; // public web-only routes, no auth required
 
-    if (!session && !inAuth) {
+    if (!session && !inAuth && !inPublic) {
       router.replace('/(auth)/sign-in');
     } else if (session && inAuth) {
-      router.replace('/(tabs)');
+      const onboardingDone = session.user.user_metadata?.onboarding_completed;
+      router.replace(onboardingDone ? '/(tabs)' : '/onboarding');
     }
   }, [session, ready, segments, isRecovery]);
 }
@@ -82,6 +84,10 @@ export default function RootLayout() {
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="(auth)" />
+        <Stack.Screen name="onboarding" />
+        <Stack.Screen name="privacy" />
+        <Stack.Screen name="account/index" />
+        <Stack.Screen name="account/change-password" />
         <Stack.Screen name="recipe/new" options={{ presentation: 'modal' }} />
         <Stack.Screen name="+not-found" />
       </Stack>
