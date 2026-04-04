@@ -12,6 +12,7 @@ import * as WebBrowser from 'expo-web-browser';
 import { supabase } from '@/lib/supabase';
 
 const PRIVACY_POLICY_URL = 'https://caliburr.coffee/privacy';
+const SUPPORT_URL = 'https://caliburr.coffee/support';
 
 async function resetOnboardingFlag() {
   await supabase.auth.updateUser({ data: { onboarding_completed: null } });
@@ -97,6 +98,13 @@ export default function AccountScreen() {
             className="flex-row items-center justify-between bg-ristretto-800 border border-ristretto-700 rounded-2xl px-4 py-3.5"
           >
             <Text className="text-latte-100 font-medium">Change Password</Text>
+            <Text className="text-latte-500 text-lg">›</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => WebBrowser.openBrowserAsync(SUPPORT_URL)}
+            className="flex-row items-center justify-between bg-ristretto-800 border border-ristretto-700 rounded-2xl px-4 py-3.5"
+          >
+            <Text className="text-latte-100 font-medium">Contact Support</Text>
             <Text className="text-latte-500 text-lg">›</Text>
           </TouchableOpacity>
           <TouchableOpacity

@@ -16,7 +16,7 @@ function useAuthGate(session: Session | null, ready: boolean, isRecovery: boolea
     if (!ready || isRecovery) return;
 
     const inAuth = segments[0] === '(auth)';
-    const inPublic = segments[0] === 'privacy'; // public web-only routes, no auth required
+    const inPublic = segments[0] === 'privacy' || segments[0] === 'support'; // public web-only routes, no auth required
 
     if (!session && !inAuth && !inPublic) {
       router.replace('/(auth)/sign-in');
@@ -86,6 +86,7 @@ export default function RootLayout() {
         <Stack.Screen name="(auth)" />
         <Stack.Screen name="onboarding" />
         <Stack.Screen name="privacy" />
+        <Stack.Screen name="support" />
         <Stack.Screen name="account/index" />
         <Stack.Screen name="account/change-password" />
         <Stack.Screen name="recipe/new" options={{ presentation: 'modal' }} />
