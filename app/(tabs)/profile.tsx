@@ -6,11 +6,13 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Alert,
+  useColorScheme,
 } from 'react-native';
 import { useState, useEffect } from 'react';
 import { router } from 'expo-router';
 import { useScreenshotMode } from '@/lib/useScreenshotMode';
 import { supabase } from '@/lib/supabase';
+import { useTheme, type ThemePreference } from '@/lib/theme';
 import { GrinderModal } from '@/components/equipment/GrinderModal';
 import { MachineModal } from '@/components/equipment/MachineModal';
 import type { Grinder, BrewMachine } from '@/lib/types';
@@ -28,8 +30,16 @@ interface UserMachine {
   is_default: boolean;
 }
 
+const THEME_OPTIONS: { value: ThemePreference; label: string }[] = [
+  { value: 'system', label: 'System' },
+  { value: 'light', label: 'Light' },
+  { value: 'dark', label: 'Dark' },
+];
+
 export default function ProfileScreen() {
   const screenshotMode = useScreenshotMode();
+  const { preference, setPreference } = useTheme();
+  const isDark = useColorScheme() === 'dark';
   const [email, setEmail] = useState<string | null>(null);
   const [grinders, setGrinders] = useState<UserGrinder[]>([]);
   const [machines, setMachines] = useState<UserMachine[]>([]);
@@ -218,11 +228,15 @@ export default function ProfileScreen() {
   }
 
   return (
-    <View className="flex-1 bg-ristretto-900">
+    <View className="flex-1 bg-latte-50 dark:bg-ristretto-900">
       <ScrollView className="flex-1 px-6 pt-16">
         {/* Header */}
-        <Text className="text-latte-100 text-2xl font-bold mb-0.5">My Gear</Text>
-        {email && !screenshotMode && <Text className="text-latte-500 text-sm mb-8">{email}</Text>}
+        <Text className="text-latte-950 dark:text-latte-100 text-2xl font-bold mb-0.5">
+          My Gear
+        </Text>
+        {email && !screenshotMode && (
+          <Text className="text-latte-600 dark:text-latte-500 text-sm mb-8">{email}</Text>
+        )}
 
         {loadingEquipment ? (
           <ActivityIndicator color="#ff9d37" style={{ marginTop: 32 }} />
@@ -231,7 +245,9 @@ export default function ProfileScreen() {
             {/* Grinders */}
             <View className="mb-8">
               <View className="flex-row items-center justify-between mb-3">
-                <Text className="text-latte-200 text-lg font-semibold">Grinders</Text>
+                <Text className="text-latte-800 dark:text-latte-200 text-lg font-semibold">
+                  Grinders
+                </Text>
                 <TouchableOpacity
                   onPress={() => setGrinderModalOpen(true)}
                   className="flex-row items-center gap-1.5"
@@ -243,9 +259,11 @@ export default function ProfileScreen() {
               {grinders.length === 0 ? (
                 <TouchableOpacity
                   onPress={() => setGrinderModalOpen(true)}
-                  className="border border-dashed border-ristretto-700 rounded-2xl py-6 items-center"
+                  className="border border-dashed border-latte-300 dark:border-ristretto-700 rounded-2xl py-6 items-center"
                 >
-                  <Text className="text-latte-600 text-sm">Add your first grinder</Text>
+                  <Text className="text-latte-500 dark:text-latte-600 text-sm">
+                    Add your first grinder
+                  </Text>
                 </TouchableOpacity>
               ) : (
                 <>
@@ -256,57 +274,59 @@ export default function ProfileScreen() {
                         setEditingGrinder(grinder);
                         setGrinderModalOpen(true);
                       }}
-                      className="flex-row items-center justify-between bg-ristretto-800 border border-ristretto-700 rounded-2xl px-4 py-3.5 mb-2"
+                      className="flex-row items-center justify-between bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-2xl px-4 py-3.5 mb-2"
                     >
                       <View className="flex-row items-center gap-3 flex-1">
                         {grinder.image_url ? (
                           <Image
                             source={{ uri: grinder.image_url }}
-                            className="w-12 h-12 rounded-lg bg-ristretto-700"
+                            className="w-12 h-12 rounded-lg bg-oat-200 dark:bg-ristretto-700"
                             resizeMode="contain"
                           />
                         ) : (
-                          <View className="w-12 h-12 rounded-lg bg-ristretto-700 items-center justify-center">
-                            <Text className="text-latte-600 text-xl">⚙</Text>
+                          <View className="w-12 h-12 rounded-lg bg-oat-200 dark:bg-ristretto-700 items-center justify-center">
+                            <Text className="text-latte-500 dark:text-latte-600 text-xl">⚙</Text>
                           </View>
                         )}
                         <View className="flex-1">
-                          <Text className="text-latte-100 font-medium">
+                          <Text className="text-latte-950 dark:text-latte-100 font-medium">
                             {grinder.brand} {grinder.model}
                           </Text>
-                          <Text className="text-latte-500 text-xs mt-0.5 capitalize">
+                          <Text className="text-latte-600 dark:text-latte-500 text-xs mt-0.5 capitalize">
                             {grinder.burr_type ?? '—'} · {grinder.adjustment_type ?? '—'}
                           </Text>
                         </View>
                       </View>
                       <View className="flex-row items-center gap-3">
                         {grinder.verified && (
-                          <View className="bg-bloom-900 border border-bloom-700 rounded-full px-2 py-0.5">
-                            <Text className="text-bloom-400 text-xs">Verified</Text>
+                          <View className="bg-bloom-100 dark:bg-bloom-900 border border-bloom-300 dark:border-bloom-700 rounded-full px-2 py-0.5">
+                            <Text className="text-bloom-700 dark:text-bloom-400 text-xs">
+                              Verified
+                            </Text>
                           </View>
                         )}
                         <TouchableOpacity onPress={() => toggleDefaultGrinder(grinder_id)}>
                           <Text
                             style={{
                               fontSize: 18,
-                              color: is_default ? '#ff9d37' : '#4a3728',
+                              color: is_default ? '#ff9d37' : isDark ? '#c8824a' : '#b5693a',
                             }}
                           >
-                            ★
+                            {is_default || isDark ? '★' : '☆'}
                           </Text>
                         </TouchableOpacity>
                         {removingId === grinder_id ? (
                           <ActivityIndicator size="small" color="#6e5a47" />
                         ) : (
                           <TouchableOpacity onPress={() => removeGrinder(grinder_id)}>
-                            <Text className="text-latte-600 text-lg">×</Text>
+                            <Text className="text-latte-500 dark:text-latte-600 text-lg">×</Text>
                           </TouchableOpacity>
                         )}
                       </View>
                     </TouchableOpacity>
                   ))}
                   {grinders.some((g) => g.is_default) && (
-                    <Text className="text-latte-600 text-xs px-1 mt-1">
+                    <Text className="text-latte-500 dark:text-latte-600 text-xs px-1 mt-1">
                       ★ Pre-selected when creating a recipe
                     </Text>
                   )}
@@ -317,7 +337,9 @@ export default function ProfileScreen() {
             {/* Machines */}
             <View className="mb-8">
               <View className="flex-row items-center justify-between mb-3">
-                <Text className="text-latte-200 text-lg font-semibold">Machines</Text>
+                <Text className="text-latte-800 dark:text-latte-200 text-lg font-semibold">
+                  Machines
+                </Text>
                 <TouchableOpacity
                   onPress={() => setMachineModalOpen(true)}
                   className="flex-row items-center gap-1.5"
@@ -329,66 +351,70 @@ export default function ProfileScreen() {
               {machines.length === 0 ? (
                 <TouchableOpacity
                   onPress={() => setMachineModalOpen(true)}
-                  className="border border-dashed border-ristretto-700 rounded-2xl py-6 items-center"
+                  className="border border-dashed border-latte-300 dark:border-ristretto-700 rounded-2xl py-6 items-center"
                 >
-                  <Text className="text-latte-600 text-sm">Add your first machine</Text>
+                  <Text className="text-latte-500 dark:text-latte-600 text-sm">
+                    Add your first machine
+                  </Text>
                 </TouchableOpacity>
               ) : (
                 <>
                   {machines.map(({ brew_machine_id, brew_machine, is_default }) => (
                     <View
                       key={brew_machine_id}
-                      className="flex-row items-center justify-between bg-ristretto-800 border border-ristretto-700 rounded-2xl px-4 py-3.5 mb-2"
+                      className="flex-row items-center justify-between bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-2xl px-4 py-3.5 mb-2"
                     >
                       <View className="flex-row items-center gap-3 flex-1">
                         {brew_machine.image_url ? (
                           <Image
                             source={{ uri: brew_machine.image_url }}
-                            className="w-12 h-12 rounded-lg bg-ristretto-700"
+                            className="w-12 h-12 rounded-lg bg-oat-200 dark:bg-ristretto-700"
                             resizeMode="contain"
                           />
                         ) : (
-                          <View className="w-12 h-12 rounded-lg bg-ristretto-700 items-center justify-center">
-                            <Text className="text-latte-600 text-xl">☕</Text>
+                          <View className="w-12 h-12 rounded-lg bg-oat-200 dark:bg-ristretto-700 items-center justify-center">
+                            <Text className="text-latte-500 dark:text-latte-600 text-xl">☕</Text>
                           </View>
                         )}
                         <View className="flex-1">
-                          <Text className="text-latte-100 font-medium">
+                          <Text className="text-latte-950 dark:text-latte-100 font-medium">
                             {brew_machine.brand} {brew_machine.model}
                           </Text>
-                          <Text className="text-latte-500 text-xs mt-0.5">
+                          <Text className="text-latte-600 dark:text-latte-500 text-xs mt-0.5">
                             {MACHINE_TYPE_LABELS[brew_machine.machine_type]}
                           </Text>
                         </View>
                       </View>
                       <View className="flex-row items-center gap-3">
                         {brew_machine.verified && (
-                          <View className="bg-bloom-900 border border-bloom-700 rounded-full px-2 py-0.5">
-                            <Text className="text-bloom-400 text-xs">Verified</Text>
+                          <View className="bg-bloom-100 dark:bg-bloom-900 border border-bloom-300 dark:border-bloom-700 rounded-full px-2 py-0.5">
+                            <Text className="text-bloom-700 dark:text-bloom-400 text-xs">
+                              Verified
+                            </Text>
                           </View>
                         )}
                         <TouchableOpacity onPress={() => toggleDefaultMachine(brew_machine_id)}>
                           <Text
                             style={{
                               fontSize: 18,
-                              color: is_default ? '#ff9d37' : '#4a3728',
+                              color: is_default ? '#ff9d37' : isDark ? '#c8824a' : '#b5693a',
                             }}
                           >
-                            ★
+                            {is_default || isDark ? '★' : '☆'}
                           </Text>
                         </TouchableOpacity>
                         {removingId === brew_machine_id ? (
                           <ActivityIndicator size="small" color="#6e5a47" />
                         ) : (
                           <TouchableOpacity onPress={() => removeMachine(brew_machine_id)}>
-                            <Text className="text-latte-600 text-lg">×</Text>
+                            <Text className="text-latte-500 dark:text-latte-600 text-lg">×</Text>
                           </TouchableOpacity>
                         )}
                       </View>
                     </View>
                   ))}
                   {machines.some((m) => m.is_default) && (
-                    <Text className="text-latte-600 text-xs px-1 mt-1">
+                    <Text className="text-latte-500 dark:text-latte-600 text-xs px-1 mt-1">
                       ★ Pre-selected when creating a recipe
                     </Text>
                   )}
@@ -398,14 +424,40 @@ export default function ProfileScreen() {
           </>
         )}
 
+        {/* Appearance */}
+        <View className="mb-4">
+          <Text className="text-latte-600 dark:text-latte-500 text-xs font-semibold uppercase tracking-wider mb-2 px-1">
+            Appearance
+          </Text>
+          <View className="flex-row bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-2xl p-1">
+            {THEME_OPTIONS.map(({ value, label }) => (
+              <TouchableOpacity
+                key={value}
+                onPress={() => setPreference(value)}
+                className={`flex-1 py-2 rounded-xl items-center ${
+                  preference === value ? 'bg-harvest-500' : ''
+                }`}
+              >
+                <Text
+                  className={`text-sm font-medium ${
+                    preference === value ? 'text-white' : 'text-latte-700 dark:text-latte-400'
+                  }`}
+                >
+                  {label}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+
         {/* Account Settings */}
         <TouchableOpacity
           onPress={() => router.push('/account')}
           testID="account-settings-row"
-          className="flex-row items-center justify-between bg-ristretto-800 border border-ristretto-700 rounded-2xl px-4 py-3.5 mb-12"
+          className="flex-row items-center justify-between bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-2xl px-4 py-3.5 mb-12"
         >
-          <Text className="text-latte-100 font-medium">Account Settings</Text>
-          <Text className="text-latte-500 text-lg">›</Text>
+          <Text className="text-latte-950 dark:text-latte-100 font-medium">Account Settings</Text>
+          <Text className="text-latte-600 dark:text-latte-500 text-lg">›</Text>
         </TouchableOpacity>
       </ScrollView>
 
