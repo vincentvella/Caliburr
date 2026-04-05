@@ -2,12 +2,14 @@ import '../global.css';
 import 'react-native-url-polyfill/auto';
 
 import { useEffect, useState } from 'react';
+import { useColorScheme } from 'react-native';
 import { Stack, router, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import * as Linking from 'expo-linking';
 import type { Session } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { ThemeProvider } from '@/lib/theme';
 
 function useAuthGate(session: Session | null, ready: boolean, isRecovery: boolean) {
   const segments = useSegments();
@@ -41,6 +43,7 @@ export default function RootLayout() {
   const [session, setSession] = useState<Session | null>(null);
   const [ready, setReady] = useState(false);
   const [isRecovery, setIsRecovery] = useState(false);
+  const colorScheme = useColorScheme();
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -79,19 +82,21 @@ export default function RootLayout() {
   useAuthGate(session, ready, isRecovery);
 
   return (
-    <ErrorBoundary>
-      <StatusBar style="light" />
-      <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="(tabs)" />
-        <Stack.Screen name="(auth)" />
-        <Stack.Screen name="onboarding" />
-        <Stack.Screen name="privacy" />
-        <Stack.Screen name="support" />
-        <Stack.Screen name="account/index" />
-        <Stack.Screen name="account/change-password" />
-        <Stack.Screen name="recipe/new" options={{ presentation: 'modal' }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-    </ErrorBoundary>
+    <ThemeProvider>
+      <ErrorBoundary>
+        <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
+        <Stack screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="(tabs)" />
+          <Stack.Screen name="(auth)" />
+          <Stack.Screen name="onboarding" />
+          <Stack.Screen name="privacy" />
+          <Stack.Screen name="support" />
+          <Stack.Screen name="account/index" />
+          <Stack.Screen name="account/change-password" />
+          <Stack.Screen name="recipe/new" options={{ presentation: 'modal' }} />
+          <Stack.Screen name="+not-found" />
+        </Stack>
+      </ErrorBoundary>
+    </ThemeProvider>
   );
 }
