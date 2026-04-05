@@ -16,6 +16,7 @@ import { useForm } from '@tanstack/react-form';
 import { supabase } from '@/lib/supabase';
 import type { Grinder, BurrType, AdjustmentType } from '@/lib/types';
 import { BURR_TYPE_LABELS, ADJUSTMENT_TYPE_LABELS } from '@/lib/types';
+import { ModalRow as Row } from './ModalRow';
 
 const VERIFICATION_THRESHOLD = 5;
 
@@ -319,15 +320,6 @@ function GrinderReadOnly({
         )}
       </TouchableOpacity>
     </ScrollView>
-  );
-}
-
-function Row({ label, value }: { label: string; value: string }) {
-  return (
-    <View className="flex-row justify-between items-center">
-      <Text className="text-latte-500 text-sm">{label}</Text>
-      <Text className="text-latte-100 text-sm font-medium">{value}</Text>
-    </View>
   );
 }
 

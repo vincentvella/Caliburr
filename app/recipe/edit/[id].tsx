@@ -25,6 +25,13 @@ import { Constants } from '@/lib/database.types';
 import { GrindTape } from '@/components/GrindTape';
 import { BeanModal } from '@/components/BeanModal';
 import { DateInput } from '@/components/DateInput';
+import {
+  SectionLabel,
+  FieldError,
+  NumericField,
+  validateNum,
+  validateDate,
+} from '@/components/recipe/FormHelpers';
 
 const BREW_METHODS = [...Constants.public.Enums.brew_method];
 const ROAST_LEVELS = [...Constants.public.Enums.roast_level];
@@ -561,68 +568,5 @@ export default function EditRecipeScreen() {
         selectedId={selectedBean?.id}
       />
     </KeyboardAvoidingView>
-  );
-}
-
-function SectionLabel({ label, required }: { label: string; required?: boolean }) {
-  return (
-    <Text className="text-latte-300 font-semibold text-sm">
-      {label}
-      {required && <Text className="text-harvest-500"> *</Text>}
-    </Text>
-  );
-}
-
-function FieldError({ errors }: { errors: (string | undefined)[] }) {
-  return (
-    <Text className="text-xs px-1" style={{ color: '#f87171', opacity: errors.length > 0 ? 1 : 0 }}>
-      {errors[0] ?? ' '}
-    </Text>
-  );
-}
-
-function validateNum(value: string) {
-  if (!value) return undefined;
-  return isNaN(parseFloat(value)) ? 'Must be a valid number' : undefined;
-}
-
-function validateDate(value: string) {
-  if (!value) return undefined;
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return 'Use YYYY-MM-DD format';
-  const [y, m, d] = value.split('-').map(Number);
-  const date = new Date(y, m - 1, d);
-  if (date.getFullYear() !== y || date.getMonth() !== m - 1 || date.getDate() !== d) {
-    return 'Invalid date';
-  }
-  return undefined;
-}
-
-function NumericField({
-  value,
-  onChange,
-  label,
-  placeholder,
-  errors,
-}: {
-  value: string;
-  onChange: (v: string) => void;
-  label: string;
-  placeholder: string;
-  errors?: (string | undefined)[];
-}) {
-  return (
-    <View className="flex-1 gap-1">
-      <Text className="text-latte-400 text-xs px-1">{label}</Text>
-      <TextInput
-        className="bg-ristretto-800 border border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-100 text-base"
-        style={{ lineHeight: undefined }}
-        placeholder={placeholder}
-        placeholderTextColor="#6e5a47"
-        keyboardType="decimal-pad"
-        value={value}
-        onChangeText={onChange}
-      />
-      {errors && <FieldError errors={errors} />}
-    </View>
   );
 }
