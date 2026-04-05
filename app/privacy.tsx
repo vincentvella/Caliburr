@@ -50,8 +50,18 @@ function Strong({ children }: { children: string }) {
 
 function SupportLink({ children }: { children: string }) {
   return (
-    <TouchableOpacity onPress={() => WebBrowser.openBrowserAsync(SUPPORT_URL)} style={{ marginBottom: 12 }}>
-      <Text style={{ color: '#ff9d37', fontWeight: '600', textDecorationLine: 'underline', fontSize: 15 }}>
+    <TouchableOpacity
+      onPress={() => WebBrowser.openBrowserAsync(SUPPORT_URL)}
+      style={{ marginBottom: 12 }}
+    >
+      <Text
+        style={{
+          color: '#ff9d37',
+          fontWeight: '600',
+          textDecorationLine: 'underline',
+          fontSize: 15,
+        }}
+      >
         {children}
       </Text>
     </TouchableOpacity>
@@ -82,9 +92,9 @@ export default function PrivacyPolicyScreen() {
           </Text>
 
           <P>
-            Caliburr ("we", "us", or "our") operates the Caliburr mobile application. This policy
-            explains what information we collect, how we use it, and your rights regarding your
-            data.
+            Caliburr (&quot;we&quot;, &quot;us&quot;, or &quot;our&quot;) operates the Caliburr
+            mobile application. This policy explains what information we collect, how we use it, and
+            your rights regarding your data.
           </P>
 
           <Section title="Information We Collect">
@@ -98,8 +108,8 @@ export default function PrivacyPolicyScreen() {
               and brew machines), upvotes, and verification actions you submit within the app.
             </Li>
             <Li>
-              <Strong>Account metadata</Strong> — flags such as onboarding completion status,
-              stored in your authentication profile.
+              <Strong>Account metadata</Strong> — flags such as onboarding completion status, stored
+              in your authentication profile.
             </Li>
             <P style={{ marginTop: 8 }}>
               We do not collect your location, contacts, camera roll, or any device identifiers. We
@@ -109,9 +119,7 @@ export default function PrivacyPolicyScreen() {
 
           <Section title="How We Use Your Information">
             <Li>To authenticate you and maintain your account session.</Li>
-            <Li>
-              To associate recipes and gear entries with your account so you can manage them.
-            </Li>
+            <Li>To associate recipes and gear entries with your account so you can manage them.</Li>
             <Li>
               To display community-contributed recipes and equipment to other users. Recipes are
               attributed to your account; if you delete your account, recipes are anonymised rather
@@ -124,8 +132,8 @@ export default function PrivacyPolicyScreen() {
             <P>
               Your data is stored and processed by Supabase (supabase.com), our backend
               infrastructure provider. Supabase stores data in the United States. Authentication
-              tokens are stored securely on-device using the platform's secure storage APIs and are
-              never transmitted beyond what is necessary for authentication.
+              tokens are stored securely on-device using the platform&apos;s secure storage APIs and
+              are never transmitted beyond what is necessary for authentication.
             </P>
           </Section>
 
@@ -155,16 +163,14 @@ export default function PrivacyPolicyScreen() {
               <Strong>Profile → Account Settings → Delete Account</Strong> within the app. Upon
               deletion:
             </P>
-            <Li>
-              Your email address and authentication credentials are permanently removed.
-            </Li>
+            <Li>Your email address and authentication credentials are permanently removed.</Li>
             <Li>
               Your equipment entries are anonymised — the association with your account is removed
               but the equipment records remain for community use.
             </Li>
             <Li>
-              Your recipes are anonymised — they remain in the community feed without attribution
-              to preserve the dial-in data for other users.
+              Your recipes are anonymised — they remain in the community feed without attribution to
+              preserve the dial-in data for other users.
             </Li>
             <Li>Your upvotes and gear collections are permanently deleted.</Li>
           </Section>
@@ -185,9 +191,9 @@ export default function PrivacyPolicyScreen() {
 
           <Section title="Changes to This Policy">
             <P>
-              We may update this policy from time to time. We will notify you of significant
-              changes by updating the date at the top of this page. Continued use of the app after
-              changes constitutes acceptance of the updated policy.
+              We may update this policy from time to time. We will notify you of significant changes
+              by updating the date at the top of this page. Continued use of the app after changes
+              constitutes acceptance of the updated policy.
             </P>
           </Section>
 

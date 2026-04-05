@@ -1,4 +1,11 @@
-import { View, Text, TextInput, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  ScrollView,
+  ActivityIndicator,
+} from 'react-native';
 import { Stack } from 'expo-router';
 import { useState } from 'react';
 import { supabase } from '@/lib/supabase';
@@ -27,7 +34,9 @@ export default function SupportScreen() {
     setError(null);
     setSubmitting(true);
 
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
     const { error: insertError } = await supabase.from('support_requests').insert({
       name: name.trim(),
@@ -78,13 +87,15 @@ export default function SupportScreen() {
               <Text style={{ color: '#f5ede4', fontSize: 18, fontWeight: '600', marginBottom: 8 }}>
                 Message received
               </Text>
-              <P>Thanks for reaching out. We'll get back to you at {email} as soon as possible.</P>
+              <P>
+                Thanks for reaching out. We&apos;ll get back to you at {email} as soon as possible.
+              </P>
             </View>
           ) : (
             <>
               <P>
                 Have a question, found a bug, or want to report incorrect equipment data? Fill out
-                the form below and we'll get back to you.
+                the form below and we&apos;ll get back to you.
               </P>
 
               <View style={{ gap: 12, marginTop: 8 }}>
@@ -146,9 +157,7 @@ export default function SupportScreen() {
                   }}
                 />
 
-                {error && (
-                  <Text style={{ color: '#f87171', fontSize: 14 }}>{error}</Text>
-                )}
+                {error && <Text style={{ color: '#f87171', fontSize: 14 }}>{error}</Text>}
 
                 <TouchableOpacity
                   onPress={handleSubmit}
