@@ -172,7 +172,7 @@ export default function RecipeDetailScreen() {
 
   if (loading) {
     return (
-      <View className="flex-1 bg-ristretto-900 items-center justify-center">
+      <View className="flex-1 bg-latte-50 dark:bg-ristretto-900 items-center justify-center">
         <ActivityIndicator color="#ff9d37" />
       </View>
     );
@@ -180,8 +180,8 @@ export default function RecipeDetailScreen() {
 
   if (!recipe) {
     return (
-      <View className="flex-1 bg-ristretto-900 items-center justify-center px-8">
-        <Text className="text-latte-500 text-center">Recipe not found.</Text>
+      <View className="flex-1 bg-latte-50 dark:bg-ristretto-900 items-center justify-center px-8">
+        <Text className="text-latte-600 dark:text-latte-500 text-center">Recipe not found.</Text>
         <TouchableOpacity onPress={() => router.back()} className="mt-4">
           <Text className="text-harvest-400 font-semibold">Go back</Text>
         </TouchableOpacity>
@@ -193,18 +193,18 @@ export default function RecipeDetailScreen() {
   const grinderLabel = `${recipe.grinder.brand} ${recipe.grinder.model}`;
 
   return (
-    <View className="flex-1 bg-ristretto-900">
+    <View className="flex-1 bg-latte-50 dark:bg-ristretto-900">
       {/* Header */}
-      <View className="flex-row items-center justify-between px-6 pt-14 pb-4 border-b border-ristretto-700">
+      <View className="flex-row items-center justify-between px-6 pt-14 pb-4 border-b border-latte-200 dark:border-ristretto-700">
         <TouchableOpacity onPress={() => router.back()}>
           <Text className="text-harvest-400 font-semibold">← Back</Text>
         </TouchableOpacity>
         <View className="flex-row items-center gap-4">
           <TouchableOpacity onPress={handleShare}>
-            <Text className="text-latte-400 font-semibold">Share</Text>
+            <Text className="text-latte-700 dark:text-latte-400 font-semibold">Share</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => router.push(`/recipe/new?templateId=${recipe.id}`)}>
-            <Text className="text-latte-400 font-semibold">Clone</Text>
+            <Text className="text-latte-700 dark:text-latte-400 font-semibold">Clone</Text>
           </TouchableOpacity>
           {isOwner && (
             <>
@@ -228,20 +228,26 @@ export default function RecipeDetailScreen() {
         <View className="gap-1">
           {recipe.bean ? (
             <>
-              <Text className="text-latte-100 text-2xl font-bold">{recipe.bean.name}</Text>
-              <Text className="text-latte-500 text-sm">{recipe.bean.roaster}</Text>
+              <Text className="text-latte-950 dark:text-latte-100 text-2xl font-bold">
+                {recipe.bean.name}
+              </Text>
+              <Text className="text-latte-600 dark:text-latte-500 text-sm">
+                {recipe.bean.roaster}
+              </Text>
             </>
           ) : (
-            <Text className="text-latte-100 text-2xl font-bold">{grinderLabel}</Text>
+            <Text className="text-latte-950 dark:text-latte-100 text-2xl font-bold">
+              {grinderLabel}
+            </Text>
           )}
-          <Text className="text-latte-500 text-sm mt-1">
+          <Text className="text-latte-600 dark:text-latte-500 text-sm mt-1">
             {BREW_METHOD_LABELS[recipe.brew_method]}
           </Text>
         </View>
 
         {/* Grind setting — hero stat */}
-        <View className="bg-ristretto-800 border border-ristretto-700 rounded-2xl px-5 py-4 items-center">
-          <Text className="text-latte-500 text-xs mb-1">Grind Setting</Text>
+        <View className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-2xl px-5 py-4 items-center">
+          <Text className="text-latte-600 dark:text-latte-500 text-xs mb-1">Grind Setting</Text>
           <Text className="text-harvest-400 font-bold" style={{ fontSize: 48 }}>
             {recipe.grind_setting}
           </Text>
@@ -277,10 +283,12 @@ export default function RecipeDetailScreen() {
         {/* Notes */}
         {recipe.notes && (
           <View className="gap-2">
-            <Text className="text-latte-400 text-xs font-semibold uppercase tracking-wider">
+            <Text className="text-latte-700 dark:text-latte-400 text-xs font-semibold uppercase tracking-wider">
               Notes
             </Text>
-            <Text className="text-latte-300 text-sm leading-relaxed">{recipe.notes}</Text>
+            <Text className="text-latte-700 dark:text-latte-300 text-sm leading-relaxed">
+              {recipe.notes}
+            </Text>
           </View>
         )}
 
@@ -321,7 +329,7 @@ export default function RecipeDetailScreen() {
         {/* Edit History — owner only */}
         {isOwner && history.length > 0 && (
           <View className="gap-2">
-            <Text className="text-latte-400 text-xs font-semibold uppercase tracking-wider">
+            <Text className="text-latte-700 dark:text-latte-400 text-xs font-semibold uppercase tracking-wider">
               Edit History
             </Text>
             {history.map((entry, i) => (
@@ -336,18 +344,24 @@ export default function RecipeDetailScreen() {
       </ScrollView>
 
       {/* Upvote bar */}
-      <View className="absolute bottom-0 left-0 right-0 px-6 pb-8 pt-4 bg-ristretto-900 border-t border-ristretto-800">
+      <View className="absolute bottom-0 left-0 right-0 px-6 pb-8 pt-4 bg-latte-50 dark:bg-ristretto-900 border-t border-latte-200 dark:border-ristretto-800">
         <TouchableOpacity
           onPress={toggleUpvote}
           accessibilityLabel={`${recipe.upvotes} ${recipe.upvotes === 1 ? 'upvote' : 'upvotes'}. ${upvoted ? 'Remove upvote' : 'Upvote'}`}
           accessibilityRole="button"
-          className="flex-row items-center justify-center gap-2 rounded-2xl py-4"
-          style={{ backgroundColor: upvoted ? '#7c3a1a' : '#2a1c14' }}
+          className={`flex-row items-center justify-center gap-2 rounded-2xl py-4 border ${
+            upvoted
+              ? 'bg-harvest-500 border-harvest-500'
+              : 'bg-oat-100 dark:bg-ristretto-800 border-latte-200 dark:border-ristretto-700'
+          }`}
         >
-          <Text style={{ color: upvoted ? '#ff9d37' : '#6e5a47', fontSize: 18 }}>▲</Text>
           <Text
-            className="font-semibold text-base"
-            style={{ color: upvoted ? '#ff9d37' : '#6e5a47' }}
+            className={`text-lg ${upvoted ? 'text-white' : 'text-latte-600 dark:text-latte-500'}`}
+          >
+            ▲
+          </Text>
+          <Text
+            className={`font-semibold text-base ${upvoted ? 'text-white' : 'text-latte-600 dark:text-latte-500'}`}
           >
             {recipe.upvotes} {recipe.upvotes === 1 ? 'upvote' : 'upvotes'}
           </Text>
