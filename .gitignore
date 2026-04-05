@@ -47,3 +47,6 @@ google-service-account.json
 .maestro/screenshots/*.png
 .maestro/screenshots/*.jpg
 credentials.json
+
+# Generated from store.config.js — contains PII (review email/phone)
+store.config.json

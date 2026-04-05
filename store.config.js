@@ -54,11 +54,12 @@ BUILT FOR THE COMMUNITY
     review: {
       firstName: 'Vince',
       lastName: 'Vella',
-      email: process.env.EXPO_REVIEW_EMAIL || 'vincevella0@gmail.com',
-      phone: process.env.EXPO_REVIEW_PHONE || '+13029936460',
+      email: process.env.EXPO_REVIEW_EMAIL || '',
+      phone: process.env.EXPO_REVIEW_PHONE || '',
       demoUsername: '',
       demoPassword: '',
-      notes: 'No login required to browse. Use the Sign Up flow to create a free account and access the full app.',
+      notes:
+        'No login required to browse. Use the Sign Up flow to create a free account and access the full app.',
     },
 
     advisory: {
