@@ -238,24 +238,30 @@ export default function ExploreScreen() {
   // ── Render ─────────────────────────────────────────────────────────────────
 
   return (
-    <View className="flex-1 bg-ristretto-900">
+    <View className="flex-1 bg-latte-50 dark:bg-ristretto-900">
       {/* Header */}
       <View className="px-4 pt-16 pb-3 gap-3">
         <View className="flex-row items-end justify-between">
           <View>
-            <Text className="text-crema-300 text-3xl font-bold leading-tight">Caliburr</Text>
-            <Text className="text-latte-500 text-sm">Dial in your perfect cup.</Text>
+            <Text className="text-harvest-600 dark:text-crema-300 text-3xl font-bold leading-tight">
+              Caliburr
+            </Text>
+            <Text className="text-latte-600 dark:text-latte-500 text-sm">
+              Dial in your perfect cup.
+            </Text>
           </View>
           <TouchableOpacity
             onPress={() => setMyGearOnly((v) => !v)}
             accessibilityLabel={myGearOnly ? 'My Gear filter on' : 'My Gear filter off'}
             accessibilityRole="button"
             className={`px-3 py-2 rounded-xl border ${
-              myGearOnly ? 'bg-harvest-500 border-harvest-500' : 'border-ristretto-700'
+              myGearOnly
+                ? 'bg-harvest-500 border-harvest-500'
+                : 'border-latte-200 dark:border-ristretto-700'
             }`}
           >
             <Text
-              className={`text-xs font-semibold ${myGearOnly ? 'text-white' : 'text-latte-400'}`}
+              className={`text-xs font-semibold ${myGearOnly ? 'text-white' : 'text-latte-700 dark:text-latte-400'}`}
             >
               My Gear
             </Text>
@@ -264,7 +270,7 @@ export default function ExploreScreen() {
 
         {/* Search */}
         <TextInput
-          className="bg-ristretto-800 border border-ristretto-700 rounded-xl px-4 py-3 text-latte-100 text-sm"
+          className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-xl px-4 py-3 text-latte-950 dark:text-latte-100 text-sm"
           style={{ lineHeight: undefined }}
           placeholder="Search grinder, bean, method..."
           placeholderTextColor="#6e5a47"
@@ -284,11 +290,13 @@ export default function ExploreScreen() {
             accessibilityLabel={methodFilter === null ? 'All methods, selected' : 'All methods'}
             accessibilityRole="button"
             className={`px-3 py-1.5 rounded-full border ${
-              methodFilter === null ? 'bg-harvest-500 border-harvest-500' : 'border-ristretto-700'
+              methodFilter === null
+                ? 'bg-harvest-500 border-harvest-500'
+                : 'border-latte-200 dark:border-ristretto-700'
             }`}
           >
             <Text
-              className={`text-xs font-medium ${methodFilter === null ? 'text-white' : 'text-latte-400'}`}
+              className={`text-xs font-medium ${methodFilter === null ? 'text-white' : 'text-latte-700 dark:text-latte-400'}`}
             >
               All
             </Text>
@@ -306,11 +314,11 @@ export default function ExploreScreen() {
               className={`px-3 py-1.5 rounded-full border ${
                 methodFilter === method
                   ? 'bg-harvest-500 border-harvest-500'
-                  : 'border-ristretto-700'
+                  : 'border-latte-200 dark:border-ristretto-700'
               }`}
             >
               <Text
-                className={`text-xs font-medium ${methodFilter === method ? 'text-white' : 'text-latte-400'}`}
+                className={`text-xs font-medium ${methodFilter === method ? 'text-white' : 'text-latte-700 dark:text-latte-400'}`}
               >
                 {BREW_METHOD_LABELS[method]}
               </Text>
@@ -326,7 +334,7 @@ export default function ExploreScreen() {
         </View>
       ) : error ? (
         <View className="flex-1 items-center justify-center px-8">
-          <Text className="text-latte-500 text-sm text-center">{error}</Text>
+          <Text className="text-latte-600 dark:text-latte-500 text-sm text-center">{error}</Text>
         </View>
       ) : (
         <FlatList
@@ -340,7 +348,7 @@ export default function ExploreScreen() {
           onEndReachedThreshold={0.3}
           ListHeaderComponent={
             recipes.length > 0 ? (
-              <Text className="text-latte-600 text-xs mb-3 mt-2">
+              <Text className="text-latte-500 dark:text-latte-600 text-xs mb-3 mt-2">
                 {recipes.length} recipe{recipes.length !== 1 ? 's' : ''}
               </Text>
             ) : null
@@ -354,7 +362,7 @@ export default function ExploreScreen() {
           }
           ListEmptyComponent={
             <View className="items-center py-16">
-              <Text className="text-latte-500 text-sm text-center">
+              <Text className="text-latte-600 dark:text-latte-500 text-sm text-center">
                 {myGearOnly && myGrinderId.length === 0
                   ? 'Add grinders in your profile to filter by gear.'
                   : 'No recipes found. Be the first to submit one.'}
