@@ -44,24 +44,24 @@ export default function ChangePasswordScreen() {
 
   return (
     <KeyboardAvoidingView
-      className="flex-1 bg-ristretto-900"
+      className="flex-1 bg-latte-50 dark:bg-ristretto-900"
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
       {/* Header */}
-      <View className="flex-row items-center justify-between px-6 pt-14 pb-4 border-b border-ristretto-700">
+      <View className="flex-row items-center justify-between px-6 pt-14 pb-4 border-b border-latte-200 dark:border-ristretto-700">
         <TouchableOpacity
           onPress={() => router.back()}
           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
         >
           <Text className="text-harvest-400 font-semibold">‹ Account</Text>
         </TouchableOpacity>
-        <Text className="text-latte-100 font-semibold">Change Password</Text>
+        <Text className="text-latte-950 dark:text-latte-100 font-semibold">Change Password</Text>
         <View style={{ width: 80 }} />
       </View>
 
       <View className="px-6 pt-6 gap-3">
         <TextInput
-          className="bg-ristretto-800 border border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-100"
+          className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-950 dark:text-latte-100"
           style={{ lineHeight: undefined }}
           placeholder="New password"
           placeholderTextColor="#6e5a47"
@@ -74,7 +74,7 @@ export default function ChangePasswordScreen() {
         />
         <TextInput
           ref={confirmRef}
-          className="bg-ristretto-800 border border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-100"
+          className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-950 dark:text-latte-100"
           style={{ lineHeight: undefined }}
           placeholder="Confirm new password"
           placeholderTextColor="#6e5a47"

@@ -41,14 +41,14 @@ export default function SignUpScreen() {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      className="flex-1 bg-ristretto-900"
+      className="flex-1 bg-latte-50 dark:bg-ristretto-900"
     >
       <ScrollView
         contentContainerClassName="flex-grow justify-center px-6"
         keyboardShouldPersistTaps="handled"
       >
         <Text className="text-crema-300 text-4xl font-bold mb-1">Caliburr</Text>
-        <Text className="text-latte-400 text-base mb-10">
+        <Text className="text-latte-700 dark:text-latte-400 text-base mb-10">
           Create an account to start dialling in.
         </Text>
 
@@ -62,7 +62,7 @@ export default function SignUpScreen() {
             {(field) => (
               <View className="gap-1">
                 <TextInput
-                  className="bg-ristretto-800 border border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-100 text-base"
+                  className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-950 dark:text-latte-100 text-base"
                   style={{ lineHeight: undefined }}
                   placeholder="Email"
                   placeholderTextColor="#6e5a47"
@@ -100,7 +100,7 @@ export default function SignUpScreen() {
               <View className="gap-1">
                 <TextInput
                   ref={passwordRef}
-                  className="bg-ristretto-800 border border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-100 text-base"
+                  className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-950 dark:text-latte-100 text-base"
                   style={{ lineHeight: undefined }}
                   placeholder="Password"
                   placeholderTextColor="#6e5a47"
@@ -151,7 +151,7 @@ export default function SignUpScreen() {
         </form.Subscribe>
 
         <View className="flex-row justify-center gap-1">
-          <Text className="text-latte-500">Already have an account?</Text>
+          <Text className="text-latte-600 dark:text-latte-500">Already have an account?</Text>
           <Link href="/(auth)/sign-in">
             <Text className="text-harvest-400 font-semibold">Sign In</Text>
           </Link>

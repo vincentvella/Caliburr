@@ -80,17 +80,17 @@ export default function OnboardingScreen() {
     grinder: {
       name: 'settings-outline',
       color: '#ff9d37',
-      containerClass: 'bg-ristretto-800 border-ristretto-700',
+      containerClass: 'bg-oat-100 dark:bg-ristretto-800 border-latte-200 dark:border-ristretto-700',
     },
     machine: {
       name: 'cafe-outline',
       color: '#ff9d37',
-      containerClass: 'bg-ristretto-800 border-ristretto-700',
+      containerClass: 'bg-oat-100 dark:bg-ristretto-800 border-latte-200 dark:border-ristretto-700',
     },
     done: {
       name: 'checkmark',
       color: '#86efac',
-      containerClass: 'bg-bloom-900 border-bloom-700',
+      containerClass: 'bg-bloom-100 dark:bg-bloom-900 border-bloom-300 dark:border-bloom-700',
     },
   };
 
@@ -127,7 +127,7 @@ export default function OnboardingScreen() {
 
   return (
     <View
-      className="flex-1 bg-ristretto-900"
+      className="flex-1 bg-latte-50 dark:bg-ristretto-900"
       style={{ paddingTop: 72, paddingBottom: 40, paddingHorizontal: 32 }}
     >
       {/* Progress dots — always occupies the same vertical slot */}
@@ -150,7 +150,7 @@ export default function OnboardingScreen() {
           </View>
 
           <Text
-            className="text-latte-100 font-bold mb-2"
+            className="text-latte-950 dark:text-latte-100 font-bold mb-2"
             style={{ fontSize: step === 'welcome' ? 36 : 24 }}
           >
             {heading[step]}
@@ -162,17 +162,25 @@ export default function OnboardingScreen() {
             </Text>
           )}
 
-          <Text className="text-latte-500 text-sm leading-relaxed mb-8">{body[step]}</Text>
+          <Text className="text-latte-600 dark:text-latte-500 text-sm leading-relaxed mb-8">
+            {body[step]}
+          </Text>
 
           {/* Gear search row — fixed-height slot shared by grinder + machine steps */}
           <View style={{ height: 56 }}>
             {step === 'grinder' && (
               <TouchableOpacity
                 onPress={() => setGrinderModalOpen(true)}
-                className="flex-row items-center justify-between bg-ristretto-800 border border-ristretto-700 rounded-2xl px-4"
+                className="flex-row items-center justify-between bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-2xl px-4"
                 style={{ height: 56 }}
               >
-                <Text className={addedGrinder ? 'text-latte-100 font-medium' : 'text-latte-400'}>
+                <Text
+                  className={
+                    addedGrinder
+                      ? 'text-latte-950 dark:text-latte-100 font-medium'
+                      : 'text-latte-700 dark:text-latte-400'
+                  }
+                >
                   {addedGrinder ? '✓  Grinder added' : 'Search for your grinder'}
                 </Text>
                 <Ionicons
@@ -185,10 +193,16 @@ export default function OnboardingScreen() {
             {step === 'machine' && (
               <TouchableOpacity
                 onPress={() => setMachineModalOpen(true)}
-                className="flex-row items-center justify-between bg-ristretto-800 border border-ristretto-700 rounded-2xl px-4"
+                className="flex-row items-center justify-between bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-2xl px-4"
                 style={{ height: 56 }}
               >
-                <Text className={addedMachine ? 'text-latte-100 font-medium' : 'text-latte-400'}>
+                <Text
+                  className={
+                    addedMachine
+                      ? 'text-latte-950 dark:text-latte-100 font-medium'
+                      : 'text-latte-700 dark:text-latte-400'
+                  }
+                >
                   {addedMachine ? '✓  Machine added' : 'Search for your machine'}
                 </Text>
                 <Ionicons
@@ -234,10 +248,13 @@ export default function OnboardingScreen() {
                   router.push('/recipe/new');
                 }}
                 disabled={finishing}
-                className="border border-ristretto-700 rounded-2xl items-center"
+                className="border border-latte-200 dark:border-ristretto-700 rounded-2xl items-center"
                 style={{ height: 52 }}
               >
-                <Text className="text-latte-300 font-medium" style={{ lineHeight: 52 }}>
+                <Text
+                  className="text-latte-700 dark:text-latte-300 font-medium"
+                  style={{ lineHeight: 52 }}
+                >
                   Submit my first recipe
                 </Text>
               </TouchableOpacity>

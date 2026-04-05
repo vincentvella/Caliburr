@@ -46,9 +46,9 @@ export function DateInput({ value, onChange, label }: Props) {
 
     return (
       <View className="gap-1">
-        <Text className="text-latte-400 text-xs px-1">{label}</Text>
+        <Text className="text-latte-700 dark:text-latte-400 text-xs px-1">{label}</Text>
         <TextInput
-          className="bg-ristretto-800 border border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-100 text-base"
+          className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-950 dark:text-latte-100 text-base"
           style={{ lineHeight: undefined }}
           placeholder="YYYY-MM-DD"
           placeholderTextColor="#6e5a47"
@@ -74,10 +74,10 @@ export function DateInput({ value, onChange, label }: Props) {
 
   return (
     <View className="gap-1">
-      <Text className="text-latte-400 text-xs px-1">{label}</Text>
+      <Text className="text-latte-700 dark:text-latte-400 text-xs px-1">{label}</Text>
       <TouchableOpacity
         onPress={openPicker}
-        className="bg-ristretto-800 border border-ristretto-700 rounded-xl px-4 py-3.5"
+        className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-xl px-4 py-3.5"
       >
         <Text style={{ color: value ? '#e8d5c0' : '#6e5a47', fontSize: 16 }}>
           {value || 'Select date'}
@@ -98,7 +98,7 @@ export function DateInput({ value, onChange, label }: Props) {
       {Platform.OS === 'ios' && (
         <Modal visible={show} transparent animationType="slide">
           <View style={{ flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.5)' }}>
-            <View className="bg-ristretto-800 rounded-t-3xl pb-10">
+            <View className="bg-oat-100 dark:bg-ristretto-800 rounded-t-3xl pb-10">
               <View className="flex-row items-center justify-between px-6 pt-4 pb-2">
                 <TouchableOpacity
                   onPress={() => {
@@ -106,9 +106,9 @@ export function DateInput({ value, onChange, label }: Props) {
                     setShow(false);
                   }}
                 >
-                  <Text className="text-latte-500 font-semibold">Clear</Text>
+                  <Text className="text-latte-600 dark:text-latte-500 font-semibold">Clear</Text>
                 </TouchableOpacity>
-                <Text className="text-latte-200 font-semibold">{label}</Text>
+                <Text className="text-latte-800 dark:text-latte-200 font-semibold">{label}</Text>
                 <TouchableOpacity
                   onPress={() => {
                     onChange(fromDate(pendingDate));

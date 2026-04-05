@@ -197,7 +197,7 @@ export default function EditRecipeScreen() {
 
   if (loading) {
     return (
-      <View className="flex-1 bg-ristretto-900 items-center justify-center">
+      <View className="flex-1 bg-latte-50 dark:bg-ristretto-900 items-center justify-center">
         <ActivityIndicator color="#ff9d37" />
       </View>
     );
@@ -206,14 +206,14 @@ export default function EditRecipeScreen() {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      className="flex-1 bg-ristretto-900"
+      className="flex-1 bg-latte-50 dark:bg-ristretto-900"
     >
       {/* Header */}
-      <View className="flex-row items-center justify-between px-6 pt-14 pb-4 border-b border-ristretto-700">
+      <View className="flex-row items-center justify-between px-6 pt-14 pb-4 border-b border-latte-200 dark:border-ristretto-700">
         <TouchableOpacity onPress={() => router.back()}>
           <Text className="text-harvest-400 font-semibold">Cancel</Text>
         </TouchableOpacity>
-        <Text className="text-latte-100 text-lg font-bold">Edit Recipe</Text>
+        <Text className="text-latte-950 dark:text-latte-100 text-lg font-bold">Edit Recipe</Text>
         <form.Subscribe selector={(s) => s.isSubmitting}>
           {(isSubmitting) => (
             <TouchableOpacity onPress={form.handleSubmit} disabled={isSubmitting}>
@@ -248,11 +248,11 @@ export default function EditRecipeScreen() {
                     className={`flex-row items-center justify-between px-4 py-3.5 rounded-2xl border ${
                       field.state.value === g.id
                         ? 'bg-harvest-500 border-harvest-500'
-                        : 'bg-ristretto-800 border-ristretto-700'
+                        : 'bg-oat-100 dark:bg-ristretto-800 border-latte-200 dark:border-ristretto-700'
                     }`}
                   >
                     <Text
-                      className={`font-medium ${field.state.value === g.id ? 'text-white' : 'text-latte-100'}`}
+                      className={`font-medium ${field.state.value === g.id ? 'text-white' : 'text-latte-950 dark:text-latte-100'}`}
                     >
                       {g.brand} {g.model}
                     </Text>
@@ -279,11 +279,11 @@ export default function EditRecipeScreen() {
                       className={`flex-row items-center justify-between px-4 py-3.5 rounded-2xl border ${
                         field.state.value === m.id
                           ? 'bg-harvest-500 border-harvest-500'
-                          : 'bg-ristretto-800 border-ristretto-700'
+                          : 'bg-oat-100 dark:bg-ristretto-800 border-latte-200 dark:border-ristretto-700'
                       }`}
                     >
                       <Text
-                        className={`font-medium ${field.state.value === m.id ? 'text-white' : 'text-latte-100'}`}
+                        className={`font-medium ${field.state.value === m.id ? 'text-white' : 'text-latte-950 dark:text-latte-100'}`}
                       >
                         {m.brand} {m.model}
                       </Text>
@@ -302,10 +302,14 @@ export default function EditRecipeScreen() {
             <View className="gap-2">
               <SectionLabel label="Bean" />
               {selectedBean ? (
-                <View className="flex-row items-center justify-between bg-ristretto-800 border border-ristretto-700 rounded-2xl px-4 py-3.5">
+                <View className="flex-row items-center justify-between bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-2xl px-4 py-3.5">
                   <View className="flex-1">
-                    <Text className="text-latte-100 font-medium">{selectedBean.name}</Text>
-                    <Text className="text-latte-500 text-xs mt-0.5">{selectedBean.roaster}</Text>
+                    <Text className="text-latte-950 dark:text-latte-100 font-medium">
+                      {selectedBean.name}
+                    </Text>
+                    <Text className="text-latte-600 dark:text-latte-500 text-xs mt-0.5">
+                      {selectedBean.roaster}
+                    </Text>
                   </View>
                   <TouchableOpacity
                     onPress={() => {
@@ -313,15 +317,17 @@ export default function EditRecipeScreen() {
                       field.setValue('');
                     }}
                   >
-                    <Text className="text-latte-600 text-lg">×</Text>
+                    <Text className="text-latte-500 dark:text-latte-600 text-lg">×</Text>
                   </TouchableOpacity>
                 </View>
               ) : (
                 <TouchableOpacity
                   onPress={() => setBeanModalOpen(true)}
-                  className="border border-dashed border-ristretto-700 rounded-2xl py-4 items-center"
+                  className="border border-dashed border-latte-300 dark:border-ristretto-700 rounded-2xl py-4 items-center"
                 >
-                  <Text className="text-latte-500 text-sm">+ Add bean (optional)</Text>
+                  <Text className="text-latte-600 dark:text-latte-500 text-sm">
+                    + Add bean (optional)
+                  </Text>
                 </TouchableOpacity>
               )}
             </View>
@@ -344,11 +350,11 @@ export default function EditRecipeScreen() {
                     className={`px-4 py-2.5 rounded-full border ${
                       field.state.value === method
                         ? 'bg-harvest-500 border-harvest-500'
-                        : 'border-ristretto-700'
+                        : 'border-latte-200 dark:border-ristretto-700'
                     }`}
                   >
                     <Text
-                      className={`text-sm font-medium ${field.state.value === method ? 'text-white' : 'text-latte-400'}`}
+                      className={`text-sm font-medium ${field.state.value === method ? 'text-white' : 'text-latte-700 dark:text-latte-400'}`}
                     >
                       {BREW_METHOD_LABELS[method]}
                     </Text>
@@ -416,15 +422,17 @@ export default function EditRecipeScreen() {
               return (
                 <View className="gap-1">
                   <View className="flex-row items-center gap-2">
-                    <Text className="text-latte-400 text-xs px-1">Ratio (1:X)</Text>
+                    <Text className="text-latte-700 dark:text-latte-400 text-xs px-1">
+                      Ratio (1:X)
+                    </Text>
                     {isAuto && (
-                      <View className="bg-bloom-900 border border-bloom-700 rounded-full px-2 py-0.5">
-                        <Text className="text-bloom-400 text-xs">auto</Text>
+                      <View className="bg-bloom-100 dark:bg-bloom-900 border border-bloom-300 dark:border-bloom-700 rounded-full px-2 py-0.5">
+                        <Text className="text-bloom-700 dark:text-bloom-400 text-xs">auto</Text>
                       </View>
                     )}
                   </View>
                   <TextInput
-                    className="bg-ristretto-800 border border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-100 text-base"
+                    className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-950 dark:text-latte-100 text-base"
                     style={{ lineHeight: undefined }}
                     placeholder="16"
                     placeholderTextColor="#6e5a47"
@@ -485,11 +493,11 @@ export default function EditRecipeScreen() {
                     className={`px-4 py-2.5 rounded-full border ${
                       field.state.value === level
                         ? 'bg-harvest-500 border-harvest-500'
-                        : 'border-ristretto-700'
+                        : 'border-latte-200 dark:border-ristretto-700'
                     }`}
                   >
                     <Text
-                      className={`text-sm font-medium ${field.state.value === level ? 'text-white' : 'text-latte-400'}`}
+                      className={`text-sm font-medium ${field.state.value === level ? 'text-white' : 'text-latte-700 dark:text-latte-400'}`}
                     >
                       {ROAST_LEVEL_LABELS[level]}
                     </Text>
@@ -520,7 +528,7 @@ export default function EditRecipeScreen() {
             <View className="gap-1">
               <SectionLabel label="Notes" />
               <TextInput
-                className="bg-ristretto-800 border border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-100 text-base"
+                className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-950 dark:text-latte-100 text-base"
                 style={{ lineHeight: undefined }}
                 placeholder="Tasting notes, tips, adjustments..."
                 placeholderTextColor="#6e5a47"

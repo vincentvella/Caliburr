@@ -85,31 +85,35 @@ export function HistoryCard({
   return (
     <TouchableOpacity
       onPress={() => setExpanded((v) => !v)}
-      className="bg-ristretto-800 border border-ristretto-700 rounded-xl px-4 py-3"
+      className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-xl px-4 py-3"
       activeOpacity={0.8}
     >
       <View className="flex-row items-center justify-between">
         <View className="gap-0.5">
-          <Text className="text-latte-200 text-sm font-medium">
+          <Text className="text-latte-800 dark:text-latte-200 text-sm font-medium">
             {dateStr} · {timeStr}
           </Text>
-          <Text className="text-latte-500 text-xs">
+          <Text className="text-latte-600 dark:text-latte-500 text-xs">
             {diffs.length === 0
               ? 'No tracked changes'
               : `${diffs.length} field${diffs.length === 1 ? '' : 's'} changed`}
           </Text>
         </View>
-        <Text className="text-latte-600 text-xs">{expanded ? '▲' : '▼'}</Text>
+        <Text className="text-latte-500 dark:text-latte-600 text-xs">{expanded ? '▲' : '▼'}</Text>
       </View>
       {expanded && diffs.length > 0 && (
         <View className="mt-3 gap-2">
           {diffs.map((d) => (
             <View key={d.label} className="gap-0.5">
-              <Text className="text-latte-500 text-xs">{d.label}</Text>
+              <Text className="text-latte-600 dark:text-latte-500 text-xs">{d.label}</Text>
               <View className="flex-row items-center gap-2">
-                <Text className="text-latte-400 text-xs line-through">{d.was}</Text>
-                <Text className="text-latte-600 text-xs">→</Text>
-                <Text className="text-latte-100 text-xs font-medium">{d.now}</Text>
+                <Text className="text-latte-700 dark:text-latte-400 text-xs line-through">
+                  {d.was}
+                </Text>
+                <Text className="text-latte-500 dark:text-latte-600 text-xs">→</Text>
+                <Text className="text-latte-950 dark:text-latte-100 text-xs font-medium">
+                  {d.now}
+                </Text>
               </View>
             </View>
           ))}

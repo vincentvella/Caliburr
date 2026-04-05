@@ -23,12 +23,16 @@ export default function VerifyEmailScreen() {
   }
 
   return (
-    <View className="flex-1 bg-ristretto-900 justify-center px-6">
+    <View className="flex-1 bg-latte-50 dark:bg-ristretto-900 justify-center px-6">
       <Text className="text-crema-300 text-4xl font-bold mb-1">Check your inbox</Text>
-      <Text className="text-latte-400 text-base mb-2">We sent a confirmation link to:</Text>
-      <Text className="text-latte-100 font-semibold text-base mb-10">{email}</Text>
+      <Text className="text-latte-700 dark:text-latte-400 text-base mb-2">
+        We sent a confirmation link to:
+      </Text>
+      <Text className="text-latte-950 dark:text-latte-100 font-semibold text-base mb-10">
+        {email}
+      </Text>
 
-      <Text className="text-latte-500 text-sm mb-8 leading-relaxed">
+      <Text className="text-latte-600 dark:text-latte-500 text-sm mb-8 leading-relaxed">
         Tap the link in that email to activate your account, then come back and sign in.
       </Text>
 
@@ -39,14 +43,14 @@ export default function VerifyEmailScreen() {
       )}
 
       {resent ? (
-        <Text className="text-bloom-400 text-sm text-center mb-6">
+        <Text className="text-bloom-700 dark:text-bloom-400 text-sm text-center mb-6">
           Email resent — check your inbox.
         </Text>
       ) : (
         <TouchableOpacity
           onPress={handleResend}
           disabled={resending}
-          className="border border-ristretto-700 rounded-xl py-4 items-center mb-6"
+          className="border border-latte-200 dark:border-ristretto-700 rounded-xl py-4 items-center mb-6"
         >
           {resending ? (
             <ActivityIndicator color="#ff9d37" />
@@ -57,7 +61,7 @@ export default function VerifyEmailScreen() {
       )}
 
       <View className="flex-row justify-center gap-1">
-        <Text className="text-latte-500">Already verified?</Text>
+        <Text className="text-latte-600 dark:text-latte-500">Already verified?</Text>
         <Link href="/(auth)/sign-in">
           <Text className="text-harvest-400 font-semibold">Sign In</Text>
         </Link>

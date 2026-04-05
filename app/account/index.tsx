@@ -65,25 +65,25 @@ export default function AccountScreen() {
   }
 
   return (
-    <View className="flex-1 bg-ristretto-900">
+    <View className="flex-1 bg-latte-50 dark:bg-ristretto-900">
       {/* Header */}
-      <View className="flex-row items-center justify-between px-6 pt-14 pb-4 border-b border-ristretto-700">
+      <View className="flex-row items-center justify-between px-6 pt-14 pb-4 border-b border-latte-200 dark:border-ristretto-700">
         <TouchableOpacity
           onPress={() => router.back()}
           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
         >
           <Text className="text-harvest-400 font-semibold">‹ Profile</Text>
         </TouchableOpacity>
-        <Text className="text-latte-100 font-semibold">Account</Text>
+        <Text className="text-latte-950 dark:text-latte-100 font-semibold">Account</Text>
         <View style={{ width: 64 }} />
       </View>
 
       <ScrollView className="flex-1 px-6 pt-6">
         {/* Email */}
         {email && (
-          <View className="bg-ristretto-800 border border-ristretto-700 rounded-2xl px-4 py-3.5 mb-6">
-            <Text className="text-latte-500 text-xs mb-0.5">Signed in as</Text>
-            <Text className="text-latte-100">{email}</Text>
+          <View className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-2xl px-4 py-3.5 mb-6">
+            <Text className="text-latte-600 dark:text-latte-500 text-xs mb-0.5">Signed in as</Text>
+            <Text className="text-latte-950 dark:text-latte-100">{email}</Text>
           </View>
         )}
 
@@ -91,24 +91,24 @@ export default function AccountScreen() {
         <View className="mb-8 gap-2">
           <TouchableOpacity
             onPress={() => router.push('/account/change-password')}
-            className="flex-row items-center justify-between bg-ristretto-800 border border-ristretto-700 rounded-2xl px-4 py-3.5"
+            className="flex-row items-center justify-between bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-2xl px-4 py-3.5"
           >
-            <Text className="text-latte-100 font-medium">Change Password</Text>
-            <Text className="text-latte-500 text-lg">›</Text>
+            <Text className="text-latte-950 dark:text-latte-100 font-medium">Change Password</Text>
+            <Text className="text-latte-600 dark:text-latte-500 text-lg">›</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => WebBrowser.openBrowserAsync(SUPPORT_URL)}
-            className="flex-row items-center justify-between bg-ristretto-800 border border-ristretto-700 rounded-2xl px-4 py-3.5"
+            className="flex-row items-center justify-between bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-2xl px-4 py-3.5"
           >
-            <Text className="text-latte-100 font-medium">Contact Support</Text>
-            <Text className="text-latte-500 text-lg">›</Text>
+            <Text className="text-latte-950 dark:text-latte-100 font-medium">Contact Support</Text>
+            <Text className="text-latte-600 dark:text-latte-500 text-lg">›</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => WebBrowser.openBrowserAsync(PRIVACY_POLICY_URL)}
-            className="flex-row items-center justify-between bg-ristretto-800 border border-ristretto-700 rounded-2xl px-4 py-3.5"
+            className="flex-row items-center justify-between bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-2xl px-4 py-3.5"
           >
-            <Text className="text-latte-100 font-medium">Privacy Policy</Text>
-            <Text className="text-latte-500 text-lg">›</Text>
+            <Text className="text-latte-950 dark:text-latte-100 font-medium">Privacy Policy</Text>
+            <Text className="text-latte-600 dark:text-latte-500 text-lg">›</Text>
           </TouchableOpacity>
         </View>
 
@@ -116,7 +116,7 @@ export default function AccountScreen() {
         <TouchableOpacity
           onPress={handleSignOut}
           disabled={signingOut}
-          className="border border-ristretto-700 rounded-xl py-4 items-center mb-3"
+          className="border border-latte-200 dark:border-ristretto-700 rounded-xl py-4 items-center mb-3"
         >
           {signingOut ? (
             <ActivityIndicator color="#ff9d37" />
@@ -140,16 +140,18 @@ export default function AccountScreen() {
 
         {/* ── Dev tools (development builds only) ────────────────────── */}
         {__DEV__ && (
-          <View className="border border-dashed border-ristretto-700 rounded-2xl p-4 mb-12">
-            <Text className="text-latte-600 text-xs font-mono mb-3">DEV TOOLS</Text>
+          <View className="border border-dashed border-latte-300 dark:border-ristretto-700 rounded-2xl p-4 mb-12">
+            <Text className="text-latte-500 dark:text-latte-600 text-xs font-mono mb-3">
+              DEV TOOLS
+            </Text>
             <TouchableOpacity
               onPress={async () => {
                 await resetOnboardingFlag();
                 router.push('/onboarding?preview=1');
               }}
-              className="bg-ristretto-800 border border-ristretto-700 rounded-xl px-4 py-3 mb-2"
+              className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-xl px-4 py-3 mb-2"
             >
-              <Text className="text-latte-300 text-sm">Preview onboarding</Text>
+              <Text className="text-latte-700 dark:text-latte-300 text-sm">Preview onboarding</Text>
             </TouchableOpacity>
           </View>
         )}

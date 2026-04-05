@@ -151,10 +151,12 @@ export function GrinderModal({ visible, onClose, onAdded, existingIds, editGrind
     >
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        className="flex-1 bg-ristretto-900"
+        className="flex-1 bg-latte-50 dark:bg-ristretto-900"
       >
-        <View className="flex-row items-center justify-between px-6 pt-6 pb-4 border-b border-ristretto-700">
-          <Text className="text-latte-100 text-xl font-bold">{titles[view]}</Text>
+        <View className="flex-row items-center justify-between px-6 pt-6 pb-4 border-b border-latte-200 dark:border-ristretto-700">
+          <Text className="text-latte-950 dark:text-latte-100 text-xl font-bold">
+            {titles[view]}
+          </Text>
           <TouchableOpacity onPress={rightAction}>
             <Text className="text-harvest-400 font-semibold">{rightLabel}</Text>
           </TouchableOpacity>
@@ -163,7 +165,7 @@ export function GrinderModal({ visible, onClose, onAdded, existingIds, editGrind
         {view === 'search' && (
           <View className="flex-1 px-6 pt-4">
             <TextInput
-              className="bg-ristretto-800 border border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-100 text-base mb-4"
+              className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-950 dark:text-latte-100 text-base mb-4"
               style={{ lineHeight: undefined }}
               placeholder="Search brand or model..."
               placeholderTextColor="#6e5a47"
@@ -180,33 +182,35 @@ export function GrinderModal({ visible, onClose, onAdded, existingIds, editGrind
                 keyboardShouldPersistTaps="handled"
                 ListHeaderComponent={
                   !query.trim() && defaults.length > 0 ? (
-                    <Text className="text-latte-600 text-xs mb-2">Popular grinders</Text>
+                    <Text className="text-latte-500 dark:text-latte-600 text-xs mb-2">
+                      Popular grinders
+                    </Text>
                   ) : null
                 }
                 renderItem={({ item }) => (
                   <TouchableOpacity
                     onPress={() => openGrinder(item)}
                     disabled={addingId === item.id}
-                    className="flex-row items-center justify-between py-4 border-b border-ristretto-800"
+                    className="flex-row items-center justify-between py-4 border-b border-latte-100 dark:border-ristretto-800"
                   >
                     <View>
-                      <Text className="text-latte-100 font-medium">
+                      <Text className="text-latte-950 dark:text-latte-100 font-medium">
                         {item.brand} {item.model}
                       </Text>
-                      <Text className="text-latte-500 text-xs mt-0.5 capitalize">
+                      <Text className="text-latte-600 dark:text-latte-500 text-xs mt-0.5 capitalize">
                         {item.burr_type ?? '—'} · {item.adjustment_type ?? '—'}
                       </Text>
                     </View>
                     {addingId === item.id ? (
                       <ActivityIndicator size="small" color="#ff9d37" />
                     ) : item.verified ? (
-                      <View className="bg-bloom-900 border border-bloom-700 rounded-full px-2 py-0.5">
-                        <Text className="text-bloom-400 text-xs">Verified</Text>
+                      <View className="bg-bloom-100 dark:bg-bloom-900 border border-bloom-300 dark:border-bloom-700 rounded-full px-2 py-0.5">
+                        <Text className="text-bloom-700 dark:text-bloom-400 text-xs">Verified</Text>
                       </View>
                     ) : currentUserId && item.created_by === currentUserId ? (
-                      <Text className="text-latte-600 text-xs">Add →</Text>
+                      <Text className="text-latte-500 dark:text-latte-600 text-xs">Add →</Text>
                     ) : (
-                      <Text className="text-latte-600 text-xs">Review →</Text>
+                      <Text className="text-latte-500 dark:text-latte-600 text-xs">Review →</Text>
                     )}
                   </TouchableOpacity>
                 )}
@@ -219,7 +223,7 @@ export function GrinderModal({ visible, onClose, onAdded, existingIds, editGrind
                       <View className="w-8 h-8 rounded-full bg-harvest-500 items-center justify-center">
                         <Text className="text-white font-bold text-lg">+</Text>
                       </View>
-                      <Text className="text-latte-300">{`Add "${query}" as new grinder`}</Text>
+                      <Text className="text-latte-700 dark:text-latte-300">{`Add "${query}" as new grinder`}</Text>
                     </TouchableOpacity>
                   ) : null
                 }
@@ -282,19 +286,21 @@ function GrinderReadOnly({
 }) {
   return (
     <ScrollView className="flex-1 px-6 pt-4" contentContainerClassName="gap-4 pb-8">
-      <View className="bg-bloom-900 border border-bloom-700 rounded-xl px-4 py-3">
-        <Text className="text-bloom-400 text-sm font-medium">✓ Community verified</Text>
+      <View className="bg-bloom-100 dark:bg-bloom-900 border border-bloom-300 dark:border-bloom-700 rounded-xl px-4 py-3">
+        <Text className="text-bloom-700 dark:text-bloom-400 text-sm font-medium">
+          ✓ Community verified
+        </Text>
       </View>
 
       {grinder.image_url ? (
         <Image
           source={{ uri: grinder.image_url }}
-          className="w-full h-48 rounded-xl bg-ristretto-800"
+          className="w-full h-48 rounded-xl bg-oat-100 dark:bg-ristretto-800"
           resizeMode="contain"
         />
       ) : null}
 
-      <View className="bg-ristretto-800 border border-ristretto-700 rounded-xl px-4 py-4 gap-3">
+      <View className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-xl px-4 py-4 gap-3">
         <Row label="Brand" value={grinder.brand} />
         <Row label="Model" value={grinder.model} />
         {grinder.burr_type ? (
@@ -429,7 +435,7 @@ function GrinderForm({
     >
       {/* Verification progress banner (review mode only) */}
       {isReview && !reviewGrinder!.verified && (
-        <View className="bg-ristretto-800 border border-ristretto-700 rounded-xl px-4 py-3 gap-2">
+        <View className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-xl px-4 py-3 gap-2">
           <View className="flex-row gap-1.5">
             {Array.from({ length: DOT_COUNT }, (_, i) => (
               <View
@@ -442,7 +448,7 @@ function GrinderForm({
               />
             ))}
           </View>
-          <Text className="text-latte-500 text-xs">
+          <Text className="text-latte-600 dark:text-latte-500 text-xs">
             {verificationCount === 0
               ? `Be the first to confirm these details — ${VERIFICATION_THRESHOLD} confirmations needed to verify`
               : remaining === 0
@@ -454,7 +460,7 @@ function GrinderForm({
 
       {isReview && reviewGrinder!.verified && (
         <View className="bg-bloom-900 border border-bloom-700 rounded-xl px-4 py-3">
-          <Text className="text-bloom-400 text-sm font-medium">
+          <Text className="text-bloom-700 dark:text-bloom-400 text-sm font-medium">
             ✓ Community verified — confirm details are still correct
           </Text>
         </View>
@@ -468,9 +474,9 @@ function GrinderForm({
       >
         {(field) => (
           <View className="gap-1">
-            <Text className="text-latte-400 text-xs px-1 mb-1">Brand</Text>
+            <Text className="text-latte-700 dark:text-latte-400 text-xs px-1 mb-1">Brand</Text>
             <TextInput
-              className="bg-ristretto-800 border border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-100 text-base"
+              className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-950 dark:text-latte-100 text-base"
               style={{ lineHeight: undefined }}
               placeholder="e.g. Niche"
               placeholderTextColor="#6e5a47"
@@ -499,9 +505,9 @@ function GrinderForm({
       >
         {(field) => (
           <View className="gap-1">
-            <Text className="text-latte-400 text-xs px-1 mb-1">Model</Text>
+            <Text className="text-latte-700 dark:text-latte-400 text-xs px-1 mb-1">Model</Text>
             <TextInput
-              className="bg-ristretto-800 border border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-100 text-base"
+              className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-950 dark:text-latte-100 text-base"
               style={{ lineHeight: undefined }}
               placeholder="e.g. Zero"
               placeholderTextColor="#6e5a47"
@@ -525,7 +531,7 @@ function GrinderForm({
       <form.Field name="burr_type">
         {(field) => (
           <View className="gap-2">
-            <Text className="text-latte-400 text-xs px-1">Burr Type</Text>
+            <Text className="text-latte-700 dark:text-latte-400 text-xs px-1">Burr Type</Text>
             <View className="flex-row gap-2">
               {BURR_TYPES.map((type) => (
                 <TouchableOpacity
@@ -534,11 +540,11 @@ function GrinderForm({
                   className={`flex-1 py-3 rounded-xl border items-center ${
                     field.state.value === type
                       ? 'bg-harvest-500 border-harvest-500'
-                      : 'border-ristretto-700'
+                      : 'border-latte-200 dark:border-ristretto-700'
                   }`}
                 >
                   <Text
-                    className={`text-sm font-medium capitalize ${field.state.value === type ? 'text-white' : 'text-latte-400'}`}
+                    className={`text-sm font-medium capitalize ${field.state.value === type ? 'text-white' : 'text-latte-700 dark:text-latte-400'}`}
                   >
                     {type}
                   </Text>
@@ -552,7 +558,7 @@ function GrinderForm({
       <form.Field name="adjustment_type">
         {(field) => (
           <View className="gap-2">
-            <Text className="text-latte-400 text-xs px-1">Adjustment</Text>
+            <Text className="text-latte-700 dark:text-latte-400 text-xs px-1">Adjustment</Text>
             <View className="flex-row flex-wrap gap-2">
               {ADJ_TYPES.map((type) => (
                 <TouchableOpacity
@@ -561,11 +567,11 @@ function GrinderForm({
                   className={`px-4 py-3 rounded-xl border items-center ${
                     field.state.value === type
                       ? 'bg-harvest-500 border-harvest-500'
-                      : 'border-ristretto-700'
+                      : 'border-latte-200 dark:border-ristretto-700'
                   }`}
                 >
                   <Text
-                    className={`text-sm font-medium ${field.state.value === type ? 'text-white' : 'text-latte-400'}`}
+                    className={`text-sm font-medium ${field.state.value === type ? 'text-white' : 'text-latte-700 dark:text-latte-400'}`}
                   >
                     {ADJ_LABELS[type]}
                   </Text>
@@ -584,12 +590,14 @@ function GrinderForm({
                 <form.Field name="steps_per_unit">
                   {(field) => (
                     <View className="gap-1">
-                      <Text className="text-latte-400 text-xs px-1 mb-1">
+                      <Text className="text-latte-700 dark:text-latte-400 text-xs px-1 mb-1">
                         Steps per number{' '}
-                        <Text className="text-latte-600">(e.g. 10 for 1Zpresso JX-Pro)</Text>
+                        <Text className="text-latte-500 dark:text-latte-600">
+                          (e.g. 10 for 1Zpresso JX-Pro)
+                        </Text>
                       </Text>
                       <TextInput
-                        className="bg-ristretto-800 border border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-100 text-base"
+                        className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-950 dark:text-latte-100 text-base"
                         style={{ lineHeight: undefined }}
                         placeholder="10"
                         placeholderTextColor="#6e5a47"
@@ -603,14 +611,14 @@ function GrinderForm({
               )}
 
               <View className="gap-2">
-                <Text className="text-latte-400 text-xs px-1">Range</Text>
+                <Text className="text-latte-700 dark:text-latte-400 text-xs px-1">Range</Text>
                 <View className="flex-row gap-3">
                   <form.Field name="range_min">
                     {(field) => (
                       <View className="flex-1 gap-1">
-                        <Text className="text-latte-600 text-xs px-1">Min</Text>
+                        <Text className="text-latte-500 dark:text-latte-600 text-xs px-1">Min</Text>
                         <TextInput
-                          className="bg-ristretto-800 border border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-100 text-base"
+                          className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-950 dark:text-latte-100 text-base"
                           style={{ lineHeight: undefined }}
                           placeholder="0"
                           placeholderTextColor="#6e5a47"
@@ -624,9 +632,9 @@ function GrinderForm({
                   <form.Field name="range_max">
                     {(field) => (
                       <View className="flex-1 gap-1">
-                        <Text className="text-latte-600 text-xs px-1">Max</Text>
+                        <Text className="text-latte-500 dark:text-latte-600 text-xs px-1">Max</Text>
                         <TextInput
-                          className="bg-ristretto-800 border border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-100 text-base"
+                          className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-950 dark:text-latte-100 text-base"
                           style={{ lineHeight: undefined }}
                           placeholder={
                             adjType === 'stepped' ? '40' : adjType === 'micro_stepped' ? '10' : '10'
@@ -649,18 +657,18 @@ function GrinderForm({
       <form.Field name="image_url">
         {(field) => (
           <View className="gap-1">
-            <Text className="text-latte-400 text-xs px-1 mb-1">
-              Image URL <Text className="text-latte-600">(optional)</Text>
+            <Text className="text-latte-700 dark:text-latte-400 text-xs px-1 mb-1">
+              Image URL <Text className="text-latte-500 dark:text-latte-600">(optional)</Text>
             </Text>
             {field.state.value ? (
               <Image
                 source={{ uri: field.state.value }}
-                className="w-full h-40 rounded-xl mb-2 bg-ristretto-800"
+                className="w-full h-40 rounded-xl mb-2 bg-oat-100 dark:bg-ristretto-800"
                 resizeMode="contain"
               />
             ) : null}
             <TextInput
-              className="bg-ristretto-800 border border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-100 text-base"
+              className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-950 dark:text-latte-100 text-base"
               style={{ lineHeight: undefined }}
               placeholder="https://..."
               placeholderTextColor="#6e5a47"
@@ -669,7 +677,7 @@ function GrinderForm({
               value={field.state.value}
               onChangeText={field.handleChange}
             />
-            <Text className="text-latte-600 text-xs px-1">
+            <Text className="text-latte-500 dark:text-latte-600 text-xs px-1">
               Only link to images you have rights to use.
             </Text>
           </View>

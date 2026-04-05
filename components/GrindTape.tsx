@@ -209,7 +209,7 @@ export function GrindTape({
   return (
     <View className="gap-2">
       <View
-        className="bg-ristretto-800 border border-ristretto-700 rounded-xl overflow-hidden"
+        className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-xl overflow-hidden"
         style={{ height: 72 }}
       >
         {/* Fixed centre cursor */}
@@ -301,7 +301,7 @@ export function GrindTape({
         </View>
         <View className="flex-1">
           <TextInput
-            className="bg-ristretto-900 border border-ristretto-700 rounded-xl px-3 py-2.5 text-latte-200 text-sm text-center"
+            className="bg-latte-50 dark:bg-ristretto-900 border border-latte-200 dark:border-ristretto-700 rounded-xl px-3 py-2.5 text-latte-800 dark:text-latte-200 text-sm text-center"
             style={{ lineHeight: undefined }}
             placeholder="or type directly"
             placeholderTextColor="#4a3728"

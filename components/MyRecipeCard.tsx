@@ -30,20 +30,25 @@ export function MyRecipeCard({
   return (
     <View
       testID="recipe-item"
-      className="bg-ristretto-800 rounded-2xl mb-3 border border-ristretto-700 overflow-hidden"
+      className="bg-oat-100 dark:bg-ristretto-800 rounded-2xl mb-3 border border-latte-200 dark:border-ristretto-700 overflow-hidden"
     >
       {/* Tappable content area */}
       <TouchableOpacity activeOpacity={0.85} onPress={onNavigate} className="p-4">
         <View className="flex-row items-start justify-between mb-1">
           <View className="flex-1">
             {recipe.bean ? (
-              <Text className="text-latte-100 font-semibold text-base" numberOfLines={1}>
+              <Text
+                className="text-latte-950 dark:text-latte-100 font-semibold text-base"
+                numberOfLines={1}
+              >
                 {recipe.bean.name}
               </Text>
             ) : (
-              <Text className="text-latte-300 font-semibold text-base">{grinderLabel}</Text>
+              <Text className="text-latte-700 dark:text-latte-300 font-semibold text-base">
+                {grinderLabel}
+              </Text>
             )}
-            <Text className="text-latte-500 text-sm mt-0.5">
+            <Text className="text-latte-600 dark:text-latte-500 text-sm mt-0.5">
               {recipe.bean ? `${grinderLabel} · ` : ''}
               {methodLabel}
             </Text>
@@ -62,7 +67,10 @@ export function MyRecipeCard({
         </View>
 
         {recipe.notes && (
-          <Text className="text-latte-500 text-xs mt-3 leading-relaxed" numberOfLines={3}>
+          <Text
+            className="text-latte-600 dark:text-latte-500 text-xs mt-3 leading-relaxed"
+            numberOfLines={3}
+          >
             {recipe.notes}
           </Text>
         )}
@@ -70,7 +78,7 @@ export function MyRecipeCard({
 
       {/* Action row */}
       <View className="flex-row items-center justify-between px-4 pb-3">
-        <Text className="text-latte-600 text-xs">{recipe.upvotes} votes</Text>
+        <Text className="text-latte-500 dark:text-latte-600 text-xs">{recipe.upvotes} votes</Text>
         {(onEdit || onDelete) && (
           <View className="flex-row gap-4">
             {onEdit && (
@@ -90,7 +98,7 @@ export function MyRecipeCard({
                 accessibilityLabel="Delete recipe"
                 accessibilityRole="button"
               >
-                <Text className="text-latte-600 text-lg leading-none">×</Text>
+                <Text className="text-latte-500 dark:text-latte-600 text-lg leading-none">×</Text>
               </TouchableOpacity>
             )}
           </View>

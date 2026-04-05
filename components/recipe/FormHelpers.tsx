@@ -2,7 +2,7 @@ import { View, Text, TextInput } from 'react-native';
 
 export function SectionLabel({ label, required }: { label: string; required?: boolean }) {
   return (
-    <Text className="text-latte-300 font-semibold text-sm">
+    <Text className="text-latte-700 dark:text-latte-300 font-semibold text-sm">
       {label}
       {required && <Text className="text-harvest-500"> *</Text>}
     </Text>
@@ -32,9 +32,9 @@ export function NumericField({
 }) {
   return (
     <View className="flex-1 gap-1">
-      <Text className="text-latte-400 text-xs px-1">{label}</Text>
+      <Text className="text-latte-700 dark:text-latte-400 text-xs px-1">{label}</Text>
       <TextInput
-        className="bg-ristretto-800 border border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-100 text-base"
+        className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-950 dark:text-latte-100 text-base"
         style={{ lineHeight: undefined }}
         placeholder={placeholder}
         placeholderTextColor="#6e5a47"

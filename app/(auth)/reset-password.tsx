@@ -42,20 +42,20 @@ export default function ResetPasswordScreen() {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      className="flex-1 bg-ristretto-900"
+      className="flex-1 bg-latte-50 dark:bg-ristretto-900"
     >
       <ScrollView
         contentContainerClassName="flex-grow justify-center px-6"
         keyboardShouldPersistTaps="handled"
       >
         <Text className="text-crema-300 text-4xl font-bold mb-1">New Password</Text>
-        <Text className="text-latte-400 text-base mb-10">
+        <Text className="text-latte-700 dark:text-latte-400 text-base mb-10">
           Choose a new password for your account.
         </Text>
 
         <View className="gap-3 mb-4">
           <TextInput
-            className="bg-ristretto-800 border border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-100 text-base"
+            className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-950 dark:text-latte-100 text-base"
             style={{ lineHeight: undefined }}
             placeholder="New password"
             placeholderTextColor="#6e5a47"
@@ -69,7 +69,7 @@ export default function ResetPasswordScreen() {
           />
           <TextInput
             ref={confirmRef}
-            className="bg-ristretto-800 border border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-100 text-base"
+            className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-950 dark:text-latte-100 text-base"
             style={{ lineHeight: undefined }}
             placeholder="Confirm password"
             placeholderTextColor="#6e5a47"

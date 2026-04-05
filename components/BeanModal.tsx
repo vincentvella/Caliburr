@@ -94,10 +94,12 @@ export function BeanModal({ visible, onClose, onSelected, selectedId }: Props) {
     >
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        className="flex-1 bg-ristretto-900"
+        className="flex-1 bg-latte-50 dark:bg-ristretto-900"
       >
-        <View className="flex-row items-center justify-between px-6 pt-6 pb-4 border-b border-ristretto-700">
-          <Text className="text-latte-100 text-xl font-bold">{titles[view]}</Text>
+        <View className="flex-row items-center justify-between px-6 pt-6 pb-4 border-b border-latte-200 dark:border-ristretto-700">
+          <Text className="text-latte-950 dark:text-latte-100 text-xl font-bold">
+            {titles[view]}
+          </Text>
           <TouchableOpacity onPress={view === 'search' ? handleClose : () => setView('search')}>
             <Text className="text-harvest-400 font-semibold">
               {view === 'search' ? 'Cancel' : 'Back'}
@@ -108,7 +110,7 @@ export function BeanModal({ visible, onClose, onSelected, selectedId }: Props) {
         {view === 'search' && (
           <View className="flex-1 px-6 pt-4">
             <TextInput
-              className="bg-ristretto-800 border border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-100 text-base mb-4"
+              className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-950 dark:text-latte-100 text-base mb-4"
               style={{ lineHeight: undefined }}
               placeholder="Search bean or roaster..."
               placeholderTextColor="#6e5a47"
@@ -125,7 +127,9 @@ export function BeanModal({ visible, onClose, onSelected, selectedId }: Props) {
                 keyboardShouldPersistTaps="handled"
                 ListHeaderComponent={
                   !query.trim() && defaults.length > 0 ? (
-                    <Text className="text-latte-600 text-xs mb-2">Recent beans</Text>
+                    <Text className="text-latte-500 dark:text-latte-600 text-xs mb-2">
+                      Recent beans
+                    </Text>
                   ) : null
                 }
                 renderItem={({ item }) => (
@@ -134,13 +138,15 @@ export function BeanModal({ visible, onClose, onSelected, selectedId }: Props) {
                       onSelected(item);
                       handleClose();
                     }}
-                    className={`flex-row items-center justify-between py-4 border-b border-ristretto-800 ${
+                    className={`flex-row items-center justify-between py-4 border-b border-latte-100 dark:border-ristretto-800 ${
                       selectedId === item.id ? 'opacity-60' : ''
                     }`}
                   >
                     <View className="flex-1 mr-3">
-                      <Text className="text-latte-100 font-medium">{item.name}</Text>
-                      <Text className="text-latte-500 text-xs mt-0.5">
+                      <Text className="text-latte-950 dark:text-latte-100 font-medium">
+                        {item.name}
+                      </Text>
+                      <Text className="text-latte-600 dark:text-latte-500 text-xs mt-0.5">
                         {item.roaster}
                         {item.origin ? ` · ${item.origin}` : ''}
                         {item.roast_level ? ` · ${ROAST_LEVEL_LABELS[item.roast_level]}` : ''}
@@ -158,7 +164,9 @@ export function BeanModal({ visible, onClose, onSelected, selectedId }: Props) {
                       <View className="w-8 h-8 rounded-full bg-harvest-500 items-center justify-center">
                         <Text className="text-white font-bold text-lg">+</Text>
                       </View>
-                      <Text className="text-latte-300">Add &quot;{query}&quot; as new bean</Text>
+                      <Text className="text-latte-700 dark:text-latte-300">
+                        Add &quot;{query}&quot; as new bean
+                      </Text>
                     </TouchableOpacity>
                   ) : null
                 }
@@ -253,8 +261,8 @@ function BeanForm({
       <form.Field name="roast_level">
         {(field) => (
           <View className="gap-2">
-            <Text className="text-latte-400 text-xs px-1">
-              Roast Level <Text className="text-latte-600">(optional)</Text>
+            <Text className="text-latte-700 dark:text-latte-400 text-xs px-1">
+              Roast Level <Text className="text-latte-500 dark:text-latte-600">(optional)</Text>
             </Text>
             <View className="flex-row flex-wrap gap-2">
               {ROAST_LEVELS.map((level) => (
@@ -264,11 +272,11 @@ function BeanForm({
                   className={`px-3 py-2.5 rounded-xl border ${
                     field.state.value === level
                       ? 'bg-harvest-500 border-harvest-500'
-                      : 'border-ristretto-700'
+                      : 'border-latte-200 dark:border-ristretto-700'
                   }`}
                 >
                   <Text
-                    className={`text-xs font-medium ${field.state.value === level ? 'text-white' : 'text-latte-400'}`}
+                    className={`text-xs font-medium ${field.state.value === level ? 'text-white' : 'text-latte-700 dark:text-latte-400'}`}
                   >
                     {ROAST_LEVEL_LABELS[level]}
                   </Text>
@@ -323,12 +331,12 @@ function FormField({
 }) {
   return (
     <View className="gap-1">
-      <Text className="text-latte-400 text-xs px-1 mb-1">
+      <Text className="text-latte-700 dark:text-latte-400 text-xs px-1 mb-1">
         {label}
-        {!required && <Text className="text-latte-600"> (optional)</Text>}
+        {!required && <Text className="text-latte-500 dark:text-latte-600"> (optional)</Text>}
       </Text>
       <TextInput
-        className="bg-ristretto-800 border border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-100 text-base"
+        className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-950 dark:text-latte-100 text-base"
         style={{ lineHeight: undefined }}
         placeholder={placeholder}
         placeholderTextColor="#6e5a47"

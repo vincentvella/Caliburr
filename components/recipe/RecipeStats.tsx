@@ -11,7 +11,7 @@ export function Stat({
 }) {
   return (
     <View>
-      <Text className="text-latte-600 text-xs">{label}</Text>
+      <Text className="text-latte-500 dark:text-latte-600 text-xs">{label}</Text>
       <Text className="font-semibold text-sm" style={{ color: highlight ? '#ff9d37' : '#c8b09a' }}>
         {value}
       </Text>

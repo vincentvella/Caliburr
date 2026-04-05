@@ -40,14 +40,14 @@ export default function ForgotPasswordScreen() {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      className="flex-1 bg-ristretto-900"
+      className="flex-1 bg-latte-50 dark:bg-ristretto-900"
     >
       <ScrollView
         contentContainerClassName="flex-grow justify-center px-6"
         keyboardShouldPersistTaps="handled"
       >
         <Text className="text-crema-300 text-4xl font-bold mb-1">Reset Password</Text>
-        <Text className="text-latte-400 text-base mb-10">
+        <Text className="text-latte-700 dark:text-latte-400 text-base mb-10">
           {sent
             ? 'Check your email for a reset link. It may take a minute to arrive.'
             : "Enter your email and we'll send you a reset link."}
@@ -57,7 +57,7 @@ export default function ForgotPasswordScreen() {
           <>
             <View className="mb-4">
               <TextInput
-                className="bg-ristretto-800 border border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-100 text-base"
+                className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-950 dark:text-latte-100 text-base"
                 style={{ lineHeight: undefined }}
                 placeholder="Email"
                 placeholderTextColor="#6e5a47"

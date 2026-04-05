@@ -39,7 +39,7 @@ export function BrewTimer({ value, onChange }: { value: string; onChange: (v: st
   const ss = String(elapsed % 60).padStart(2, '0');
 
   return (
-    <View className="bg-ristretto-800 border border-ristretto-700 rounded-xl px-4 py-3 gap-3">
+    <View className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-xl px-4 py-3 gap-3">
       <View className="items-center">
         <Text className="text-harvest-400 font-bold" style={{ fontSize: 48, letterSpacing: 2 }}>
           {mm}:{ss}
@@ -57,25 +57,27 @@ export function BrewTimer({ value, onChange }: { value: string; onChange: (v: st
         ) : (
           <TouchableOpacity
             onPress={stop}
-            className="flex-1 bg-ristretto-700 rounded-xl py-3 items-center"
+            className="flex-1 bg-oat-200 dark:bg-ristretto-700 rounded-xl py-3 items-center"
           >
-            <Text className="text-latte-100 font-semibold">Stop</Text>
+            <Text className="text-latte-950 dark:text-latte-100 font-semibold">Stop</Text>
           </TouchableOpacity>
         )}
         {elapsed > 0 && (
           <TouchableOpacity
             onPress={reset}
-            className="px-5 border border-ristretto-700 rounded-xl py-3 items-center"
+            className="px-5 border border-latte-200 dark:border-ristretto-700 rounded-xl py-3 items-center"
           >
-            <Text className="text-latte-500 font-semibold">Reset</Text>
+            <Text className="text-latte-600 dark:text-latte-500 font-semibold">Reset</Text>
           </TouchableOpacity>
         )}
       </View>
 
       <View className="flex-row items-center gap-2">
-        <Text className="text-latte-600 text-xs">or enter seconds manually:</Text>
+        <Text className="text-latte-500 dark:text-latte-600 text-xs">
+          or enter seconds manually:
+        </Text>
         <TextInput
-          className="flex-1 bg-ristretto-900 border border-ristretto-800 rounded-lg px-3 py-2 text-latte-300 text-sm"
+          className="flex-1 bg-latte-50 dark:bg-ristretto-900 border border-latte-200 dark:border-ristretto-800 rounded-lg px-3 py-2 text-latte-700 dark:text-latte-300 text-sm"
           style={{ lineHeight: undefined }}
           placeholder="e.g. 28"
           placeholderTextColor="#4a3728"

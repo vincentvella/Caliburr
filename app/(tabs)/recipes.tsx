@@ -333,39 +333,43 @@ export default function RecipesScreen() {
   }
 
   return (
-    <View className="flex-1 bg-ristretto-900">
+    <View className="flex-1 bg-latte-50 dark:bg-ristretto-900">
       <ScrollView
         className="flex-1 px-4 pt-16"
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor="#ff9d37" />
         }
       >
-        <Text className="text-latte-100 text-2xl font-bold mb-1">My Recipes</Text>
-        <Text className="text-latte-500 text-sm mb-5">Your submitted dials.</Text>
+        <Text className="text-latte-950 dark:text-latte-100 text-2xl font-bold mb-1">
+          My Recipes
+        </Text>
+        <Text className="text-latte-600 dark:text-latte-500 text-sm mb-5">
+          Your submitted dials.
+        </Text>
 
         {/* Tab toggle */}
-        <View className="flex-row bg-ristretto-800 rounded-xl p-1 mb-6">
+        <View className="flex-row bg-oat-100 dark:bg-ristretto-800 rounded-xl p-1 mb-6">
           <TouchableOpacity
             onPress={() => setTab('mine')}
-            className={`flex-1 py-2 rounded-lg items-center ${tab === 'mine' ? 'bg-ristretto-700' : ''}`}
+            className={`flex-1 py-2 rounded-lg items-center ${tab === 'mine' ? 'bg-oat-200 dark:bg-ristretto-700' : ''}`}
             accessibilityRole="button"
             accessibilityLabel="My Recipes tab"
           >
             <Text
-              className={`text-sm font-medium ${tab === 'mine' ? 'text-latte-100' : 'text-latte-500'}`}
+              className={`text-sm font-medium ${tab === 'mine' ? 'text-latte-950 dark:text-latte-100' : 'text-latte-600 dark:text-latte-500'}`}
             >
               My Recipes
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => setTab('liked')}
-            className={`flex-1 py-2 rounded-lg items-center ${tab === 'liked' ? 'bg-ristretto-700' : ''}`}
+            className={`flex-1 py-2 rounded-lg items-center ${tab === 'liked' ? 'bg-oat-200 dark:bg-ristretto-700' : ''}`}
             accessibilityRole="button"
             accessibilityLabel="Liked Recipes tab"
             testID="tab-liked"
           >
             <Text
-              className={`text-sm font-medium ${tab === 'liked' ? 'text-latte-100' : 'text-latte-500'}`}
+              className={`text-sm font-medium ${tab === 'liked' ? 'text-latte-950 dark:text-latte-100' : 'text-latte-600 dark:text-latte-500'}`}
             >
               Liked
             </Text>
@@ -378,13 +382,13 @@ export default function RecipesScreen() {
           </View>
         ) : error ? (
           <View className="items-center py-12">
-            <Text className="text-latte-500 text-sm">{error}</Text>
+            <Text className="text-latte-600 dark:text-latte-500 text-sm">{error}</Text>
           </View>
         ) : displayRecipes.length === 0 ? (
           <View className="items-center py-12 gap-3">
             {tab === 'mine' ? (
               <>
-                <Text className="text-latte-500 text-sm">No recipes yet.</Text>
+                <Text className="text-latte-600 dark:text-latte-500 text-sm">No recipes yet.</Text>
                 <TouchableOpacity
                   onPress={() => router.push('/recipe/new')}
                   className="bg-harvest-500 rounded-xl px-6 py-3"
@@ -393,7 +397,9 @@ export default function RecipesScreen() {
                 </TouchableOpacity>
               </>
             ) : (
-              <Text className="text-latte-500 text-sm">No liked recipes yet.</Text>
+              <Text className="text-latte-600 dark:text-latte-500 text-sm">
+                No liked recipes yet.
+              </Text>
             )}
           </View>
         ) : (
