@@ -1,5 +1,5 @@
 appId: coffee.caliburr
-name: "App Store screenshots — main screens"
+name: 'App Store screenshots — main screens'
 # Requires a seeded account with gear and recipes.
 # Run: MAESTRO_EMAIL=you@email.com MAESTRO_PASSWORD=pass maestro test .maestro/screenshots.yaml
 ---

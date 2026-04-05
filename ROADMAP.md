@@ -6,8 +6,6 @@
 - [x] **Onboarding** — 3-step flow (Welcome → Add grinder → Done); triggered on first sign-in via `onboarding_completed` user metadata; existing users with gear are fast-pathed through; `_layout.tsx` routes new users to `/onboarding` instead of `/(tabs)`.
 - [x] **Liked recipes & clone** — users have no way to browse recipes they've upvoted, and no way to clone a recipe as a starting point for their own.
 
-
-
 - [x] **Password reset flow** — forgot-password screen + reset-password screen; `PASSWORD_RECOVERY` event routes through `_layout.tsx`; sign-in has "Forgot password?" link.
 - [x] **Equipment removal confirmation** — `removeGrinder` and `removeMachine` in Profile now show `Alert.alert` with destructive confirm before deleting.
 - [x] **Error handling on destructive operations** — `removeGrinder`, `removeMachine`, and recipe delete now check the Supabase error and show an alert on failure without mutating local state.

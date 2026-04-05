@@ -15,9 +15,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "coffee.caliburr.app",
-      "associatedDomains": [
-        "applinks:caliburr.coffee"
-      ],
+      "associatedDomains": ["applinks:caliburr.coffee"],
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       }
@@ -38,10 +36,7 @@
               "host": "caliburr.coffee"
             }
           ],
-          "category": [
-            "BROWSABLE",
-            "DEFAULT"
-          ]
+          "category": ["BROWSABLE", "DEFAULT"]
         }
       ]
     },

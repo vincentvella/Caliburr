@@ -49,7 +49,10 @@ export default function ChangePasswordScreen() {
     >
       {/* Header */}
       <View className="flex-row items-center justify-between px-6 pt-14 pb-4 border-b border-ristretto-700">
-        <TouchableOpacity onPress={() => router.back()} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+        <TouchableOpacity
+          onPress={() => router.back()}
+          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+        >
           <Text className="text-harvest-400 font-semibold">‹ Account</Text>
         </TouchableOpacity>
         <Text className="text-latte-100 font-semibold">Change Password</Text>

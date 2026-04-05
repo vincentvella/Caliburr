@@ -222,9 +222,7 @@ export default function ProfileScreen() {
       <ScrollView className="flex-1 px-6 pt-16">
         {/* Header */}
         <Text className="text-latte-100 text-2xl font-bold mb-0.5">My Gear</Text>
-        {email && !screenshotMode && (
-          <Text className="text-latte-500 text-sm mb-8">{email}</Text>
-        )}
+        {email && !screenshotMode && <Text className="text-latte-500 text-sm mb-8">{email}</Text>}
 
         {loadingEquipment ? (
           <ActivityIndicator color="#ff9d37" style={{ marginTop: 32 }} />

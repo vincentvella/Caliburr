@@ -35,16 +35,16 @@ supabase/migrations/    — all schema changes live here
 
 Coffee-themed Tailwind color palette. Use these instead of generic grays/blacks:
 
-| Token | Use |
-|---|---|
-| `latte` | Light mode base, cream backgrounds |
-| `oat` | Softest backgrounds, cards in light mode |
-| `french-press` | Mid-dark surfaces |
-| `ristretto` | Dark mode base (primary dark background) |
-| `cold-brew` | Cool dark alternative surfaces |
-| `harvest` | Warm amber — primary accent, CTAs |
-| `crema` | Golden — highlights, ratings, stars |
-| `bloom` | Earthy green — roast/origin tags |
+| Token          | Use                                      |
+| -------------- | ---------------------------------------- |
+| `latte`        | Light mode base, cream backgrounds       |
+| `oat`          | Softest backgrounds, cards in light mode |
+| `french-press` | Mid-dark surfaces                        |
+| `ristretto`    | Dark mode base (primary dark background) |
+| `cold-brew`    | Cool dark alternative surfaces           |
+| `harvest`      | Warm amber — primary accent, CTAs        |
+| `crema`        | Golden — highlights, ratings, stars      |
+| `bloom`        | Earthy green — roast/origin tags         |
 
 Default to dark mode using `ristretto` backgrounds with `latte` text.
 
@@ -53,22 +53,26 @@ Always add `style={{ lineHeight: undefined }}` to `TextInput` to prevent iOS tex
 ## Data Model
 
 ### Equipment
+
 - `grinders` — brand, model, burr_type, adjustment_type (`stepped` | `stepless` | `micro_stepped`), steps_per_unit, range_min, range_max, verified, created_by
 - `brew_machines` — brand, model, machine_type (`espresso` | `super_automatic` | `drip` | `pod`), verified, created_by
 - `user_grinders` — user_id, grinder_id, is_default
 - `user_brew_machines` — user_id, brew_machine_id, is_default
 
 ### Community Verification
+
 - `grinder_verifications` / `machine_verifications` — (equipment_id, user_id) unique pairs
 - 5 unique user confirmations trigger a DB function that flips `verified = true`
 - The user who created an entry (`created_by`) cannot verify their own entry
 - Verified equipment is **read-only** in the UI — users see a details card, not an edit form
 
 ### Default equipment
+
 - `is_default` on `user_grinders` and `user_brew_machines` — one per user each
 - Starred in the profile screen; auto pre-selected in the new recipe form
 
 ### Recipes
+
 - `recipes` — grinder_id, bean_id (optional), brew_machine_id (optional), brew_method, grind_setting (text), dose_g, yield_g, brew_time_s, water_temp_c, ratio, roast_date, roast_level, notes, user_id, upvotes
 - `beans` — name, roaster, origin, process, roast_level (optional)
 
@@ -89,6 +93,7 @@ Always add `style={{ lineHeight: undefined }}` to `TextInput` to prevent iOS tex
 ## Environment
 
 Copy `.env.local` and fill in:
+
 ```
 EXPO_PUBLIC_SUPABASE_URL=
 EXPO_PUBLIC_SUPABASE_ANON_KEY=
@@ -110,23 +115,26 @@ bunx supabase db push              # push migrations to remote Supabase
 EAS Workflows run automatically on push to `main` (release) and on pull requests (preview).
 Workflow files live in `.eas/workflows/`.
 
-| Workflow | Trigger | Jobs |
-|---|---|---|
-| `release.yml` | push → main | iOS build + App Store submit (sequential); web deploy (parallel) |
-| `preview.yml` | pull request | iOS simulator build + web preview URL (parallel) |
+| Workflow      | Trigger      | Jobs                                                             |
+| ------------- | ------------ | ---------------------------------------------------------------- |
+| `release.yml` | push → main  | iOS build + App Store submit (sequential); web deploy (parallel) |
+| `preview.yml` | pull request | iOS simulator build + web preview URL (parallel)                 |
 
 **Before first release** — set `ascAppId` in `eas.json`:
+
 1. Create the app in [App Store Connect](https://appstoreconnect.apple.com)
 2. Apps → Caliburr → App Information → **Apple ID** (numeric, e.g. `6745678901`)
 3. Paste into `eas.json` → `submit.production.ios.ascAppId`
 
 **Manual workflow trigger:**
+
 ```bash
 bunx eas-cli@latest workflow:run release.yml    # trigger release manually
 bunx eas-cli@latest workflow:run preview.yml    # trigger preview manually
 ```
 
 **Manual one-off commands:**
+
 ```bash
 bunx eas-cli@latest build -p ios --profile production          # iOS build only
 bunx eas-cli@latest build -p ios --profile production --submit # build + submit

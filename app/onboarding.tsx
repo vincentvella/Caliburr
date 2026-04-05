@@ -285,17 +285,17 @@ function AnimatedProgressDots({ total, active }: { total: number; active: number
           useNativeDriver: false,
           tension: 180,
           friction: 12,
-        })
+        }),
       ),
       ...fills.map((f, i) =>
         Animated.timing(f, {
           toValue: i <= active ? 1 : 0,
           duration: 250,
           useNativeDriver: false,
-        })
+        }),
       ),
     ]).start();
-  }, [active]); // widths and fills are stable refs — intentionally omitted
+  }, [active, fills, widths]);
 
   return (
     <View style={{ flexDirection: 'row', gap: 6, alignItems: 'center' }}>
