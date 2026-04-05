@@ -1,7 +1,10 @@
-import { View, Text, ScrollView } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import { Stack } from 'expo-router';
+import * as WebBrowser from 'expo-web-browser';
 
-const EFFECTIVE_DATE = 'April 3, 2026';
+const SUPPORT_URL = 'https://caliburr.coffee/support';
+
+const EFFECTIVE_DATE = 'April 4, 2026';
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -43,6 +46,16 @@ function Li({ children }: { children: React.ReactNode }) {
 
 function Strong({ children }: { children: string }) {
   return <Text style={{ color: '#d4bfaa', fontWeight: '600' }}>{children}</Text>;
+}
+
+function SupportLink({ children }: { children: string }) {
+  return (
+    <TouchableOpacity onPress={() => WebBrowser.openBrowserAsync(SUPPORT_URL)} style={{ marginBottom: 12 }}>
+      <Text style={{ color: '#ff9d37', fontWeight: '600', textDecorationLine: 'underline', fontSize: 15 }}>
+        {children}
+      </Text>
+    </TouchableOpacity>
+  );
 }
 
 export default function PrivacyPolicyScreen() {
@@ -130,6 +143,10 @@ export default function PrivacyPolicyScreen() {
               of the community feed. Do not include personal information in recipe notes or
               equipment descriptions.
             </P>
+            <P>
+              We reserve the right to remove content that violates our Terms of Service or that is
+              otherwise harmful, misleading, or inappropriate.
+            </P>
           </Section>
 
           <Section title="Account Deletion">
@@ -154,10 +171,16 @@ export default function PrivacyPolicyScreen() {
 
           <Section title="Children's Privacy">
             <P>
+              You must be at least 13 years old to create a Caliburr account. By creating an
+              account, you represent that you are 13 or older.
+            </P>
+            <P>
               Caliburr is not directed at children under 13. We do not knowingly collect personal
               information from children under 13. If you believe a child has provided us with
-              personal information, please contact us and we will delete it promptly.
+              personal information, please contact us via the link below and we will delete the
+              account and associated data promptly.
             </P>
+            <SupportLink>Contact us about a privacy concern</SupportLink>
           </Section>
 
           <Section title="Changes to This Policy">
@@ -189,10 +212,8 @@ export default function PrivacyPolicyScreen() {
             >
               Contact
             </Text>
-            <P>
-              If you have questions or requests regarding your data, contact us at{' '}
-              <Strong>privacy@caliburr.coffee</Strong>.
-            </P>
+            <P>If you have questions or requests regarding your data:</P>
+            <SupportLink>Open support form</SupportLink>
           </View>
         </View>
       </ScrollView>

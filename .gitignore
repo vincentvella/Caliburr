@@ -46,3 +46,4 @@ google-service-account.json
 # Maestro screenshot output
 .maestro/screenshots/*.png
 .maestro/screenshots/*.jpg
+credentials.json
