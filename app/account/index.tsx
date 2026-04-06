@@ -107,7 +107,7 @@ export default function AccountScreen() {
           </TouchableOpacity>
           {isAdmin && (
             <TouchableOpacity
-              onPress={() => router.push('/(admin)')}
+              onPress={() => router.push('/admin')}
               className="flex-row items-center justify-between bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-2xl px-4 py-3.5"
             >
               <Text className="text-latte-950 dark:text-latte-100 font-medium">Pending Edits</Text>
