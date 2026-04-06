@@ -2,8 +2,8 @@ import '../global.css';
 import 'react-native-url-polyfill/auto';
 
 import { useEffect, useState } from 'react';
-import { useColorScheme } from 'react-native';
 import { Stack, router, useSegments } from 'expo-router';
+import { useUniwind } from 'uniwind';
 import { StatusBar } from 'expo-status-bar';
 import * as Linking from 'expo-linking';
 import type { Session } from '@supabase/supabase-js';
@@ -43,7 +43,7 @@ export default function RootLayout() {
   const [session, setSession] = useState<Session | null>(null);
   const [ready, setReady] = useState(false);
   const [isRecovery, setIsRecovery] = useState(false);
-  const colorScheme = useColorScheme();
+  const { theme } = useUniwind();
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -84,7 +84,7 @@ export default function RootLayout() {
   return (
     <ThemeProvider>
       <ErrorBoundary>
-        <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
+        <StatusBar style={theme === 'dark' ? 'light' : 'dark'} />
         <Stack screenOptions={{ headerShown: false }}>
           <Stack.Screen name="(tabs)" />
           <Stack.Screen name="(auth)" />

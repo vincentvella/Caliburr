@@ -6,8 +6,8 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Alert,
-  useColorScheme,
 } from 'react-native';
+import { useUniwind } from 'uniwind';
 import { useState, useEffect } from 'react';
 import { router } from 'expo-router';
 import { useScreenshotMode } from '@/lib/useScreenshotMode';
@@ -39,7 +39,8 @@ const THEME_OPTIONS: { value: ThemePreference; label: string }[] = [
 export default function ProfileScreen() {
   const screenshotMode = useScreenshotMode();
   const { preference, setPreference } = useTheme();
-  const isDark = useColorScheme() === 'dark';
+  const { theme } = useUniwind();
+  const isDark = theme === 'dark';
   const [email, setEmail] = useState<string | null>(null);
   const [grinders, setGrinders] = useState<UserGrinder[]>([]);
   const [machines, setMachines] = useState<UserMachine[]>([]);
