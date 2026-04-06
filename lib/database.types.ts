@@ -102,6 +102,59 @@ export type Database = {
         }
         Relationships: []
       }
+      feature_request_upvotes: {
+        Row: {
+          request_id: string
+          user_id: string
+        }
+        Insert: {
+          request_id: string
+          user_id: string
+        }
+        Update: {
+          request_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "feature_request_upvotes_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "feature_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      feature_requests: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          status: Database["public"]["Enums"]["feature_request_status"]
+          title: string
+          upvotes: number
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          status?: Database["public"]["Enums"]["feature_request_status"]
+          title: string
+          upvotes?: number
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          status?: Database["public"]["Enums"]["feature_request_status"]
+          title?: string
+          upvotes?: number
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       grinder_verifications: {
         Row: {
           created_at: string
@@ -508,6 +561,7 @@ export type Database = {
         | "siphon"
         | "turkish"
       burr_type: "flat" | "conical" | "hybrid"
+      feature_request_status: "open" | "planned" | "done"
       machine_type: "espresso" | "super_automatic" | "drip" | "pod"
       roast_level: "light" | "medium_light" | "medium" | "medium_dark" | "dark"
     }
@@ -654,6 +708,7 @@ export const Constants = {
         "turkish",
       ],
       burr_type: ["flat", "conical", "hybrid"],
+      feature_request_status: ["open", "planned", "done"],
       machine_type: ["espresso", "super_automatic", "drip", "pod"],
       roast_level: ["light", "medium_light", "medium", "medium_dark", "dark"],
     },

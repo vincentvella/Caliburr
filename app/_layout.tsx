@@ -126,6 +126,7 @@ export default function RootLayout() {
           <Stack.Screen name="support" />
           <Stack.Screen name="account/index" />
           <Stack.Screen name="account/change-password" />
+          <Stack.Screen name="feature-requests" />
           <Stack.Screen name="recipe/new" options={{ presentation: 'modal' }} />
           <Stack.Screen name="+not-found" />
         </Stack>

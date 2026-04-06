@@ -97,6 +97,13 @@ export default function AccountScreen() {
             <Text className="text-latte-600 dark:text-latte-500 text-lg">›</Text>
           </TouchableOpacity>
           <TouchableOpacity
+            onPress={() => router.push('/feature-requests')}
+            className="flex-row items-center justify-between bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-2xl px-4 py-3.5"
+          >
+            <Text className="text-latte-950 dark:text-latte-100 font-medium">Feature Requests</Text>
+            <Text className="text-latte-600 dark:text-latte-500 text-lg">›</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
             onPress={() => WebBrowser.openBrowserAsync(SUPPORT_URL)}
             className="flex-row items-center justify-between bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-2xl px-4 py-3.5"
           >

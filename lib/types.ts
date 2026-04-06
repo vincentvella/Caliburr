@@ -119,6 +119,24 @@ export const BREW_METHOD_LABELS: Record<BrewMethod, string> = {
   turkish: 'Turkish',
 };
 
+export type FeatureRequestStatus = Enums<'feature_request_status'>;
+
+export interface FeatureRequest {
+  id: string;
+  user_id: string | null;
+  title: string;
+  description: string | null;
+  status: FeatureRequestStatus;
+  upvotes: number;
+  created_at: string;
+}
+
+export const FEATURE_REQUEST_STATUS_LABELS: Record<FeatureRequestStatus, string> = {
+  open: 'Open',
+  planned: 'Planned',
+  done: 'Done',
+};
+
 export const ROAST_LEVEL_LABELS: Record<RoastLevel, string> = {
   light: 'Light',
   medium_light: 'Medium Light',
