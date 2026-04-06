@@ -7,7 +7,12 @@
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
-    "lint": "expo lint"
+    "lint": "expo lint",
+    "lint:fix": "expo lint --fix",
+    "format": "prettier --check .",
+    "format:fix": "prettier --write .",
+    "typecheck": "tsc",
+    "validate": "bun run typecheck && bun run lint && bun run format"
   },
   "dependencies": {
     "@expo-google-fonts/dm-sans": "^0.4.2",
