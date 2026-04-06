@@ -111,12 +111,40 @@ export default function NewRecipeScreen() {
       const grinderIds = (userGrindersRes.data ?? []).map((r) => r.grinder_id);
       const machineIds = (userMachinesRes.data ?? []).map((r) => r.brew_machine_id);
 
-      const [grindersRes, machinesRes] = await Promise.all([
+      const [grindersRes, machinesRes, grinderEditsRes, machineEditsRes] = await Promise.all([
         supabase.from('grinders').select('*').in('id', grinderIds),
         supabase.from('brew_machines').select('*').in('id', machineIds),
+        grinderIds.length
+          ? supabase
+              .from('grinder_edits')
+              .select('grinder_id, payload')
+              .in('grinder_id', grinderIds)
+              .eq('status', 'pending')
+          : Promise.resolve({ data: [] }),
+        machineIds.length
+          ? supabase
+              .from('machine_edits')
+              .select('machine_id, payload')
+              .in('machine_id', machineIds)
+              .eq('status', 'pending')
+          : Promise.resolve({ data: [] }),
       ]);
-      setGrinders(grindersRes.data ?? []);
-      setMachines(machinesRes.data ?? []);
+
+      // Build lookup of pending edits by equipment ID (user's own, via RLS)
+      const pendingGrinderEdits = new Map(
+        (grinderEditsRes.data ?? []).map((e) => [e.grinder_id, e.payload as Partial<Grinder>]),
+      );
+      const pendingMachineEdits = new Map(
+        (machineEditsRes.data ?? []).map((e) => [e.machine_id, e.payload as Partial<BrewMachine>]),
+      );
+
+      // Merge pending payload over base data so GrindTape uses corrected specs
+      setGrinders(
+        (grindersRes.data ?? []).map((g) => ({ ...g, ...pendingGrinderEdits.get(g.id) })),
+      );
+      setMachines(
+        (machinesRes.data ?? []).map((m) => ({ ...m, ...pendingMachineEdits.get(m.id) })),
+      );
 
       const defaultGrinderRow = (userGrindersRes.data ?? []).find((r) => r.is_default);
       if (defaultGrinderRow) form.setFieldValue('grinder_id', defaultGrinderRow.grinder_id);

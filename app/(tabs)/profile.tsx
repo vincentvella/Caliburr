@@ -49,6 +49,8 @@ export default function ProfileScreen() {
   const [grinderModalOpen, setGrinderModalOpen] = useState(false);
   const [machineModalOpen, setMachineModalOpen] = useState(false);
   const [editingGrinder, setEditingGrinder] = useState<Grinder | null>(null);
+  const [pendingGrinderEditIds, setPendingGrinderEditIds] = useState<Set<string>>(new Set());
+  const [pendingMachineEditIds, setPendingMachineEditIds] = useState<Set<string>>(new Set());
 
   async function fetchEquipment() {
     const {
@@ -74,9 +76,23 @@ export default function ProfileScreen() {
     const grinderIds = (userGrindersRes.data ?? []).map((r) => r.grinder_id);
     const machineIds = (userMachinesRes.data ?? []).map((r) => r.brew_machine_id);
 
-    const [grindersRes, machinesRes] = await Promise.all([
+    const [grindersRes, machinesRes, grinderEditsRes, machineEditsRes] = await Promise.all([
       supabase.from('grinders').select('*').in('id', grinderIds),
       supabase.from('brew_machines').select('*').in('id', machineIds),
+      grinderIds.length
+        ? supabase
+            .from('grinder_edits')
+            .select('grinder_id')
+            .in('grinder_id', grinderIds)
+            .eq('status', 'pending')
+        : Promise.resolve({ data: [] }),
+      machineIds.length
+        ? supabase
+            .from('machine_edits')
+            .select('machine_id')
+            .in('machine_id', machineIds)
+            .eq('status', 'pending')
+        : Promise.resolve({ data: [] }),
     ]);
 
     const grindersById = new Map((grindersRes.data ?? []).map((g) => [g.id, g]));
@@ -96,6 +112,8 @@ export default function ProfileScreen() {
         return [{ brew_machine_id: row.brew_machine_id, is_default: row.is_default, brew_machine }];
       }),
     );
+    setPendingGrinderEditIds(new Set((grinderEditsRes.data ?? []).map((e) => e.grinder_id)));
+    setPendingMachineEditIds(new Set((machineEditsRes.data ?? []).map((e) => e.machine_id)));
     setLoadingEquipment(false);
   }
 
@@ -299,13 +317,19 @@ export default function ProfileScreen() {
                         </View>
                       </View>
                       <View className="flex-row items-center gap-3">
-                        {grinder.verified && (
+                        {grinder.verified ? (
                           <View className="bg-bloom-100 dark:bg-bloom-900 border border-bloom-300 dark:border-bloom-700 rounded-full px-2 py-0.5">
                             <Text className="text-bloom-700 dark:text-bloom-400 text-xs">
                               Verified
                             </Text>
                           </View>
-                        )}
+                        ) : pendingGrinderEditIds.has(grinder_id) ? (
+                          <View className="bg-crema-100 dark:bg-crema-900 border border-crema-300 dark:border-crema-700 rounded-full px-2 py-0.5">
+                            <Text className="text-crema-700 dark:text-crema-400 text-xs">
+                              Edit pending
+                            </Text>
+                          </View>
+                        ) : null}
                         <TouchableOpacity onPress={() => toggleDefaultGrinder(grinder_id)}>
                           <Text
                             style={{
@@ -387,13 +411,19 @@ export default function ProfileScreen() {
                         </View>
                       </View>
                       <View className="flex-row items-center gap-3">
-                        {brew_machine.verified && (
+                        {brew_machine.verified ? (
                           <View className="bg-bloom-100 dark:bg-bloom-900 border border-bloom-300 dark:border-bloom-700 rounded-full px-2 py-0.5">
                             <Text className="text-bloom-700 dark:text-bloom-400 text-xs">
                               Verified
                             </Text>
                           </View>
-                        )}
+                        ) : pendingMachineEditIds.has(brew_machine_id) ? (
+                          <View className="bg-crema-100 dark:bg-crema-900 border border-crema-300 dark:border-crema-700 rounded-full px-2 py-0.5">
+                            <Text className="text-crema-700 dark:text-crema-400 text-xs">
+                              Edit pending
+                            </Text>
+                          </View>
+                        ) : null}
                         <TouchableOpacity onPress={() => toggleDefaultMachine(brew_machine_id)}>
                           <Text
                             style={{
