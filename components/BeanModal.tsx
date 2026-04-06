@@ -3,13 +3,13 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  FlatList,
   Modal,
   ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
 } from 'react-native';
+import { LegendList } from '@legendapp/list';
 import { useState, useEffect } from 'react';
 import { useForm } from '@tanstack/react-form';
 import { supabase } from '@/lib/supabase';
@@ -121,7 +121,7 @@ export function BeanModal({ visible, onClose, onSelected, selectedId }: Props) {
             {searching ? (
               <ActivityIndicator color="#ff9d37" style={{ marginTop: 16 }} />
             ) : (
-              <FlatList
+              <LegendList
                 data={query.trim() ? results : defaults}
                 keyExtractor={(item) => item.id}
                 keyboardShouldPersistTaps="handled"

@@ -3,12 +3,12 @@ import {
   Text,
   TextInput,
   ScrollView,
-  FlatList,
   TouchableOpacity,
   RefreshControl,
   ActivityIndicator,
 } from 'react-native';
 
+import { LegendList } from '@legendapp/list';
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { useFocusEffect, router } from 'expo-router';
 import { supabase } from '@/lib/supabase';
@@ -337,7 +337,7 @@ export default function ExploreScreen() {
           <Text className="text-latte-600 dark:text-latte-500 text-sm text-center">{error}</Text>
         </View>
       ) : (
-        <FlatList
+        <LegendList
           data={recipes}
           keyExtractor={(r) => r.id}
           contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 96 }}

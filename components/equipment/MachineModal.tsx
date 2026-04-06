@@ -3,7 +3,6 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  FlatList,
   Modal,
   Image,
   ActivityIndicator,
@@ -11,6 +10,7 @@ import {
   Platform,
   ScrollView,
 } from 'react-native';
+import { LegendList } from '@legendapp/list';
 import { useState, useEffect } from 'react';
 import { useForm } from '@tanstack/react-form';
 import { supabase } from '@/lib/supabase';
@@ -178,7 +178,7 @@ export function MachineModal({ visible, onClose, onAdded, existingIds }: Props) 
             {searching ? (
               <ActivityIndicator color="#ff9d37" style={{ marginTop: 16 }} />
             ) : (
-              <FlatList
+              <LegendList
                 data={query.trim() ? results : defaults}
                 keyExtractor={(item) => item.id}
                 keyboardShouldPersistTaps="handled"
