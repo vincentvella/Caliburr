@@ -155,6 +155,44 @@ export type Database = {
         }
         Relationships: []
       }
+      grinder_edits: {
+        Row: {
+          created_at: string
+          grinder_id: string
+          id: string
+          payload: Json
+          proposed_by: string | null
+          reviewed_at: string | null
+          status: Database["public"]["Enums"]["equipment_edit_status"]
+        }
+        Insert: {
+          created_at?: string
+          grinder_id: string
+          id?: string
+          payload: Json
+          proposed_by?: string | null
+          reviewed_at?: string | null
+          status?: Database["public"]["Enums"]["equipment_edit_status"]
+        }
+        Update: {
+          created_at?: string
+          grinder_id?: string
+          id?: string
+          payload?: Json
+          proposed_by?: string | null
+          reviewed_at?: string | null
+          status?: Database["public"]["Enums"]["equipment_edit_status"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "grinder_edits_grinder_id_fkey"
+            columns: ["grinder_id"]
+            isOneToOne: false
+            referencedRelation: "grinders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       grinder_verifications: {
         Row: {
           created_at: string
@@ -232,6 +270,44 @@ export type Database = {
           verified?: boolean
         }
         Relationships: []
+      }
+      machine_edits: {
+        Row: {
+          created_at: string
+          id: string
+          machine_id: string
+          payload: Json
+          proposed_by: string | null
+          reviewed_at: string | null
+          status: Database["public"]["Enums"]["equipment_edit_status"]
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          machine_id: string
+          payload: Json
+          proposed_by?: string | null
+          reviewed_at?: string | null
+          status?: Database["public"]["Enums"]["equipment_edit_status"]
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          machine_id?: string
+          payload?: Json
+          proposed_by?: string | null
+          reviewed_at?: string | null
+          status?: Database["public"]["Enums"]["equipment_edit_status"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "machine_edits_machine_id_fkey"
+            columns: ["machine_id"]
+            isOneToOne: false
+            referencedRelation: "brew_machines"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       machine_verifications: {
         Row: {
@@ -549,6 +625,7 @@ export type Database = {
     }
     Enums: {
       adjustment_type: "stepped" | "stepless" | "micro_stepped"
+      equipment_edit_status: "pending" | "approved" | "rejected"
       brew_method:
         | "espresso"
         | "pour_over"
@@ -695,6 +772,7 @@ export const Constants = {
   public: {
     Enums: {
       adjustment_type: ["stepped", "stepless", "micro_stepped"],
+      equipment_edit_status: ["pending", "approved", "rejected"],
       brew_method: [
         "espresso",
         "pour_over",

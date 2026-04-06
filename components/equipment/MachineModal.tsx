@@ -310,6 +310,20 @@ function MachineReadOnly({
   );
 }
 
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+
+function machinePayloadChanged(
+  current: BrewMachine,
+  payload: { brand: string; model: string; machine_type: MachineType; image_url: string | null },
+): boolean {
+  return (
+    payload.brand !== current.brand ||
+    payload.model !== current.model ||
+    payload.machine_type !== current.machine_type ||
+    payload.image_url !== (current.image_url ?? null)
+  );
+}
+
 // ─── Shared form (create + review) ───────────────────────────────────────────
 
 function MachineForm({
@@ -349,27 +363,39 @@ function MachineForm({
       let machine: BrewMachine;
 
       if (isReview) {
-        // Update details if anything changed, then record this user's verification
-        const { data, error } = await supabase
-          .from('brew_machines')
-          .update(payload)
-          .eq('id', reviewMachine.id)
-          .select()
-          .single();
-        if (error || !data) return;
-        machine = data as BrewMachine;
-
         const {
           data: { user },
         } = await supabase.auth.getUser();
-        if (user) {
-          await supabase
-            .from('machine_verifications')
-            .upsert(
-              { brew_machine_id: machine.id, user_id: user.id },
-              { onConflict: 'brew_machine_id,user_id', ignoreDuplicates: true },
-            );
+
+        if (machinePayloadChanged(reviewMachine, payload)) {
+          const { data: edit } = await supabase
+            .from('machine_edits')
+            .insert({ machine_id: reviewMachine.id, proposed_by: user?.id ?? null, payload })
+            .select()
+            .single();
+
+          if (edit) {
+            supabase.functions.invoke('notify-equipment-edit', {
+              body: {
+                editType: 'machine',
+                equipmentName: `${reviewMachine.brand} ${reviewMachine.model}`,
+                payload,
+                editId: edit.id,
+              },
+            });
+          }
+        } else {
+          if (user) {
+            await supabase
+              .from('machine_verifications')
+              .upsert(
+                { brew_machine_id: reviewMachine.id, user_id: user.id },
+                { onConflict: 'brew_machine_id,user_id', ignoreDuplicates: true },
+              );
+          }
         }
+
+        machine = reviewMachine;
       } else {
         const {
           data: { user },

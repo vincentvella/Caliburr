@@ -329,6 +329,33 @@ function GrinderReadOnly({
   );
 }
 
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+
+function grinderPayloadChanged(
+  current: Grinder,
+  payload: {
+    brand: string;
+    model: string;
+    burr_type: string | null;
+    adjustment_type: string | null;
+    steps_per_unit: number | null;
+    range_min: number | null;
+    range_max: number | null;
+    image_url: string | null;
+  },
+): boolean {
+  return (
+    payload.brand !== current.brand ||
+    payload.model !== current.model ||
+    payload.burr_type !== (current.burr_type ?? null) ||
+    payload.adjustment_type !== (current.adjustment_type ?? null) ||
+    payload.steps_per_unit !== (current.steps_per_unit ?? null) ||
+    payload.range_min !== (current.range_min ?? null) ||
+    payload.range_max !== (current.range_max ?? null) ||
+    payload.image_url !== (current.image_url ?? null)
+  );
+}
+
 // ─── Shared form (create + edit + review) ────────────────────────────────────
 
 function GrinderForm({
@@ -383,25 +410,42 @@ function GrinderForm({
       };
 
       if (isReview) {
-        const { data, error } = await supabase
-          .from('grinders')
-          .update(payload)
-          .eq('id', reviewGrinder!.id)
-          .select()
-          .single();
-        if (error || !data) return;
         const {
           data: { user },
         } = await supabase.auth.getUser();
-        if (user) {
-          await supabase
-            .from('grinder_verifications')
-            .upsert(
-              { grinder_id: reviewGrinder!.id, user_id: user.id },
-              { onConflict: 'grinder_id,user_id', ignoreDuplicates: true },
-            );
+
+        if (grinderPayloadChanged(reviewGrinder!, payload)) {
+          // Queue for moderation — do not apply directly
+          const { data: edit } = await supabase
+            .from('grinder_edits')
+            .insert({ grinder_id: reviewGrinder!.id, proposed_by: user?.id ?? null, payload })
+            .select()
+            .single();
+
+          // Fire-and-forget email notification
+          if (edit) {
+            supabase.functions.invoke('notify-equipment-edit', {
+              body: {
+                editType: 'grinder',
+                equipmentName: `${reviewGrinder!.brand} ${reviewGrinder!.model}`,
+                payload,
+                editId: edit.id,
+              },
+            });
+          }
+        } else {
+          // No changes — just count the verification
+          if (user) {
+            await supabase
+              .from('grinder_verifications')
+              .upsert(
+                { grinder_id: reviewGrinder!.id, user_id: user.id },
+                { onConflict: 'grinder_id,user_id', ignoreDuplicates: true },
+              );
+          }
         }
-        onDone(data as Grinder);
+
+        onDone(reviewGrinder!);
       } else if (editGrinder) {
         const { data, error } = await supabase
           .from('grinders')
