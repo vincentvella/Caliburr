@@ -228,7 +228,7 @@ export default function RecipeDetailScreen() {
         <View className="gap-1">
           {recipe.bean ? (
             <>
-              <Text className="text-latte-950 dark:text-latte-100 text-2xl font-bold">
+              <Text className="text-latte-950 dark:text-latte-100 text-2xl font-display-bold">
                 {recipe.bean.name}
               </Text>
               <Text className="text-latte-600 dark:text-latte-500 text-sm">
@@ -236,7 +236,7 @@ export default function RecipeDetailScreen() {
               </Text>
             </>
           ) : (
-            <Text className="text-latte-950 dark:text-latte-100 text-2xl font-bold">
+            <Text className="text-latte-950 dark:text-latte-100 text-2xl font-display-bold">
               {grinderLabel}
             </Text>
           )}

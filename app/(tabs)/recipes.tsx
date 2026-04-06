@@ -340,7 +340,7 @@ export default function RecipesScreen() {
           <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor="#ff9d37" />
         }
       >
-        <Text className="text-latte-950 dark:text-latte-100 text-2xl font-bold mb-1">
+        <Text className="text-latte-950 dark:text-latte-100 text-2xl mb-1 font-display-bold">
           My Recipes
         </Text>
         <Text className="text-latte-600 dark:text-latte-500 text-sm mb-5">

@@ -232,7 +232,7 @@ export default function ProfileScreen() {
     <View className="flex-1 bg-latte-50 dark:bg-ristretto-900">
       <ScrollView className="flex-1 px-6 pt-16">
         {/* Header */}
-        <Text className="text-latte-950 dark:text-latte-100 text-2xl font-bold mb-0.5">
+        <Text className="text-latte-950 dark:text-latte-100 text-2xl mb-0.5 font-display-bold">
           My Gear
         </Text>
         {email && !screenshotMode && (

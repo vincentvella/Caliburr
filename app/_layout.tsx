@@ -6,10 +6,27 @@ import { Stack, router, useSegments } from 'expo-router';
 import { useUniwind } from 'uniwind';
 import { StatusBar } from 'expo-status-bar';
 import * as Linking from 'expo-linking';
+import * as SplashScreen from 'expo-splash-screen';
+import { useFonts } from 'expo-font';
+import {
+  Fraunces_400Regular,
+  Fraunces_400Regular_Italic,
+  Fraunces_600SemiBold,
+  Fraunces_700Bold,
+} from '@expo-google-fonts/fraunces';
+import {
+  DMSans_400Regular,
+  DMSans_400Regular_Italic,
+  DMSans_500Medium,
+  DMSans_600SemiBold,
+  DMSans_700Bold,
+} from '@expo-google-fonts/dm-sans';
 import type { Session } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { ThemeProvider } from '@/lib/theme';
+
+SplashScreen.preventAutoHideAsync();
 
 function useAuthGate(session: Session | null, ready: boolean, isRecovery: boolean) {
   const segments = useSegments();
@@ -44,6 +61,22 @@ export default function RootLayout() {
   const [ready, setReady] = useState(false);
   const [isRecovery, setIsRecovery] = useState(false);
   const { theme } = useUniwind();
+
+  const [fontsLoaded] = useFonts({
+    Fraunces_400Regular,
+    Fraunces_400Regular_Italic,
+    Fraunces_600SemiBold,
+    Fraunces_700Bold,
+    DMSans_400Regular,
+    DMSans_400Regular_Italic,
+    DMSans_500Medium,
+    DMSans_600SemiBold,
+    DMSans_700Bold,
+  });
+
+  useEffect(() => {
+    if (fontsLoaded) SplashScreen.hideAsync();
+  }, [fontsLoaded]);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {

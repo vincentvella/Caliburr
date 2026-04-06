@@ -21,12 +21,12 @@ export function RecipeCard({
         <View className="flex-1 mr-2">
           {recipe.bean ? (
             <Text
-              className="text-latte-950 dark:text-latte-100 font-semibold text-base"
+              className="text-latte-950 dark:text-latte-100 text-base font-display-semibold"
               numberOfLines={1}
             >
               {recipe.bean.name}
               {recipe.bean.roaster ? (
-                <Text className="text-latte-600 dark:text-latte-500 font-normal text-sm">
+                <Text className="text-latte-600 dark:text-latte-500 text-sm font-sans">
                   {' '}
                   · {recipe.bean.roaster}
                 </Text>
@@ -34,7 +34,7 @@ export function RecipeCard({
             </Text>
           ) : (
             <Text
-              className="text-latte-950 dark:text-latte-100 font-semibold text-base"
+              className="text-latte-950 dark:text-latte-100 text-base font-display-semibold"
               numberOfLines={1}
             >
               {grinderLabel}

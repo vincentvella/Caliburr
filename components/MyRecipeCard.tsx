@@ -38,13 +38,13 @@ export function MyRecipeCard({
           <View className="flex-1">
             {recipe.bean ? (
               <Text
-                className="text-latte-950 dark:text-latte-100 font-semibold text-base"
+                className="text-latte-950 dark:text-latte-100 text-base font-display-semibold"
                 numberOfLines={1}
               >
                 {recipe.bean.name}
               </Text>
             ) : (
-              <Text className="text-latte-700 dark:text-latte-300 font-semibold text-base">
+              <Text className="text-latte-700 dark:text-latte-300 text-base font-display-semibold">
                 {grinderLabel}
               </Text>
             )}

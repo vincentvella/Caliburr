@@ -150,7 +150,7 @@ export default function OnboardingScreen() {
           </View>
 
           <Text
-            className="text-latte-950 dark:text-latte-100 font-bold mb-2"
+            className={`text-latte-950 dark:text-latte-100 mb-2 ${step === 'welcome' ? 'font-display-bold' : 'font-display-semibold'}`}
             style={{ fontSize: step === 'welcome' ? 36 : 24 }}
           >
             {heading[step]}

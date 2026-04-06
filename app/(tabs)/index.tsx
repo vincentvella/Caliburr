@@ -243,7 +243,7 @@ export default function ExploreScreen() {
       <View className="px-4 pt-16 pb-3 gap-3">
         <View className="flex-row items-end justify-between">
           <View>
-            <Text className="text-harvest-600 dark:text-crema-300 text-3xl font-bold leading-tight">
+            <Text className="text-harvest-600 dark:text-crema-300 text-3xl leading-tight font-display-bold">
               Caliburr
             </Text>
             <Text className="text-latte-600 dark:text-latte-500 text-sm">
