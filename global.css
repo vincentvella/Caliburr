@@ -108,14 +108,32 @@
 }
 
 @layer utilities {
-  .font-display          { font-family: Fraunces_400Regular; }
-  .font-display-italic   { font-family: Fraunces_400Regular_Italic; }
-  .font-display-semibold { font-family: Fraunces_600SemiBold; }
-  .font-display-bold     { font-family: Fraunces_700Bold; }
+  .font-display {
+    font-family: Fraunces_400Regular;
+  }
+  .font-display-italic {
+    font-family: Fraunces_400Regular_Italic;
+  }
+  .font-display-semibold {
+    font-family: Fraunces_600SemiBold;
+  }
+  .font-display-bold {
+    font-family: Fraunces_700Bold;
+  }
 
-  .font-sans             { font-family: DMSans_400Regular; }
-  .font-sans-italic      { font-family: DMSans_400Regular_Italic; }
-  .font-sans-medium      { font-family: DMSans_500Medium; }
-  .font-sans-semibold    { font-family: DMSans_600SemiBold; }
-  .font-sans-bold        { font-family: DMSans_700Bold; }
+  .font-sans {
+    font-family: DMSans_400Regular;
+  }
+  .font-sans-italic {
+    font-family: DMSans_400Regular_Italic;
+  }
+  .font-sans-medium {
+    font-family: DMSans_500Medium;
+  }
+  .font-sans-semibold {
+    font-family: DMSans_600SemiBold;
+  }
+  .font-sans-bold {
+    font-family: DMSans_700Bold;
+  }
 }
