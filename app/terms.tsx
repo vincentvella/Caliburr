@@ -150,6 +150,12 @@ export default function TermsOfServiceScreen() {
               Community-contributed recipe and equipment data is owned by its respective
               contributors and shared under the licence described in the User Content section above.
             </P>
+            <P>
+              Equipment image URLs submitted by users link to third-party content. Caliburr does not
+              own, host, or claim any rights to those images. By submitting an image URL, you
+              confirm you have permission to share it. We will remove links to infringing content
+              upon request.
+            </P>
           </Section>
 
           <Section title="Disclaimers">

@@ -1,4 +1,12 @@
-import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
+import {
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  ActivityIndicator,
+  Alert,
+  Image,
+} from 'react-native';
 import { useState, useEffect, useCallback } from 'react';
 import { router } from 'expo-router';
 import { supabase } from '@/lib/supabase';
@@ -35,6 +43,14 @@ interface MachineEdit {
   };
 }
 
+interface PendingImage {
+  id: string;
+  brand: string;
+  model: string;
+  image_url: string;
+  type: 'grinder' | 'machine';
+}
+
 const FIELD_LABELS: Record<string, string> = {
   brand: 'Brand',
   model: 'Model',
@@ -64,10 +80,11 @@ function DiffRow({ field, before, after }: { field: string; before: unknown; aft
 function usePendingEdits() {
   const [grinderEdits, setGrinderEdits] = useState<GrinderEdit[]>([]);
   const [machineEdits, setMachineEdits] = useState<MachineEdit[]>([]);
+  const [pendingImages, setPendingImages] = useState<PendingImage[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchEdits = useCallback(async () => {
-    const [gRes, mRes] = await Promise.all([
+    const [gRes, mRes, giRes, miRes] = await Promise.all([
       supabase
         .from('grinder_edits')
         .select(
@@ -80,22 +97,46 @@ function usePendingEdits() {
         .select('*, machine:brew_machines(brand, model, machine_type, image_url)')
         .eq('status', 'pending')
         .order('created_at', { ascending: true }),
+      supabase.from('grinders').select('id, brand, model, image_url').eq('image_status', 'pending'),
+      supabase
+        .from('brew_machines')
+        .select('id, brand, model, image_url')
+        .eq('image_status', 'pending'),
     ]);
 
     setGrinderEdits((gRes.data ?? []) as GrinderEdit[]);
     setMachineEdits((mRes.data ?? []) as MachineEdit[]);
+    setPendingImages([
+      ...(giRes.data ?? []).map((g) => ({ ...g, type: 'grinder' as const })),
+      ...(miRes.data ?? []).map((m) => ({ ...m, type: 'machine' as const })),
+    ] as PendingImage[]);
   }, []);
 
   useEffect(() => {
     fetchEdits().finally(() => setLoading(false));
   }, [fetchEdits]);
 
-  return { grinderEdits, setGrinderEdits, machineEdits, setMachineEdits, loading };
+  return {
+    grinderEdits,
+    setGrinderEdits,
+    machineEdits,
+    setMachineEdits,
+    pendingImages,
+    setPendingImages,
+    loading,
+  };
 }
 
 export default function AdminScreen() {
-  const { grinderEdits, setGrinderEdits, machineEdits, setMachineEdits, loading } =
-    usePendingEdits();
+  const {
+    grinderEdits,
+    setGrinderEdits,
+    machineEdits,
+    setMachineEdits,
+    pendingImages,
+    setPendingImages,
+    loading,
+  } = usePendingEdits();
   const [actioningId, setActioningId] = useState<string | null>(null);
 
   async function handleAction(
@@ -125,7 +166,31 @@ export default function AdminScreen() {
     setActioningId(null);
   }
 
-  const totalPending = grinderEdits.length + machineEdits.length;
+  async function handleImageAction(image: PendingImage, action: 'approve' | 'reject') {
+    setActioningId(image.id);
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    const { error } = await supabase.functions.invoke('approve-equipment-image', {
+      body: { equipmentId: image.id, equipmentType: image.type, action },
+      headers: { Authorization: `Bearer ${session?.access_token}` },
+    });
+
+    if (error) {
+      Alert.alert(
+        'Error',
+        action === 'approve'
+          ? 'Failed to fetch or process the image. The URL may be unreachable.'
+          : 'Failed to reject image.',
+      );
+    } else {
+      setPendingImages((prev) => prev.filter((i) => i.id !== image.id));
+    }
+    setActioningId(null);
+  }
+
+  const totalPending = grinderEdits.length + machineEdits.length + pendingImages.length;
 
   return (
     <View className="flex-1 bg-latte-50 dark:bg-ristretto-900">
@@ -183,6 +248,58 @@ export default function AdminScreen() {
               onReject={() => handleAction(edit.id, 'machine', 'reject')}
             />
           ))}
+
+          {pendingImages.length > 0 && (
+            <>
+              <Text className="text-latte-600 dark:text-latte-500 text-xs font-semibold uppercase tracking-wider mb-3 mt-4 px-1">
+                Pending Images · {pendingImages.length}
+              </Text>
+              {pendingImages.map((item) => (
+                <View
+                  key={item.id}
+                  className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-2xl p-4 mb-3"
+                >
+                  <Text className="text-latte-950 dark:text-latte-100 font-display-semibold text-base mb-1">
+                    {item.brand} {item.model}
+                  </Text>
+                  <Text className="text-latte-500 dark:text-latte-600 text-xs mb-3 capitalize">
+                    {item.type}
+                  </Text>
+                  <Image
+                    source={{ uri: item.image_url }}
+                    className="w-full h-48 rounded-xl bg-latte-200 dark:bg-ristretto-700 mb-3"
+                    resizeMode="contain"
+                  />
+                  <Text
+                    className="text-latte-500 dark:text-latte-600 text-xs mb-3 leading-5"
+                    numberOfLines={2}
+                  >
+                    {item.image_url}
+                  </Text>
+                  <View className="flex-row gap-2">
+                    <TouchableOpacity
+                      onPress={() => handleImageAction(item, 'approve')}
+                      disabled={actioningId === item.id}
+                      className="flex-1 bg-bloom-600 rounded-xl py-3 items-center"
+                    >
+                      {actioningId === item.id ? (
+                        <ActivityIndicator color="#fff" size="small" />
+                      ) : (
+                        <Text className="text-white font-semibold text-sm">Approve</Text>
+                      )}
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => handleImageAction(item, 'reject')}
+                      disabled={actioningId === item.id}
+                      className="flex-1 border border-latte-300 dark:border-ristretto-600 rounded-xl py-3 items-center"
+                    >
+                      <Text className="text-latte-600 dark:text-latte-500 text-sm">Reject</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              ))}
+            </>
+          )}
 
           <View className="h-12" />
         </ScrollView>

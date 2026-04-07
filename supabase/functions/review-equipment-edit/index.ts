@@ -76,7 +76,12 @@ Deno.serve(async (req) => {
   }
 
   if (editType === 'grinder') {
-    await adminClient.from('grinders').update(edit.payload).eq('id', edit.grinder_id);
+    const payload = { ...edit.payload };
+    // If the edit changes image_url, queue it for image approval
+    if ('image_url' in payload) {
+      (payload as Record<string, unknown>).image_status = payload.image_url ? 'pending' : null;
+    }
+    await adminClient.from('grinders').update(payload).eq('id', edit.grinder_id);
 
     if (edit.proposed_by) {
       await adminClient
@@ -87,7 +92,12 @@ Deno.serve(async (req) => {
         );
     }
   } else {
-    await adminClient.from('brew_machines').update(edit.payload).eq('id', edit.machine_id);
+    const payload = { ...edit.payload };
+    // If the edit changes image_url, queue it for image approval
+    if ('image_url' in payload) {
+      (payload as Record<string, unknown>).image_status = payload.image_url ? 'pending' : null;
+    }
+    await adminClient.from('brew_machines').update(payload).eq('id', edit.machine_id);
 
     if (edit.proposed_by) {
       await adminClient

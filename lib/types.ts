@@ -6,6 +6,8 @@ export type BurrType = Enums<'burr_type'>;
 export type AdjustmentType = Enums<'adjustment_type'>;
 export type MachineType = Enums<'machine_type'>;
 
+export type ImageStatus = 'pending' | 'approved' | 'rejected';
+
 export interface Grinder {
   id: string;
   brand: string;
@@ -17,6 +19,7 @@ export interface Grinder {
   range_max: number | null;
   verified: boolean;
   image_url: string | null;
+  image_status: ImageStatus | null;
   created_by: string | null;
   created_at: string;
 }
@@ -28,6 +31,7 @@ export interface BrewMachine {
   machine_type: MachineType;
   verified: boolean;
   image_url: string | null;
+  image_status: ImageStatus | null;
   created_by: string | null;
   created_at: string;
 }

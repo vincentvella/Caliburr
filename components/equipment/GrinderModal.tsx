@@ -304,7 +304,7 @@ function GrinderReadOnly({
         </Text>
       </View>
 
-      {grinder.image_url ? (
+      {grinder.image_url && grinder.image_status === 'approved' ? (
         <Image
           source={{ uri: grinder.image_url }}
           className="w-full h-48 rounded-xl bg-oat-100 dark:bg-ristretto-800"
@@ -465,10 +465,14 @@ function GrinderForm({
           haptics.success();
           onDone(reviewGrinder!);
         } else if (editGrinder) {
+          const imageStatusUpdate =
+            payload.image_url !== (editGrinder.image_url ?? null)
+              ? { image_status: payload.image_url ? 'pending' : null }
+              : {};
           const data = unwrap(
             await supabase
               .from('grinders')
-              .update(payload)
+              .update({ ...payload, ...imageStatusUpdate })
               .eq('id', editGrinder.id)
               .select()
               .single(),
@@ -482,7 +486,11 @@ function GrinderForm({
           const data = unwrap(
             await supabase
               .from('grinders')
-              .insert({ ...payload, created_by: user?.id ?? null })
+              .insert({
+                ...payload,
+                image_status: payload.image_url ? 'pending' : null,
+                created_by: user?.id ?? null,
+              })
               .select()
               .single(),
           );
@@ -750,7 +758,9 @@ function GrinderForm({
               onChangeText={field.handleChange}
             />
             <Text className="text-latte-500 dark:text-latte-600 text-xs px-1">
-              Only link to images you have rights to use.
+              Only link to images you have the right to use. By submitting an image URL you confirm
+              you have permission to share it. Caliburr does not own or claim rights to any
+              user-submitted content.
             </Text>
           </View>
         )}
