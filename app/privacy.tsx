@@ -8,18 +8,8 @@ const EFFECTIVE_DATE = 'April 4, 2026';
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <View style={{ marginBottom: 32 }}>
-      <Text
-        style={{
-          color: '#f5ede4',
-          fontSize: 16,
-          fontWeight: '600',
-          marginBottom: 12,
-          paddingBottom: 8,
-          borderBottomWidth: 1,
-          borderBottomColor: '#2e2017',
-        }}
-      >
+    <View className="mb-8">
+      <Text className="text-latte-100 text-base font-semibold mb-3 pb-2 border-b border-ristretto-800">
         {title}
       </Text>
       {children}
@@ -27,43 +17,29 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   );
 }
 
-function P({ children, style }: { children: React.ReactNode; style?: object }) {
+function P({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
-    <Text style={[{ color: '#a89080', fontSize: 15, lineHeight: 26, marginBottom: 12 }, style]}>
-      {children}
-    </Text>
+    <Text className={`text-latte-500 text-sm leading-7 mb-3 ${className ?? ''}`}>{children}</Text>
   );
 }
 
 function Li({ children }: { children: React.ReactNode }) {
   return (
-    <View style={{ flexDirection: 'row', marginBottom: 8, paddingLeft: 4 }}>
-      <Text style={{ color: '#6e5a47', marginRight: 10, marginTop: 1 }}>•</Text>
-      <Text style={{ color: '#a89080', fontSize: 15, lineHeight: 26, flex: 1 }}>{children}</Text>
+    <View className="flex-row mb-2 pl-1">
+      <Text className="text-latte-700 mr-2.5 mt-0.5">•</Text>
+      <Text className="text-latte-500 text-sm leading-7 flex-1">{children}</Text>
     </View>
   );
 }
 
 function Strong({ children }: { children: string }) {
-  return <Text style={{ color: '#d4bfaa', fontWeight: '600' }}>{children}</Text>;
+  return <Text className="text-latte-300 font-semibold">{children}</Text>;
 }
 
 function SupportLink({ children }: { children: string }) {
   return (
-    <TouchableOpacity
-      onPress={() => WebBrowser.openBrowserAsync(SUPPORT_URL)}
-      style={{ marginBottom: 12 }}
-    >
-      <Text
-        style={{
-          color: '#ff9d37',
-          fontWeight: '600',
-          textDecorationLine: 'underline',
-          fontSize: 15,
-        }}
-      >
-        {children}
-      </Text>
+    <TouchableOpacity onPress={() => WebBrowser.openBrowserAsync(SUPPORT_URL)} className="mb-3">
+      <Text className="text-harvest-400 font-semibold underline text-sm">{children}</Text>
     </TouchableOpacity>
   );
 }
@@ -72,22 +48,11 @@ export default function PrivacyPolicyScreen() {
   return (
     <>
       <Stack.Screen options={{ title: 'Privacy Policy — Caliburr' }} />
-      <ScrollView style={{ flex: 1, backgroundColor: '#0e0a07' }}>
-        <View
-          style={{
-            maxWidth: 680,
-            width: '100%',
-            alignSelf: 'center',
-            paddingHorizontal: 24,
-            paddingTop: 64,
-            paddingBottom: 96,
-          }}
-        >
+      <ScrollView className="flex-1 bg-ristretto-950">
+        <View className="max-w-2xl w-full self-center px-6 pt-16 pb-24">
           {/* Header */}
-          <Text style={{ color: '#f5ede4', fontSize: 32, fontWeight: '700', marginBottom: 6 }}>
-            Privacy Policy
-          </Text>
-          <Text style={{ color: '#6e5a47', fontSize: 14, marginBottom: 48 }}>
+          <Text className="text-latte-100 text-3xl font-bold mb-1">Privacy Policy</Text>
+          <Text className="text-latte-700 text-sm mb-12">
             Caliburr — Last updated {EFFECTIVE_DATE}
           </Text>
 
@@ -111,7 +76,7 @@ export default function PrivacyPolicyScreen() {
               <Strong>Account metadata</Strong> — flags such as onboarding completion status, stored
               in your authentication profile.
             </Li>
-            <P style={{ marginTop: 8 }}>
+            <P className="mt-2">
               We do not collect your location, contacts, camera roll, or any device identifiers. We
               do not run third-party advertising or analytics SDKs.
             </P>
@@ -198,26 +163,8 @@ export default function PrivacyPolicyScreen() {
           </Section>
 
           {/* Contact */}
-          <View
-            style={{
-              marginTop: 16,
-              padding: 24,
-              backgroundColor: '#16100b',
-              borderWidth: 1,
-              borderColor: '#2e2017',
-              borderRadius: 12,
-            }}
-          >
-            <Text
-              style={{
-                color: '#f5ede4',
-                fontSize: 16,
-                fontWeight: '600',
-                marginBottom: 8,
-              }}
-            >
-              Contact
-            </Text>
+          <View className="mt-4 p-6 bg-ristretto-900 border border-ristretto-800 rounded-xl">
+            <Text className="text-latte-100 text-base font-semibold mb-2">Contact</Text>
             <P>If you have questions or requests regarding your data:</P>
             <SupportLink>Open support form</SupportLink>
           </View>

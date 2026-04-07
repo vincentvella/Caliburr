@@ -10,8 +10,12 @@ import {
 } from 'react-native';
 import { useRef, useState } from 'react';
 import { Link, router } from 'expo-router';
+import * as WebBrowser from 'expo-web-browser';
 import { useForm } from '@tanstack/react-form';
 import { supabase } from '@/lib/supabase';
+
+const PRIVACY_POLICY_URL = 'https://caliburr.coffee/privacy';
+const TOS_URL = 'https://caliburr.coffee/terms';
 
 export default function SignUpScreen() {
   const passwordRef = useRef<TextInput>(null);
@@ -149,6 +153,21 @@ export default function SignUpScreen() {
             </TouchableOpacity>
           )}
         </form.Subscribe>
+
+        <Text className="text-latte-500 dark:text-latte-600 text-xs text-center mb-6 leading-5">
+          By creating an account you agree to our{' '}
+          <Text className="text-harvest-400" onPress={() => WebBrowser.openBrowserAsync(TOS_URL)}>
+            Terms of Service
+          </Text>{' '}
+          and{' '}
+          <Text
+            className="text-harvest-400"
+            onPress={() => WebBrowser.openBrowserAsync(PRIVACY_POLICY_URL)}
+          >
+            Privacy Policy
+          </Text>
+          .
+        </Text>
 
         <View className="flex-row justify-center gap-1">
           <Text className="text-latte-600 dark:text-latte-500">Already have an account?</Text>
