@@ -1,5 +1,19 @@
 import { View, Text, TextInput, TouchableOpacity } from 'react-native';
 import { useState, useEffect, useRef } from 'react';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+  withTiming,
+} from 'react-native-reanimated';
+
+const DIGIT_STYLE = {
+  fontSize: 48,
+  fontWeight: 'bold',
+  color: '#ff9d37',
+  lineHeight: 56,
+  fontVariant: ['tabular-nums'],
+} satisfies import('react-native').TextStyle;
 
 function useSyncOnStop(running: boolean, elapsed: number, onChange: (v: string) => void) {
   useEffect(() => {
@@ -16,6 +30,31 @@ function useManagedInterval(running: boolean, onTick: () => void) {
     const id = setInterval(() => onTickRef.current(), 1000);
     return () => clearInterval(id);
   }, [running]);
+}
+
+function useDigitAnimation(value: string) {
+  const translateY = useSharedValue(0);
+  const opacity = useSharedValue(1);
+  const prevValue = useRef(value);
+
+  useEffect(() => {
+    if (value === prevValue.current) return;
+    prevValue.current = value;
+    translateY.value = 14;
+    opacity.value = 0;
+    translateY.value = withSpring(0, { damping: 18, stiffness: 450, mass: 0.6 });
+    opacity.value = withTiming(1, { duration: 100 });
+  }, [value, translateY, opacity]);
+
+  return useAnimatedStyle(() => ({
+    transform: [{ translateY: translateY.value }],
+    opacity: opacity.value,
+  }));
+}
+
+function AnimatedDigit({ value }: { value: string }) {
+  const animatedStyle = useDigitAnimation(value);
+  return <Animated.Text style={[DIGIT_STYLE, animatedStyle]}>{value}</Animated.Text>;
 }
 
 export function BrewTimer({ value, onChange }: { value: string; onChange: (v: string) => void }) {
@@ -48,10 +87,14 @@ export function BrewTimer({ value, onChange }: { value: string; onChange: (v: st
 
   return (
     <View className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-xl px-4 py-3 gap-3">
-      <View className="items-center">
-        <Text className="text-harvest-400 font-bold" style={{ fontSize: 48, letterSpacing: 2 }}>
-          {mm}:{ss}
-        </Text>
+      <View className="items-center" style={{ overflow: 'hidden', height: 56 }}>
+        <View className="flex-row items-center">
+          <AnimatedDigit value={mm[0]} />
+          <AnimatedDigit value={mm[1]} />
+          <Text style={DIGIT_STYLE}>:</Text>
+          <AnimatedDigit value={ss[0]} />
+          <AnimatedDigit value={ss[1]} />
+        </View>
       </View>
 
       <View className="flex-row gap-2">
