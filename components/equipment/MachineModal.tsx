@@ -14,6 +14,8 @@ import { LegendList } from '@legendapp/list';
 import { useState, useEffect } from 'react';
 import { useForm } from '@tanstack/react-form';
 import { supabase } from '@/lib/supabase';
+import { useQuery } from '@/hooks/useQuery';
+import { unwrap } from '@/lib/api';
 import type { BrewMachine, MachineType } from '@/lib/types';
 import { MACHINE_TYPE_LABELS } from '@/lib/types';
 import { ModalRow as Row } from './ModalRow';
@@ -46,24 +48,17 @@ function useMachineModal(visible: boolean) {
 }
 
 function useMachineDefaults(existingIds: string[]) {
-  const [defaults, setDefaults] = useState<BrewMachine[]>([]);
-
-  useEffect(() => {
-    async function load() {
-      let q = supabase
-        .from('brew_machines')
-        .select('*')
-        .order('verified', { ascending: false })
-        .order('created_at', { ascending: false })
-        .limit(25);
-      if (existingIds.length) q = q.not('id', 'in', `(${existingIds.join(',')})`);
-      const { data } = await q;
-      setDefaults((data as BrewMachine[]) ?? []);
-    }
-    load();
+  const { data, error } = useQuery(async () => {
+    let q = supabase
+      .from('brew_machines')
+      .select('*')
+      .order('verified', { ascending: false })
+      .order('created_at', { ascending: false })
+      .limit(25);
+    if (existingIds.length) q = q.not('id', 'in', `(${existingIds.join(',')})`);
+    return unwrap(await q) as BrewMachine[];
   }, [existingIds]);
-
-  return { defaults };
+  return { defaults: data ?? [], error };
 }
 
 function useMachineSearch(query: string, existingIds: string[]) {
@@ -356,6 +351,8 @@ function MachineForm({
   const MACHINE_TYPES = Object.keys(MACHINE_TYPE_LABELS) as MachineType[];
   const isReview = !!reviewMachine;
 
+  const [submitError, setSubmitError] = useState<string | null>(null);
+
   const form = useForm({
     defaultValues: {
       brand: reviewMachine?.brand ?? initialBrand,
@@ -364,6 +361,8 @@ function MachineForm({
       image_url: reviewMachine?.image_url ?? '',
     },
     onSubmit: async ({ value }) => {
+      setSubmitError(null);
+
       if (!value.machine_type) {
         form.setErrorMap({ onSubmit: { fields: { machine_type: 'Select a machine type' } } });
         return;
@@ -376,21 +375,24 @@ function MachineForm({
         image_url: value.image_url.trim() || null,
       };
 
-      let machine: BrewMachine;
+      try {
+        let machine: BrewMachine;
 
-      if (isReview) {
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
+        if (isReview) {
+          const {
+            data: { user },
+          } = await supabase.auth.getUser();
 
-        if (machinePayloadChanged(reviewMachine, payload)) {
-          const { data: edit } = await supabase
-            .from('machine_edits')
-            .insert({ machine_id: reviewMachine.id, proposed_by: user?.id ?? null, payload })
-            .select()
-            .single();
+          if (machinePayloadChanged(reviewMachine, payload)) {
+            const edit = unwrap(
+              await supabase
+                .from('machine_edits')
+                .insert({ machine_id: reviewMachine.id, proposed_by: user?.id ?? null, payload })
+                .select()
+                .single(),
+            );
 
-          if (edit) {
+            // Fire-and-forget email notification
             supabase.functions.invoke('notify-equipment-edit', {
               body: {
                 editType: 'machine',
@@ -399,33 +401,35 @@ function MachineForm({
                 editId: edit.id,
               },
             });
+          } else {
+            if (user) {
+              await supabase
+                .from('machine_verifications')
+                .upsert(
+                  { brew_machine_id: reviewMachine.id, user_id: user.id },
+                  { onConflict: 'brew_machine_id,user_id', ignoreDuplicates: true },
+                );
+            }
           }
+
+          machine = reviewMachine;
         } else {
-          if (user) {
+          const {
+            data: { user },
+          } = await supabase.auth.getUser();
+          machine = unwrap(
             await supabase
-              .from('machine_verifications')
-              .upsert(
-                { brew_machine_id: reviewMachine.id, user_id: user.id },
-                { onConflict: 'brew_machine_id,user_id', ignoreDuplicates: true },
-              );
-          }
+              .from('brew_machines')
+              .insert({ ...payload, created_by: user?.id ?? null })
+              .select()
+              .single(),
+          ) as BrewMachine;
         }
 
-        machine = reviewMachine;
-      } else {
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
-        const { data, error } = await supabase
-          .from('brew_machines')
-          .insert({ ...payload, created_by: user?.id ?? null })
-          .select()
-          .single();
-        if (error || !data) return;
-        machine = data as BrewMachine;
+        onDone(machine);
+      } catch (e) {
+        setSubmitError(e instanceof Error ? e.message : 'Something went wrong');
       }
-
-      onDone(machine);
     },
   });
 
@@ -603,6 +607,12 @@ function MachineForm({
           ) : null
         }
       </form.Subscribe>
+
+      {submitError && (
+        <Text style={{ color: '#f87171' }} className="text-sm px-1">
+          {submitError}
+        </Text>
+      )}
 
       <form.Subscribe selector={(s) => s.isSubmitting}>
         {(isSubmitting) => (

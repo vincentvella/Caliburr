@@ -43,6 +43,7 @@ function useLoadEditRecipe(id: string, form: AnyForm) {
   const [grinders, setGrinders] = useState<Grinder[]>([]);
   const [machines, setMachines] = useState<BrewMachine[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [selectedBean, setSelectedBean] = useState<{
     id: string;
     name: string;
@@ -51,70 +52,72 @@ function useLoadEditRecipe(id: string, form: AnyForm) {
 
   useEffect(() => {
     async function load() {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) return;
+      setError(null);
+      try {
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+        if (!user) throw new Error('You must be signed in to edit a recipe.');
 
-      const [recipeRes, userGrindersRes, userMachinesRes] = await Promise.all([
-        supabase
-          .from('recipes')
-          .select(
-            `
-              *,
-              grinder:grinders(brand, model, verified, burr_type, adjustment_type),
-              bean:beans(name, roaster, origin, process, roast_level),
-              brew_machine:brew_machines(brand, model, machine_type, verified)
-            `,
-          )
-          .eq('id', id)
-          .eq('user_id', user.id)
-          .single(),
-        supabase.from('user_grinders').select('grinder_id').eq('user_id', user.id),
-        supabase.from('user_brew_machines').select('brew_machine_id').eq('user_id', user.id),
-      ]);
+        const [recipeRes, userGrindersRes, userMachinesRes] = await Promise.all([
+          supabase
+            .from('recipes')
+            .select(
+              `
+                *,
+                grinder:grinders(brand, model, verified, burr_type, adjustment_type),
+                bean:beans(name, roaster, origin, process, roast_level),
+                brew_machine:brew_machines(brand, model, machine_type, verified)
+              `,
+            )
+            .eq('id', id)
+            .eq('user_id', user.id)
+            .single(),
+          supabase.from('user_grinders').select('grinder_id').eq('user_id', user.id),
+          supabase.from('user_brew_machines').select('brew_machine_id').eq('user_id', user.id),
+        ]);
 
-      if (!recipeRes.data) {
-        router.back();
-        return;
+        if (recipeRes.error || !recipeRes.data) throw new Error('Recipe not found.');
+        setRecipe(recipeRes.data as RecipeWithJoins);
+        const r = recipeRes.data;
+
+        const grinderIds = (userGrindersRes.data ?? []).map((row) => row.grinder_id);
+        const machineIds = (userMachinesRes.data ?? []).map((row) => row.brew_machine_id);
+
+        const [grindersRes, machinesRes] = await Promise.all([
+          supabase.from('grinders').select('*').in('id', grinderIds),
+          supabase.from('brew_machines').select('*').in('id', machineIds),
+        ]);
+        setGrinders(grindersRes.data ?? []);
+        setMachines(machinesRes.data ?? []);
+
+        form.setFieldValue('grinder_id', r.grinder_id);
+        form.setFieldValue('brew_machine_id', r.brew_machine_id ?? '');
+        form.setFieldValue('bean_id', r.bean_id ?? '');
+        form.setFieldValue('brew_method', r.brew_method);
+        form.setFieldValue('grind_setting', r.grind_setting);
+        form.setFieldValue('dose_g', r.dose_g?.toString() ?? '');
+        form.setFieldValue('yield_g', r.yield_g?.toString() ?? '');
+        form.setFieldValue('brew_time_s', r.brew_time_s?.toString() ?? '');
+        form.setFieldValue('water_temp_c', r.water_temp_c?.toString() ?? '');
+        form.setFieldValue('ratio', r.ratio?.toString() ?? '');
+        form.setFieldValue('roast_level', r.roast_level ?? '');
+        form.setFieldValue('roast_date', r.roast_date ?? '');
+        form.setFieldValue('notes', r.notes ?? '');
+
+        if (r.bean && r.bean_id) {
+          setSelectedBean({ id: r.bean_id, name: r.bean.name, roaster: r.bean.roaster });
+        }
+      } catch (e) {
+        setError(e instanceof Error ? e.message : 'Something went wrong');
+      } finally {
+        setLoading(false);
       }
-      setRecipe(recipeRes.data as RecipeWithJoins);
-      const r = recipeRes.data;
-
-      const grinderIds = (userGrindersRes.data ?? []).map((row) => row.grinder_id);
-      const machineIds = (userMachinesRes.data ?? []).map((row) => row.brew_machine_id);
-
-      const [grindersRes, machinesRes] = await Promise.all([
-        supabase.from('grinders').select('*').in('id', grinderIds),
-        supabase.from('brew_machines').select('*').in('id', machineIds),
-      ]);
-      setGrinders(grindersRes.data ?? []);
-      setMachines(machinesRes.data ?? []);
-
-      form.setFieldValue('grinder_id', r.grinder_id);
-      form.setFieldValue('brew_machine_id', r.brew_machine_id ?? '');
-      form.setFieldValue('bean_id', r.bean_id ?? '');
-      form.setFieldValue('brew_method', r.brew_method);
-      form.setFieldValue('grind_setting', r.grind_setting);
-      form.setFieldValue('dose_g', r.dose_g?.toString() ?? '');
-      form.setFieldValue('yield_g', r.yield_g?.toString() ?? '');
-      form.setFieldValue('brew_time_s', r.brew_time_s?.toString() ?? '');
-      form.setFieldValue('water_temp_c', r.water_temp_c?.toString() ?? '');
-      form.setFieldValue('ratio', r.ratio?.toString() ?? '');
-      form.setFieldValue('roast_level', r.roast_level ?? '');
-      form.setFieldValue('roast_date', r.roast_date ?? '');
-      form.setFieldValue('notes', r.notes ?? '');
-
-      if (r.bean && r.bean_id) {
-        setSelectedBean({ id: r.bean_id, name: r.bean.name, roaster: r.bean.roaster });
-      }
-
-      setLoading(false);
     }
     load();
   }, [id, form]);
 
-  return { recipe, grinders, machines, loading, selectedBean, setSelectedBean };
+  return { recipe, grinders, machines, loading, error, selectedBean, setSelectedBean };
 }
 
 function useResetGrindOnGrinderChange(grinderId: string, form: AnyForm) {
@@ -200,10 +203,15 @@ export default function EditRecipeScreen() {
     },
   });
 
-  const { recipe, grinders, machines, loading, selectedBean, setSelectedBean } = useLoadEditRecipe(
-    id,
-    form,
-  );
+  const {
+    recipe,
+    grinders,
+    machines,
+    loading,
+    error: loadError,
+    selectedBean,
+    setSelectedBean,
+  } = useLoadEditRecipe(id, form);
 
   const grinderId = useStore(form.store, (s) => s.values.grinder_id);
   const grinder = grinders.find((g) => g.id === grinderId) ?? null;
@@ -214,6 +222,17 @@ export default function EditRecipeScreen() {
     return (
       <View className="flex-1 bg-latte-50 dark:bg-ristretto-900 items-center justify-center">
         <ActivityIndicator color="#ff9d37" />
+      </View>
+    );
+  }
+
+  if (loadError) {
+    return (
+      <View className="flex-1 bg-latte-50 dark:bg-ristretto-900 items-center justify-center px-8">
+        <Text className="text-latte-600 dark:text-latte-500 text-center">{loadError}</Text>
+        <TouchableOpacity onPress={() => router.back()} className="mt-4">
+          <Text className="text-harvest-400 font-semibold">Go back</Text>
+        </TouchableOpacity>
       </View>
     );
   }

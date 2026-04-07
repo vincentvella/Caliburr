@@ -26,63 +26,70 @@ import { formatTime } from '@/components/recipe/RecipeStats';
 function useRecipeScreen(id: string) {
   const [recipe, setRecipe] = useState<RecipeWithJoins | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [upvoted, setUpvoted] = useState(false);
   const [history, setHistory] = useState<RecipeHistory[]>([]);
 
   useEffect(() => {
     async function load() {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      setCurrentUserId(user?.id ?? null);
+      setError(null);
+      try {
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+        setCurrentUserId(user?.id ?? null);
 
-      const [recipeRes, upvoteRes] = await Promise.all([
-        supabase
-          .from('recipes')
-          .select(
-            `
-              *,
-              grinder:grinders(brand, model, verified, burr_type, adjustment_type),
-              bean:beans(name, roaster, origin, process, roast_level),
-              brew_machine:brew_machines(brand, model, machine_type, verified)
-            `,
-          )
-          .eq('id', id)
-          .single(),
-        user
-          ? supabase
-              .from('recipe_upvotes')
-              .select('recipe_id')
-              .eq('recipe_id', id)
-              .eq('user_id', user.id)
-              .maybeSingle()
-          : Promise.resolve({ data: null }),
-      ]);
+        const [recipeRes, upvoteRes] = await Promise.all([
+          supabase
+            .from('recipes')
+            .select(
+              `
+                *,
+                grinder:grinders(brand, model, verified, burr_type, adjustment_type),
+                bean:beans(name, roaster, origin, process, roast_level),
+                brew_machine:brew_machines(brand, model, machine_type, verified)
+              `,
+            )
+            .eq('id', id)
+            .single(),
+          user
+            ? supabase
+                .from('recipe_upvotes')
+                .select('recipe_id')
+                .eq('recipe_id', id)
+                .eq('user_id', user.id)
+                .maybeSingle()
+            : Promise.resolve({ data: null }),
+        ]);
 
-      if (recipeRes.data) setRecipe(recipeRes.data as RecipeWithJoins);
-      setUpvoted(!!upvoteRes.data);
+        if (recipeRes.error) throw new Error(recipeRes.error.message);
+        setRecipe(recipeRes.data as RecipeWithJoins);
+        setUpvoted(!!upvoteRes.data);
 
-      if (user && recipeRes.data?.user_id === user.id) {
-        const { data: historyData } = await supabase
-          .from('recipe_history')
-          .select('*')
-          .eq('recipe_id', id)
-          .order('edited_at', { ascending: false });
-        setHistory(historyData ?? []);
+        if (user && recipeRes.data?.user_id === user.id) {
+          const { data: historyData } = await supabase
+            .from('recipe_history')
+            .select('*')
+            .eq('recipe_id', id)
+            .order('edited_at', { ascending: false });
+          setHistory(historyData ?? []);
+        }
+      } catch (e) {
+        setError(e instanceof Error ? e.message : 'Something went wrong');
+      } finally {
+        setLoading(false);
       }
-
-      setLoading(false);
     }
     load();
   }, [id]);
 
-  return { recipe, setRecipe, loading, currentUserId, upvoted, setUpvoted, history };
+  return { recipe, setRecipe, loading, error, currentUserId, upvoted, setUpvoted, history };
 }
 
 export default function RecipeDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { recipe, setRecipe, loading, currentUserId, upvoted, setUpvoted, history } =
+  const { recipe, setRecipe, loading, error, currentUserId, upvoted, setUpvoted, history } =
     useRecipeScreen(id);
   const [deleting, setDeleting] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -93,22 +100,24 @@ export default function RecipeDetailScreen() {
     setRecipe((r) => (r ? { ...r, upvotes: r.upvotes + (upvoted ? -1 : 1) } : r));
 
     if (upvoted) {
-      const { error } = await supabase
+      const { error: err } = await supabase
         .from('recipe_upvotes')
         .delete()
         .eq('recipe_id', recipe.id)
         .eq('user_id', currentUserId);
-      if (error) {
+      if (err) {
         setUpvoted(true);
         setRecipe((r) => (r ? { ...r, upvotes: r.upvotes + 1 } : r));
+        Alert.alert('Error', 'Failed to remove upvote. Please try again.');
       }
     } else {
-      const { error } = await supabase
+      const { error: err } = await supabase
         .from('recipe_upvotes')
         .insert({ recipe_id: recipe.id, user_id: currentUserId });
-      if (error) {
+      if (err) {
         setUpvoted(false);
         setRecipe((r) => (r ? { ...r, upvotes: r.upvotes - 1 } : r));
+        Alert.alert('Error', 'Failed to upvote. Please try again.');
       }
     }
   }
@@ -185,10 +194,12 @@ export default function RecipeDetailScreen() {
     );
   }
 
-  if (!recipe) {
+  if (error || !recipe) {
     return (
       <View className="flex-1 bg-latte-50 dark:bg-ristretto-900 items-center justify-center px-8">
-        <Text className="text-latte-600 dark:text-latte-500 text-center">Recipe not found.</Text>
+        <Text className="text-latte-600 dark:text-latte-500 text-center">
+          {error ?? 'Recipe not found.'}
+        </Text>
         <TouchableOpacity onPress={() => router.back()} className="mt-4">
           <Text className="text-harvest-400 font-semibold">Go back</Text>
         </TouchableOpacity>

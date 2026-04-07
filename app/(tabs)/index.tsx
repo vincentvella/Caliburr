@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   RefreshControl,
   ActivityIndicator,
+  Alert,
 } from 'react-native';
 
 import { LegendList } from '@legendapp/list';
@@ -250,6 +251,7 @@ export default function ExploreScreen() {
         setRecipes((prev) =>
           prev.map((r) => (r.id === recipeId ? { ...r, upvotes: r.upvotes + 1 } : r)),
         );
+        Alert.alert('Error', 'Failed to remove upvote. Please try again.');
       }
     } else {
       const { error } = await supabase
@@ -264,6 +266,7 @@ export default function ExploreScreen() {
         setRecipes((prev) =>
           prev.map((r) => (r.id === recipeId ? { ...r, upvotes: r.upvotes - 1 } : r)),
         );
+        Alert.alert('Error', 'Failed to upvote. Please try again.');
       }
     }
   }

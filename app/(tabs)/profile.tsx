@@ -41,6 +41,7 @@ function useEquipment() {
   const [grinders, setGrinders] = useState<UserGrinder[]>([]);
   const [machines, setMachines] = useState<UserMachine[]>([]);
   const [loadingEquipment, setLoadingEquipment] = useState(true);
+  const [equipmentError, setEquipmentError] = useState<string | null>(null);
   const [pendingGrinderEditIds, setPendingGrinderEditIds] = useState<Set<string>>(new Set());
   const [pendingMachineEditIds, setPendingMachineEditIds] = useState<Set<string>>(new Set());
 
@@ -49,68 +50,79 @@ function useEquipment() {
   }, []);
 
   async function fetchEquipment() {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) return;
+    setEquipmentError(null);
+    try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) return;
 
-    setEmail(user.email ?? null);
+      setEmail(user.email ?? null);
 
-    const [userGrindersRes, userMachinesRes] = await Promise.all([
-      supabase
-        .from('user_grinders')
-        .select('grinder_id, is_default')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false }),
-      supabase
-        .from('user_brew_machines')
-        .select('brew_machine_id, is_default')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false }),
-    ]);
+      const [userGrindersRes, userMachinesRes] = await Promise.all([
+        supabase
+          .from('user_grinders')
+          .select('grinder_id, is_default')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false }),
+        supabase
+          .from('user_brew_machines')
+          .select('brew_machine_id, is_default')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false }),
+      ]);
 
-    const grinderIds = (userGrindersRes.data ?? []).map((r) => r.grinder_id);
-    const machineIds = (userMachinesRes.data ?? []).map((r) => r.brew_machine_id);
+      if (userGrindersRes.error) throw new Error(userGrindersRes.error.message);
+      if (userMachinesRes.error) throw new Error(userMachinesRes.error.message);
 
-    const [grindersRes, machinesRes, grinderEditsRes, machineEditsRes] = await Promise.all([
-      supabase.from('grinders').select('*').in('id', grinderIds),
-      supabase.from('brew_machines').select('*').in('id', machineIds),
-      grinderIds.length
-        ? supabase
-            .from('grinder_edits')
-            .select('grinder_id')
-            .in('grinder_id', grinderIds)
-            .eq('status', 'pending')
-        : Promise.resolve({ data: [] }),
-      machineIds.length
-        ? supabase
-            .from('machine_edits')
-            .select('machine_id')
-            .in('machine_id', machineIds)
-            .eq('status', 'pending')
-        : Promise.resolve({ data: [] }),
-    ]);
+      const grinderIds = (userGrindersRes.data ?? []).map((r) => r.grinder_id);
+      const machineIds = (userMachinesRes.data ?? []).map((r) => r.brew_machine_id);
 
-    const grindersById = new Map((grindersRes.data ?? []).map((g) => [g.id, g]));
-    const machinesById = new Map((machinesRes.data ?? []).map((m) => [m.id, m]));
+      const [grindersRes, machinesRes, grinderEditsRes, machineEditsRes] = await Promise.all([
+        supabase.from('grinders').select('*').in('id', grinderIds),
+        supabase.from('brew_machines').select('*').in('id', machineIds),
+        grinderIds.length
+          ? supabase
+              .from('grinder_edits')
+              .select('grinder_id')
+              .in('grinder_id', grinderIds)
+              .eq('status', 'pending')
+          : Promise.resolve({ data: [] }),
+        machineIds.length
+          ? supabase
+              .from('machine_edits')
+              .select('machine_id')
+              .in('machine_id', machineIds)
+              .eq('status', 'pending')
+          : Promise.resolve({ data: [] }),
+      ]);
 
-    setGrinders(
-      (userGrindersRes.data ?? []).flatMap((row) => {
-        const grinder = grindersById.get(row.grinder_id);
-        if (!grinder) return [];
-        return [{ grinder_id: row.grinder_id, is_default: row.is_default, grinder }];
-      }),
-    );
-    setMachines(
-      (userMachinesRes.data ?? []).flatMap((row) => {
-        const brew_machine = machinesById.get(row.brew_machine_id);
-        if (!brew_machine) return [];
-        return [{ brew_machine_id: row.brew_machine_id, is_default: row.is_default, brew_machine }];
-      }),
-    );
-    setPendingGrinderEditIds(new Set((grinderEditsRes.data ?? []).map((e) => e.grinder_id)));
-    setPendingMachineEditIds(new Set((machineEditsRes.data ?? []).map((e) => e.machine_id)));
-    setLoadingEquipment(false);
+      const grindersById = new Map((grindersRes.data ?? []).map((g) => [g.id, g]));
+      const machinesById = new Map((machinesRes.data ?? []).map((m) => [m.id, m]));
+
+      setGrinders(
+        (userGrindersRes.data ?? []).flatMap((row) => {
+          const grinder = grindersById.get(row.grinder_id);
+          if (!grinder) return [];
+          return [{ grinder_id: row.grinder_id, is_default: row.is_default, grinder }];
+        }),
+      );
+      setMachines(
+        (userMachinesRes.data ?? []).flatMap((row) => {
+          const brew_machine = machinesById.get(row.brew_machine_id);
+          if (!brew_machine) return [];
+          return [
+            { brew_machine_id: row.brew_machine_id, is_default: row.is_default, brew_machine },
+          ];
+        }),
+      );
+      setPendingGrinderEditIds(new Set((grinderEditsRes.data ?? []).map((e) => e.grinder_id)));
+      setPendingMachineEditIds(new Set((machineEditsRes.data ?? []).map((e) => e.machine_id)));
+    } catch (e) {
+      setEquipmentError(e instanceof Error ? e.message : 'Something went wrong');
+    } finally {
+      setLoadingEquipment(false);
+    }
   }
 
   return {
@@ -120,6 +132,7 @@ function useEquipment() {
     machines,
     setMachines,
     loadingEquipment,
+    equipmentError,
     pendingGrinderEditIds,
     pendingMachineEditIds,
     fetchEquipment,
@@ -138,6 +151,7 @@ export default function ProfileScreen() {
     machines,
     setMachines,
     loadingEquipment,
+    equipmentError,
     pendingGrinderEditIds,
     pendingMachineEditIds,
     fetchEquipment,
@@ -213,23 +227,37 @@ export default function ProfileScreen() {
 
     const isAlreadyDefault = grinders.find((g) => g.grinder_id === grinderId)?.is_default ?? false;
 
-    if (isAlreadyDefault) {
-      await supabase
-        .from('user_grinders')
-        .update({ is_default: false })
-        .eq('user_id', user.id)
-        .eq('grinder_id', grinderId);
-      setGrinders((prev) =>
-        prev.map((g) => (g.grinder_id === grinderId ? { ...g, is_default: false } : g)),
-      );
-    } else {
-      await supabase.from('user_grinders').update({ is_default: false }).eq('user_id', user.id);
-      await supabase
-        .from('user_grinders')
-        .update({ is_default: true })
-        .eq('user_id', user.id)
-        .eq('grinder_id', grinderId);
-      setGrinders((prev) => prev.map((g) => ({ ...g, is_default: g.grinder_id === grinderId })));
+    // Optimistic update
+    setGrinders((prev) =>
+      isAlreadyDefault
+        ? prev.map((g) => (g.grinder_id === grinderId ? { ...g, is_default: false } : g))
+        : prev.map((g) => ({ ...g, is_default: g.grinder_id === grinderId })),
+    );
+
+    try {
+      if (isAlreadyDefault) {
+        const { error } = await supabase
+          .from('user_grinders')
+          .update({ is_default: false })
+          .eq('user_id', user.id)
+          .eq('grinder_id', grinderId);
+        if (error) throw error;
+      } else {
+        const [r1, r2] = await Promise.all([
+          supabase.from('user_grinders').update({ is_default: false }).eq('user_id', user.id),
+          supabase
+            .from('user_grinders')
+            .update({ is_default: true })
+            .eq('user_id', user.id)
+            .eq('grinder_id', grinderId),
+        ]);
+        if (r1.error) throw r1.error;
+        if (r2.error) throw r2.error;
+      }
+    } catch {
+      // Revert optimistic update
+      await fetchEquipment();
+      Alert.alert('Error', 'Failed to update default grinder. Please try again.');
     }
   }
 
@@ -242,33 +270,37 @@ export default function ProfileScreen() {
     const isAlreadyDefault =
       machines.find((m) => m.brew_machine_id === machineId)?.is_default ?? false;
 
-    if (isAlreadyDefault) {
-      // Deselect
-      await supabase
-        .from('user_brew_machines')
-        .update({ is_default: false })
-        .eq('user_id', user.id)
-        .eq('brew_machine_id', machineId);
-      setMachines((prev) =>
-        prev.map((m) => (m.brew_machine_id === machineId ? { ...m, is_default: false } : m)),
-      );
-    } else {
-      // Clear any existing default, then set this one
-      await supabase
-        .from('user_brew_machines')
-        .update({ is_default: false })
-        .eq('user_id', user.id);
-      await supabase
-        .from('user_brew_machines')
-        .update({ is_default: true })
-        .eq('user_id', user.id)
-        .eq('brew_machine_id', machineId);
-      setMachines((prev) =>
-        prev.map((m) => ({
-          ...m,
-          is_default: m.brew_machine_id === machineId,
-        })),
-      );
+    // Optimistic update
+    setMachines((prev) =>
+      isAlreadyDefault
+        ? prev.map((m) => (m.brew_machine_id === machineId ? { ...m, is_default: false } : m))
+        : prev.map((m) => ({ ...m, is_default: m.brew_machine_id === machineId })),
+    );
+
+    try {
+      if (isAlreadyDefault) {
+        const { error } = await supabase
+          .from('user_brew_machines')
+          .update({ is_default: false })
+          .eq('user_id', user.id)
+          .eq('brew_machine_id', machineId);
+        if (error) throw error;
+      } else {
+        const [r1, r2] = await Promise.all([
+          supabase.from('user_brew_machines').update({ is_default: false }).eq('user_id', user.id),
+          supabase
+            .from('user_brew_machines')
+            .update({ is_default: true })
+            .eq('user_id', user.id)
+            .eq('brew_machine_id', machineId),
+        ]);
+        if (r1.error) throw r1.error;
+        if (r2.error) throw r2.error;
+      }
+    } catch {
+      // Revert optimistic update
+      await fetchEquipment();
+      Alert.alert('Error', 'Failed to update default machine. Please try again.');
     }
   }
 
@@ -285,6 +317,8 @@ export default function ProfileScreen() {
 
         {loadingEquipment ? (
           <ActivityIndicator color="#ff9d37" style={{ marginTop: 32 }} />
+        ) : equipmentError ? (
+          <Text className="text-red-400 text-sm text-center mt-8">{equipmentError}</Text>
         ) : (
           <>
             {/* Grinders */}

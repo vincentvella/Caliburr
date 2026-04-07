@@ -14,6 +14,8 @@ import { LegendList } from '@legendapp/list';
 import { useState, useEffect } from 'react';
 import { useForm } from '@tanstack/react-form';
 import { supabase } from '@/lib/supabase';
+import { useQuery } from '@/hooks/useQuery';
+import { unwrap } from '@/lib/api';
 import type { Grinder, BurrType, AdjustmentType } from '@/lib/types';
 import { BURR_TYPE_LABELS, ADJUSTMENT_TYPE_LABELS } from '@/lib/types';
 import { ModalRow as Row } from './ModalRow';
@@ -46,24 +48,17 @@ function useGrinderModal(visible: boolean, editGrinder: Grinder | undefined) {
 }
 
 function useGrinderDefaults(existingIds: string[]) {
-  const [defaults, setDefaults] = useState<Grinder[]>([]);
-
-  useEffect(() => {
-    async function load() {
-      let q = supabase
-        .from('grinders')
-        .select('*')
-        .order('verified', { ascending: false })
-        .order('created_at', { ascending: false })
-        .limit(25);
-      if (existingIds.length) q = q.not('id', 'in', `(${existingIds.join(',')})`);
-      const { data } = await q;
-      setDefaults((data as Grinder[]) ?? []);
-    }
-    load();
+  const { data, error } = useQuery(async () => {
+    let q = supabase
+      .from('grinders')
+      .select('*')
+      .order('verified', { ascending: false })
+      .order('created_at', { ascending: false })
+      .limit(25);
+    if (existingIds.length) q = q.not('id', 'in', `(${existingIds.join(',')})`);
+    return unwrap(await q) as Grinder[];
   }, [existingIds]);
-
-  return { defaults };
+  return { defaults: data ?? [], error };
 }
 
 function useGrinderSearch(query: string, existingIds: string[]) {
@@ -397,6 +392,8 @@ function GrinderForm({
     stepless: 'Stepless',
   };
 
+  const [submitError, setSubmitError] = useState<string | null>(null);
+
   const form = useForm({
     defaultValues: {
       brand: source?.brand ?? initialBrand,
@@ -409,6 +406,8 @@ function GrinderForm({
       image_url: source?.image_url ?? '',
     },
     onSubmit: async ({ value }) => {
+      setSubmitError(null);
+
       const stepsPerUnit =
         value.adjustment_type === 'micro_stepped' && value.steps_per_unit
           ? parseInt(value.steps_per_unit, 10)
@@ -425,21 +424,23 @@ function GrinderForm({
         image_url: value.image_url.trim() || null,
       };
 
-      if (isReview) {
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
+      try {
+        if (isReview) {
+          const {
+            data: { user },
+          } = await supabase.auth.getUser();
 
-        if (grinderPayloadChanged(reviewGrinder!, payload)) {
-          // Queue for moderation — do not apply directly
-          const { data: edit } = await supabase
-            .from('grinder_edits')
-            .insert({ grinder_id: reviewGrinder!.id, proposed_by: user?.id ?? null, payload })
-            .select()
-            .single();
+          if (grinderPayloadChanged(reviewGrinder!, payload)) {
+            // Queue for moderation — do not apply directly
+            const edit = unwrap(
+              await supabase
+                .from('grinder_edits')
+                .insert({ grinder_id: reviewGrinder!.id, proposed_by: user?.id ?? null, payload })
+                .select()
+                .single(),
+            );
 
-          // Fire-and-forget email notification
-          if (edit) {
+            // Fire-and-forget email notification
             supabase.functions.invoke('notify-equipment-edit', {
               body: {
                 editType: 'grinder',
@@ -448,38 +449,44 @@ function GrinderForm({
                 editId: edit.id,
               },
             });
+          } else {
+            // No changes — just count the verification
+            if (user) {
+              await supabase
+                .from('grinder_verifications')
+                .upsert(
+                  { grinder_id: reviewGrinder!.id, user_id: user.id },
+                  { onConflict: 'grinder_id,user_id', ignoreDuplicates: true },
+                );
+            }
           }
-        } else {
-          // No changes — just count the verification
-          if (user) {
-            await supabase
-              .from('grinder_verifications')
-              .upsert(
-                { grinder_id: reviewGrinder!.id, user_id: user.id },
-                { onConflict: 'grinder_id,user_id', ignoreDuplicates: true },
-              );
-          }
-        }
 
-        onDone(reviewGrinder!);
-      } else if (editGrinder) {
-        const { data, error } = await supabase
-          .from('grinders')
-          .update(payload)
-          .eq('id', editGrinder.id)
-          .select()
-          .single();
-        if (!error && data) onDone(data as Grinder);
-      } else {
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
-        const { data, error } = await supabase
-          .from('grinders')
-          .insert({ ...payload, created_by: user?.id ?? null })
-          .select()
-          .single();
-        if (!error && data) onDone(data as Grinder);
+          onDone(reviewGrinder!);
+        } else if (editGrinder) {
+          const data = unwrap(
+            await supabase
+              .from('grinders')
+              .update(payload)
+              .eq('id', editGrinder.id)
+              .select()
+              .single(),
+          );
+          onDone(data as Grinder);
+        } else {
+          const {
+            data: { user },
+          } = await supabase.auth.getUser();
+          const data = unwrap(
+            await supabase
+              .from('grinders')
+              .insert({ ...payload, created_by: user?.id ?? null })
+              .select()
+              .single(),
+          );
+          onDone(data as Grinder);
+        }
+      } catch (e) {
+        setSubmitError(e instanceof Error ? e.message : 'Something went wrong');
       }
     },
   });
@@ -743,6 +750,12 @@ function GrinderForm({
           </View>
         )}
       </form.Field>
+
+      {submitError && (
+        <Text style={{ color: '#f87171' }} className="text-sm px-1">
+          {submitError}
+        </Text>
+      )}
 
       <form.Subscribe selector={(s) => s.isSubmitting}>
         {(isSubmitting) => (

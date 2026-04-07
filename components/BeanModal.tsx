@@ -13,6 +13,8 @@ import { LegendList } from '@legendapp/list';
 import { useState, useEffect } from 'react';
 import { useForm } from '@tanstack/react-form';
 import { supabase } from '@/lib/supabase';
+import { useQuery } from '@/hooks/useQuery';
+import { unwrap } from '@/lib/api';
 import type { Bean, RoastLevel } from '@/lib/types';
 import { ROAST_LEVEL_LABELS } from '@/lib/types';
 import { Constants } from '@/lib/database.types';
@@ -42,21 +44,17 @@ function useResetOnOpen(
 }
 
 function useDefaults() {
-  const [defaults, setDefaults] = useState<Bean[]>([]);
-
-  useEffect(() => {
-    async function load() {
-      const { data } = await supabase
+  const { data, error } = useQuery(
+    () =>
+      supabase
         .from('beans')
         .select('*')
         .order('created_at', { ascending: false })
-        .limit(25);
-      setDefaults(data ?? []);
-    }
-    load();
-  }, []);
-
-  return { defaults };
+        .limit(25)
+        .then((res) => unwrap(res) as Bean[]),
+    [],
+  );
+  return { defaults: data ?? [], error };
 }
 
 function useBeanSearch(query: string) {
@@ -89,7 +87,7 @@ export function BeanModal({ visible, onClose, onSelected, selectedId }: Props) {
   const [query, setQuery] = useState('');
 
   useResetOnOpen(visible, setView, setQuery);
-  const { defaults } = useDefaults();
+  const { defaults, error: defaultsError } = useDefaults();
   const { results, searching } = useBeanSearch(query);
 
   function handleClose() {
@@ -144,7 +142,9 @@ export function BeanModal({ visible, onClose, onSelected, selectedId }: Props) {
                 keyExtractor={(item) => item.id}
                 keyboardShouldPersistTaps="handled"
                 ListHeaderComponent={
-                  !query.trim() && defaults.length > 0 ? (
+                  defaultsError && !query.trim() ? (
+                    <Text className="text-red-400 text-xs mb-2">{defaultsError}</Text>
+                  ) : !query.trim() && defaults.length > 0 ? (
                     <Text className="text-latte-500 dark:text-latte-600 text-xs mb-2">
                       Recent beans
                     </Text>
