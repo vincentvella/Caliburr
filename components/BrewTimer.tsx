@@ -1,5 +1,6 @@
 import { View, Text, TextInput, TouchableOpacity } from 'react-native';
 import { useState, useEffect, useRef } from 'react';
+import { haptics } from '@/lib/haptics';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -66,15 +67,18 @@ export function BrewTimer({ value, onChange }: { value: string; onChange: (v: st
   }
 
   function start() {
+    haptics.tick();
     setRunning(true);
   }
 
   function stop() {
+    haptics.medium();
     setRunning(false);
   }
 
   function reset() {
-    stop();
+    haptics.tick();
+    setRunning(false);
     setElapsed(0);
     onChange('');
   }

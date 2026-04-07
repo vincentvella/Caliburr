@@ -16,6 +16,7 @@ import { useForm } from '@tanstack/react-form';
 import { supabase } from '@/lib/supabase';
 import { useQuery } from '@/hooks/useQuery';
 import { unwrap } from '@/lib/api';
+import { haptics } from '@/lib/haptics';
 import type { BrewMachine, MachineType } from '@/lib/types';
 import { MACHINE_TYPE_LABELS } from '@/lib/types';
 import { ModalRow as Row } from './ModalRow';
@@ -426,8 +427,10 @@ function MachineForm({
           ) as BrewMachine;
         }
 
+        haptics.success();
         onDone(machine);
       } catch (e) {
+        haptics.error();
         setSubmitError(e instanceof Error ? e.message : 'Something went wrong');
       }
     },

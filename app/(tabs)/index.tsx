@@ -13,6 +13,7 @@ import { LegendList } from '@legendapp/list';
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { useFocusEffect, router } from 'expo-router';
 import { supabase } from '@/lib/supabase';
+import { haptics } from '@/lib/haptics';
 import { type RecipeWithJoins, type BrewMethod, BREW_METHOD_LABELS } from '@/lib/types';
 import { Constants } from '@/lib/database.types';
 import { RecipeCard } from '@/components/RecipeCard';
@@ -221,6 +222,7 @@ export default function ExploreScreen() {
 
   async function toggleUpvote(recipeId: string) {
     if (!currentUserId) return;
+    haptics.medium();
 
     const hasUpvoted = upvotedIds.has(recipeId);
 
@@ -247,6 +249,7 @@ export default function ExploreScreen() {
         .eq('recipe_id', recipeId)
         .eq('user_id', currentUserId);
       if (error) {
+        haptics.error();
         setUpvotedIds((prev) => new Set(prev).add(recipeId));
         setRecipes((prev) =>
           prev.map((r) => (r.id === recipeId ? { ...r, upvotes: r.upvotes + 1 } : r)),
@@ -258,6 +261,7 @@ export default function ExploreScreen() {
         .from('recipe_upvotes')
         .insert({ recipe_id: recipeId, user_id: currentUserId });
       if (error) {
+        haptics.error();
         setUpvotedIds((prev) => {
           const next = new Set(prev);
           next.delete(recipeId);

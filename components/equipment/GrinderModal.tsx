@@ -16,6 +16,7 @@ import { useForm } from '@tanstack/react-form';
 import { supabase } from '@/lib/supabase';
 import { useQuery } from '@/hooks/useQuery';
 import { unwrap } from '@/lib/api';
+import { haptics } from '@/lib/haptics';
 import type { Grinder, BurrType, AdjustmentType } from '@/lib/types';
 import { BURR_TYPE_LABELS, ADJUSTMENT_TYPE_LABELS } from '@/lib/types';
 import { ModalRow as Row } from './ModalRow';
@@ -461,6 +462,7 @@ function GrinderForm({
             }
           }
 
+          haptics.success();
           onDone(reviewGrinder!);
         } else if (editGrinder) {
           const data = unwrap(
@@ -471,6 +473,7 @@ function GrinderForm({
               .select()
               .single(),
           );
+          haptics.success();
           onDone(data as Grinder);
         } else {
           const {
@@ -483,9 +486,11 @@ function GrinderForm({
               .select()
               .single(),
           );
+          haptics.success();
           onDone(data as Grinder);
         }
       } catch (e) {
+        haptics.error();
         setSubmitError(e instanceof Error ? e.message : 'Something went wrong');
       }
     },

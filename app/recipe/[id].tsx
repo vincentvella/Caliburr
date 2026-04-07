@@ -11,6 +11,7 @@ import { useEffect, useState } from 'react';
 import { useLocalSearchParams, router } from 'expo-router';
 import * as Clipboard from 'expo-clipboard';
 import { supabase } from '@/lib/supabase';
+import { haptics } from '@/lib/haptics';
 import {
   type RecipeWithJoins,
   type RecipeHistory,
@@ -96,6 +97,7 @@ export default function RecipeDetailScreen() {
 
   async function toggleUpvote() {
     if (!currentUserId || !recipe) return;
+    haptics.medium();
     setUpvoted((v) => !v);
     setRecipe((r) => (r ? { ...r, upvotes: r.upvotes + (upvoted ? -1 : 1) } : r));
 
@@ -106,6 +108,7 @@ export default function RecipeDetailScreen() {
         .eq('recipe_id', recipe.id)
         .eq('user_id', currentUserId);
       if (err) {
+        haptics.error();
         setUpvoted(true);
         setRecipe((r) => (r ? { ...r, upvotes: r.upvotes + 1 } : r));
         Alert.alert('Error', 'Failed to remove upvote. Please try again.');
@@ -115,6 +118,7 @@ export default function RecipeDetailScreen() {
         .from('recipe_upvotes')
         .insert({ recipe_id: recipe.id, user_id: currentUserId });
       if (err) {
+        haptics.error();
         setUpvoted(false);
         setRecipe((r) => (r ? { ...r, upvotes: r.upvotes - 1 } : r));
         Alert.alert('Error', 'Failed to upvote. Please try again.');

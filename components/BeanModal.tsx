@@ -15,6 +15,7 @@ import { useForm } from '@tanstack/react-form';
 import { supabase } from '@/lib/supabase';
 import { useQuery } from '@/hooks/useQuery';
 import { unwrap } from '@/lib/api';
+import { haptics } from '@/lib/haptics';
 import type { Bean, RoastLevel } from '@/lib/types';
 import { ROAST_LEVEL_LABELS } from '@/lib/types';
 import { Constants } from '@/lib/database.types';
@@ -153,6 +154,7 @@ export function BeanModal({ visible, onClose, onSelected, selectedId }: Props) {
                 renderItem={({ item }) => (
                   <TouchableOpacity
                     onPress={() => {
+                      haptics.select();
                       onSelected(item);
                       handleClose();
                     }}
@@ -197,6 +199,7 @@ export function BeanModal({ visible, onClose, onSelected, selectedId }: Props) {
           <BeanForm
             initialName={query}
             onDone={(bean) => {
+              haptics.success();
               onSelected(bean);
               handleClose();
             }}

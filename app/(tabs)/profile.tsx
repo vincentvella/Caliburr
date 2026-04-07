@@ -12,6 +12,7 @@ import { useState, useEffect } from 'react';
 import { router } from 'expo-router';
 import { useScreenshotMode } from '@/lib/useScreenshotMode';
 import { supabase } from '@/lib/supabase';
+import { haptics } from '@/lib/haptics';
 import { useTheme, type ThemePreference } from '@/lib/theme';
 import { GrinderModal } from '@/components/equipment/GrinderModal';
 import { MachineModal } from '@/components/equipment/MachineModal';
@@ -227,6 +228,7 @@ export default function ProfileScreen() {
 
     const isAlreadyDefault = grinders.find((g) => g.grinder_id === grinderId)?.is_default ?? false;
 
+    haptics.medium();
     // Optimistic update
     setGrinders((prev) =>
       isAlreadyDefault
@@ -270,6 +272,7 @@ export default function ProfileScreen() {
     const isAlreadyDefault =
       machines.find((m) => m.brew_machine_id === machineId)?.is_default ?? false;
 
+    haptics.medium();
     // Optimistic update
     setMachines((prev) =>
       isAlreadyDefault

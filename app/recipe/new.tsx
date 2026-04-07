@@ -12,6 +12,7 @@ import { useEffect, useState, useRef } from 'react';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useForm, useStore } from '@tanstack/react-form';
 import { supabase } from '@/lib/supabase';
+import { haptics } from '@/lib/haptics';
 import {
   type Grinder,
   type BrewMachine,
@@ -209,8 +210,13 @@ export default function NewRecipeScreen() {
         notes: value.notes.trim() || null,
       });
 
-      if (!error) router.back();
-      else setSubmitError(error.message);
+      if (!error) {
+        haptics.success();
+        router.back();
+      } else {
+        haptics.error();
+        setSubmitError(error.message);
+      }
     },
   });
 

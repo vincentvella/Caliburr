@@ -1,6 +1,7 @@
 import { View, Text, ScrollView, TextInput, useWindowDimensions } from 'react-native';
 import { useRef, useEffect, useState, useCallback, useMemo } from 'react';
 import type { AdjustmentType } from '@/lib/types';
+import { haptics } from '@/lib/haptics';
 
 interface GrindTapeProps {
   value: string;
@@ -74,6 +75,7 @@ function useGrindTape({
   const scrolling = useRef(false);
   const hasMomentum = useRef(false);
   const inputFocused = useRef(false);
+  const lastHapticTick = useRef(-1);
   const prevConfigRef = useRef<{
     adjustmentType: AdjustmentType | null;
     rMin: number;
@@ -139,6 +141,7 @@ function useGrindTape({
     prevConfigRef.current = { adjustmentType, rMin, rMax, n };
     scrolling.current = false;
     hasMomentum.current = false;
+    lastHapticTick.current = -1;
     const parsed = parseFloat(value);
     const offset = isNaN(parsed)
       ? valueToOffset(rMin + (rMax - rMin) * 0.25)
@@ -165,6 +168,13 @@ function useGrindTape({
   // ── Scroll + input handlers (defined here so refs stay encapsulated) ──────────
 
   function handleScroll(offset: number) {
+    if (scrolling.current) {
+      const tick = Math.round(offset / cfg.pxPerTick);
+      if (tick !== lastHapticTick.current) {
+        lastHapticTick.current = tick;
+        haptics.tick();
+      }
+    }
     setDisplayValue(offsetToValue(offset));
   }
 
