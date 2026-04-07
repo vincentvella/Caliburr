@@ -90,6 +90,30 @@ Always add `style={{ lineHeight: undefined }}` to `TextInput` to prevent iOS tex
 - **Admin interface** is role-gated in Expo Router, not a separate app — works on mobile and web.
 - **Equipment modals** follow a search → review → add flow. Unverified items show a 5-step progress bar; verified items are read-only.
 
+## Code Conventions
+
+### useEffect — no inline callbacks
+
+Never write an inline arrow or anonymous function directly inside `useEffect`. Always extract a named function and pass it as a reference. This is enforced by ESLint (`local/no-inline-use-effect`).
+
+```tsx
+// ✗ forbidden
+useEffect(() => {
+  fetchData();
+}, [id]);
+
+// ✓ correct
+useEffect(fetchData, [id]);
+
+async function fetchData() { ... }
+
+// ✓ also correct — custom hook
+function useFetchData(id: string) {
+  useEffect(load, [id]);
+  async function load() { ... }
+}
+```
+
 ## Environment
 
 Copy `.env.local` and fill in:
