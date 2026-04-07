@@ -36,21 +36,17 @@ const THEME_OPTIONS: { value: ThemePreference; label: string }[] = [
   { value: 'dark', label: 'Dark' },
 ];
 
-export default function ProfileScreen() {
-  const screenshotMode = useScreenshotMode();
-  const { preference, setPreference } = useTheme();
-  const { theme } = useUniwind();
-  const isDark = theme === 'dark';
+function useEquipment() {
   const [email, setEmail] = useState<string | null>(null);
   const [grinders, setGrinders] = useState<UserGrinder[]>([]);
   const [machines, setMachines] = useState<UserMachine[]>([]);
   const [loadingEquipment, setLoadingEquipment] = useState(true);
-  const [removingId, setRemovingId] = useState<string | null>(null);
-  const [grinderModalOpen, setGrinderModalOpen] = useState(false);
-  const [machineModalOpen, setMachineModalOpen] = useState(false);
-  const [editingGrinder, setEditingGrinder] = useState<Grinder | null>(null);
   const [pendingGrinderEditIds, setPendingGrinderEditIds] = useState<Set<string>>(new Set());
   const [pendingMachineEditIds, setPendingMachineEditIds] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    fetchEquipment();
+  }, []);
 
   async function fetchEquipment() {
     const {
@@ -117,9 +113,39 @@ export default function ProfileScreen() {
     setLoadingEquipment(false);
   }
 
-  useEffect(() => {
-    fetchEquipment();
-  }, []);
+  return {
+    email,
+    grinders,
+    setGrinders,
+    machines,
+    setMachines,
+    loadingEquipment,
+    pendingGrinderEditIds,
+    pendingMachineEditIds,
+    fetchEquipment,
+  };
+}
+
+export default function ProfileScreen() {
+  const screenshotMode = useScreenshotMode();
+  const { preference, setPreference } = useTheme();
+  const { theme } = useUniwind();
+  const isDark = theme === 'dark';
+  const {
+    email,
+    grinders,
+    setGrinders,
+    machines,
+    setMachines,
+    loadingEquipment,
+    pendingGrinderEditIds,
+    pendingMachineEditIds,
+    fetchEquipment,
+  } = useEquipment();
+  const [removingId, setRemovingId] = useState<string | null>(null);
+  const [grinderModalOpen, setGrinderModalOpen] = useState(false);
+  const [machineModalOpen, setMachineModalOpen] = useState(false);
+  const [editingGrinder, setEditingGrinder] = useState<Grinder | null>(null);
 
   function removeGrinder(grinderId: string) {
     Alert.alert('Remove Grinder', 'Remove this grinder from your gear?', [

@@ -35,8 +35,9 @@ import {
 const BREW_METHODS = [...Constants.public.Enums.brew_method];
 const ROAST_LEVELS = [...Constants.public.Enums.roast_level];
 
-export default function NewRecipeScreen() {
-  const { templateId } = useLocalSearchParams<{ templateId?: string }>();
+type AnyForm = { setFieldValue: (field: any, value: any) => void };
+
+function useLoadNewRecipe(form: AnyForm, templateId: string | undefined) {
   const [grinders, setGrinders] = useState<Grinder[]>([]);
   const [machines, setMachines] = useState<BrewMachine[]>([]);
   const [loadingEquipment, setLoadingEquipment] = useState(true);
@@ -45,6 +46,116 @@ export default function NewRecipeScreen() {
     name: string;
     roaster: string;
   } | null>(null);
+
+  useEffect(() => {
+    async function load() {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const [userGrindersRes, userMachinesRes] = await Promise.all([
+        supabase.from('user_grinders').select('grinder_id, is_default').eq('user_id', user.id),
+        supabase
+          .from('user_brew_machines')
+          .select('brew_machine_id, is_default')
+          .eq('user_id', user.id),
+      ]);
+
+      const grinderIds = (userGrindersRes.data ?? []).map((r) => r.grinder_id);
+      const machineIds = (userMachinesRes.data ?? []).map((r) => r.brew_machine_id);
+
+      const [grindersRes, machinesRes, grinderEditsRes, machineEditsRes] = await Promise.all([
+        supabase.from('grinders').select('*').in('id', grinderIds),
+        supabase.from('brew_machines').select('*').in('id', machineIds),
+        grinderIds.length
+          ? supabase
+              .from('grinder_edits')
+              .select('grinder_id, payload')
+              .in('grinder_id', grinderIds)
+              .eq('status', 'pending')
+          : Promise.resolve({ data: [] }),
+        machineIds.length
+          ? supabase
+              .from('machine_edits')
+              .select('machine_id, payload')
+              .in('machine_id', machineIds)
+              .eq('status', 'pending')
+          : Promise.resolve({ data: [] }),
+      ]);
+
+      const pendingGrinderEdits = new Map(
+        (grinderEditsRes.data ?? []).map((e) => [e.grinder_id, e.payload as Partial<Grinder>]),
+      );
+      const pendingMachineEdits = new Map(
+        (machineEditsRes.data ?? []).map((e) => [e.machine_id, e.payload as Partial<BrewMachine>]),
+      );
+
+      setGrinders(
+        (grindersRes.data ?? []).map((g) => ({ ...g, ...pendingGrinderEdits.get(g.id) })),
+      );
+      setMachines(
+        (machinesRes.data ?? []).map((m) => ({ ...m, ...pendingMachineEdits.get(m.id) })),
+      );
+
+      const defaultGrinderRow = (userGrindersRes.data ?? []).find((r) => r.is_default);
+      if (defaultGrinderRow) form.setFieldValue('grinder_id', defaultGrinderRow.grinder_id);
+
+      const defaultMachineRow = (userMachinesRes.data ?? []).find((r) => r.is_default);
+      if (defaultMachineRow)
+        form.setFieldValue('brew_machine_id', defaultMachineRow.brew_machine_id);
+
+      if (templateId) {
+        const { data: tpl } = await supabase
+          .from('recipes')
+          .select('*, bean:beans(id, name, roaster)')
+          .eq('id', templateId)
+          .single();
+
+        if (tpl) {
+          form.setFieldValue('brew_method', tpl.brew_method);
+          form.setFieldValue('grind_setting', tpl.grind_setting);
+          form.setFieldValue('dose_g', tpl.dose_g?.toString() ?? '');
+          form.setFieldValue('yield_g', tpl.yield_g?.toString() ?? '');
+          form.setFieldValue('brew_time_s', tpl.brew_time_s?.toString() ?? '');
+          form.setFieldValue('water_temp_c', tpl.water_temp_c?.toString() ?? '');
+          form.setFieldValue('ratio', tpl.ratio?.toString() ?? '');
+          form.setFieldValue('roast_level', tpl.roast_level ?? '');
+          form.setFieldValue('notes', tpl.notes ?? '');
+
+          if (tpl.grinder_id && grinderIds.includes(tpl.grinder_id)) {
+            form.setFieldValue('grinder_id', tpl.grinder_id);
+          }
+          if (tpl.brew_machine_id && machineIds.includes(tpl.brew_machine_id)) {
+            form.setFieldValue('brew_machine_id', tpl.brew_machine_id);
+          }
+          if (tpl.bean && tpl.bean_id) {
+            form.setFieldValue('bean_id', tpl.bean_id);
+            setSelectedBean({ id: tpl.bean_id, name: tpl.bean.name, roaster: tpl.bean.roaster });
+          }
+        }
+      }
+
+      setLoadingEquipment(false);
+    }
+    load();
+  }, [form, templateId]);
+
+  return { grinders, machines, loadingEquipment, selectedBean, setSelectedBean };
+}
+
+function useResetGrindOnGrinderChange(grinderId: string, form: AnyForm) {
+  const prevGrinderIdRef = useRef('');
+  useEffect(() => {
+    if (grinderId && grinderId !== prevGrinderIdRef.current) {
+      form.setFieldValue('grind_setting', '');
+    }
+    prevGrinderIdRef.current = grinderId ?? '';
+  }, [grinderId, form]);
+}
+
+export default function NewRecipeScreen() {
+  const { templateId } = useLocalSearchParams<{ templateId?: string }>();
   const [beanModalOpen, setBeanModalOpen] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
@@ -93,116 +204,15 @@ export default function NewRecipeScreen() {
     },
   });
 
-  useEffect(() => {
-    async function load() {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) return;
-
-      const [userGrindersRes, userMachinesRes] = await Promise.all([
-        supabase.from('user_grinders').select('grinder_id, is_default').eq('user_id', user.id),
-        supabase
-          .from('user_brew_machines')
-          .select('brew_machine_id, is_default')
-          .eq('user_id', user.id),
-      ]);
-
-      const grinderIds = (userGrindersRes.data ?? []).map((r) => r.grinder_id);
-      const machineIds = (userMachinesRes.data ?? []).map((r) => r.brew_machine_id);
-
-      const [grindersRes, machinesRes, grinderEditsRes, machineEditsRes] = await Promise.all([
-        supabase.from('grinders').select('*').in('id', grinderIds),
-        supabase.from('brew_machines').select('*').in('id', machineIds),
-        grinderIds.length
-          ? supabase
-              .from('grinder_edits')
-              .select('grinder_id, payload')
-              .in('grinder_id', grinderIds)
-              .eq('status', 'pending')
-          : Promise.resolve({ data: [] }),
-        machineIds.length
-          ? supabase
-              .from('machine_edits')
-              .select('machine_id, payload')
-              .in('machine_id', machineIds)
-              .eq('status', 'pending')
-          : Promise.resolve({ data: [] }),
-      ]);
-
-      // Build lookup of pending edits by equipment ID (user's own, via RLS)
-      const pendingGrinderEdits = new Map(
-        (grinderEditsRes.data ?? []).map((e) => [e.grinder_id, e.payload as Partial<Grinder>]),
-      );
-      const pendingMachineEdits = new Map(
-        (machineEditsRes.data ?? []).map((e) => [e.machine_id, e.payload as Partial<BrewMachine>]),
-      );
-
-      // Merge pending payload over base data so GrindTape uses corrected specs
-      setGrinders(
-        (grindersRes.data ?? []).map((g) => ({ ...g, ...pendingGrinderEdits.get(g.id) })),
-      );
-      setMachines(
-        (machinesRes.data ?? []).map((m) => ({ ...m, ...pendingMachineEdits.get(m.id) })),
-      );
-
-      const defaultGrinderRow = (userGrindersRes.data ?? []).find((r) => r.is_default);
-      if (defaultGrinderRow) form.setFieldValue('grinder_id', defaultGrinderRow.grinder_id);
-
-      const defaultMachineRow = (userMachinesRes.data ?? []).find((r) => r.is_default);
-      if (defaultMachineRow)
-        form.setFieldValue('brew_machine_id', defaultMachineRow.brew_machine_id);
-
-      // Pre-fill from a cloned recipe if templateId was passed
-      if (templateId) {
-        const { data: tpl } = await supabase
-          .from('recipes')
-          .select('*, bean:beans(id, name, roaster)')
-          .eq('id', templateId)
-          .single();
-
-        if (tpl) {
-          form.setFieldValue('brew_method', tpl.brew_method);
-          form.setFieldValue('grind_setting', tpl.grind_setting);
-          form.setFieldValue('dose_g', tpl.dose_g?.toString() ?? '');
-          form.setFieldValue('yield_g', tpl.yield_g?.toString() ?? '');
-          form.setFieldValue('brew_time_s', tpl.brew_time_s?.toString() ?? '');
-          form.setFieldValue('water_temp_c', tpl.water_temp_c?.toString() ?? '');
-          form.setFieldValue('ratio', tpl.ratio?.toString() ?? '');
-          form.setFieldValue('roast_level', tpl.roast_level ?? '');
-          form.setFieldValue('notes', tpl.notes ?? '');
-
-          // Use the same grinder only if the user owns it
-          if (tpl.grinder_id && grinderIds.includes(tpl.grinder_id)) {
-            form.setFieldValue('grinder_id', tpl.grinder_id);
-          }
-          // Use the same machine only if the user owns it
-          if (tpl.brew_machine_id && machineIds.includes(tpl.brew_machine_id)) {
-            form.setFieldValue('brew_machine_id', tpl.brew_machine_id);
-          }
-          // Carry the bean across if it exists
-          if (tpl.bean && tpl.bean_id) {
-            form.setFieldValue('bean_id', tpl.bean_id);
-            setSelectedBean({ id: tpl.bean_id, name: tpl.bean.name, roaster: tpl.bean.roaster });
-          }
-        }
-      }
-
-      setLoadingEquipment(false);
-    }
-    load();
-  }, [form, templateId]);
+  const { grinders, machines, loadingEquipment, selectedBean, setSelectedBean } = useLoadNewRecipe(
+    form,
+    templateId,
+  );
 
   const grinderId = useStore(form.store, (s) => s.values.grinder_id);
   const grinder = grinders.find((g) => g.id === grinderId) ?? null;
-  const prevGrinderIdRef = useRef('');
 
-  useEffect(() => {
-    if (grinderId && grinderId !== prevGrinderIdRef.current) {
-      form.setFieldValue('grind_setting', '');
-    }
-    prevGrinderIdRef.current = grinderId ?? '';
-  }, [grinderId, form]);
+  useResetGrindOnGrinderChange(grinderId, form);
 
   return (
     <KeyboardAvoidingView

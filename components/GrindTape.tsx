@@ -59,9 +59,9 @@ function getTapeConfig(
   }
 }
 
-// ─── Component ────────────────────────────────────────────────────────────────
+// ─── Hook ─────────────────────────────────────────────────────────────────────
 
-export function GrindTape({
+function useGrindTape({
   value,
   onChange,
   adjustmentType,
@@ -120,12 +120,11 @@ export function GrindTape({
     [TICKS, cfg],
   );
 
-  // Nearest snapped pixel offset — used to correct position after momentum ends
   function snapOffset(offset: number): number {
     return Math.round(offset / cfg.pxPerTick) * cfg.pxPerTick;
   }
 
-  // ── Re-initialise when grinder config changes ───────────────────────────────
+  // ── Effects ─────────────────────────────────────────────────────────────────
 
   useEffect(() => {
     const prev = prevConfigRef.current;
@@ -152,8 +151,6 @@ export function GrindTape({
     return () => clearTimeout(t);
   }, [adjustmentType, rMin, rMax, n, value, valueToOffset, offsetToValue]);
 
-  // ── Sync tape when value changes externally (text input) ───────────────────
-
   useEffect(() => {
     if (scrolling.current || inputFocused.current) return;
     if (value === prevSyncValueRef.current) return;
@@ -165,7 +162,7 @@ export function GrindTape({
     }
   }, [value, valueToOffset]);
 
-  // ── Scroll handlers ─────────────────────────────────────────────────────────
+  // ── Scroll + input handlers (defined here so refs stay encapsulated) ──────────
 
   function handleScroll(offset: number) {
     setDisplayValue(offsetToValue(offset));
@@ -180,6 +177,32 @@ export function GrindTape({
     onChange(v);
     if (snap && Math.abs(corrected - offset) > 1) {
       scrollRef.current?.scrollTo({ x: corrected, animated: true });
+    }
+  }
+
+  function handleScrollBeginDrag() {
+    scrolling.current = true;
+    hasMomentum.current = false;
+  }
+
+  function handleMomentumScrollBegin() {
+    hasMomentum.current = true;
+  }
+
+  function handleScrollEndDrag(offset: number) {
+    if (!hasMomentum.current) handleScrollEnd(offset);
+  }
+
+  function handleInputFocus() {
+    inputFocused.current = true;
+  }
+
+  function handleInputBlur() {
+    inputFocused.current = false;
+    const v = parseFloat(value);
+    if (!isNaN(v)) {
+      setDisplayValue(value);
+      scrollRef.current?.scrollTo({ x: valueToOffset(v), animated: true });
     }
   }
 
@@ -204,7 +227,42 @@ export function GrindTape({
     return { i, isMajor, isMedium, height, label };
   });
 
-  // ── Render ──────────────────────────────────────────────────────────────────
+  return {
+    scrollRef,
+    displayValue,
+    cfg,
+    TICKS,
+    SIDE,
+    ticks,
+    handleScroll,
+    handleScrollEnd,
+    handleScrollBeginDrag,
+    handleMomentumScrollBegin,
+    handleScrollEndDrag,
+    handleInputFocus,
+    handleInputBlur,
+  };
+}
+
+// ─── Component ────────────────────────────────────────────────────────────────
+
+export function GrindTape(props: GrindTapeProps) {
+  const { value, onChange } = props;
+  const {
+    scrollRef,
+    displayValue,
+    cfg,
+    TICKS,
+    SIDE,
+    ticks,
+    handleScroll,
+    handleScrollEnd,
+    handleScrollBeginDrag,
+    handleMomentumScrollBegin,
+    handleScrollEndDrag,
+    handleInputFocus,
+    handleInputBlur,
+  } = useGrindTape(props);
 
   return (
     <View className="gap-2">
@@ -235,17 +293,10 @@ export function GrindTape({
           decelerationRate={0.992}
           onScroll={(e) => handleScroll(e.nativeEvent.contentOffset.x)}
           scrollEventThrottle={16}
-          onScrollBeginDrag={() => {
-            scrolling.current = true;
-            hasMomentum.current = false;
-          }}
-          onMomentumScrollBegin={() => {
-            hasMomentum.current = true;
-          }}
+          onScrollBeginDrag={handleScrollBeginDrag}
+          onMomentumScrollBegin={handleMomentumScrollBegin}
           onMomentumScrollEnd={(e) => handleScrollEnd(e.nativeEvent.contentOffset.x)}
-          onScrollEndDrag={(e) => {
-            if (!hasMomentum.current) handleScrollEnd(e.nativeEvent.contentOffset.x);
-          }}
+          onScrollEndDrag={(e) => handleScrollEndDrag(e.nativeEvent.contentOffset.x)}
           contentContainerStyle={{ paddingHorizontal: SIDE }}
         >
           <View
@@ -308,20 +359,8 @@ export function GrindTape({
             keyboardType="decimal-pad"
             value={value}
             onChangeText={onChange}
-            onFocus={() => {
-              inputFocused.current = true;
-            }}
-            onBlur={() => {
-              inputFocused.current = false;
-              const v = parseFloat(value);
-              if (!isNaN(v)) {
-                setDisplayValue(value);
-                scrollRef.current?.scrollTo({
-                  x: valueToOffset(v),
-                  animated: true,
-                });
-              }
-            }}
+            onFocus={handleInputFocus}
+            onBlur={handleInputBlur}
           />
         </View>
       </View>

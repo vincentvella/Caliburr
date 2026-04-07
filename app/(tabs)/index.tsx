@@ -18,30 +18,12 @@ import { RecipeCard } from '@/components/RecipeCard';
 
 const BREW_METHODS = [...Constants.public.Enums.brew_method];
 
-// ─── Explore screen ───────────────────────────────────────────────────────────
+// ─── Hooks ────────────────────────────────────────────────────────────────────
 
-export default function ExploreScreen() {
-  const [recipes, setRecipes] = useState<RecipeWithJoins[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
-  const [loadingMore, setLoadingMore] = useState(false);
-  const [hasMore, setHasMore] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  // Filters
-  const [search, setSearch] = useState('');
-  const [methodFilter, setMethodFilter] = useState<BrewMethod | null>(null);
-  const [myGearOnly, setMyGearOnly] = useState(false);
-  const [myGrinderId, setMyGrinderId] = useState<string[]>([]);
-
-  // Upvotes
-  const [upvotedIds, setUpvotedIds] = useState<Set<string>>(new Set());
+function useUserContext() {
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
-
-  // Debounce search
-  const searchTimer = useRef<ReturnType<typeof setTimeout>>(null);
-
-  // ── Load user context once ─────────────────────────────────────────────────
+  const [myGrinderId, setMyGrinderId] = useState<string[]>([]);
+  const [upvotedIds, setUpvotedIds] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     supabase.auth.getUser().then(async ({ data: { user } }) => {
@@ -58,7 +40,20 @@ export default function ExploreScreen() {
     });
   }, []);
 
-  // ── Fetch recipes ──────────────────────────────────────────────────────────
+  return { currentUserId, myGrinderId, upvotedIds, setUpvotedIds };
+}
+
+function useRecipes(myGrinderId: string[]) {
+  const [recipes, setRecipes] = useState<RecipeWithJoins[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [search, setSearch] = useState('');
+  const [methodFilter, setMethodFilter] = useState<BrewMethod | null>(null);
+  const [myGearOnly, setMyGearOnly] = useState(false);
+  const searchTimer = useRef<ReturnType<typeof setTimeout>>(null);
 
   const PAGE_SIZE = 50;
 
@@ -155,6 +150,58 @@ export default function ExploreScreen() {
     fetchRecipes().finally(() => setLoading(false));
   }, [fetchRecipes]);
 
+  async function handleRefresh() {
+    setRefreshing(true);
+    await fetchRecipes();
+    setRefreshing(false);
+  }
+
+  function handleSearchChange(text: string) {
+    setSearch(text);
+    if (searchTimer.current) clearTimeout(searchTimer.current);
+    searchTimer.current = setTimeout(() => fetchRecipes(text), 300);
+  }
+
+  return {
+    recipes,
+    setRecipes,
+    loading,
+    refreshing,
+    loadingMore,
+    hasMore,
+    error,
+    search,
+    methodFilter,
+    myGearOnly,
+    setMethodFilter,
+    setMyGearOnly,
+    fetchMore,
+    handleRefresh,
+    handleSearchChange,
+  };
+}
+
+// ─── Explore screen ───────────────────────────────────────────────────────────
+
+export default function ExploreScreen() {
+  const { currentUserId, myGrinderId, upvotedIds, setUpvotedIds } = useUserContext();
+  const {
+    recipes,
+    setRecipes,
+    loading,
+    refreshing,
+    loadingMore,
+    error,
+    search,
+    methodFilter,
+    myGearOnly,
+    setMethodFilter,
+    setMyGearOnly,
+    fetchMore,
+    handleRefresh,
+    handleSearchChange,
+  } = useRecipes(myGrinderId);
+
   // Re-fetch upvoted IDs when screen comes back into focus
   useFocusEffect(
     useCallback(() => {
@@ -166,22 +213,8 @@ export default function ExploreScreen() {
           .eq('user_id', user.id);
         setUpvotedIds(new Set((data ?? []).map((r) => r.recipe_id)));
       });
-    }, []),
+    }, [setUpvotedIds]),
   );
-
-  async function handleRefresh() {
-    setRefreshing(true);
-    await fetchRecipes();
-    setRefreshing(false);
-  }
-
-  function handleSearchChange(text: string) {
-    setSearch(text);
-    if (searchTimer.current) {
-      clearTimeout(searchTimer.current);
-    }
-    searchTimer.current = setTimeout(() => fetchRecipes(text), 300);
-  }
 
   // ── Upvote ─────────────────────────────────────────────────────────────────
 

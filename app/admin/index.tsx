@@ -61,11 +61,10 @@ function DiffRow({ field, before, after }: { field: string; before: unknown; aft
   );
 }
 
-export default function AdminScreen() {
+function usePendingEdits() {
   const [grinderEdits, setGrinderEdits] = useState<GrinderEdit[]>([]);
   const [machineEdits, setMachineEdits] = useState<MachineEdit[]>([]);
   const [loading, setLoading] = useState(true);
-  const [actioningId, setActioningId] = useState<string | null>(null);
 
   const fetchEdits = useCallback(async () => {
     const [gRes, mRes] = await Promise.all([
@@ -90,6 +89,14 @@ export default function AdminScreen() {
   useEffect(() => {
     fetchEdits().finally(() => setLoading(false));
   }, [fetchEdits]);
+
+  return { grinderEdits, setGrinderEdits, machineEdits, setMachineEdits, loading };
+}
+
+export default function AdminScreen() {
+  const { grinderEdits, setGrinderEdits, machineEdits, setMachineEdits, loading } =
+    usePendingEdits();
+  const [actioningId, setActioningId] = useState<string | null>(null);
 
   async function handleAction(
     editId: string,

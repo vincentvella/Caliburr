@@ -1,21 +1,37 @@
 import { View, Text, TextInput, TouchableOpacity } from 'react-native';
 import { useState, useEffect, useRef } from 'react';
 
+function useSyncOnStop(running: boolean, elapsed: number, onChange: (v: string) => void) {
+  useEffect(() => {
+    if (!running && elapsed > 0) onChange(String(elapsed));
+  }, [running, elapsed, onChange]);
+}
+
+function useManagedInterval(running: boolean, onTick: () => void) {
+  const onTickRef = useRef(onTick);
+  onTickRef.current = onTick;
+
+  useEffect(() => {
+    if (!running) return;
+    const id = setInterval(() => onTickRef.current(), 1000);
+    return () => clearInterval(id);
+  }, [running]);
+}
+
 export function BrewTimer({ value, onChange }: { value: string; onChange: (v: string) => void }) {
   const [running, setRunning] = useState(false);
   const [elapsed, setElapsed] = useState(value ? parseInt(value, 10) : 0);
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  function tick() {
+    setElapsed((s) => s + 1);
+  }
 
   function start() {
     setRunning(true);
-    intervalRef.current = setInterval(() => {
-      setElapsed((s) => s + 1);
-    }, 1000);
   }
 
   function stop() {
     setRunning(false);
-    if (intervalRef.current) clearInterval(intervalRef.current);
   }
 
   function reset() {
@@ -24,16 +40,8 @@ export function BrewTimer({ value, onChange }: { value: string; onChange: (v: st
     onChange('');
   }
 
-  useEffect(() => {
-    if (!running && elapsed > 0) onChange(String(elapsed));
-  }, [running, elapsed, onChange]);
-
-  useEffect(
-    () => () => {
-      if (intervalRef.current) clearInterval(intervalRef.current);
-    },
-    [],
-  );
+  useSyncOnStop(running, elapsed, onChange);
+  useManagedInterval(running, tick);
 
   const mm = String(Math.floor(elapsed / 60)).padStart(2, '0');
   const ss = String(elapsed % 60).padStart(2, '0');

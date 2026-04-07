@@ -13,6 +13,31 @@ async function markOnboardingComplete() {
   await supabase.auth.updateUser({ data: { onboarding_completed: true } });
 }
 
+function useSkipIfOnboarded(preview: string | undefined) {
+  useEffect(() => {
+    if (preview) return;
+    checkExistingGear();
+  }, [preview]);
+
+  async function checkExistingGear() {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { data } = await supabase
+      .from('user_grinders')
+      .select('grinder_id')
+      .eq('user_id', user.id)
+      .limit(1);
+
+    if (data && data.length > 0) {
+      await markOnboardingComplete();
+      router.replace('/(tabs)');
+    }
+  }
+}
+
 export default function OnboardingScreen() {
   const { preview } = useLocalSearchParams<{ preview?: string }>();
   const [step, setStep] = useState<Step>('welcome');
@@ -24,28 +49,7 @@ export default function OnboardingScreen() {
 
   const fadeAnim = useRef(new Animated.Value(1)).current;
 
-  useEffect(() => {
-    if (preview) return;
-
-    async function checkExistingGear() {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) return;
-
-      const { data } = await supabase
-        .from('user_grinders')
-        .select('grinder_id')
-        .eq('user_id', user.id)
-        .limit(1);
-
-      if (data && data.length > 0) {
-        await markOnboardingComplete();
-        router.replace('/(tabs)');
-      }
-    }
-    checkExistingGear();
-  }, [preview]);
+  useSkipIfOnboarded(preview);
 
   function transition(next: Step) {
     Animated.timing(fadeAnim, {
@@ -290,10 +294,7 @@ export default function OnboardingScreen() {
 
 // ─── Animated progress dots ───────────────────────────────────────────────────
 
-function AnimatedProgressDots({ total, active }: { total: number; active: number }) {
-  const widths = useRef(Array.from({ length: total }, () => new Animated.Value(8))).current;
-  const fills = useRef(Array.from({ length: total }, () => new Animated.Value(0))).current;
-
+function useAnimateDots(active: number, widths: Animated.Value[], fills: Animated.Value[]) {
   useEffect(() => {
     Animated.parallel([
       ...widths.map((w, i) =>
@@ -313,6 +314,13 @@ function AnimatedProgressDots({ total, active }: { total: number; active: number
       ),
     ]).start();
   }, [active, fills, widths]);
+}
+
+function AnimatedProgressDots({ total, active }: { total: number; active: number }) {
+  const widths = useRef(Array.from({ length: total }, () => new Animated.Value(8))).current;
+  const fills = useRef(Array.from({ length: total }, () => new Animated.Value(0))).current;
+
+  useAnimateDots(active, widths, fills);
 
   return (
     <View style={{ flexDirection: 'row', gap: 6, alignItems: 'center' }}>

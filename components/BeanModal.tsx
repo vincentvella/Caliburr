@@ -28,23 +28,24 @@ interface Props {
   selectedId?: string | null;
 }
 
-export function BeanModal({ visible, onClose, onSelected, selectedId }: Props) {
-  const [view, setView] = useState<ModalView>('search');
-  const [query, setQuery] = useState('');
-  const [results, setResults] = useState<Bean[]>([]);
-  const [defaults, setDefaults] = useState<Bean[]>([]);
-  const [searching, setSearching] = useState(false);
-
+function useResetOnOpen(
+  visible: boolean,
+  setView: (v: ModalView) => void,
+  setQuery: (q: string) => void,
+) {
   useEffect(() => {
     if (visible) {
       setView('search');
       setQuery('');
-      setResults([]);
     }
-  }, [visible]);
+  }, [visible, setView, setQuery]);
+}
+
+function useDefaults() {
+  const [defaults, setDefaults] = useState<Bean[]>([]);
 
   useEffect(() => {
-    async function loadDefaults() {
+    async function load() {
       const { data } = await supabase
         .from('beans')
         .select('*')
@@ -52,8 +53,15 @@ export function BeanModal({ visible, onClose, onSelected, selectedId }: Props) {
         .limit(25);
       setDefaults(data ?? []);
     }
-    loadDefaults();
+    load();
   }, []);
+
+  return { defaults };
+}
+
+function useBeanSearch(query: string) {
+  const [results, setResults] = useState<Bean[]>([]);
+  const [searching, setSearching] = useState(false);
 
   useEffect(() => {
     const t = setTimeout(async () => {
@@ -73,10 +81,20 @@ export function BeanModal({ visible, onClose, onSelected, selectedId }: Props) {
     return () => clearTimeout(t);
   }, [query]);
 
+  return { results, searching };
+}
+
+export function BeanModal({ visible, onClose, onSelected, selectedId }: Props) {
+  const [view, setView] = useState<ModalView>('search');
+  const [query, setQuery] = useState('');
+
+  useResetOnOpen(visible, setView, setQuery);
+  const { defaults } = useDefaults();
+  const { results, searching } = useBeanSearch(query);
+
   function handleClose() {
     setView('search');
     setQuery('');
-    setResults([]);
     onClose();
   }
 

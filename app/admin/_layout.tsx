@@ -2,7 +2,7 @@ import { Stack, router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 
-export default function AdminLayout() {
+function useAdminGuard() {
   const [checked, setChecked] = useState(false);
 
   useEffect(() => {
@@ -13,6 +13,12 @@ export default function AdminLayout() {
       setChecked(true);
     });
   }, []);
+
+  return { checked };
+}
+
+export default function AdminLayout() {
+  const { checked } = useAdminGuard();
 
   if (!checked) return null;
 

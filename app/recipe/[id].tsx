@@ -23,15 +23,12 @@ import { HistoryCard } from '@/components/recipe/HistoryCard';
 import { EquipmentRow } from '@/components/recipe/EquipmentRow';
 import { formatTime } from '@/components/recipe/RecipeStats';
 
-export default function RecipeDetailScreen() {
-  const { id } = useLocalSearchParams<{ id: string }>();
+function useRecipeScreen(id: string) {
   const [recipe, setRecipe] = useState<RecipeWithJoins | null>(null);
   const [loading, setLoading] = useState(true);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [upvoted, setUpvoted] = useState(false);
-  const [deleting, setDeleting] = useState(false);
   const [history, setHistory] = useState<RecipeHistory[]>([]);
-  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     async function load() {
@@ -45,11 +42,11 @@ export default function RecipeDetailScreen() {
           .from('recipes')
           .select(
             `
-            *,
-            grinder:grinders(brand, model, verified, burr_type, adjustment_type),
-            bean:beans(name, roaster, origin, process, roast_level),
-            brew_machine:brew_machines(brand, model, machine_type, verified)
-          `,
+              *,
+              grinder:grinders(brand, model, verified, burr_type, adjustment_type),
+              bean:beans(name, roaster, origin, process, roast_level),
+              brew_machine:brew_machines(brand, model, machine_type, verified)
+            `,
           )
           .eq('id', id)
           .single(),
@@ -79,6 +76,16 @@ export default function RecipeDetailScreen() {
     }
     load();
   }, [id]);
+
+  return { recipe, setRecipe, loading, currentUserId, upvoted, setUpvoted, history };
+}
+
+export default function RecipeDetailScreen() {
+  const { id } = useLocalSearchParams<{ id: string }>();
+  const { recipe, setRecipe, loading, currentUserId, upvoted, setUpvoted, history } =
+    useRecipeScreen(id);
+  const [deleting, setDeleting] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   async function toggleUpvote() {
     if (!currentUserId || !recipe) return;

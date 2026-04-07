@@ -36,8 +36,9 @@ import {
 const BREW_METHODS = [...Constants.public.Enums.brew_method];
 const ROAST_LEVELS = [...Constants.public.Enums.roast_level];
 
-export default function EditRecipeScreen() {
-  const { id } = useLocalSearchParams<{ id: string }>();
+type AnyForm = { setFieldValue: (field: any, value: any) => void };
+
+function useLoadEditRecipe(id: string, form: AnyForm) {
   const [recipe, setRecipe] = useState<RecipeWithJoins | null>(null);
   const [grinders, setGrinders] = useState<Grinder[]>([]);
   const [machines, setMachines] = useState<BrewMachine[]>([]);
@@ -47,6 +48,87 @@ export default function EditRecipeScreen() {
     name: string;
     roaster: string;
   } | null>(null);
+
+  useEffect(() => {
+    async function load() {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const [recipeRes, userGrindersRes, userMachinesRes] = await Promise.all([
+        supabase
+          .from('recipes')
+          .select(
+            `
+              *,
+              grinder:grinders(brand, model, verified, burr_type, adjustment_type),
+              bean:beans(name, roaster, origin, process, roast_level),
+              brew_machine:brew_machines(brand, model, machine_type, verified)
+            `,
+          )
+          .eq('id', id)
+          .eq('user_id', user.id)
+          .single(),
+        supabase.from('user_grinders').select('grinder_id').eq('user_id', user.id),
+        supabase.from('user_brew_machines').select('brew_machine_id').eq('user_id', user.id),
+      ]);
+
+      if (!recipeRes.data) {
+        router.back();
+        return;
+      }
+      setRecipe(recipeRes.data as RecipeWithJoins);
+      const r = recipeRes.data;
+
+      const grinderIds = (userGrindersRes.data ?? []).map((row) => row.grinder_id);
+      const machineIds = (userMachinesRes.data ?? []).map((row) => row.brew_machine_id);
+
+      const [grindersRes, machinesRes] = await Promise.all([
+        supabase.from('grinders').select('*').in('id', grinderIds),
+        supabase.from('brew_machines').select('*').in('id', machineIds),
+      ]);
+      setGrinders(grindersRes.data ?? []);
+      setMachines(machinesRes.data ?? []);
+
+      form.setFieldValue('grinder_id', r.grinder_id);
+      form.setFieldValue('brew_machine_id', r.brew_machine_id ?? '');
+      form.setFieldValue('bean_id', r.bean_id ?? '');
+      form.setFieldValue('brew_method', r.brew_method);
+      form.setFieldValue('grind_setting', r.grind_setting);
+      form.setFieldValue('dose_g', r.dose_g?.toString() ?? '');
+      form.setFieldValue('yield_g', r.yield_g?.toString() ?? '');
+      form.setFieldValue('brew_time_s', r.brew_time_s?.toString() ?? '');
+      form.setFieldValue('water_temp_c', r.water_temp_c?.toString() ?? '');
+      form.setFieldValue('ratio', r.ratio?.toString() ?? '');
+      form.setFieldValue('roast_level', r.roast_level ?? '');
+      form.setFieldValue('roast_date', r.roast_date ?? '');
+      form.setFieldValue('notes', r.notes ?? '');
+
+      if (r.bean && r.bean_id) {
+        setSelectedBean({ id: r.bean_id, name: r.bean.name, roaster: r.bean.roaster });
+      }
+
+      setLoading(false);
+    }
+    load();
+  }, [id, form]);
+
+  return { recipe, grinders, machines, loading, selectedBean, setSelectedBean };
+}
+
+function useResetGrindOnGrinderChange(grinderId: string, form: AnyForm) {
+  const prevGrinderIdRef = useRef('');
+  useEffect(() => {
+    if (grinderId && grinderId !== prevGrinderIdRef.current && prevGrinderIdRef.current !== '') {
+      form.setFieldValue('grind_setting', '');
+    }
+    prevGrinderIdRef.current = grinderId ?? '';
+  }, [grinderId, form]);
+}
+
+export default function EditRecipeScreen() {
+  const { id } = useLocalSearchParams<{ id: string }>();
   const [beanModalOpen, setBeanModalOpen] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
@@ -118,82 +200,15 @@ export default function EditRecipeScreen() {
     },
   });
 
-  useEffect(() => {
-    async function load() {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) return;
-
-      const [recipeRes, userGrindersRes, userMachinesRes] = await Promise.all([
-        supabase
-          .from('recipes')
-          .select(
-            `
-            *,
-            grinder:grinders(brand, model, verified, burr_type, adjustment_type),
-            bean:beans(name, roaster, origin, process, roast_level),
-            brew_machine:brew_machines(brand, model, machine_type, verified)
-          `,
-          )
-          .eq('id', id)
-          .eq('user_id', user.id)
-          .single(),
-        supabase.from('user_grinders').select('grinder_id').eq('user_id', user.id),
-        supabase.from('user_brew_machines').select('brew_machine_id').eq('user_id', user.id),
-      ]);
-
-      if (!recipeRes.data) {
-        router.back();
-        return;
-      }
-      setRecipe(recipeRes.data as RecipeWithJoins);
-      const r = recipeRes.data;
-
-      const grinderIds = (userGrindersRes.data ?? []).map((row) => row.grinder_id);
-      const machineIds = (userMachinesRes.data ?? []).map((row) => row.brew_machine_id);
-
-      const [grindersRes, machinesRes] = await Promise.all([
-        supabase.from('grinders').select('*').in('id', grinderIds),
-        supabase.from('brew_machines').select('*').in('id', machineIds),
-      ]);
-      setGrinders(grindersRes.data ?? []);
-      setMachines(machinesRes.data ?? []);
-
-      // Pre-populate form from existing recipe
-      form.setFieldValue('grinder_id', r.grinder_id);
-      form.setFieldValue('brew_machine_id', r.brew_machine_id ?? '');
-      form.setFieldValue('bean_id', r.bean_id ?? '');
-      form.setFieldValue('brew_method', r.brew_method);
-      form.setFieldValue('grind_setting', r.grind_setting);
-      form.setFieldValue('dose_g', r.dose_g?.toString() ?? '');
-      form.setFieldValue('yield_g', r.yield_g?.toString() ?? '');
-      form.setFieldValue('brew_time_s', r.brew_time_s?.toString() ?? '');
-      form.setFieldValue('water_temp_c', r.water_temp_c?.toString() ?? '');
-      form.setFieldValue('ratio', r.ratio?.toString() ?? '');
-      form.setFieldValue('roast_level', r.roast_level ?? '');
-      form.setFieldValue('roast_date', r.roast_date ?? '');
-      form.setFieldValue('notes', r.notes ?? '');
-
-      if (r.bean && r.bean_id) {
-        setSelectedBean({ id: r.bean_id, name: r.bean.name, roaster: r.bean.roaster });
-      }
-
-      setLoading(false);
-    }
-    load();
-  }, [id, form]);
+  const { recipe, grinders, machines, loading, selectedBean, setSelectedBean } = useLoadEditRecipe(
+    id,
+    form,
+  );
 
   const grinderId = useStore(form.store, (s) => s.values.grinder_id);
   const grinder = grinders.find((g) => g.id === grinderId) ?? null;
-  const prevGrinderIdRef = useRef('');
 
-  useEffect(() => {
-    if (grinderId && grinderId !== prevGrinderIdRef.current && prevGrinderIdRef.current !== '') {
-      form.setFieldValue('grind_setting', '');
-    }
-    prevGrinderIdRef.current = grinderId ?? '';
-  }, [grinderId, form]);
+  useResetGrindOnGrinderChange(grinderId, form);
 
   if (loading) {
     return (

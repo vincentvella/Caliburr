@@ -30,18 +30,11 @@ interface Props {
   editGrinder?: Grinder;
 }
 
-export function GrinderModal({ visible, onClose, onAdded, existingIds, editGrinder }: Props) {
+function useGrinderModal(visible: boolean, editGrinder: Grinder | undefined) {
   const [view, setView] = useState<ModalView>(editGrinder ? 'edit' : 'search');
   const [query, setQuery] = useState('');
-  const [defaults, setDefaults] = useState<Grinder[]>([]);
-  const [results, setResults] = useState<Grinder[]>([]);
-  const [searching, setSearching] = useState(false);
-  const [addingId, setAddingId] = useState<string | null>(null);
-  const [selectedGrinder, setSelectedGrinder] = useState<Grinder | null>(null);
-  const [verificationCount, setVerificationCount] = useState(0);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
-  // Reset view whenever the modal opens
   useEffect(() => {
     if (visible) {
       setView(editGrinder ? 'edit' : 'search');
@@ -49,9 +42,14 @@ export function GrinderModal({ visible, onClose, onAdded, existingIds, editGrind
     }
   }, [visible, editGrinder]);
 
-  // Load default list: verified first, then most recent
+  return { view, setView, query, setQuery, currentUserId };
+}
+
+function useGrinderDefaults(existingIds: string[]) {
+  const [defaults, setDefaults] = useState<Grinder[]>([]);
+
   useEffect(() => {
-    async function loadDefaults() {
+    async function load() {
       let q = supabase
         .from('grinders')
         .select('*')
@@ -62,8 +60,15 @@ export function GrinderModal({ visible, onClose, onAdded, existingIds, editGrind
       const { data } = await q;
       setDefaults((data as Grinder[]) ?? []);
     }
-    loadDefaults();
+    load();
   }, [existingIds]);
+
+  return { defaults };
+}
+
+function useGrinderSearch(query: string, existingIds: string[]) {
+  const [results, setResults] = useState<Grinder[]>([]);
+  const [searching, setSearching] = useState(false);
 
   useEffect(() => {
     const t = setTimeout(async () => {
@@ -83,6 +88,18 @@ export function GrinderModal({ visible, onClose, onAdded, existingIds, editGrind
     }, 300);
     return () => clearTimeout(t);
   }, [query, existingIds]);
+
+  return { results, searching };
+}
+
+export function GrinderModal({ visible, onClose, onAdded, existingIds, editGrinder }: Props) {
+  const { view, setView, query, setQuery, currentUserId } = useGrinderModal(visible, editGrinder);
+  const [addingId, setAddingId] = useState<string | null>(null);
+  const [selectedGrinder, setSelectedGrinder] = useState<Grinder | null>(null);
+  const [verificationCount, setVerificationCount] = useState(0);
+
+  const { defaults } = useGrinderDefaults(existingIds);
+  const { results, searching } = useGrinderSearch(query, existingIds);
 
   async function openGrinder(grinder: Grinder) {
     const {
@@ -127,7 +144,6 @@ export function GrinderModal({ visible, onClose, onAdded, existingIds, editGrind
   function handleClose() {
     setView('search');
     setQuery('');
-    setResults([]);
     setSelectedGrinder(null);
     onClose();
   }

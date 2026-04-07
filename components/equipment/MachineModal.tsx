@@ -29,29 +29,27 @@ interface Props {
   existingIds: string[];
 }
 
-export function MachineModal({ visible, onClose, onAdded, existingIds }: Props) {
+function useMachineModal(visible: boolean) {
   const [view, setView] = useState<ModalView>('search');
   const [query, setQuery] = useState('');
-  const [results, setResults] = useState<BrewMachine[]>([]);
-  const [defaults, setDefaults] = useState<BrewMachine[]>([]);
-  const [searching, setSearching] = useState(false);
-  const [selectedMachine, setSelectedMachine] = useState<BrewMachine | null>(null);
-  const [verificationCount, setVerificationCount] = useState(0);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
-  const [adding, setAdding] = useState(false);
 
   useEffect(() => {
     if (visible) {
       setView('search');
       setQuery('');
-      setResults([]);
       supabase.auth.getUser().then(({ data: { user } }) => setCurrentUserId(user?.id ?? null));
     }
   }, [visible]);
 
-  // Load defaults: verified first, then most recent
+  return { view, setView, query, setQuery, currentUserId };
+}
+
+function useMachineDefaults(existingIds: string[]) {
+  const [defaults, setDefaults] = useState<BrewMachine[]>([]);
+
   useEffect(() => {
-    async function loadDefaults() {
+    async function load() {
       let q = supabase
         .from('brew_machines')
         .select('*')
@@ -62,8 +60,15 @@ export function MachineModal({ visible, onClose, onAdded, existingIds }: Props) 
       const { data } = await q;
       setDefaults((data as BrewMachine[]) ?? []);
     }
-    loadDefaults();
+    load();
   }, [existingIds]);
+
+  return { defaults };
+}
+
+function useMachineSearch(query: string, existingIds: string[]) {
+  const [results, setResults] = useState<BrewMachine[]>([]);
+  const [searching, setSearching] = useState(false);
 
   useEffect(() => {
     const t = setTimeout(async () => {
@@ -83,6 +88,18 @@ export function MachineModal({ visible, onClose, onAdded, existingIds }: Props) 
     }, 300);
     return () => clearTimeout(t);
   }, [query, existingIds]);
+
+  return { results, searching };
+}
+
+export function MachineModal({ visible, onClose, onAdded, existingIds }: Props) {
+  const { view, setView, query, setQuery, currentUserId } = useMachineModal(visible);
+  const [selectedMachine, setSelectedMachine] = useState<BrewMachine | null>(null);
+  const [verificationCount, setVerificationCount] = useState(0);
+  const [adding, setAdding] = useState(false);
+
+  const { defaults } = useMachineDefaults(existingIds);
+  const { results, searching } = useMachineSearch(query, existingIds);
 
   async function openMachine(machine: BrewMachine) {
     const {
@@ -129,7 +146,6 @@ export function MachineModal({ visible, onClose, onAdded, existingIds }: Props) 
   function handleClose() {
     setView('search');
     setQuery('');
-    setResults([]);
     setSelectedMachine(null);
     onClose();
   }

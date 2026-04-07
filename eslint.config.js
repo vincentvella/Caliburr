@@ -5,34 +5,52 @@ const eslintPluginPrettierRecommended = require('eslint-plugin-prettier/recommen
 const reactCompiler = require('eslint-plugin-react-compiler');
 
 /**
- * Disallows inline arrow/anonymous functions as the first argument to useEffect.
- * Every effect callback must be a named function reference so effects are
- * identifiable, extractable, and easy to test in isolation.
- *
- * ✗  useEffect(() => { ... }, [dep])
- * ✗  useEffect(function() { ... }, [dep])
- * ✓  useEffect(loadData, [dep])       ← named function defined in scope
- * ✓  function loadData() { ... }      ← extracted above the component
+ * Resolves the name of the nearest enclosing function for a given node by
+ * walking up the parent chain. Handles:
+ *   function foo() {}               → "foo"
+ *   const foo = function() {}       → "foo"
+ *   const foo = () => {}            → "foo"
+ *   export default function() {}    → null
  */
-const noInlineUseEffect = {
+function enclosingFunctionName(node) {
+  let current = node.parent;
+  while (current) {
+    const t = current.type;
+    if (t === 'FunctionDeclaration' || t === 'FunctionExpression' || t === 'ArrowFunctionExpression') {
+      // Named function declaration or named function expression
+      if (current.id?.name) return current.id.name;
+      // Arrow or anonymous assigned to a variable: const foo = () => {}
+      if (current.parent?.type === 'VariableDeclarator' && current.parent.id?.type === 'Identifier') {
+        return current.parent.id.name;
+      }
+      return null; // Anonymous / unresolvable
+    }
+    current = current.parent;
+  }
+  return null;
+}
+
+/**
+ * Disallows calling useEffect directly inside a component body.
+ * Every useEffect must live inside a custom hook (a function named useXxx).
+ *
+ * ✗  function MyComponent() { useEffect(...) }
+ * ✗  const MyComponent = () => { useEffect(...) }
+ * ✓  function useMyHook() { useEffect(...) }
+ * ✓  const useMyHook = () => { useEffect(...) }
+ */
+const useEffectInCustomHookOnly = {
   meta: { type: 'suggestion', fixable: null },
   create(context) {
     return {
       CallExpression(node) {
-        if (
-          node.callee.type === 'Identifier' &&
-          node.callee.name === 'useEffect' &&
-          node.arguments.length > 0 &&
-          (node.arguments[0].type === 'ArrowFunctionExpression' ||
-            node.arguments[0].type === 'FunctionExpression')
-        ) {
-          context.report({
-            node: node.arguments[0],
-            message:
-              'useEffect callbacks must be extracted as named functions, not written inline. ' +
-              'Define a named function (e.g. `function loadData() {}`) and pass it as a reference.',
-          });
-        }
+        if (node.callee.type !== 'Identifier' || node.callee.name !== 'useEffect') return;
+        const name = enclosingFunctionName(node);
+        if (name && /^use[A-Z]/.test(name)) return;
+        context.report({
+          node,
+          message: `useEffect must be called inside a custom hook (useXxx), not in "${name ?? 'an anonymous function'}".`,
+        });
       },
     };
   },
@@ -46,7 +64,7 @@ module.exports = defineConfig([
     ignores: ['dist/*'],
   },
   {
-    plugins: { local: { rules: { 'no-inline-use-effect': noInlineUseEffect } } },
-    rules: { 'local/no-inline-use-effect': 'error' },
+    plugins: { local: { rules: { 'use-effect-in-custom-hook-only': useEffectInCustomHookOnly } } },
+    rules: { 'local/use-effect-in-custom-hook-only': 'error' },
   },
 ]);

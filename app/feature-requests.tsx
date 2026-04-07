@@ -36,19 +36,15 @@ const STATUS_STYLES: Record<FeatureRequestStatus, { container: string; text: str
   },
 };
 
-export default function FeatureRequestsScreen() {
+function useFeatureRequests() {
   const [requests, setRequests] = useState<FeatureRequest[]>([]);
   const [upvotedIds, setUpvotedIds] = useState<Set<string>>(new Set());
   const [userId, setUserId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
-  const [togglingId, setTogglingId] = useState<string | null>(null);
 
-  const [formOpen, setFormOpen] = useState(false);
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [submitting, setSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState<string | null>(null);
+  useEffect(() => {
+    fetchData().finally(() => setLoading(false));
+  }, []);
 
   async function fetchData() {
     const {
@@ -73,9 +69,20 @@ export default function FeatureRequestsScreen() {
     }
   }
 
-  useEffect(() => {
-    fetchData().finally(() => setLoading(false));
-  }, []);
+  return { requests, setRequests, upvotedIds, setUpvotedIds, userId, loading, fetchData };
+}
+
+export default function FeatureRequestsScreen() {
+  const { requests, setRequests, upvotedIds, setUpvotedIds, userId, loading, fetchData } =
+    useFeatureRequests();
+  const [refreshing, setRefreshing] = useState(false);
+  const [togglingId, setTogglingId] = useState<string | null>(null);
+
+  const [formOpen, setFormOpen] = useState(false);
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   async function handleRefresh() {
     setRefreshing(true);

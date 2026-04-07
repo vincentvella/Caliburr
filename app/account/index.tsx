@@ -11,11 +11,9 @@ async function resetOnboardingFlag() {
   await supabase.auth.updateUser({ data: { onboarding_completed: null } });
 }
 
-export default function AccountScreen() {
+function useCurrentUser() {
   const [email, setEmail] = useState<string | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [signingOut, setSigningOut] = useState(false);
-  const [deletingAccount, setDeletingAccount] = useState(false);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
@@ -23,6 +21,14 @@ export default function AccountScreen() {
       setIsAdmin(user?.user_metadata?.is_admin === true);
     });
   }, []);
+
+  return { email, isAdmin };
+}
+
+export default function AccountScreen() {
+  const { email, isAdmin } = useCurrentUser();
+  const [signingOut, setSigningOut] = useState(false);
+  const [deletingAccount, setDeletingAccount] = useState(false);
 
   async function handleSignOut() {
     setSigningOut(true);

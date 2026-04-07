@@ -28,6 +28,52 @@ import { ThemeProvider } from '@/lib/theme';
 
 SplashScreen.preventAutoHideAsync();
 
+function useHideSplash(fontsLoaded: boolean) {
+  useEffect(() => {
+    if (fontsLoaded) SplashScreen.hideAsync();
+  }, [fontsLoaded]);
+}
+
+function useSetupAuth() {
+  const [session, setSession] = useState<Session | null>(null);
+  const [ready, setReady] = useState(false);
+  const [isRecovery, setIsRecovery] = useState(false);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setReady(true);
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      setSession(session);
+      if (event === 'PASSWORD_RECOVERY') {
+        setIsRecovery(true);
+        router.replace('/(auth)/reset-password');
+      } else if (event === 'USER_UPDATED') {
+        setIsRecovery(false);
+      }
+    });
+
+    const linkSub = Linking.addEventListener('url', ({ url }) => {
+      handleDeepLink(url);
+    });
+
+    Linking.getInitialURL().then((url) => {
+      if (url) handleDeepLink(url);
+    });
+
+    return () => {
+      subscription.unsubscribe();
+      linkSub.remove();
+    };
+  }, []);
+
+  return { session, ready, isRecovery };
+}
+
 function useAuthGate(session: Session | null, ready: boolean, isRecovery: boolean) {
   const segments = useSegments();
 
@@ -57,9 +103,7 @@ async function handleDeepLink(url: string) {
 }
 
 export default function RootLayout() {
-  const [session, setSession] = useState<Session | null>(null);
-  const [ready, setReady] = useState(false);
-  const [isRecovery, setIsRecovery] = useState(false);
+  const { session, ready, isRecovery } = useSetupAuth();
   const { theme } = useUniwind();
 
   const [fontsLoaded] = useFonts({
@@ -74,44 +118,7 @@ export default function RootLayout() {
     DMSans_700Bold,
   });
 
-  useEffect(() => {
-    if (fontsLoaded) SplashScreen.hideAsync();
-  }, [fontsLoaded]);
-
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setReady(true);
-    });
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
-      setSession(session);
-      if (event === 'PASSWORD_RECOVERY') {
-        setIsRecovery(true);
-        router.replace('/(auth)/reset-password');
-      } else if (event === 'USER_UPDATED') {
-        setIsRecovery(false);
-      }
-    });
-
-    // Handle URL when app is already open
-    const linkSub = Linking.addEventListener('url', ({ url }) => {
-      handleDeepLink(url);
-    });
-
-    // Handle URL that launched the app from cold start
-    Linking.getInitialURL().then((url) => {
-      if (url) handleDeepLink(url);
-    });
-
-    return () => {
-      subscription.unsubscribe();
-      linkSub.remove();
-    };
-  }, []);
-
+  useHideSplash(fontsLoaded);
   useAuthGate(session, ready, isRecovery);
 
   return (
