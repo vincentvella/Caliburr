@@ -25,6 +25,7 @@ import type { Session } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { ThemeProvider } from '@/lib/theme';
+import { BackerProvider } from '@/lib/backerContext';
 import * as purchases from '@/lib/purchases';
 
 SplashScreen.preventAutoHideAsync();
@@ -131,6 +132,7 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider>
+      <BackerProvider>
       <ErrorBoundary>
         <StatusBar style={theme === 'dark' ? 'light' : 'dark'} />
         <Stack screenOptions={{ headerShown: false }}>
@@ -148,6 +150,7 @@ export default function RootLayout() {
           <Stack.Screen name="+not-found" />
         </Stack>
       </ErrorBoundary>
+      </BackerProvider>
     </ThemeProvider>
   );
 }

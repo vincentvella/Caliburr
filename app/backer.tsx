@@ -1,11 +1,12 @@
 import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator, Alert } from 'react-native';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Stack, router } from 'expo-router';
 import * as purchases from '@/lib/purchases';
 import type { PurchasesPackage } from '@/lib/purchases';
 import { PURCHASES_ERROR_CODE } from '@/lib/purchases';
 import { BackerBadge } from '@/components/BackerBadge';
 import { haptics } from '@/lib/haptics';
+import { useBackerContext } from '@/lib/backerContext';
 
 function useOffering() {
   const [monthly, setMonthly] = useState<PurchasesPackage | null>(null);
@@ -35,6 +36,7 @@ export default function BackerScreen() {
   const [selected, setSelected] = useState<'monthly' | 'annual'>('annual');
   const [purchasing, setPurchasing] = useState(false);
   const [restoring, setRestoring] = useState(false);
+  const { isBacker, refresh } = useBackerContext();
 
   async function handlePurchase() {
     const pkg = selected === 'annual' ? annual : monthly;
@@ -45,6 +47,7 @@ export default function BackerScreen() {
     setPurchasing(true);
     try {
       await purchases.purchasePackage(pkg);
+      await refresh();
       haptics.success();
       Alert.alert(
         'Thank you! ☕',
@@ -68,6 +71,7 @@ export default function BackerScreen() {
     setRestoring(true);
     try {
       const restored = await purchases.restorePurchases();
+      if (restored) await refresh();
       haptics.success();
       if (restored) {
         Alert.alert('Restored!', 'Your Backer status has been restored.', [
@@ -161,92 +165,112 @@ export default function BackerScreen() {
           </View>
         </View>
 
-        {/* Plan selection */}
-        {loading ? (
-          <ActivityIndicator color="#ff9d37" className="my-6" />
-        ) : (
-          <View className="gap-3 mb-8">
-            <TouchableOpacity
-              onPress={() => setSelected('annual')}
-              className={`rounded-2xl p-4 border-2 ${
-                selected === 'annual'
-                  ? 'border-harvest-500 bg-harvest-500/10'
-                  : 'border-latte-200 dark:border-ristretto-700 bg-oat-100 dark:bg-ristretto-800'
-              }`}
-            >
-              <View className="flex-row items-start justify-between">
-                <View className="flex-1">
-                  <View className="flex-row items-center gap-2 mb-1">
-                    <Text className="text-latte-950 dark:text-latte-100 font-semibold">Annual</Text>
-                    <View className="bg-harvest-500 rounded-full px-2 py-0.5">
-                      <Text className="text-white text-xs font-semibold">Best value</Text>
-                    </View>
-                  </View>
-                  <Text className="text-latte-600 dark:text-latte-500 text-sm">
-                    Save 37% vs monthly
-                  </Text>
-                </View>
-                <Text className="text-latte-950 dark:text-latte-100 font-bold text-lg">
-                  {annualPrice}
-                  <Text className="text-latte-600 dark:text-latte-500 text-sm font-normal">
-                    {' '}
-                    / yr
-                  </Text>
-                </Text>
-              </View>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              onPress={() => setSelected('monthly')}
-              className={`rounded-2xl p-4 border-2 ${
-                selected === 'monthly'
-                  ? 'border-harvest-500 bg-harvest-500/10'
-                  : 'border-latte-200 dark:border-ristretto-700 bg-oat-100 dark:bg-ristretto-800'
-              }`}
-            >
-              <View className="flex-row items-center justify-between">
-                <Text className="text-latte-950 dark:text-latte-100 font-semibold">Monthly</Text>
-                <Text className="text-latte-950 dark:text-latte-100 font-bold text-lg">
-                  {monthlyPrice}
-                  <Text className="text-latte-600 dark:text-latte-500 text-sm font-normal">
-                    {' '}
-                    / mo
-                  </Text>
-                </Text>
-              </View>
-            </TouchableOpacity>
+        {isBacker ? (
+          <View className="bg-crema-900/20 border border-crema-700 rounded-2xl px-4 py-5 items-center mb-8">
+            <Text style={{ fontSize: 32 }}>☕</Text>
+            <Text className="text-crema-300 font-semibold text-base mt-3">
+              You're a Caliburr Backer
+            </Text>
+            <Text className="text-crema-500 text-sm text-center mt-1">
+              Thank you for your support!
+            </Text>
           </View>
+        ) : (
+          <>
+            {/* Plan selection */}
+            {loading ? (
+              <ActivityIndicator color="#ff9d37" className="my-6" />
+            ) : (
+              <View className="gap-3 mb-8">
+                <TouchableOpacity
+                  onPress={() => setSelected('annual')}
+                  className={`rounded-2xl p-4 border-2 ${
+                    selected === 'annual'
+                      ? 'border-harvest-500 bg-harvest-500/10'
+                      : 'border-latte-200 dark:border-ristretto-700 bg-oat-100 dark:bg-ristretto-800'
+                  }`}
+                >
+                  <View className="flex-row items-start justify-between">
+                    <View className="flex-1">
+                      <View className="flex-row items-center gap-2 mb-1">
+                        <Text className="text-latte-950 dark:text-latte-100 font-semibold">
+                          Annual
+                        </Text>
+                        <View className="bg-harvest-500 rounded-full px-2 py-0.5">
+                          <Text className="text-white text-xs font-semibold">Best value</Text>
+                        </View>
+                      </View>
+                      <Text className="text-latte-600 dark:text-latte-500 text-sm">
+                        Save 37% vs monthly
+                      </Text>
+                    </View>
+                    <Text className="text-latte-950 dark:text-latte-100 font-bold text-lg">
+                      {annualPrice}
+                      <Text className="text-latte-600 dark:text-latte-500 text-sm font-normal">
+                        {' '}
+                        / yr
+                      </Text>
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  onPress={() => setSelected('monthly')}
+                  className={`rounded-2xl p-4 border-2 ${
+                    selected === 'monthly'
+                      ? 'border-harvest-500 bg-harvest-500/10'
+                      : 'border-latte-200 dark:border-ristretto-700 bg-oat-100 dark:bg-ristretto-800'
+                  }`}
+                >
+                  <View className="flex-row items-center justify-between">
+                    <Text className="text-latte-950 dark:text-latte-100 font-semibold">
+                      Monthly
+                    </Text>
+                    <Text className="text-latte-950 dark:text-latte-100 font-bold text-lg">
+                      {monthlyPrice}
+                      <Text className="text-latte-600 dark:text-latte-500 text-sm font-normal">
+                        {' '}
+                        / mo
+                      </Text>
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              </View>
+            )}
+
+            {/* CTA */}
+            <TouchableOpacity
+              onPress={handlePurchase}
+              disabled={purchasing || loading}
+              className="bg-harvest-500 rounded-xl py-4 items-center mb-4"
+            >
+              {purchasing ? (
+                <ActivityIndicator color="#fff" />
+              ) : (
+                <Text className="text-white font-semibold text-base">Support Caliburr</Text>
+              )}
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={handleRestore}
+              disabled={restoring}
+              className="items-center py-3 mb-6"
+            >
+              {restoring ? (
+                <ActivityIndicator color="#ff9d37" size="small" />
+              ) : (
+                <Text className="text-latte-500 dark:text-latte-600 text-sm">
+                  Restore Purchases
+                </Text>
+              )}
+            </TouchableOpacity>
+
+            <Text className="text-latte-400 dark:text-latte-700 text-xs text-center leading-5">
+              Subscriptions auto-renew unless cancelled at least 24 hours before the end of the
+              current period. Manage or cancel in your App Store account settings.
+            </Text>
+          </>
         )}
-
-        {/* CTA */}
-        <TouchableOpacity
-          onPress={handlePurchase}
-          disabled={purchasing || loading}
-          className="bg-harvest-500 rounded-xl py-4 items-center mb-4"
-        >
-          {purchasing ? (
-            <ActivityIndicator color="#fff" />
-          ) : (
-            <Text className="text-white font-semibold text-base">Support Caliburr</Text>
-          )}
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          onPress={handleRestore}
-          disabled={restoring}
-          className="items-center py-3 mb-6"
-        >
-          {restoring ? (
-            <ActivityIndicator color="#ff9d37" size="small" />
-          ) : (
-            <Text className="text-latte-500 dark:text-latte-600 text-sm">Restore Purchases</Text>
-          )}
-        </TouchableOpacity>
-
-        <Text className="text-latte-400 dark:text-latte-700 text-xs text-center leading-5">
-          Subscriptions auto-renew unless cancelled at least 24 hours before the end of the current
-          period. Manage or cancel in your App Store account settings.
-        </Text>
       </ScrollView>
     </>
   );
