@@ -5,7 +5,6 @@ import * as WebBrowser from 'expo-web-browser';
 import { supabase } from '@/lib/supabase';
 
 const PRIVACY_POLICY_URL = 'https://caliburr.coffee/privacy';
-const SUPPORT_URL = 'https://caliburr.coffee/support';
 
 async function resetOnboardingFlag() {
   await supabase.auth.updateUser({ data: { onboarding_completed: null } });
@@ -121,7 +120,7 @@ export default function AccountScreen() {
             </TouchableOpacity>
           )}
           <TouchableOpacity
-            onPress={() => WebBrowser.openBrowserAsync(SUPPORT_URL)}
+            onPress={() => router.push('/support')}
             className="flex-row items-center justify-between bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-2xl px-4 py-3.5"
           >
             <Text className="text-latte-950 dark:text-latte-100 font-medium">Contact Support</Text>
@@ -135,6 +134,21 @@ export default function AccountScreen() {
             <Text className="text-latte-600 dark:text-latte-500 text-lg">›</Text>
           </TouchableOpacity>
         </View>
+
+        {/* Backer */}
+        <Text className="text-latte-600 dark:text-latte-500 text-xs font-semibold uppercase tracking-wider mb-2 px-1">
+          Support
+        </Text>
+        <TouchableOpacity
+          onPress={() => router.push('/backer')}
+          className="flex-row items-center justify-between bg-oat-100 dark:bg-ristretto-800 border border-crema-600 dark:border-crema-700 rounded-2xl px-4 py-3.5 mb-6"
+        >
+          <View className="flex-row items-center gap-2">
+            <Text style={{ fontSize: 18 }}>☕</Text>
+            <Text className="text-latte-950 dark:text-latte-100 font-medium">Caliburr Backer</Text>
+          </View>
+          <Text className="text-crema-500 text-lg">›</Text>
+        </TouchableOpacity>
 
         {/* Sign out */}
         <TouchableOpacity

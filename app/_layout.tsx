@@ -25,6 +25,7 @@ import type { Session } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { ThemeProvider } from '@/lib/theme';
+import * as purchases from '@/lib/purchases';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -40,16 +41,23 @@ function useSetupAuth() {
   const [isRecovery, setIsRecovery] = useState(false);
 
   useEffect(() => {
+    purchases.configure();
+
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setReady(true);
+      if (session?.user.id) purchases.logIn(session.user.id);
     });
 
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
       setSession(session);
-      if (event === 'PASSWORD_RECOVERY') {
+      if (event === 'SIGNED_IN' && session?.user.id) {
+        purchases.logIn(session.user.id);
+      } else if (event === 'SIGNED_OUT') {
+        purchases.logOut();
+      } else if (event === 'PASSWORD_RECOVERY') {
         setIsRecovery(true);
         router.replace('/(auth)/reset-password');
       } else if (event === 'USER_UPDATED') {
@@ -134,6 +142,7 @@ export default function RootLayout() {
           <Stack.Screen name="account/index" />
           <Stack.Screen name="account/change-password" />
           <Stack.Screen name="feature-requests" />
+          <Stack.Screen name="backer" />
           <Stack.Screen name="admin" />
           <Stack.Screen name="recipe/new" options={{ presentation: 'modal' }} />
           <Stack.Screen name="+not-found" />

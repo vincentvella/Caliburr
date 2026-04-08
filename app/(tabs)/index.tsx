@@ -22,6 +22,20 @@ const BREW_METHODS = [...Constants.public.Enums.brew_method];
 
 // ─── Hooks ────────────────────────────────────────────────────────────────────
 
+function useBackerIds() {
+  const [backerIds, setBackerIds] = useState<Set<string>>(new Set());
+  useEffect(() => {
+    supabase
+      .from('profiles')
+      .select('user_id')
+      .not('backer_tier', 'is', null)
+      .then(({ data }) => {
+        setBackerIds(new Set((data ?? []).map((p) => p.user_id)));
+      });
+  }, []);
+  return backerIds;
+}
+
 function useUserContext() {
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [myGrinderId, setMyGrinderId] = useState<string[]>([]);
@@ -187,6 +201,7 @@ function useRecipes(myGrinderId: string[]) {
 
 export default function ExploreScreen() {
   const { currentUserId, myGrinderId, upvotedIds, setUpvotedIds } = useUserContext();
+  const backerIds = useBackerIds();
   const {
     recipes,
     setRecipes,
@@ -419,6 +434,7 @@ export default function ExploreScreen() {
                 recipe={item}
                 upvoted={upvotedIds.has(item.id)}
                 onUpvote={() => toggleUpvote(item.id)}
+                isAuthorBacker={backerIds.has(item.user_id)}
               />
             </TouchableOpacity>
           )}

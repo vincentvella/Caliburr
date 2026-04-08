@@ -171,6 +171,34 @@ export default function TermsOfServiceScreen() {
             </P>
           </Section>
 
+          <Section title="Caliburr Backer Subscription">
+            <P>
+              Caliburr Backer is an optional, auto-renewing subscription available on monthly and
+              annual plans. Payment is charged to your Apple ID account at confirmation of purchase.
+            </P>
+            <Li>
+              Subscriptions automatically renew unless cancelled at least 24 hours before the end of
+              the current period.
+            </Li>
+            <Li>
+              Your account will be charged for renewal within 24 hours prior to the end of the
+              current period at the rate of your selected plan.
+            </Li>
+            <Li>
+              You can manage or cancel your subscription at any time in your App Store account
+              settings. Cancellation takes effect at the end of the current billing period — you
+              retain backer status until then.
+            </Li>
+            <Li>
+              Backer status (badge and perks) is tied to an active subscription. Status is removed
+              when the subscription expires.
+            </Li>
+            <P>
+              Caliburr Backer grants cosmetic benefits only. No core features of the app are locked
+              behind the subscription.
+            </P>
+          </Section>
+
           <Section title="Limitation of Liability">
             <P>
               To the maximum extent permitted by law, Caliburr and its operators shall not be liable

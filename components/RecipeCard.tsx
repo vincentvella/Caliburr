@@ -1,21 +1,30 @@
 import { View, Text, TouchableOpacity } from 'react-native';
 import { type RecipeWithJoins, BREW_METHOD_LABELS } from '@/lib/types';
 import { Stat, formatTime } from '@/components/recipe/RecipeStats';
+import { BackerBadge } from '@/components/BackerBadge';
 
 export function RecipeCard({
   recipe,
   upvoted,
   onUpvote,
+  isAuthorBacker = false,
 }: {
   recipe: RecipeWithJoins;
   upvoted: boolean;
   onUpvote: () => void;
+  isAuthorBacker?: boolean;
 }) {
   const grinderLabel = `${recipe.grinder.brand} ${recipe.grinder.model}`;
   const methodLabel = BREW_METHOD_LABELS[recipe.brew_method];
 
   return (
-    <View className="bg-oat-100 dark:bg-ristretto-800 rounded-2xl p-4 mb-3 border border-latte-200 dark:border-ristretto-700">
+    <View
+      className={`bg-oat-100 dark:bg-ristretto-800 rounded-2xl p-4 mb-3 border ${
+        isAuthorBacker
+          ? 'border-crema-600 dark:border-crema-700'
+          : 'border-latte-200 dark:border-ristretto-700'
+      }`}
+    >
       {/* Title row */}
       <View className="flex-row items-start justify-between mb-2">
         <View className="flex-1 mr-2">
@@ -75,9 +84,10 @@ export function RecipeCard({
         </Text>
       ) : null}
 
-      {/* Footer: roast level + upvote */}
+      {/* Footer: roast level + backer badge + upvote */}
       <View className="flex-row items-center justify-between mt-3">
-        <View className="flex-row gap-2">
+        <View className="flex-row gap-2 flex-1 mr-2 flex-wrap">
+          {isAuthorBacker && <BackerBadge size="sm" />}
           {recipe.roast_level ? (
             <View className="bg-oat-200 dark:bg-ristretto-700 rounded-full px-2 py-0.5">
               <Text className="text-latte-600 dark:text-latte-500 text-xs capitalize">

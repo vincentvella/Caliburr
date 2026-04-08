@@ -18,6 +18,7 @@ import { GrinderModal } from '@/components/equipment/GrinderModal';
 import { MachineModal } from '@/components/equipment/MachineModal';
 import type { Grinder, BrewMachine } from '@/lib/types';
 import { MACHINE_TYPE_LABELS } from '@/lib/types';
+import { useBetaAccess } from '@/hooks/useBetaAccess';
 
 interface UserGrinder {
   grinder_id: string;
@@ -157,6 +158,7 @@ export default function ProfileScreen() {
     pendingMachineEditIds,
     fetchEquipment,
   } = useEquipment();
+  const { isBacker, loading: backerLoading } = useBetaAccess();
   const [removingId, setRemovingId] = useState<string | null>(null);
   const [grinderModalOpen, setGrinderModalOpen] = useState(false);
   const [machineModalOpen, setMachineModalOpen] = useState(false);
@@ -315,7 +317,33 @@ export default function ProfileScreen() {
           My Gear
         </Text>
         {email && !screenshotMode && (
-          <Text className="text-latte-600 dark:text-latte-500 text-sm mb-8">{email}</Text>
+          <Text className="text-latte-600 dark:text-latte-500 text-sm mb-4">{email}</Text>
+        )}
+
+        {!backerLoading && !isBacker && (
+          <TouchableOpacity
+            onPress={() => router.push('/backer')}
+            className="flex-row items-center gap-3 bg-crema-900/20 border border-crema-700 rounded-2xl px-4 py-3 mb-8"
+          >
+            <Text style={{ fontSize: 22 }}>☕</Text>
+            <View className="flex-1">
+              <Text className="text-crema-300 font-semibold text-sm">Support Caliburr</Text>
+              <Text className="text-crema-500 text-xs mt-0.5">
+                Get a backer badge on your recipes
+              </Text>
+            </View>
+            <Text className="text-crema-500 text-lg">›</Text>
+          </TouchableOpacity>
+        )}
+
+        {!backerLoading && isBacker && (
+          <View className="flex-row items-center gap-3 bg-crema-900/20 border border-crema-700 rounded-2xl px-4 py-3 mb-8">
+            <Text style={{ fontSize: 22 }}>☕</Text>
+            <View className="flex-1">
+              <Text className="text-crema-300 font-semibold text-sm">Caliburr Backer</Text>
+              <Text className="text-crema-500 text-xs mt-0.5">Thank you for your support</Text>
+            </View>
+          </View>
         )}
 
         {loadingEquipment ? (
