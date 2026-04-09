@@ -31,6 +31,7 @@ export default function AdminLayout() {
       <Stack.Screen name="recipes" />
       <Stack.Screen name="equipment" />
       <Stack.Screen name="backers" />
+      <Stack.Screen name="stats" />
     </Stack>
   );
 }
