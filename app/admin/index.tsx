@@ -5,6 +5,7 @@ import { supabase } from '@/lib/supabase';
 
 interface AdminCounts {
   edits: number;
+  unverified: number;
   support: number;
   featureRequests: number;
 }
@@ -14,18 +15,21 @@ function useAdminCounts() {
 
   useEffect(() => {
     async function fetch() {
-      const [gRes, mRes, giRes, miRes, sRes, fRes] = await Promise.all([
+      const [gRes, mRes, giRes, miRes, ugRes, umRes, sRes, fRes] = await Promise.all([
         supabase.from('grinder_edits').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
         supabase.from('machine_edits').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (supabase.from('grinders') as any).select('*', { count: 'exact', head: true }).eq('image_status', 'pending'),
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (supabase.from('brew_machines') as any).select('*', { count: 'exact', head: true }).eq('image_status', 'pending'),
+        supabase.from('grinders').select('*', { count: 'exact', head: true }).eq('verified', false),
+        supabase.from('brew_machines').select('*', { count: 'exact', head: true }).eq('verified', false),
         supabase.from('support_requests').select('*', { count: 'exact', head: true }).eq('status', 'open'),
         supabase.from('feature_requests').select('*', { count: 'exact', head: true }).eq('status', 'open'),
       ]);
       setCounts({
         edits: (gRes.count ?? 0) + (mRes.count ?? 0) + (giRes.count ?? 0) + (miRes.count ?? 0),
+        unverified: (ugRes.count ?? 0) + (umRes.count ?? 0),
         support: sRes.count ?? 0,
         featureRequests: fRes.count ?? 0,
       });
@@ -89,6 +93,11 @@ export default function AdminScreen() {
           label="Equipment Edits"
           count={counts?.edits ?? null}
           onPress={() => router.push('/admin/edits')}
+        />
+        <NavRow
+          label="Equipment Verification"
+          count={counts?.unverified ?? null}
+          onPress={() => router.push('/admin/equipment')}
         />
         <NavRow
           label="Support Requests"
