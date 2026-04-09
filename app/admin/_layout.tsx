@@ -28,6 +28,7 @@ export default function AdminLayout() {
       <Stack.Screen name="edits" />
       <Stack.Screen name="support" />
       <Stack.Screen name="feature-requests" />
+      <Stack.Screen name="recipes" />
     </Stack>
   );
 }

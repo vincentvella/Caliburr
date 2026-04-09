@@ -81,6 +81,11 @@ export default function AdminScreen() {
 
       <ScrollView className="flex-1 px-4 pt-6">
         <NavRow
+          label="Recipes"
+          count={0}
+          onPress={() => router.push('/admin/recipes')}
+        />
+        <NavRow
           label="Equipment Edits"
           count={counts?.edits ?? null}
           onPress={() => router.push('/admin/edits')}
