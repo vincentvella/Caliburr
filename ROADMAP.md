@@ -36,7 +36,15 @@
 
 ## 🟢 Features — post-launch
 
-- [ ] **Admin interface** (`app/(admin)/`) — moderation dashboard for flagging/removing bad equipment entries and recipes. Role-gated, works on mobile and web. Required before user-generated content can grow unchecked.
+- [x] **Admin interface** — hub with equipment edit review, support queue, and feature request triage. Role-gated via `is_admin` user metadata.
+- [ ] **Recipe moderation** — flag and remove spam/invalid recipes; no removal path exists today.
+- [ ] **Equipment verification override** — manually verify equipment or un-verify incorrectly verified entries without waiting for the 5-vote threshold.
+- [ ] **Backer management** — manually set/clear `profiles.backer_tier`; needed until RevenueCat webhook is wired up and as a permanent override for disputes/gifting.
+- [ ] **Admin stats dashboard** — total users, recipes, equipment; new signups and recipes this week; most-used grinders and beans.
+- [ ] **User management** — view a user's recipes and activity, ability to ban.
+- [ ] **Content reporting** — user-facing report button on recipes/equipment + admin moderation queue (requires new table).
+- [ ] **Bean moderation** — beans are added freely with no verification or review flow.
+- [ ] **RevenueCat webhook** — wire up `revenuecat-webhook` edge function to write `profiles.backer_tier` on subscription events so backer status persists across reinstalls and devices without relying on the SDK check.
 - [ ] **Image uploads** — equipment modals currently only accept an external URL. Should support camera/gallery picker with Supabase Storage upload.
 - [ ] **Grind setting aggregation** — median + IQR across all recipes for a given grinder + brew method combination. Outlier flagging at 2 std deviations. Mentioned in product decisions but no query or UI exists.
 - [ ] **Trending / ranking** — weekly top recipes, most upvoted by brew method or grinder.
@@ -46,6 +54,7 @@
 
 ## ✅ Done
 
+- Backer IAP — RevenueCat monthly + annual subscriptions, backer badge, BackerContext for zero-overhead status checks
 - Auth (sign in, sign up, email verification)
 - Explore feed with search, brew method filters, My Gear toggle, upvotes
 - My Recipes with delete
