@@ -37,10 +37,10 @@
 ## 🟢 Features — post-launch
 
 - [x] **Admin interface** — hub with equipment edit review, support queue, and feature request triage. Role-gated via `is_admin` user metadata.
-- [ ] **Recipe moderation** — flag and remove spam/invalid recipes; no removal path exists today.
-- [ ] **Equipment verification override** — manually verify equipment or un-verify incorrectly verified entries without waiting for the 5-vote threshold.
-- [ ] **Backer management** — manually set/clear `profiles.backer_tier`; needed until RevenueCat webhook is wired up and as a permanent override for disputes/gifting.
-- [ ] **Admin stats dashboard** — total users, recipes, equipment; new signups and recipes this week; most-used grinders and beans.
+- [x] **Recipe moderation** — browse newest-first with notes search, delete any recipe with confirmation.
+- [x] **Equipment verification override** — manually verify or un-verify equipment; un-verify clears all votes so community can re-verify from scratch.
+- [x] **Backer management** — list active backers, grant by email, revoke with confirmation. `admin-backer` edge function uses service role.
+- [x] **Admin stats dashboard** — recipe/grinder/machine/backer totals, new recipes this week, top grinders and beans, breakdown by brew method.
 - [ ] **User management** — view a user's recipes and activity, ability to ban.
 - [ ] **Content reporting** — user-facing report button on recipes/equipment + admin moderation queue (requires new table).
 - [ ] **Bean moderation** — beans are added freely with no verification or review flow.
