@@ -25,6 +25,9 @@ export default function AdminLayout() {
   return (
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="index" />
+      <Stack.Screen name="edits" />
+      <Stack.Screen name="support" />
+      <Stack.Screen name="feature-requests" />
     </Stack>
   );
 }
