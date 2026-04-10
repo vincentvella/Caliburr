@@ -43,6 +43,7 @@ export interface Bean {
   origin: string | null;
   process: string | null;
   roast_level: RoastLevel | null;
+  tasting_notes: string[];
   created_at: string;
 }
 
@@ -87,7 +88,7 @@ export interface RecipeHistory {
 
 export interface RecipeWithJoins extends Recipe {
   grinder: Pick<Grinder, 'brand' | 'model' | 'verified' | 'burr_type' | 'adjustment_type'>;
-  bean: Pick<Bean, 'name' | 'roaster' | 'origin' | 'process' | 'roast_level'> | null;
+  bean: Pick<Bean, 'name' | 'roaster' | 'origin' | 'process' | 'roast_level' | 'tasting_notes'> | null;
   brew_machine: Pick<BrewMachine, 'brand' | 'model' | 'machine_type' | 'verified'> | null;
 }
 

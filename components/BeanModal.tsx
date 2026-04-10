@@ -10,7 +10,7 @@ import {
   ScrollView,
 } from 'react-native';
 import { LegendList } from '@legendapp/list';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useForm } from '@tanstack/react-form';
 import { supabase } from '@/lib/supabase';
 import { useQuery } from '@/hooks/useQuery';
@@ -46,13 +46,14 @@ function useResetOnOpen(
 
 function useDefaults() {
   const { data, error } = useQuery(
-    () =>
-      supabase
+    async () => {
+      const res = await supabase
         .from('beans')
         .select('*')
         .order('created_at', { ascending: false })
-        .limit(25)
-        .then((res) => unwrap(res) as Bean[]),
+        .limit(25);
+      return unwrap(res) as unknown as Bean[];
+    },
     [],
   );
   return { defaults: data ?? [], error };
@@ -74,7 +75,7 @@ function useBeanSearch(query: string) {
         .select('*')
         .or(`name.ilike.%${query}%,roaster.ilike.%${query}%`)
         .limit(15);
-      setResults(data ?? []);
+      setResults((data ?? []) as unknown as Bean[]);
       setSearching(false);
     }, 300);
     return () => clearTimeout(t);
@@ -158,21 +159,37 @@ export function BeanModal({ visible, onClose, onSelected, selectedId }: Props) {
                       onSelected(item);
                       handleClose();
                     }}
-                    className={`flex-row items-center justify-between py-4 border-b border-latte-100 dark:border-ristretto-800 ${
+                    className={`py-4 border-b border-latte-100 dark:border-ristretto-800 ${
                       selectedId === item.id ? 'opacity-60' : ''
                     }`}
                   >
-                    <View className="flex-1 mr-3">
-                      <Text className="text-latte-950 dark:text-latte-100 font-medium">
-                        {item.name}
-                      </Text>
-                      <Text className="text-latte-600 dark:text-latte-500 text-xs mt-0.5">
-                        {item.roaster}
-                        {item.origin ? ` · ${item.origin}` : ''}
-                        {item.roast_level ? ` · ${ROAST_LEVEL_LABELS[item.roast_level]}` : ''}
-                      </Text>
+                    <View className="flex-row items-center justify-between">
+                      <View className="flex-1 mr-3">
+                        <Text className="text-latte-950 dark:text-latte-100 font-medium">
+                          {item.name}
+                        </Text>
+                        <Text className="text-latte-600 dark:text-latte-500 text-xs mt-0.5">
+                          {item.roaster}
+                          {item.origin ? ` · ${item.origin}` : ''}
+                          {item.roast_level ? ` · ${ROAST_LEVEL_LABELS[item.roast_level]}` : ''}
+                        </Text>
+                      </View>
+                      {selectedId === item.id && <Text className="text-harvest-400">✓</Text>}
                     </View>
-                    {selectedId === item.id && <Text className="text-harvest-400">✓</Text>}
+                    {item.tasting_notes.length > 0 && (
+                      <View className="flex-row flex-wrap gap-1 mt-2">
+                        {item.tasting_notes.map((note) => (
+                          <View
+                            key={note}
+                            className="bg-bloom-600/15 rounded-full px-2 py-0.5"
+                          >
+                            <Text className="text-bloom-600 dark:text-bloom-400 text-xs">
+                              {note}
+                            </Text>
+                          </View>
+                        ))}
+                      </View>
+                    )}
                   </TouchableOpacity>
                 )}
                 ListEmptyComponent={
@@ -220,6 +237,22 @@ function BeanForm({
   onDone: (bean: Bean) => void;
 }) {
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [tastingNotes, setTastingNotes] = useState<string[]>([]);
+  const [noteInput, setNoteInput] = useState('');
+  const noteInputRef = useRef<TextInput>(null);
+
+  function addNote(raw: string) {
+    const note = raw.trim().toLowerCase();
+    if (note && !tastingNotes.includes(note)) {
+      setTastingNotes((prev) => [...prev, note]);
+    }
+    setNoteInput('');
+  }
+
+  function removeNote(note: string) {
+    setTastingNotes((prev) => prev.filter((n) => n !== note));
+  }
+
   const form = useForm({
     defaultValues: {
       name: initialName,
@@ -237,6 +270,7 @@ function BeanForm({
           origin: value.origin.trim() || null,
           process: value.process.trim() || null,
           roast_level: value.roast_level || null,
+          tasting_notes: tastingNotes,
         })
         .select()
         .single();
@@ -245,7 +279,7 @@ function BeanForm({
         setSubmitError(error?.message ?? 'Failed to save');
         return;
       }
-      onDone(data);
+      onDone(data as Bean);
     },
   });
 
@@ -277,6 +311,48 @@ function BeanForm({
       <form.Field name="process">
         {(field) => <FormField field={field} label="Process" placeholder="e.g. Washed, Natural" />}
       </form.Field>
+
+      {/* Tasting notes */}
+      <View className="gap-2">
+        <Text className="text-latte-700 dark:text-latte-400 text-xs px-1 mb-1">
+          Tasting Notes <Text className="text-latte-500 dark:text-latte-600">(optional)</Text>
+        </Text>
+        {tastingNotes.length > 0 && (
+          <View className="flex-row flex-wrap gap-2 mb-1">
+            {tastingNotes.map((note) => (
+              <TouchableOpacity
+                key={note}
+                onPress={() => removeNote(note)}
+                className="flex-row items-center gap-1 bg-bloom-600/15 rounded-full px-3 py-1"
+              >
+                <Text className="text-bloom-600 dark:text-bloom-400 text-xs">{note}</Text>
+                <Text className="text-bloom-600 dark:text-bloom-400 text-xs">×</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        )}
+        <TextInput
+          ref={noteInputRef}
+          className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-950 dark:text-latte-100 text-base"
+          style={{ lineHeight: undefined }}
+          placeholder="e.g. chocolate, citrus, floral"
+          placeholderTextColor="#6e5a47"
+          value={noteInput}
+          onChangeText={(text) => {
+            if (text.endsWith(',')) {
+              addNote(text.slice(0, -1));
+            } else {
+              setNoteInput(text);
+            }
+          }}
+          onSubmitEditing={() => addNote(noteInput)}
+          returnKeyType="done"
+          blurOnSubmit={false}
+        />
+        <Text className="text-latte-500 dark:text-latte-600 text-xs px-1">
+          Type a note and press comma or return to add
+        </Text>
+      </View>
 
       {/* Roast level */}
       <form.Field name="roast_level">

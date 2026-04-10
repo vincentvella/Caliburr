@@ -49,7 +49,7 @@ function useRecipeScreen(id: string) {
               `
                 *,
                 grinder:grinders(brand, model, verified, burr_type, adjustment_type),
-                bean:beans(name, roaster, origin, process, roast_level),
+                bean:beans(name, roaster, origin, process, roast_level, tasting_notes),
                 brew_machine:brew_machines(brand, model, machine_type, verified)
               `,
             )
@@ -345,6 +345,7 @@ export default function RecipeDetailScreen() {
               subtitle={
                 [recipe.bean.origin, recipe.bean.process].filter(Boolean).join(' · ') || undefined
               }
+              onPress={recipe.bean_id ? () => router.push(`/bean/${recipe.bean_id}`) : undefined}
             />
           )}
         </View>
