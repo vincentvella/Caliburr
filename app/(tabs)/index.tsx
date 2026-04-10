@@ -352,7 +352,7 @@ export default function ExploreScreen() {
 
         {/* Sort mode */}
         <View className="flex-row gap-2">
-          {(['trending', 'top', 'new'] as const).map((mode) => (
+          {(['top', 'trending', 'new'] as const).map((mode) => (
             <TouchableOpacity
               key={mode}
               onPress={() => setSortMode(mode)}
@@ -362,7 +362,9 @@ export default function ExploreScreen() {
                   : 'border-latte-200 dark:border-ristretto-700'
               }`}
             >
-              <Text className={`text-xs font-medium capitalize ${sortMode === mode ? 'text-white' : 'text-latte-700 dark:text-latte-400'}`}>
+              <Text
+                className={`text-xs font-medium capitalize ${sortMode === mode ? 'text-white' : 'text-latte-700 dark:text-latte-400'}`}
+              >
                 {mode === 'trending' ? '🔥 Trending' : mode === 'top' ? '▲ Top' : '✦ New'}
               </Text>
             </TouchableOpacity>
