@@ -329,6 +329,7 @@ export default function RecipeDetailScreen() {
                 : undefined
             }
             verified={recipe.grinder.verified}
+            onPress={() => router.push(`/grinder/${recipe.grinder_id}`)}
           />
           {recipe.brew_machine && (
             <EquipmentRow
