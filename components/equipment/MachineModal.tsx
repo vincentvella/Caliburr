@@ -20,6 +20,7 @@ import { haptics } from '@/lib/haptics';
 import type { BrewMachine, MachineType } from '@/lib/types';
 import { MACHINE_TYPE_LABELS } from '@/lib/types';
 import { ModalRow as Row } from './ModalRow';
+import { promptReport } from '@/lib/report';
 
 const VERIFICATION_THRESHOLD = 5;
 
@@ -317,6 +318,13 @@ function MachineReadOnly({
         ) : (
           <Text className="text-white font-semibold">Add to My Gear</Text>
         )}
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        onPress={() => promptReport('machine', machine.id)}
+        className="items-center py-3"
+      >
+        <Text className="text-latte-400 dark:text-latte-700 text-xs">Report incorrect data</Text>
       </TouchableOpacity>
     </ScrollView>
   );

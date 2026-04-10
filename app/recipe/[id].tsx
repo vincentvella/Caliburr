@@ -12,6 +12,7 @@ import { useLocalSearchParams, router } from 'expo-router';
 import * as Clipboard from 'expo-clipboard';
 import { supabase } from '@/lib/supabase';
 import { haptics } from '@/lib/haptics';
+import { promptReport } from '@/lib/report';
 import {
   type RecipeWithJoins,
   type RecipeHistory,
@@ -362,6 +363,15 @@ export default function RecipeDetailScreen() {
               />
             ))}
           </View>
+        )}
+
+        {!isOwner && (
+          <TouchableOpacity
+            onPress={() => promptReport('recipe', recipe.id)}
+            className="items-center py-4 mb-4"
+          >
+            <Text className="text-latte-400 dark:text-latte-700 text-xs">Report this recipe</Text>
+          </TouchableOpacity>
         )}
       </ScrollView>
 

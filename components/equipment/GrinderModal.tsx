@@ -20,6 +20,7 @@ import { haptics } from '@/lib/haptics';
 import type { Grinder, BurrType, AdjustmentType } from '@/lib/types';
 import { BURR_TYPE_LABELS, ADJUSTMENT_TYPE_LABELS } from '@/lib/types';
 import { ModalRow as Row } from './ModalRow';
+import { promptReport } from '@/lib/report';
 
 const VERIFICATION_THRESHOLD = 5;
 
@@ -336,6 +337,13 @@ function GrinderReadOnly({
         ) : (
           <Text className="text-white font-semibold">Add to My Gear</Text>
         )}
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        onPress={() => promptReport('grinder', grinder.id)}
+        className="items-center py-3"
+      >
+        <Text className="text-latte-400 dark:text-latte-700 text-xs">Report incorrect data</Text>
       </TouchableOpacity>
     </ScrollView>
   );

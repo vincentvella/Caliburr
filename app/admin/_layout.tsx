@@ -33,6 +33,7 @@ export default function AdminLayout() {
       <Stack.Screen name="backers" />
       <Stack.Screen name="stats" />
       <Stack.Screen name="users" />
+      <Stack.Screen name="reports" />
     </Stack>
   );
 }
