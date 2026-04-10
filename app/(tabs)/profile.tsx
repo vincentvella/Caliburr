@@ -378,8 +378,8 @@ export default function ProfileScreen() {
               ) : (
                 <>
                   {grinders.map(({ grinder_id, grinder, is_default }) => (
+                    <View key={grinder_id}>
                     <TouchableOpacity
-                      key={grinder_id}
                       onPress={() => {
                         setEditingGrinder(grinder);
                         setGrinderModalOpen(true);
@@ -440,6 +440,14 @@ export default function ProfileScreen() {
                         )}
                       </View>
                     </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => router.push(`/grinder/${grinder_id}`)}
+                      className="flex-row items-center gap-1 px-1 pb-2 -mt-1"
+                    >
+                      <Text className="text-harvest-400 text-xs">Dial-In Guide</Text>
+                      <Text className="text-harvest-400 text-xs">›</Text>
+                    </TouchableOpacity>
+                    </View>
                   ))}
                   {grinders.some((g) => g.is_default) && (
                     <Text className="text-latte-500 dark:text-latte-600 text-xs px-1 mt-1">

@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import { LegendList } from '@legendapp/list';
 import { useState, useEffect } from 'react';
+import { router } from 'expo-router';
 import { useForm } from '@tanstack/react-form';
 import { supabase } from '@/lib/supabase';
 import { useQuery } from '@/hooks/useQuery';
@@ -270,6 +271,7 @@ export function GrinderModal({ visible, onClose, onAdded, existingIds, editGrind
             grinder={selectedGrinder}
             addingId={addingId}
             onAdd={() => handleAdd(selectedGrinder)}
+            onViewDialIn={() => { handleClose(); router.push(`/grinder/${selectedGrinder.id}`); }}
           />
         )}
 
@@ -293,10 +295,12 @@ function GrinderReadOnly({
   grinder,
   addingId,
   onAdd,
+  onViewDialIn,
 }: {
   grinder: Grinder;
   addingId: string | null;
   onAdd: () => void;
+  onViewDialIn: () => void;
 }) {
   return (
     <ScrollView className="flex-1 px-6 pt-4" contentContainerClassName="gap-4 pb-8">
@@ -338,6 +342,13 @@ function GrinderReadOnly({
         ) : (
           <Text className="text-white font-semibold">Add to My Gear</Text>
         )}
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        onPress={onViewDialIn}
+        className="border border-harvest-400 rounded-xl py-3.5 items-center"
+      >
+        <Text className="text-harvest-400 font-semibold text-sm">View Dial-In Guide →</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
