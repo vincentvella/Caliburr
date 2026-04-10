@@ -54,7 +54,20 @@
       "expo-font",
       "expo-web-browser",
       "expo-system-ui",
-      "@react-native-community/datetimepicker"
+      "@react-native-community/datetimepicker",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Choose a photo of your equipment to help other users identify it."
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "color": "#ff9d37",
+          "defaultChannel": "default"
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,
