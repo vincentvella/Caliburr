@@ -59,6 +59,8 @@ function useUserContext() {
   return { currentUserId, myGrinderId, upvotedIds, setUpvotedIds };
 }
 
+export type SortMode = 'trending' | 'top' | 'new';
+
 function useRecipes(myGrinderId: string[]) {
   const [recipes, setRecipes] = useState<RecipeWithJoins[]>([]);
   const [loading, setLoading] = useState(true);
@@ -69,6 +71,7 @@ function useRecipes(myGrinderId: string[]) {
   const [search, setSearch] = useState('');
   const [methodFilter, setMethodFilter] = useState<BrewMethod | null>(null);
   const [myGearOnly, setMyGearOnly] = useState(false);
+  const [sortMode, setSortMode] = useState<SortMode>('trending');
   const searchTimer = useRef<ReturnType<typeof setTimeout>>(null);
 
   const PAGE_SIZE = 50;
@@ -85,9 +88,18 @@ function useRecipes(myGrinderId: string[]) {
         brew_machine:brew_machines(brand, model, machine_type, verified)
       `,
         )
-        .order('upvotes', { ascending: false })
-        .order('created_at', { ascending: false })
         .range(offset, offset + PAGE_SIZE - 1);
+
+      if (sortMode === 'new') {
+        q = q.order('created_at', { ascending: false });
+      } else {
+        q = q.order('upvotes', { ascending: false }).order('created_at', { ascending: false });
+      }
+
+      if (sortMode === 'trending') {
+        const since = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+        q = q.gte('created_at', since);
+      }
 
       if (methodFilter) q = q.eq('brew_method', methodFilter);
       if (myGearOnly && myGrinderId.length) q = q.in('grinder_id', myGrinderId);
@@ -120,7 +132,7 @@ function useRecipes(myGrinderId: string[]) {
 
       return q;
     },
-    [methodFilter, myGearOnly, myGrinderId],
+    [sortMode, methodFilter, myGearOnly, myGrinderId],
   );
 
   const fetchRecipes = useCallback(
@@ -187,8 +199,10 @@ function useRecipes(myGrinderId: string[]) {
     hasMore,
     error,
     search,
+    sortMode,
     methodFilter,
     myGearOnly,
+    setSortMode,
     setMethodFilter,
     setMyGearOnly,
     fetchMore,
@@ -210,8 +224,10 @@ export default function ExploreScreen() {
     loadingMore,
     error,
     search,
+    sortMode,
     methodFilter,
     myGearOnly,
+    setSortMode,
     setMethodFilter,
     setMyGearOnly,
     fetchMore,
@@ -333,6 +349,25 @@ export default function ExploreScreen() {
           onChangeText={handleSearchChange}
           clearButtonMode="while-editing"
         />
+
+        {/* Sort mode */}
+        <View className="flex-row gap-2">
+          {(['trending', 'top', 'new'] as const).map((mode) => (
+            <TouchableOpacity
+              key={mode}
+              onPress={() => setSortMode(mode)}
+              className={`px-3 py-1.5 rounded-full border ${
+                sortMode === mode
+                  ? 'bg-harvest-500 border-harvest-500'
+                  : 'border-latte-200 dark:border-ristretto-700'
+              }`}
+            >
+              <Text className={`text-xs font-medium capitalize ${sortMode === mode ? 'text-white' : 'text-latte-700 dark:text-latte-400'}`}>
+                {mode === 'trending' ? '🔥 Trending' : mode === 'top' ? '▲ Top' : '✦ New'}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
 
         {/* Method filter chips */}
         <ScrollView
