@@ -100,6 +100,11 @@ export default function AdminScreen() {
           onPress={() => router.push('/admin/equipment')}
         />
         <NavRow
+          label="Users"
+          count={0}
+          onPress={() => router.push('/admin/users')}
+        />
+        <NavRow
           label="Stats"
           count={0}
           onPress={() => router.push('/admin/stats')}
