@@ -44,7 +44,7 @@
 - [x] **User management** — view a user's recipes and activity, ability to ban.
 - [x] **Content reporting** — user-facing report button on recipes/equipment + admin moderation queue (requires new table).
 - [x] **Bean tasting notes** — tasting notes as searchable tags on beans; dedicated bean detail screen showing all recipes using that bean; bean row on recipe detail is tappable.
-- [ ] **RevenueCat webhook** — wire up `revenuecat-webhook` edge function to write `profiles.backer_tier` on subscription events so backer status persists across reinstalls and devices without relying on the SDK check.
+- [x] **RevenueCat webhook** — wire up `revenuecat-webhook` edge function to write `profiles.backer_tier` on subscription events so backer status persists across reinstalls and devices without relying on the SDK check.
 - [ ] **Image uploads** — equipment modals currently only accept an external URL. Should support camera/gallery picker with Supabase Storage upload.
 - [ ] **Grind setting aggregation** — median + IQR across all recipes for a given grinder + brew method combination. Outlier flagging at 2 std deviations. Mentioned in product decisions but no query or UI exists.
 - [ ] **Trending / ranking** — weekly top recipes, most upvoted by brew method or grinder.

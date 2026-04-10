@@ -21,6 +21,7 @@ import type { Grinder, BurrType, AdjustmentType } from '@/lib/types';
 import { BURR_TYPE_LABELS, ADJUSTMENT_TYPE_LABELS } from '@/lib/types';
 import { ModalRow as Row } from './ModalRow';
 import { promptReport } from '@/lib/report';
+import { pickAndUploadImage } from '@/lib/uploadImage';
 
 const VERIFICATION_THRESHOLD = 5;
 
@@ -402,6 +403,7 @@ function GrinderForm({
   };
 
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
 
   const form = useForm({
     defaultValues: {
@@ -744,31 +746,49 @@ function GrinderForm({
 
       <form.Field name="image_url">
         {(field) => (
-          <View className="gap-1">
-            <Text className="text-latte-700 dark:text-latte-400 text-xs px-1 mb-1">
-              Image URL <Text className="text-latte-500 dark:text-latte-600">(optional)</Text>
+          <View className="gap-2">
+            <Text className="text-latte-700 dark:text-latte-400 text-xs px-1">
+              Photo <Text className="text-latte-500 dark:text-latte-600">(optional)</Text>
             </Text>
             {field.state.value ? (
-              <Image
-                source={{ uri: field.state.value }}
-                className="w-full h-40 rounded-xl mb-2 bg-oat-100 dark:bg-ristretto-800"
-                resizeMode="contain"
-              />
-            ) : null}
-            <TextInput
-              className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-950 dark:text-latte-100 text-base"
-              style={{ lineHeight: undefined }}
-              placeholder="https://..."
-              placeholderTextColor="#6e5a47"
-              autoCapitalize="none"
-              keyboardType="url"
-              value={field.state.value}
-              onChangeText={field.handleChange}
-            />
+              <View>
+                <Image
+                  source={{ uri: field.state.value }}
+                  className="w-full h-40 rounded-xl bg-oat-100 dark:bg-ristretto-800"
+                  resizeMode="contain"
+                />
+                <TouchableOpacity
+                  onPress={() => field.setValue('')}
+                  className="absolute top-2 right-2 bg-ristretto-900/70 rounded-full w-7 h-7 items-center justify-center"
+                >
+                  <Text className="text-white text-xs font-bold">✕</Text>
+                </TouchableOpacity>
+              </View>
+            ) : (
+              <TouchableOpacity
+                onPress={async () => {
+                  setUploading(true);
+                  const url = await pickAndUploadImage('grinders');
+                  if (url) field.setValue(url);
+                  setUploading(false);
+                }}
+                disabled={uploading}
+                className="bg-oat-100 dark:bg-ristretto-800 border border-dashed border-latte-300 dark:border-ristretto-600 rounded-xl py-8 items-center justify-center gap-2"
+              >
+                {uploading ? (
+                  <ActivityIndicator color="#ff9d37" />
+                ) : (
+                  <>
+                    <Text className="text-2xl">📷</Text>
+                    <Text className="text-latte-600 dark:text-latte-400 text-sm">
+                      Choose from library
+                    </Text>
+                  </>
+                )}
+              </TouchableOpacity>
+            )}
             <Text className="text-latte-500 dark:text-latte-600 text-xs px-1">
-              Only link to images you have the right to use. By submitting an image URL you confirm
-              you have permission to share it. Caliburr does not own or claim rights to any
-              user-submitted content.
+              Only submit images you have the right to share.
             </Text>
           </View>
         )}

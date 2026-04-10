@@ -17,7 +17,8 @@
       "bundleIdentifier": "coffee.caliburr.app",
       "associatedDomains": ["applinks:caliburr.coffee"],
       "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSPhotoLibraryUsageDescription": "Choose a photo of your equipment to help other users identify it."
       }
     },
     "android": {
