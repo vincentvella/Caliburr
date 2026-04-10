@@ -1,5 +1,7 @@
 import { Stack, router } from 'expo-router';
 import { useEffect, useState } from 'react';
+import { Platform } from 'react-native';
+import * as Notifications from 'expo-notifications';
 import { supabase } from '@/lib/supabase';
 
 function useAdminGuard() {
@@ -17,8 +19,42 @@ function useAdminGuard() {
   return { checked };
 }
 
+async function registerAdminPushToken() {
+  if (Platform.OS === 'web') return;
+
+  const { status: existing } = await Notifications.getPermissionsAsync();
+  const { status } = existing === 'granted'
+    ? { status: existing }
+    : await Notifications.requestPermissionsAsync();
+
+  if (status !== 'granted') return;
+
+  const { data: token } = await Notifications.getExpoPushTokenAsync();
+  if (!token) return;
+
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return;
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  await (supabase as any).from('admin_push_tokens').upsert(
+    {
+      user_id: user.id,
+      token,
+      platform: Platform.OS,
+      updated_at: new Date().toISOString(),
+    },
+    { onConflict: 'user_id,token' },
+  );
+}
+
 export default function AdminLayout() {
   const { checked } = useAdminGuard();
+
+  useEffect(() => {
+    if (checked) {
+      registerAdminPushToken();
+    }
+  }, [checked]);
 
   if (!checked) return null;
 

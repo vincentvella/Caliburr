@@ -19,6 +19,9 @@
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
         "NSPhotoLibraryUsageDescription": "Choose a photo of your equipment to help other users identify it."
+      },
+      "entitlements": {
+        "aps-environment": "production"
       }
     },
     "android": {
