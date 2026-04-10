@@ -71,7 +71,7 @@ function useRecipes(myGrinderId: string[]) {
   const [search, setSearch] = useState('');
   const [methodFilter, setMethodFilter] = useState<BrewMethod | null>(null);
   const [myGearOnly, setMyGearOnly] = useState(false);
-  const [sortMode, setSortMode] = useState<SortMode>('trending');
+  const [sortMode, setSortMode] = useState<SortMode>('top');
   const searchTimer = useRef<ReturnType<typeof setTimeout>>(null);
 
   const PAGE_SIZE = 50;
