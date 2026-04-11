@@ -41,7 +41,7 @@ export default function AccountScreen() {
   function handleDeleteAccount() {
     Alert.alert(
       'Delete Account',
-      'This will permanently delete your account. Your recipes will remain anonymised in the community feed. This cannot be undone.',
+      'This will permanently delete your account. Your brews will remain anonymised in the community feed. This cannot be undone.',
       [
         { text: 'Cancel', style: 'cancel' },
         {

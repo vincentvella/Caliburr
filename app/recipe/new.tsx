@@ -243,7 +243,7 @@ export default function NewRecipeScreen() {
           <Text className="text-harvest-400 font-semibold">Cancel</Text>
         </TouchableOpacity>
         <Text className="text-latte-950 dark:text-latte-100 text-lg font-bold">
-          {templateId ? 'Clone Recipe' : 'New Recipe'}
+          {templateId ? 'Clone Brew' : 'New Brew'}
         </Text>
         <form.Subscribe selector={(s) => s.isSubmitting}>
           {(isSubmitting) => (
@@ -664,7 +664,7 @@ export default function NewRecipeScreen() {
                   {isSubmitting ? (
                     <ActivityIndicator color="#fff" />
                   ) : (
-                    <Text className="text-white font-semibold text-base">Save Recipe</Text>
+                    <Text className="text-white font-semibold text-base">Save Brew</Text>
                   )}
                 </TouchableOpacity>
               )}

@@ -399,12 +399,12 @@ export default function RecipesScreen() {
           <View className="items-center py-12 gap-3">
             {tab === 'mine' ? (
               <>
-                <Text className="text-latte-600 dark:text-latte-500 text-sm">No recipes yet.</Text>
+                <Text className="text-latte-600 dark:text-latte-500 text-sm">No brews yet.</Text>
                 <TouchableOpacity
                   onPress={() => router.push('/recipe/new')}
                   className="bg-harvest-500 rounded-xl px-6 py-3"
                 >
-                  <Text className="text-white font-semibold">Submit your first recipe</Text>
+                  <Text className="text-white font-semibold">Submit your first brew</Text>
                 </TouchableOpacity>
               </>
             ) : (

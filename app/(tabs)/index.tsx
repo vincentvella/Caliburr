@@ -457,7 +457,7 @@ export default function ExploreScreen() {
               <Text className="text-latte-600 dark:text-latte-500 text-sm text-center">
                 {myGearOnly && myGrinderId.length === 0
                   ? 'Add grinders in your profile to filter by gear.'
-                  : 'No recipes found. Be the first to submit one.'}
+                  : 'No brews found. Be the first to submit one.'}
               </Text>
             </View>
           }
@@ -481,7 +481,7 @@ export default function ExploreScreen() {
       {/* FAB */}
       <TouchableOpacity
         onPress={() => router.push('/recipe/new')}
-        accessibilityLabel="New recipe"
+        accessibilityLabel="New brew"
         accessibilityRole="button"
         testID="fab-new-recipe"
         className="absolute bottom-8 right-6 w-14 h-14 rounded-full bg-harvest-500 items-center justify-center"

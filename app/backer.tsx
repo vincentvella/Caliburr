@@ -51,7 +51,7 @@ export default function BackerScreen() {
       haptics.success();
       Alert.alert(
         'Thank you! ☕',
-        "You're now a Caliburr Backer. Your badge will appear on your recipes.",
+        "You're now a Caliburr Backer. Your badge will appear on your brews.",
         [{ text: 'Done', onPress: () => router.back() }],
       );
     } catch (e: unknown) {
@@ -124,7 +124,7 @@ export default function BackerScreen() {
         {/* Perks */}
         <View className="gap-2 mb-8">
           {[
-            { icon: '☕', title: 'Backer badge', desc: 'Shown on every recipe you share' },
+            { icon: '☕', title: 'Backer badge', desc: 'Shown on every brew you share' },
             {
               icon: '⚡',
               title: 'Beta features',
@@ -152,7 +152,7 @@ export default function BackerScreen() {
         {/* Badge preview */}
         <View className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-2xl p-4 mb-8">
           <Text className="text-latte-600 dark:text-latte-500 text-xs font-semibold uppercase tracking-wider mb-3">
-            Your recipes will look like this
+            Your brews will look like this
           </Text>
           <View className="bg-oat-200 dark:bg-ristretto-700 rounded-xl p-3 border border-crema-600 dark:border-crema-700">
             <Text className="text-latte-950 dark:text-latte-100 font-semibold mb-1">

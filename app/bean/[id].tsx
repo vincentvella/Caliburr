@@ -121,8 +121,8 @@ export default function BeanDetailScreen() {
           {/* Recipes using this bean */}
           <Text className="text-latte-700 dark:text-latte-400 text-xs font-semibold uppercase tracking-wider mb-3">
             {recipes.length > 0
-              ? `${recipes.length} Recipe${recipes.length !== 1 ? 's' : ''}`
-              : 'No Recipes Yet'}
+              ? `${recipes.length} Brew${recipes.length !== 1 ? 's' : ''}`
+              : 'No Brews Yet'}
           </Text>
           {recipes.map((recipe) => (
             <TouchableOpacity

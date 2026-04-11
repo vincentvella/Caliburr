@@ -69,7 +69,7 @@ export default function PrivacyPolicyScreen() {
               Provided directly by you at sign-up.
             </Li>
             <Li>
-              <Strong>User-generated content</Strong> — grind recipes, equipment entries (grinders
+              <Strong>User-generated content</Strong> — grind brews, equipment entries (grinders
               and brew machines), upvotes, and verification actions you submit within the app.
             </Li>
             <Li>
@@ -84,10 +84,10 @@ export default function PrivacyPolicyScreen() {
 
           <Section title="How We Use Your Information">
             <Li>To authenticate you and maintain your account session.</Li>
-            <Li>To associate recipes and gear entries with your account so you can manage them.</Li>
+            <Li>To associate brews and gear entries with your account so you can manage them.</Li>
             <Li>
-              To display community-contributed recipes and equipment to other users. Recipes are
-              attributed to your account; if you delete your account, recipes are anonymised rather
+              To display community-contributed brews and equipment to other users. Brews are
+              attributed to your account; if you delete your account, brews are anonymised rather
               than removed so community data is preserved.
             </Li>
             <Li>To process account deletion requests when you initiate them.</Li>
@@ -112,8 +112,8 @@ export default function PrivacyPolicyScreen() {
 
           <Section title="Community Content">
             <P>
-              Recipes and equipment entries you submit are visible to all users of Caliburr as part
-              of the community feed. Do not include personal information in recipe notes or
+              Brews and equipment entries you submit are visible to all users of Caliburr as part
+              of the community feed. Do not include personal information in brew notes or
               equipment descriptions.
             </P>
             <P>
@@ -134,7 +134,7 @@ export default function PrivacyPolicyScreen() {
               but the equipment records remain for community use.
             </Li>
             <Li>
-              Your recipes are anonymised — they remain in the community feed without attribution to
+              Your brews are anonymised — they remain in the community feed without attribution to
               preserve the dial-in data for other users.
             </Li>
             <Li>Your upvotes and gear collections are permanently deleted.</Li>

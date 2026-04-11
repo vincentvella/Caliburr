@@ -107,11 +107,11 @@ export default function OnboardingScreen() {
 
   const body: Record<Step, string> = {
     welcome:
-      'A community recipe database for coffee nerds — share and discover grind settings across every bean, brewer, and dial.',
+      'A community brew database for coffee nerds — share and discover grind settings across every bean, brewer, and dial.',
     grinder:
-      'Your grinder is the foundation of every recipe. Adding it now lets you track grind settings and see what the community is dialling in on the same hardware.',
+      'Your grinder is the foundation of every brew. Adding it now lets you track grind settings and see what the community is dialling in on the same hardware.',
     machine:
-      'Got an espresso machine or brewer? Adding it links your recipes to your full setup and helps others with the same machine find your dials.',
+      'Got an espresso machine or brewer? Adding it links your brews to your full setup and helps others with the same machine find your dials.',
     done:
       addedGrinder || addedMachine
         ? 'Your gear is saved. Explore what the community is brewing or submit your first dial-in.'
@@ -122,7 +122,7 @@ export default function OnboardingScreen() {
     welcome: 'Get started',
     grinder: addedGrinder ? 'Continue →' : 'Skip for now →',
     machine: addedMachine ? 'Continue →' : 'Skip for now →',
-    done: 'Explore recipes',
+    done: 'Explore brews',
   };
 
   const { name: iconName, color: iconColor, containerClass } = iconProps[step];
@@ -259,7 +259,7 @@ export default function OnboardingScreen() {
                   className="text-latte-700 dark:text-latte-300 font-medium"
                   style={{ lineHeight: 52 }}
                 >
-                  Submit my first recipe
+                  Submit my first brew
                 </Text>
               </TouchableOpacity>
             )}

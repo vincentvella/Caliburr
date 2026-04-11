@@ -372,7 +372,7 @@ export default function RecipeDetailScreen() {
             onPress={() => promptReport('recipe', recipe.id)}
             className="items-center py-4 mb-4"
           >
-            <Text className="text-latte-400 dark:text-latte-700 text-xs">Report this recipe</Text>
+            <Text className="text-latte-400 dark:text-latte-700 text-xs">Report this brew</Text>
           </TouchableOpacity>
         )}
       </ScrollView>

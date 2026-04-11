@@ -329,7 +329,7 @@ export default function ProfileScreen() {
             <View className="flex-1">
               <Text className="text-crema-300 font-semibold text-sm">Support Caliburr</Text>
               <Text className="text-crema-500 text-xs mt-0.5">
-                Get a backer badge on your recipes
+                Get a backer badge on your brews
               </Text>
             </View>
             <Text className="text-crema-500 text-lg">›</Text>
@@ -451,7 +451,7 @@ export default function ProfileScreen() {
                   ))}
                   {grinders.some((g) => g.is_default) && (
                     <Text className="text-latte-500 dark:text-latte-600 text-xs px-1 mt-1">
-                      ★ Pre-selected when creating a recipe
+                      ★ Pre-selected when creating a brew
                     </Text>
                   )}
                 </>
@@ -545,7 +545,7 @@ export default function ProfileScreen() {
                   ))}
                   {machines.some((m) => m.is_default) && (
                     <Text className="text-latte-500 dark:text-latte-600 text-xs px-1 mt-1">
-                      ★ Pre-selected when creating a recipe
+                      ★ Pre-selected when creating a brew
                     </Text>
                   )}
                 </>

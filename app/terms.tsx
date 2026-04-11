@@ -75,8 +75,8 @@ export default function TermsOfServiceScreen() {
 
           <Section title="The Service">
             <P>
-              Caliburr is a community-driven database for coffee grind recipes and equipment. It
-              lets you log and share espresso and brew recipes, discover settings from other users,
+              Caliburr is a community-driven database for coffee brews and equipment. It
+              lets you log and share espresso and brew dials, discover settings from other users,
               and contribute to a shared library of grinder and machine data.
             </P>
             <P>
@@ -100,12 +100,12 @@ export default function TermsOfServiceScreen() {
 
           <Section title="User Content">
             <P>
-              You retain ownership of the content you submit — recipes, notes, and equipment
+              You retain ownership of the content you submit — brews, notes, and equipment
               entries. By submitting content, you grant Caliburr a worldwide, royalty-free licence
               to store, display, and distribute it to other users of the service.
             </P>
             <P>
-              When you delete your account, your recipes and equipment entries are{' '}
+              When you delete your account, your brews and equipment entries are{' '}
               <Strong>anonymised</Strong> rather than deleted — the association with your account is
               removed but the data remains in the community database. This preserves dial-in
               information for other users.
@@ -116,7 +116,7 @@ export default function TermsOfServiceScreen() {
           <Section title="Community Guidelines">
             <P>You agree not to:</P>
             <Li>
-              Submit false or deliberately misleading equipment specifications or recipe data.
+              Submit false or deliberately misleading equipment specifications or brew data.
             </Li>
             <Li>
               Abuse the verification system — verifying equipment you have not personally used.
@@ -147,7 +147,7 @@ export default function TermsOfServiceScreen() {
               reproduce or use them without our written permission.
             </P>
             <P>
-              Community-contributed recipe and equipment data is owned by its respective
+              Community-contributed brew and equipment data is owned by its respective
               contributors and shared under the licence described in the User Content section above.
             </P>
             <P>
@@ -162,7 +162,7 @@ export default function TermsOfServiceScreen() {
             <P>
               Caliburr is provided <Strong>&quot;as is&quot;</Strong> without warranties of any
               kind. We do not guarantee that the service will be uninterrupted, error-free, or that
-              any recipe data will produce a specific result in your cup.
+              any brew data will produce a specific result in your cup.
             </P>
             <P>
               Coffee outcomes depend on many variables beyond grind setting — water quality,

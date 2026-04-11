@@ -257,7 +257,7 @@ export default function EditRecipeScreen() {
         <TouchableOpacity onPress={() => router.back()}>
           <Text className="text-harvest-400 font-semibold">Cancel</Text>
         </TouchableOpacity>
-        <Text className="text-latte-950 dark:text-latte-100 text-lg font-bold">Edit Recipe</Text>
+        <Text className="text-latte-950 dark:text-latte-100 text-lg font-bold">Edit Brew</Text>
         <form.Subscribe selector={(s) => s.isSubmitting}>
           {(isSubmitting) => (
             <TouchableOpacity onPress={form.handleSubmit} disabled={isSubmitting}>
