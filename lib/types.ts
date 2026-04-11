@@ -122,6 +122,29 @@ export const BREW_METHOD_LABELS: Record<BrewMethod, string> = {
   drip: 'Drip',
   siphon: 'Siphon',
   turkish: 'Turkish',
+  v60: 'V60',
+  kalita_wave: 'Kalita Wave',
+  clever_dripper: 'Clever Dripper',
+  ristretto: 'Ristretto',
+  vietnamese_phin: 'Vietnamese Phin',
+};
+
+export const BREW_METHOD_DESCRIPTIONS: Record<BrewMethod, string> = {
+  espresso: 'High-pressure extraction producing a concentrated shot with crema. Basis for lattes, cappuccinos, and flat whites.',
+  pour_over: 'Manual hot water poured slowly over grounds in a filter. Highlights clarity, brightness, and delicate flavours.',
+  aeropress: 'Pressure brewed in 1–2 min. Versatile, forgiving, and great for travel — produces a clean, smooth cup.',
+  french_press: 'Full immersion for 4 min with no filter paper. Rich, full-bodied, and slightly textured from fine sediment.',
+  chemex: 'Pour-over with a thick paper filter that removes oils and fines. Exceptionally clean, bright, and tea-like.',
+  moka_pot: 'Stovetop brewer that forces steam through grounds. Strong and bold — not espresso, but espresso-adjacent.',
+  cold_brew: 'Coarse grounds steeped in cold water 12–24 h. Low acidity, naturally sweet, smooth concentrate.',
+  drip: 'Automatic hot water over a paper filter. Convenient and consistent — the everyday classic.',
+  siphon: 'Vacuum brewer using vapour pressure and gravity. Theatre-worthy process with a remarkably clean, rounded result.',
+  turkish: 'Unfiltered, finely ground coffee simmered in a cezve. Intensely strong with a thick layer of grounds in the cup.',
+  v60: "Hario's conical dripper with spiral ribs for maximum airflow. Rewards precise pouring technique with exceptional clarity.",
+  kalita_wave: 'Flat-bed dripper with three small holes for even extraction. More forgiving than a V60 with a fuller, rounder cup.',
+  clever_dripper: 'Immersion brewer with a valve — steep like french press, drain through a filter for a clean, full-flavoured result.',
+  ristretto: 'A shorter, more restricted espresso pull — typically half the yield at the same dose. Sweeter, more concentrated, less bitter.',
+  vietnamese_phin: 'Small metal filter that drip-brews slowly over 4–5 min. Rich and bold, traditionally served over condensed milk or ice.',
 };
 
 export type FeatureRequestStatus = Enums<'feature_request_status'>;

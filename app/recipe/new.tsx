@@ -19,6 +19,7 @@ import {
   type BrewMethod,
   type RoastLevel,
   BREW_METHOD_LABELS,
+  BREW_METHOD_DESCRIPTIONS,
   ROAST_LEVEL_LABELS,
 } from '@/lib/types';
 import { Constants } from '@/lib/database.types';
@@ -412,6 +413,11 @@ export default function NewRecipeScreen() {
                       </TouchableOpacity>
                     ))}
                   </View>
+                  {field.state.value ? (
+                    <Text className="text-latte-500 dark:text-latte-600 text-xs px-1 leading-5">
+                      {BREW_METHOD_DESCRIPTIONS[field.state.value]}
+                    </Text>
+                  ) : null}
                   <FieldError errors={field.state.meta.errors} />
                 </View>
               )}

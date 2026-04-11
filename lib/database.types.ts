@@ -649,6 +649,11 @@ export type Database = {
         | "drip"
         | "siphon"
         | "turkish"
+        | "v60"
+        | "kalita_wave"
+        | "clever_dripper"
+        | "ristretto"
+        | "vietnamese_phin"
       burr_type: "flat" | "conical" | "hybrid"
       feature_request_status: "open" | "planned" | "done"
       machine_type: "espresso" | "super_automatic" | "drip" | "pod"
@@ -796,6 +801,11 @@ export const Constants = {
         "drip",
         "siphon",
         "turkish",
+        "v60",
+        "kalita_wave",
+        "clever_dripper",
+        "ristretto",
+        "vietnamese_phin",
       ],
       burr_type: ["flat", "conical", "hybrid"],
       feature_request_status: ["open", "planned", "done"],
