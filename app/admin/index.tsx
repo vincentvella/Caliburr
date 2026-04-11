@@ -2,6 +2,7 @@ import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator } from 'rea
 import { useState, useEffect } from 'react';
 import { router } from 'expo-router';
 import { supabase } from '@/lib/supabase';
+import { db } from '@/lib/db';
 
 interface AdminCounts {
   edits: number;
@@ -17,18 +18,36 @@ function useAdminCounts() {
   useEffect(() => {
     async function fetch() {
       const [gRes, mRes, giRes, miRes, ugRes, umRes, rRes, sRes, fRes] = await Promise.all([
-        supabase.from('grinder_edits').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
-        supabase.from('machine_edits').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (supabase.from('grinders') as any).select('*', { count: 'exact', head: true }).eq('image_status', 'pending'),
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (supabase.from('brew_machines') as any).select('*', { count: 'exact', head: true }).eq('image_status', 'pending'),
+        supabase
+          .from('grinder_edits')
+          .select('*', { count: 'exact', head: true })
+          .eq('status', 'pending'),
+        supabase
+          .from('machine_edits')
+          .select('*', { count: 'exact', head: true })
+          .eq('status', 'pending'),
+        supabase
+          .from('grinders')
+          .select('*', { count: 'exact', head: true })
+          .eq('image_status' as never, 'pending'),
+        supabase
+          .from('brew_machines')
+          .select('*', { count: 'exact', head: true })
+          .eq('image_status' as never, 'pending'),
         supabase.from('grinders').select('*', { count: 'exact', head: true }).eq('verified', false),
-        supabase.from('brew_machines').select('*', { count: 'exact', head: true }).eq('verified', false),
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (supabase as any).from('reports').select('*', { count: 'exact', head: true }).eq('status', 'open'),
-        supabase.from('support_requests').select('*', { count: 'exact', head: true }).eq('status', 'open'),
-        supabase.from('feature_requests').select('*', { count: 'exact', head: true }).eq('status', 'open'),
+        supabase
+          .from('brew_machines')
+          .select('*', { count: 'exact', head: true })
+          .eq('verified', false),
+        db.from('reports').select('*', { count: 'exact', head: true }).eq('status', 'open'),
+        supabase
+          .from('support_requests')
+          .select('*', { count: 'exact', head: true })
+          .eq('status', 'open'),
+        supabase
+          .from('feature_requests')
+          .select('*', { count: 'exact', head: true })
+          .eq('status', 'open'),
       ]);
       setCounts({
         edits: (gRes.count ?? 0) + (mRes.count ?? 0) + (giRes.count ?? 0) + (miRes.count ?? 0),
@@ -88,11 +107,7 @@ export default function AdminScreen() {
       </View>
 
       <ScrollView className="flex-1 px-4 pt-6">
-        <NavRow
-          label="Recipes"
-          count={0}
-          onPress={() => router.push('/admin/recipes')}
-        />
+        <NavRow label="Recipes" count={0} onPress={() => router.push('/admin/recipes')} />
         <NavRow
           label="Equipment Edits"
           count={counts?.edits ?? null}
@@ -103,21 +118,9 @@ export default function AdminScreen() {
           count={counts?.unverified ?? null}
           onPress={() => router.push('/admin/equipment')}
         />
-        <NavRow
-          label="Users"
-          count={0}
-          onPress={() => router.push('/admin/users')}
-        />
-        <NavRow
-          label="Stats"
-          count={0}
-          onPress={() => router.push('/admin/stats')}
-        />
-        <NavRow
-          label="Backers"
-          count={0}
-          onPress={() => router.push('/admin/backers')}
-        />
+        <NavRow label="Users" count={0} onPress={() => router.push('/admin/users')} />
+        <NavRow label="Stats" count={0} onPress={() => router.push('/admin/stats')} />
+        <NavRow label="Backers" count={0} onPress={() => router.push('/admin/backers')} />
         <NavRow
           label="Reports"
           count={counts?.reports ?? null}

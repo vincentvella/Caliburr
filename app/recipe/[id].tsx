@@ -167,7 +167,7 @@ export default function RecipeDetailScreen() {
   }
 
   async function handleDelete() {
-    if (!recipe) return;
+    if (!recipe || !currentUserId) return;
     Alert.alert('Delete Recipe', 'This cannot be undone.', [
       { text: 'Cancel', style: 'cancel' },
       {
@@ -179,7 +179,7 @@ export default function RecipeDetailScreen() {
             .from('recipes')
             .delete()
             .eq('id', recipe.id)
-            .eq('user_id', currentUserId!);
+            .eq('user_id', currentUserId);
           if (error) {
             setDeleting(false);
             Alert.alert('Error', 'Failed to delete recipe. Please try again.');
@@ -293,12 +293,12 @@ export default function RecipeDetailScreen() {
             {recipe.water_temp_c != null && (
               <StatCard label="Temp" value={`${recipe.water_temp_c}°C`} />
             )}
-            {(recipe.roast_level ?? recipe.bean?.roast_level) && (
-              <StatCard
-                label="Roast"
-                value={ROAST_LEVEL_LABELS[(recipe.roast_level ?? recipe.bean!.roast_level)!]}
-              />
-            )}
+            {(() => {
+              const roastLevel = recipe.roast_level ?? recipe.bean?.roast_level;
+              return roastLevel ? (
+                <StatCard label="Roast" value={ROAST_LEVEL_LABELS[roastLevel]} />
+              ) : null;
+            })()}
             {recipe.roast_date && <StatCard label="Roast Date" value={recipe.roast_date} />}
           </View>
         </View>

@@ -47,8 +47,8 @@
 - [x] **RevenueCat webhook** — wire up `revenuecat-webhook` edge function to write `profiles.backer_tier` on subscription events so backer status persists across reinstalls and devices without relying on the SDK check.
 - [x] **Image uploads** — equipment modals currently only accept an external URL. Should support camera/gallery picker with Supabase Storage upload.
 - [x] **Grind setting aggregation** — median + IQR across all recipes for a given grinder + brew method combination. Outlier flagging at 2 std deviations. Mentioned in product decisions but no query or UI exists.
-- [ ] **Trending / ranking** — weekly top recipes, most upvoted by brew method or grinder.
-- [ ] **Push notifications** — notify users when their recipe is upvoted or their submitted equipment gets verified.
+- [x] **Trending / ranking** — Trending/Top/New sort modes on Explore feed; Trending filters to last 7 days by upvotes.
+- [x] **Push notifications** — Admin push notifications for reports, equipment edits, support requests, and feature requests via Expo Push API + Supabase Database Webhooks.
 - [ ] **Draft saving** — auto-save new recipe form to AsyncStorage so work isn't lost if the user navigates away or the app crashes.
 - [ ] **Offline support** — local cache with sync-on-reconnect. Low priority until core product is stable.
 

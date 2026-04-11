@@ -45,17 +45,14 @@ function useResetOnOpen(
 }
 
 function useDefaults() {
-  const { data, error } = useQuery(
-    async () => {
-      const res = await supabase
-        .from('beans')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(25);
-      return unwrap(res) as unknown as Bean[];
-    },
-    [],
-  );
+  const { data, error } = useQuery(async () => {
+    const res = await supabase
+      .from('beans')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(25);
+    return unwrap(res) as Bean[];
+  }, []);
   return { defaults: data ?? [], error };
 }
 
@@ -75,7 +72,7 @@ function useBeanSearch(query: string) {
         .select('*')
         .or(`name.ilike.%${query}%,roaster.ilike.%${query}%`)
         .limit(15);
-      setResults((data ?? []) as unknown as Bean[]);
+      setResults((data ?? []) as Bean[]);
       setSearching(false);
     }, 300);
     return () => clearTimeout(t);
@@ -179,10 +176,7 @@ export function BeanModal({ visible, onClose, onSelected, selectedId }: Props) {
                     {item.tasting_notes.length > 0 && (
                       <View className="flex-row flex-wrap gap-1 mt-2">
                         {item.tasting_notes.map((note) => (
-                          <View
-                            key={note}
-                            className="bg-bloom-600/15 rounded-full px-2 py-0.5"
-                          >
+                          <View key={note} className="bg-bloom-600/15 rounded-full px-2 py-0.5">
                             <Text className="text-bloom-600 dark:text-bloom-400 text-xs">
                               {note}
                             </Text>

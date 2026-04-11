@@ -17,6 +17,7 @@ import { supabase } from '@/lib/supabase';
 import { useQuery } from '@/hooks/useQuery';
 import { unwrap } from '@/lib/api';
 import { haptics } from '@/lib/haptics';
+import type { Json } from '@/lib/database.types';
 import type { BrewMachine, MachineType } from '@/lib/types';
 import { MACHINE_TYPE_LABELS } from '@/lib/types';
 import { ModalRow as Row } from './ModalRow';
@@ -395,11 +396,15 @@ function MachineForm({
           } = await supabase.auth.getUser();
 
           if (machinePayloadChanged(reviewMachine, payload)) {
-            const edit = unwrap(
+            const edit = unwrap<{ id: string }>(
               await supabase
                 .from('machine_edits')
-                .insert({ machine_id: reviewMachine.id, proposed_by: user?.id ?? null, payload })
-                .select()
+                .insert({
+                  machine_id: reviewMachine.id,
+                  proposed_by: user?.id ?? null,
+                  payload: payload as Json,
+                })
+                .select('id')
                 .single(),
             );
 
@@ -433,7 +438,7 @@ function MachineForm({
               .from('brew_machines')
               .insert({
                 ...payload,
-                image_status: payload.image_url ? 'pending' : null,
+                image_status: payload.image_url ? ('pending' as const) : null,
                 created_by: user?.id ?? null,
               })
               .select()

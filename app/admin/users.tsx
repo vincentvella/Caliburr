@@ -28,7 +28,9 @@ interface UserRecipe {
 }
 
 async function invokeUsersAdmin<T>(body: object): Promise<T> {
-  const { data: { session } } = await supabase.auth.getSession();
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
   const { data, error } = await supabase.functions.invoke('admin-users', {
     body,
     headers: { Authorization: `Bearer ${session?.access_token}` },
@@ -90,7 +92,7 @@ export default function AdminUsersScreen() {
       .eq('user_id', userId)
       .order('created_at', { ascending: false })
       .limit(10);
-    setRecipes((prev) => ({ ...prev, [userId]: (data ?? []) as unknown as UserRecipe[] }));
+    setRecipes((prev) => ({ ...prev, [userId]: (data ?? []) as UserRecipe[] }));
     setLoadingRecipes(null);
   }
 
@@ -183,7 +185,10 @@ export default function AdminUsersScreen() {
                 <View className="flex-row items-center px-4 py-3.5">
                   <TouchableOpacity className="flex-1" onPress={() => toggleExpand(user.id)}>
                     <View className="flex-row items-center gap-2 mb-0.5">
-                      <Text className="text-latte-950 dark:text-latte-100 font-medium" numberOfLines={1}>
+                      <Text
+                        className="text-latte-950 dark:text-latte-100 font-medium"
+                        numberOfLines={1}
+                      >
                         {user.email}
                       </Text>
                       {isBanned && (
@@ -241,7 +246,10 @@ export default function AdminUsersScreen() {
                               : ''
                           }`}
                         >
-                          <Text className="text-latte-950 dark:text-latte-100 text-sm" numberOfLines={1}>
+                          <Text
+                            className="text-latte-950 dark:text-latte-100 text-sm"
+                            numberOfLines={1}
+                          >
                             {recipe.grinder
                               ? `${recipe.grinder.brand} ${recipe.grinder.model}`
                               : 'Unknown grinder'}{' '}

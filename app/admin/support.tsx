@@ -13,9 +13,8 @@ interface SupportRequest {
   created_at: string;
 }
 
-export default function SupportScreen() {
+function useSupportRequests() {
   const [requests, setRequests] = useState<SupportRequest[]>([]);
-  const [filter, setFilter] = useState<'open' | 'resolved'>('open');
   const [loading, setLoading] = useState(true);
   const [actioningId, setActioningId] = useState<string | null>(null);
 
@@ -25,11 +24,13 @@ export default function SupportScreen() {
       .from('support_requests')
       .select('id, name, email, message, status, is_backer, created_at')
       .order('created_at', { ascending: false });
-    setRequests((data ?? []) as unknown as SupportRequest[]);
+    setRequests((data ?? []) as SupportRequest[]);
     setLoading(false);
   }, []);
 
-  useEffect(() => { fetchRequests(); }, [fetchRequests]);
+  useEffect(() => {
+    fetchRequests();
+  }, [fetchRequests]);
 
   async function resolve(id: string) {
     setActioningId(id);
@@ -40,12 +41,17 @@ export default function SupportScreen() {
     if (error) {
       Alert.alert('Error', 'Failed to update request.');
     } else {
-      setRequests((prev) =>
-        prev.map((r) => (r.id === id ? { ...r, status: 'resolved' } : r)),
-      );
+      setRequests((prev) => prev.map((r) => (r.id === id ? { ...r, status: 'resolved' } : r)));
     }
     setActioningId(null);
   }
+
+  return { requests, loading, actioningId, resolve };
+}
+
+export default function SupportScreen() {
+  const { requests, loading, actioningId, resolve } = useSupportRequests();
+  const [filter, setFilter] = useState<'open' | 'resolved'>('open');
 
   const filtered = requests.filter((r) => r.status === filter);
 
@@ -73,9 +79,7 @@ export default function SupportScreen() {
               className={`text-sm font-medium capitalize ${filter === s ? 'text-white' : 'text-latte-700 dark:text-latte-400'}`}
             >
               {s}{' '}
-              <Text className="font-normal">
-                ({requests.filter((r) => r.status === s).length})
-              </Text>
+              <Text className="font-normal">({requests.filter((r) => r.status === s).length})</Text>
             </Text>
           </TouchableOpacity>
         ))}

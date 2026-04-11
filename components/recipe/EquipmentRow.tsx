@@ -32,9 +32,7 @@ export function EquipmentRow({
             <Text className="text-bloom-700 dark:text-bloom-400 text-xs">Verified</Text>
           </View>
         )}
-        {onPress && (
-          <Text className="text-latte-400 dark:text-latte-600 text-lg">›</Text>
-        )}
+        {onPress && <Text className="text-latte-400 dark:text-latte-600 text-lg">›</Text>}
       </View>
     </View>
   );

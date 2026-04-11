@@ -18,6 +18,7 @@ import { supabase } from '@/lib/supabase';
 import { useQuery } from '@/hooks/useQuery';
 import { unwrap } from '@/lib/api';
 import { haptics } from '@/lib/haptics';
+import type { Json } from '@/lib/database.types';
 import type { Grinder, BurrType, AdjustmentType } from '@/lib/types';
 import { BURR_TYPE_LABELS, ADJUSTMENT_TYPE_LABELS } from '@/lib/types';
 import { ModalRow as Row } from './ModalRow';
@@ -271,7 +272,10 @@ export function GrinderModal({ visible, onClose, onAdded, existingIds, editGrind
             grinder={selectedGrinder}
             addingId={addingId}
             onAdd={() => handleAdd(selectedGrinder)}
-            onViewDialIn={() => { handleClose(); router.push(`/grinder/${selectedGrinder.id}`); }}
+            onViewDialIn={() => {
+              handleClose();
+              router.push(`/grinder/${selectedGrinder.id}`);
+            }}
           />
         )}
 
@@ -448,17 +452,22 @@ function GrinderForm({
 
       try {
         if (isReview) {
+          if (!reviewGrinder) return;
           const {
             data: { user },
           } = await supabase.auth.getUser();
 
-          if (grinderPayloadChanged(reviewGrinder!, payload)) {
+          if (grinderPayloadChanged(reviewGrinder, payload)) {
             // Queue for moderation — do not apply directly
-            const edit = unwrap(
+            const edit = unwrap<{ id: string }>(
               await supabase
                 .from('grinder_edits')
-                .insert({ grinder_id: reviewGrinder!.id, proposed_by: user?.id ?? null, payload })
-                .select()
+                .insert({
+                  grinder_id: reviewGrinder.id,
+                  proposed_by: user?.id ?? null,
+                  payload: payload as Json,
+                })
+                .select('id')
                 .single(),
             );
 
@@ -466,7 +475,7 @@ function GrinderForm({
             supabase.functions.invoke('notify-equipment-edit', {
               body: {
                 editType: 'grinder',
-                equipmentName: `${reviewGrinder!.brand} ${reviewGrinder!.model}`,
+                equipmentName: `${reviewGrinder.brand} ${reviewGrinder.model}`,
                 payload,
                 editId: edit.id,
               },
@@ -477,46 +486,56 @@ function GrinderForm({
               await supabase
                 .from('grinder_verifications')
                 .upsert(
-                  { grinder_id: reviewGrinder!.id, user_id: user.id },
+                  { grinder_id: reviewGrinder.id, user_id: user.id },
                   { onConflict: 'grinder_id,user_id', ignoreDuplicates: true },
                 );
             }
           }
 
           haptics.success();
-          onDone(reviewGrinder!);
+          onDone(reviewGrinder);
         } else if (editGrinder) {
-          const imageStatusUpdate =
-            payload.image_url !== (editGrinder.image_url ?? null)
-              ? { image_status: payload.image_url ? 'pending' : null }
-              : {};
-          const data = unwrap(
+          const imageStatusChanged = payload.image_url !== (editGrinder.image_url ?? null);
+          const updateObj = {
+            brand: payload.brand,
+            model: payload.model,
+            burr_type: payload.burr_type,
+            adjustment_type: payload.adjustment_type,
+            steps_per_unit: payload.steps_per_unit,
+            range_min: payload.range_min,
+            range_max: payload.range_max,
+            image_url: payload.image_url,
+            ...(imageStatusChanged
+              ? { image_status: payload.image_url ? ('pending' as const) : null }
+              : {}),
+          };
+          const data = unwrap<Grinder>(
             await supabase
               .from('grinders')
-              .update({ ...payload, ...imageStatusUpdate })
+              .update(updateObj)
               .eq('id', editGrinder.id)
               .select()
               .single(),
           );
           haptics.success();
-          onDone(data as Grinder);
+          onDone(data);
         } else {
           const {
             data: { user },
           } = await supabase.auth.getUser();
-          const data = unwrap(
+          const data = unwrap<Grinder>(
             await supabase
               .from('grinders')
               .insert({
                 ...payload,
-                image_status: payload.image_url ? 'pending' : null,
+                image_status: payload.image_url ? ('pending' as const) : null,
                 created_by: user?.id ?? null,
               })
               .select()
               .single(),
           );
           haptics.success();
-          onDone(data as Grinder);
+          onDone(data);
         }
       } catch (e) {
         haptics.error();
@@ -535,7 +554,7 @@ function GrinderForm({
       keyboardShouldPersistTaps="handled"
     >
       {/* Verification progress banner (review mode only) */}
-      {isReview && !reviewGrinder!.verified && (
+      {reviewGrinder && !reviewGrinder.verified && (
         <View className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-xl px-4 py-3 gap-2">
           <View className="flex-row gap-1.5">
             {Array.from({ length: DOT_COUNT }, (_, i) => (
@@ -559,7 +578,7 @@ function GrinderForm({
         </View>
       )}
 
-      {isReview && reviewGrinder!.verified && (
+      {reviewGrinder?.verified && (
         <View className="bg-bloom-900 border border-bloom-700 rounded-xl px-4 py-3">
           <Text className="text-bloom-700 dark:text-bloom-400 text-sm font-medium">
             ✓ Community verified — confirm details are still correct

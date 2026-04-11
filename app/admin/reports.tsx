@@ -2,6 +2,7 @@ import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Alert } fr
 import { useState, useEffect, useCallback } from 'react';
 import { router } from 'expo-router';
 import { supabase } from '@/lib/supabase';
+import { db } from '@/lib/db';
 
 type ReportStatus = 'open' | 'resolved' | 'dismissed';
 
@@ -25,14 +26,13 @@ const REASON_LABELS: Record<string, string> = {
 };
 
 async function fetchReports(status: ReportStatus): Promise<Report[]> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data } = await (supabase as any)
+  const { data } = await db
     .from('reports')
     .select('*')
     .eq('status', status)
     .order('created_at', { ascending: false });
 
-  const reports = (data ?? []) as unknown as Report[];
+  const reports = (data ?? []) as Report[];
   if (!reports.length) return [];
 
   // Fetch target labels in parallel
@@ -42,7 +42,10 @@ async function fetchReports(status: ReportStatus): Promise<Report[]> {
 
   const [recipesRes, grindersRes, machinesRes] = await Promise.all([
     recipeIds.length
-      ? supabase.from('recipes').select('id, brew_method, grinder:grinders(brand, model)').in('id', recipeIds)
+      ? supabase
+          .from('recipes')
+          .select('id, brew_method, grinder:grinders(brand, model)')
+          .in('id', recipeIds)
       : { data: [] },
     grinderIds.length
       ? supabase.from('grinders').select('id, brand, model').in('id', grinderIds)
@@ -53,8 +56,14 @@ async function fetchReports(status: ReportStatus): Promise<Report[]> {
   ]);
 
   const labelMap: Record<string, string> = {};
-  for (const r of (recipesRes.data ?? []) as { id: string; brew_method: string; grinder: { brand: string; model: string } | null }[]) {
-    labelMap[r.id] = r.grinder ? `${r.grinder.brand} ${r.grinder.model} · ${r.brew_method.replace(/_/g, ' ')}` : r.brew_method;
+  for (const r of (recipesRes.data ?? []) as {
+    id: string;
+    brew_method: string;
+    grinder: { brand: string; model: string } | null;
+  }[]) {
+    labelMap[r.id] = r.grinder
+      ? `${r.grinder.brand} ${r.grinder.model} · ${r.brew_method.replace(/_/g, ' ')}`
+      : r.brew_method;
   }
   for (const g of (grindersRes.data ?? []) as { id: string; brand: string; model: string }[]) {
     labelMap[g.id] = `${g.brand} ${g.model}`;
@@ -66,8 +75,7 @@ async function fetchReports(status: ReportStatus): Promise<Report[]> {
   return reports.map((r) => ({ ...r, targetLabel: labelMap[r.target_id] ?? r.target_id }));
 }
 
-export default function AdminReportsScreen() {
-  const [filter, setFilter] = useState<ReportStatus>('open');
+function useAdminReports(filter: ReportStatus) {
   const [reports, setReports] = useState<Report[]>([]);
   const [loading, setLoading] = useState(true);
   const [actioningId, setActioningId] = useState<string | null>(null);
@@ -79,15 +87,13 @@ export default function AdminReportsScreen() {
     setLoading(false);
   }, []);
 
-  useEffect(() => { load(filter); }, [load, filter]);
+  useEffect(() => {
+    load(filter);
+  }, [load, filter]);
 
   async function updateStatus(id: string, status: 'resolved' | 'dismissed') {
     setActioningId(id);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { error } = await (supabase as any)
-      .from('reports')
-      .update({ status })
-      .eq('id', id);
+    const { error } = await db.from('reports').update({ status }).eq('id', id);
     if (error) {
       Alert.alert('Error', 'Failed to update report.');
     } else {
@@ -95,6 +101,13 @@ export default function AdminReportsScreen() {
     }
     setActioningId(null);
   }
+
+  return { reports, loading, actioningId, updateStatus };
+}
+
+export default function AdminReportsScreen() {
+  const [filter, setFilter] = useState<ReportStatus>('open');
+  const { reports, loading, actioningId, updateStatus } = useAdminReports(filter);
 
   return (
     <View className="flex-1 bg-latte-50 dark:bg-ristretto-900">

@@ -15,16 +15,23 @@ interface FeatureRequest {
 }
 
 const STATUS_STYLES: Record<FeatureStatus, { pill: string; text: string; label: string }> = {
-  open:    { pill: 'bg-latte-200 dark:bg-ristretto-700',          text: 'text-latte-600 dark:text-latte-400',   label: 'Open' },
-  planned: { pill: 'bg-harvest-500/20 border border-harvest-500', text: 'text-harvest-500',                     label: 'Planned' },
-  done:    { pill: 'bg-bloom-500/20 border border-bloom-500',     text: 'text-bloom-500',                       label: 'Done' },
+  open: {
+    pill: 'bg-latte-200 dark:bg-ristretto-700',
+    text: 'text-latte-600 dark:text-latte-400',
+    label: 'Open',
+  },
+  planned: {
+    pill: 'bg-harvest-500/20 border border-harvest-500',
+    text: 'text-harvest-500',
+    label: 'Planned',
+  },
+  done: { pill: 'bg-bloom-500/20 border border-bloom-500', text: 'text-bloom-500', label: 'Done' },
 };
 
 const STATUS_ORDER: FeatureStatus[] = ['open', 'planned', 'done'];
 
-export default function AdminFeatureRequestsScreen() {
+function useFeatureRequests() {
   const [requests, setRequests] = useState<FeatureRequest[]>([]);
-  const [filter, setFilter] = useState<FeatureStatus | 'all'>('open');
   const [loading, setLoading] = useState(true);
   const [actioningId, setActioningId] = useState<string | null>(null);
 
@@ -38,14 +45,13 @@ export default function AdminFeatureRequestsScreen() {
     setLoading(false);
   }, []);
 
-  useEffect(() => { fetchRequests(); }, [fetchRequests]);
+  useEffect(() => {
+    fetchRequests();
+  }, [fetchRequests]);
 
   async function setStatus(id: string, status: FeatureStatus) {
     setActioningId(id);
-    const { error } = await supabase
-      .from('feature_requests')
-      .update({ status })
-      .eq('id', id);
+    const { error } = await supabase.from('feature_requests').update({ status }).eq('id', id);
     if (error) {
       Alert.alert('Error', 'Failed to update status.');
     } else {
@@ -55,18 +61,21 @@ export default function AdminFeatureRequestsScreen() {
   }
 
   function promptStatus(req: FeatureRequest) {
-    Alert.alert(
-      'Update Status',
-      req.title,
-      [
-        ...STATUS_ORDER.filter((s) => s !== req.status).map((s) => ({
-          text: STATUS_STYLES[s].label,
-          onPress: () => setStatus(req.id, s),
-        })),
-        { text: 'Cancel', style: 'cancel' as const },
-      ],
-    );
+    Alert.alert('Update Status', req.title, [
+      ...STATUS_ORDER.filter((s) => s !== req.status).map((s) => ({
+        text: STATUS_STYLES[s].label,
+        onPress: () => setStatus(req.id, s),
+      })),
+      { text: 'Cancel', style: 'cancel' as const },
+    ]);
   }
+
+  return { requests, loading, actioningId, promptStatus };
+}
+
+export default function AdminFeatureRequestsScreen() {
+  const { requests, loading, actioningId, promptStatus } = useFeatureRequests();
+  const [filter, setFilter] = useState<FeatureStatus | 'all'>('open');
 
   const counts = Object.fromEntries(
     STATUS_ORDER.map((s) => [s, requests.filter((r) => r.status === s).length]),
@@ -107,7 +116,9 @@ export default function AdminFeatureRequestsScreen() {
             <Text
               className={`text-sm font-medium capitalize ${filter === s ? 'text-white' : 'text-latte-700 dark:text-latte-400'}`}
             >
-              {s === 'all' ? `All (${requests.length})` : `${STATUS_STYLES[s].label} (${counts[s]})`}
+              {s === 'all'
+                ? `All (${requests.length})`
+                : `${STATUS_STYLES[s].label} (${counts[s]})`}
             </Text>
           </TouchableOpacity>
         ))}

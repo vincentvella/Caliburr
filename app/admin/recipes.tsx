@@ -26,7 +26,7 @@ interface AdminRecipe {
   bean: { name: string; roaster: string } | null;
 }
 
-export default function AdminRecipesScreen() {
+function useAdminRecipes() {
   const [recipes, setRecipes] = useState<AdminRecipe[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -38,7 +38,9 @@ export default function AdminRecipesScreen() {
   const fetchRecipes = useCallback(async (query: string, offset: number) => {
     const builder = supabase
       .from('recipes')
-      .select('id, grind_setting, brew_method, notes, upvotes, created_at, user_id, grinder:grinders(brand, model), bean:beans(name, roaster)')
+      .select(
+        'id, grind_setting, brew_method, notes, upvotes, created_at, user_id, grinder:grinders(brand, model), bean:beans(name, roaster)',
+      )
       .order('created_at', { ascending: false })
       .range(offset, offset + PAGE - 1);
 
@@ -47,17 +49,20 @@ export default function AdminRecipesScreen() {
     }
 
     const { data } = await builder;
-    return (data ?? []) as unknown as AdminRecipe[];
+    return (data ?? []) as AdminRecipe[];
   }, []);
 
-  const load = useCallback(async (query: string) => {
-    setLoading(true);
-    setHasMore(true);
-    const data = await fetchRecipes(query, 0);
-    setRecipes(data);
-    setHasMore(data.length === PAGE);
-    setLoading(false);
-  }, [fetchRecipes]);
+  const load = useCallback(
+    async (query: string) => {
+      setLoading(true);
+      setHasMore(true);
+      const data = await fetchRecipes(query, 0);
+      setRecipes(data);
+      setHasMore(data.length === PAGE);
+      setLoading(false);
+    },
+    [fetchRecipes],
+  );
 
   const loadMore = useCallback(async () => {
     if (loadingMore || !hasMore) return;
@@ -68,7 +73,9 @@ export default function AdminRecipesScreen() {
     setLoadingMore(false);
   }, [loadingMore, hasMore, fetchRecipes, search, recipes.length]);
 
-  useEffect(() => { load(''); }, [load]);
+  useEffect(() => {
+    load('');
+  }, [load]);
 
   function onSearchChange(text: string) {
     setSearch(text);
@@ -77,21 +84,15 @@ export default function AdminRecipesScreen() {
   }
 
   function confirmDelete(recipe: AdminRecipe) {
-    const title = recipe.grinder
-      ? `${recipe.grinder.brand} ${recipe.grinder.model}`
-      : 'Recipe';
-    Alert.alert(
-      'Delete Recipe',
-      `Remove this ${title} recipe? This cannot be undone.`,
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Delete',
-          style: 'destructive',
-          onPress: () => deleteRecipe(recipe.id),
-        },
-      ],
-    );
+    const title = recipe.grinder ? `${recipe.grinder.brand} ${recipe.grinder.model}` : 'Recipe';
+    Alert.alert('Delete Recipe', `Remove this ${title} recipe? This cannot be undone.`, [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Delete',
+        style: 'destructive',
+        onPress: () => deleteRecipe(recipe.id),
+      },
+    ]);
   }
 
   async function deleteRecipe(id: string) {
@@ -104,6 +105,30 @@ export default function AdminRecipesScreen() {
     }
     setDeletingId(null);
   }
+
+  return {
+    recipes,
+    loading,
+    loadingMore,
+    search,
+    deletingId,
+    loadMore,
+    onSearchChange,
+    confirmDelete,
+  };
+}
+
+export default function AdminRecipesScreen() {
+  const {
+    recipes,
+    loading,
+    loadingMore,
+    search,
+    deletingId,
+    loadMore,
+    onSearchChange,
+    confirmDelete,
+  } = useAdminRecipes();
 
   return (
     <View className="flex-1 bg-latte-50 dark:bg-ristretto-900">
@@ -152,13 +177,19 @@ export default function AdminRecipesScreen() {
             <View className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-2xl p-4 mb-3">
               <View className="flex-row items-start justify-between gap-3 mb-1">
                 <View className="flex-1">
-                  <Text className="text-latte-950 dark:text-latte-100 font-semibold" numberOfLines={1}>
+                  <Text
+                    className="text-latte-950 dark:text-latte-100 font-semibold"
+                    numberOfLines={1}
+                  >
                     {item.grinder
                       ? `${item.grinder.brand} ${item.grinder.model}`
                       : 'Unknown grinder'}
                   </Text>
                   {item.bean && (
-                    <Text className="text-latte-600 dark:text-latte-500 text-xs mt-0.5" numberOfLines={1}>
+                    <Text
+                      className="text-latte-600 dark:text-latte-500 text-xs mt-0.5"
+                      numberOfLines={1}
+                    >
                       {item.bean.name} · {item.bean.roaster}
                     </Text>
                   )}
@@ -177,16 +208,17 @@ export default function AdminRecipesScreen() {
 
               <View className="flex-row flex-wrap gap-x-3 gap-y-1 mt-2">
                 <Text className="text-latte-600 dark:text-latte-500 text-xs">
-                  {BREW_METHOD_LABELS[item.brew_method as keyof typeof BREW_METHOD_LABELS] ?? item.brew_method}
+                  {BREW_METHOD_LABELS[item.brew_method as keyof typeof BREW_METHOD_LABELS] ??
+                    item.brew_method}
                 </Text>
                 <Text className="text-latte-600 dark:text-latte-500 text-xs">
                   Grind {item.grind_setting}
                 </Text>
-                <Text className="text-latte-600 dark:text-latte-500 text-xs">
-                  {item.upvotes} ↑
-                </Text>
+                <Text className="text-latte-600 dark:text-latte-500 text-xs">{item.upvotes} ↑</Text>
                 {!item.user_id && (
-                  <Text className="text-latte-500 dark:text-latte-600 text-xs italic">anonymised</Text>
+                  <Text className="text-latte-500 dark:text-latte-600 text-xs italic">
+                    anonymised
+                  </Text>
                 )}
               </View>
 

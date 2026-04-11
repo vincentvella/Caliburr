@@ -2,6 +2,7 @@ import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator } from 'rea
 import { useState, useEffect } from 'react';
 import { router } from 'expo-router';
 import { supabase } from '@/lib/supabase';
+import { db } from '@/lib/db';
 
 interface Stats {
   totalUsers: number;
@@ -38,17 +39,20 @@ async function fetchStats(): Promise<Stats> {
     supabase.from('recipes').select('*', { count: 'exact', head: true }),
     supabase.from('grinders').select('*', { count: 'exact', head: true }),
     supabase.from('brew_machines').select('*', { count: 'exact', head: true }),
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (supabase as any).from('profiles').select('*', { count: 'exact', head: true }).not('backer_tier', 'is', null),
+    db.from('profiles').select('*', { count: 'exact', head: true }).not('backer_tier', 'is', null),
     supabase.from('recipes').select('*', { count: 'exact', head: true }).gte('created_at', since),
     supabase.from('recipes').select('grinder_id, grinder:grinders(brand, model)').limit(500),
-    supabase.from('recipes').select('bean_id, bean:beans(name, roaster)').not('bean_id', 'is', null).limit(500),
+    supabase
+      .from('recipes')
+      .select('bean_id, bean:beans(name, roaster)')
+      .not('bean_id', 'is', null)
+      .limit(500),
     supabase.from('recipes').select('brew_method').limit(500),
   ]);
 
   // Aggregate top grinders
   const grinderCounts: Record<string, { brand: string; model: string; count: number }> = {};
-  for (const r of (topGrindersRes.data ?? [])) {
+  for (const r of topGrindersRes.data ?? []) {
     const g = r.grinder as { brand: string; model: string } | null;
     if (!g || !r.grinder_id) continue;
     const key = r.grinder_id as string;
@@ -61,7 +65,7 @@ async function fetchStats(): Promise<Stats> {
 
   // Aggregate top beans
   const beanCounts: Record<string, { name: string; roaster: string; count: number }> = {};
-  for (const r of (topBeansRes.data ?? [])) {
+  for (const r of topBeansRes.data ?? []) {
     const b = r.bean as { name: string; roaster: string } | null;
     if (!b || !r.bean_id) continue;
     const key = r.bean_id as string;
@@ -74,7 +78,7 @@ async function fetchStats(): Promise<Stats> {
 
   // Aggregate by brew method
   const methodCounts: Record<string, number> = {};
-  for (const r of (methodsRes.data ?? [])) {
+  for (const r of methodsRes.data ?? []) {
     const m = r.brew_method as string;
     methodCounts[m] = (methodCounts[m] ?? 0) + 1;
   }
@@ -101,18 +105,28 @@ function StatCard({ label, value, sub }: { label: string; value: number | string
     <View className="flex-1 bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-2xl p-4">
       <Text className="text-latte-500 dark:text-latte-600 text-xs mb-1">{label}</Text>
       <Text className="text-latte-950 dark:text-latte-100 text-2xl font-bold">{value}</Text>
-      {sub ? <Text className="text-latte-500 dark:text-latte-600 text-xs mt-0.5">{sub}</Text> : null}
+      {sub ? (
+        <Text className="text-latte-500 dark:text-latte-600 text-xs mt-0.5">{sub}</Text>
+      ) : null}
     </View>
   );
 }
 
-export default function AdminStatsScreen() {
+function useAdminStats() {
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchStats().then(setStats).finally(() => setLoading(false));
+    fetchStats()
+      .then(setStats)
+      .finally(() => setLoading(false));
   }, []);
+
+  return { stats, loading };
+}
+
+export default function AdminStatsScreen() {
+  const { stats, loading } = useAdminStats();
 
   return (
     <View className="flex-1 bg-latte-50 dark:bg-ristretto-900">
@@ -137,7 +151,11 @@ export default function AdminStatsScreen() {
             Totals
           </Text>
           <View className="flex-row gap-3 mb-3">
-            <StatCard label="Recipes" value={stats.totalRecipes} sub={`+${stats.newRecipesThisWeek} this week`} />
+            <StatCard
+              label="Recipes"
+              value={stats.totalRecipes}
+              sub={`+${stats.newRecipesThisWeek} this week`}
+            />
             <StatCard label="Backers" value={stats.totalBacers} />
           </View>
           <View className="flex-row gap-3 mb-6">
@@ -151,17 +169,24 @@ export default function AdminStatsScreen() {
           <View className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-2xl mb-6 overflow-hidden">
             {stats.topGrinders.length === 0 ? (
               <Text className="text-latte-500 dark:text-latte-600 text-sm p-4">No data yet.</Text>
-            ) : stats.topGrinders.map((g, i) => (
-              <View
-                key={i}
-                className={`flex-row items-center justify-between px-4 py-3 ${i < stats.topGrinders.length - 1 ? 'border-b border-latte-200 dark:border-ristretto-700' : ''}`}
-              >
-                <Text className="text-latte-950 dark:text-latte-100 text-sm flex-1" numberOfLines={1}>
-                  {g.brand} {g.model}
-                </Text>
-                <Text className="text-latte-500 dark:text-latte-600 text-sm ml-3">{g.count} recipes</Text>
-              </View>
-            ))}
+            ) : (
+              stats.topGrinders.map((g, i) => (
+                <View
+                  key={i}
+                  className={`flex-row items-center justify-between px-4 py-3 ${i < stats.topGrinders.length - 1 ? 'border-b border-latte-200 dark:border-ristretto-700' : ''}`}
+                >
+                  <Text
+                    className="text-latte-950 dark:text-latte-100 text-sm flex-1"
+                    numberOfLines={1}
+                  >
+                    {g.brand} {g.model}
+                  </Text>
+                  <Text className="text-latte-500 dark:text-latte-600 text-sm ml-3">
+                    {g.count} recipes
+                  </Text>
+                </View>
+              ))
+            )}
           </View>
 
           <Text className="text-latte-600 dark:text-latte-500 text-xs font-semibold uppercase tracking-wider mb-3 px-1">
@@ -170,20 +195,24 @@ export default function AdminStatsScreen() {
           <View className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-2xl mb-6 overflow-hidden">
             {stats.topBeans.length === 0 ? (
               <Text className="text-latte-500 dark:text-latte-600 text-sm p-4">No data yet.</Text>
-            ) : stats.topBeans.map((b, i) => (
-              <View
-                key={i}
-                className={`flex-row items-center justify-between px-4 py-3 ${i < stats.topBeans.length - 1 ? 'border-b border-latte-200 dark:border-ristretto-700' : ''}`}
-              >
-                <View className="flex-1">
-                  <Text className="text-latte-950 dark:text-latte-100 text-sm" numberOfLines={1}>
-                    {b.name}
+            ) : (
+              stats.topBeans.map((b, i) => (
+                <View
+                  key={i}
+                  className={`flex-row items-center justify-between px-4 py-3 ${i < stats.topBeans.length - 1 ? 'border-b border-latte-200 dark:border-ristretto-700' : ''}`}
+                >
+                  <View className="flex-1">
+                    <Text className="text-latte-950 dark:text-latte-100 text-sm" numberOfLines={1}>
+                      {b.name}
+                    </Text>
+                    <Text className="text-latte-500 dark:text-latte-600 text-xs">{b.roaster}</Text>
+                  </View>
+                  <Text className="text-latte-500 dark:text-latte-600 text-sm ml-3">
+                    {b.count} recipes
                   </Text>
-                  <Text className="text-latte-500 dark:text-latte-600 text-xs">{b.roaster}</Text>
                 </View>
-                <Text className="text-latte-500 dark:text-latte-600 text-sm ml-3">{b.count} recipes</Text>
-              </View>
-            ))}
+              ))
+            )}
           </View>
 
           <Text className="text-latte-600 dark:text-latte-500 text-xs font-semibold uppercase tracking-wider mb-3 px-1">
@@ -192,17 +221,19 @@ export default function AdminStatsScreen() {
           <View className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-2xl mb-12 overflow-hidden">
             {stats.recipesByMethod.length === 0 ? (
               <Text className="text-latte-500 dark:text-latte-600 text-sm p-4">No data yet.</Text>
-            ) : stats.recipesByMethod.map((m, i) => (
-              <View
-                key={m.brew_method}
-                className={`flex-row items-center justify-between px-4 py-3 ${i < stats.recipesByMethod.length - 1 ? 'border-b border-latte-200 dark:border-ristretto-700' : ''}`}
-              >
-                <Text className="text-latte-950 dark:text-latte-100 text-sm capitalize">
-                  {m.brew_method.replace(/_/g, ' ')}
-                </Text>
-                <Text className="text-latte-500 dark:text-latte-600 text-sm">{m.count}</Text>
-              </View>
-            ))}
+            ) : (
+              stats.recipesByMethod.map((m, i) => (
+                <View
+                  key={m.brew_method}
+                  className={`flex-row items-center justify-between px-4 py-3 ${i < stats.recipesByMethod.length - 1 ? 'border-b border-latte-200 dark:border-ristretto-700' : ''}`}
+                >
+                  <Text className="text-latte-950 dark:text-latte-100 text-sm capitalize">
+                    {m.brew_method.replace(/_/g, ' ')}
+                  </Text>
+                  <Text className="text-latte-500 dark:text-latte-600 text-sm">{m.count}</Text>
+                </View>
+              ))
+            )}
           </View>
         </ScrollView>
       )}

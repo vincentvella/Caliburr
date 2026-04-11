@@ -13,6 +13,7 @@ import { LegendList } from '@legendapp/list';
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { useFocusEffect, router } from 'expo-router';
 import { supabase } from '@/lib/supabase';
+import { db } from '@/lib/db';
 import { haptics } from '@/lib/haptics';
 import { type RecipeWithJoins, type BrewMethod, BREW_METHOD_LABELS } from '@/lib/types';
 import { Constants } from '@/lib/database.types';
@@ -25,8 +26,7 @@ const BREW_METHODS = [...Constants.public.Enums.brew_method];
 function useBackerIds() {
   const [backerIds, setBackerIds] = useState<Set<string>>(new Set());
   useEffect(() => {
-    supabase
-      .from('profiles')
+    db.from('profiles')
       .select('user_id')
       .not('backer_tier', 'is', null)
       .then(({ data }) => {

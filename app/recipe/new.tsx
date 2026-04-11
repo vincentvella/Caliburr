@@ -36,7 +36,10 @@ import {
 const BREW_METHODS = [...Constants.public.Enums.brew_method];
 const ROAST_LEVELS = [...Constants.public.Enums.roast_level];
 
-type AnyForm = { setFieldValue: (field: any, value: any) => void };
+// Interface method syntax uses bivariant checking, allowing TanStack Form to satisfy this type.
+interface AnyForm {
+  setFieldValue(field: string, value: unknown): void;
+}
 
 function useLoadNewRecipe(form: AnyForm, templateId: string | undefined) {
   const [grinders, setGrinders] = useState<Grinder[]>([]);

@@ -22,7 +22,7 @@ export function MyRecipeCard({
       'Are you sure you want to delete this recipe? This cannot be undone.',
       [
         { text: 'Cancel', style: 'cancel' },
-        { text: 'Delete', style: 'destructive', onPress: () => onDelete!(recipe.id) },
+        { text: 'Delete', style: 'destructive', onPress: () => onDelete?.(recipe.id) },
       ],
     );
   }

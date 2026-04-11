@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator, Alert } from 'react-native';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Stack, router } from 'expo-router';
 import * as purchases from '@/lib/purchases';
 import type { PurchasesPackage } from '@/lib/purchases';
@@ -169,7 +169,7 @@ export default function BackerScreen() {
           <View className="bg-crema-900/20 border border-crema-700 rounded-2xl px-4 py-5 items-center mb-8">
             <Text style={{ fontSize: 32 }}>☕</Text>
             <Text className="text-crema-300 font-semibold text-base mt-3">
-              You're a Caliburr Backer
+              You&apos;re a Caliburr Backer
             </Text>
             <Text className="text-crema-500 text-sm text-center mt-1">
               Thank you for your support!

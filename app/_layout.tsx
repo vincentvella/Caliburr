@@ -133,23 +133,23 @@ export default function RootLayout() {
   return (
     <ThemeProvider>
       <BackerProvider>
-      <ErrorBoundary>
-        <StatusBar style={theme === 'dark' ? 'light' : 'dark'} />
-        <Stack screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="(tabs)" />
-          <Stack.Screen name="(auth)" />
-          <Stack.Screen name="onboarding" />
-          <Stack.Screen name="privacy" />
-          <Stack.Screen name="support" />
-          <Stack.Screen name="account/index" />
-          <Stack.Screen name="account/change-password" />
-          <Stack.Screen name="feature-requests" />
-          <Stack.Screen name="backer" />
-          <Stack.Screen name="admin" />
-          <Stack.Screen name="recipe/new" options={{ presentation: 'modal' }} />
-          <Stack.Screen name="+not-found" />
-        </Stack>
-      </ErrorBoundary>
+        <ErrorBoundary>
+          <StatusBar style={theme === 'dark' ? 'light' : 'dark'} />
+          <Stack screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="(tabs)" />
+            <Stack.Screen name="(auth)" />
+            <Stack.Screen name="onboarding" />
+            <Stack.Screen name="privacy" />
+            <Stack.Screen name="support" />
+            <Stack.Screen name="account/index" />
+            <Stack.Screen name="account/change-password" />
+            <Stack.Screen name="feature-requests" />
+            <Stack.Screen name="backer" />
+            <Stack.Screen name="admin" />
+            <Stack.Screen name="recipe/new" options={{ presentation: 'modal' }} />
+            <Stack.Screen name="+not-found" />
+          </Stack>
+        </ErrorBoundary>
       </BackerProvider>
     </ThemeProvider>
   );

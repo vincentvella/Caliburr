@@ -301,7 +301,12 @@ export default function RecipesScreen() {
     else {
       // Preserve upvote order
       const byId = new Map((data as RecipeWithJoins[]).map((r) => [r.id, r]));
-      setRecipes(ids.flatMap((id) => (byId.has(id) ? [byId.get(id)!] : [])));
+      setRecipes(
+        ids.flatMap((id) => {
+          const r = byId.get(id);
+          return r ? [r] : [];
+        }),
+      );
     }
   }, []);
 

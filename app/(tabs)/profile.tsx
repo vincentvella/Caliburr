@@ -379,74 +379,74 @@ export default function ProfileScreen() {
                 <>
                   {grinders.map(({ grinder_id, grinder, is_default }) => (
                     <View key={grinder_id}>
-                    <TouchableOpacity
-                      onPress={() => {
-                        setEditingGrinder(grinder);
-                        setGrinderModalOpen(true);
-                      }}
-                      className="flex-row items-center justify-between bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-2xl px-4 py-3.5 mb-2"
-                    >
-                      <View className="flex-row items-center gap-3 flex-1">
-                        {grinder.image_url ? (
-                          <Image
-                            source={{ uri: grinder.image_url }}
-                            className="w-12 h-12 rounded-lg bg-oat-200 dark:bg-ristretto-700"
-                            resizeMode="contain"
-                          />
-                        ) : (
-                          <View className="w-12 h-12 rounded-lg bg-oat-200 dark:bg-ristretto-700 items-center justify-center">
-                            <Text className="text-latte-500 dark:text-latte-600 text-xl">⚙</Text>
+                      <TouchableOpacity
+                        onPress={() => {
+                          setEditingGrinder(grinder);
+                          setGrinderModalOpen(true);
+                        }}
+                        className="flex-row items-center justify-between bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-2xl px-4 py-3.5 mb-2"
+                      >
+                        <View className="flex-row items-center gap-3 flex-1">
+                          {grinder.image_url ? (
+                            <Image
+                              source={{ uri: grinder.image_url }}
+                              className="w-12 h-12 rounded-lg bg-oat-200 dark:bg-ristretto-700"
+                              resizeMode="contain"
+                            />
+                          ) : (
+                            <View className="w-12 h-12 rounded-lg bg-oat-200 dark:bg-ristretto-700 items-center justify-center">
+                              <Text className="text-latte-500 dark:text-latte-600 text-xl">⚙</Text>
+                            </View>
+                          )}
+                          <View className="flex-1">
+                            <Text className="text-latte-950 dark:text-latte-100 font-medium">
+                              {grinder.brand} {grinder.model}
+                            </Text>
+                            <Text className="text-latte-600 dark:text-latte-500 text-xs mt-0.5 capitalize">
+                              {grinder.burr_type ?? '—'} · {grinder.adjustment_type ?? '—'}
+                            </Text>
                           </View>
-                        )}
-                        <View className="flex-1">
-                          <Text className="text-latte-950 dark:text-latte-100 font-medium">
-                            {grinder.brand} {grinder.model}
-                          </Text>
-                          <Text className="text-latte-600 dark:text-latte-500 text-xs mt-0.5 capitalize">
-                            {grinder.burr_type ?? '—'} · {grinder.adjustment_type ?? '—'}
-                          </Text>
                         </View>
-                      </View>
-                      <View className="flex-row items-center gap-3">
-                        {grinder.verified ? (
-                          <View className="bg-bloom-100 dark:bg-bloom-900 border border-bloom-300 dark:border-bloom-700 rounded-full px-2 py-0.5">
-                            <Text className="text-bloom-700 dark:text-bloom-400 text-xs">
-                              Verified
+                        <View className="flex-row items-center gap-3">
+                          {grinder.verified ? (
+                            <View className="bg-bloom-100 dark:bg-bloom-900 border border-bloom-300 dark:border-bloom-700 rounded-full px-2 py-0.5">
+                              <Text className="text-bloom-700 dark:text-bloom-400 text-xs">
+                                Verified
+                              </Text>
+                            </View>
+                          ) : pendingGrinderEditIds.has(grinder_id) ? (
+                            <View className="bg-crema-100 dark:bg-crema-900 border border-crema-300 dark:border-crema-700 rounded-full px-2 py-0.5">
+                              <Text className="text-crema-700 dark:text-crema-400 text-xs">
+                                Edit pending
+                              </Text>
+                            </View>
+                          ) : null}
+                          <TouchableOpacity onPress={() => toggleDefaultGrinder(grinder_id)}>
+                            <Text
+                              style={{
+                                fontSize: 18,
+                                color: is_default ? '#ff9d37' : isDark ? '#c8824a' : '#b5693a',
+                              }}
+                            >
+                              {is_default || isDark ? '★' : '☆'}
                             </Text>
-                          </View>
-                        ) : pendingGrinderEditIds.has(grinder_id) ? (
-                          <View className="bg-crema-100 dark:bg-crema-900 border border-crema-300 dark:border-crema-700 rounded-full px-2 py-0.5">
-                            <Text className="text-crema-700 dark:text-crema-400 text-xs">
-                              Edit pending
-                            </Text>
-                          </View>
-                        ) : null}
-                        <TouchableOpacity onPress={() => toggleDefaultGrinder(grinder_id)}>
-                          <Text
-                            style={{
-                              fontSize: 18,
-                              color: is_default ? '#ff9d37' : isDark ? '#c8824a' : '#b5693a',
-                            }}
-                          >
-                            {is_default || isDark ? '★' : '☆'}
-                          </Text>
-                        </TouchableOpacity>
-                        {removingId === grinder_id ? (
-                          <ActivityIndicator size="small" color="#6e5a47" />
-                        ) : (
-                          <TouchableOpacity onPress={() => removeGrinder(grinder_id)}>
-                            <Text className="text-latte-500 dark:text-latte-600 text-lg">×</Text>
                           </TouchableOpacity>
-                        )}
-                      </View>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      onPress={() => router.push(`/grinder/${grinder_id}`)}
-                      className="flex-row items-center gap-1 px-1 pb-2 -mt-1"
-                    >
-                      <Text className="text-harvest-400 text-xs">Dial-In Guide</Text>
-                      <Text className="text-harvest-400 text-xs">›</Text>
-                    </TouchableOpacity>
+                          {removingId === grinder_id ? (
+                            <ActivityIndicator size="small" color="#6e5a47" />
+                          ) : (
+                            <TouchableOpacity onPress={() => removeGrinder(grinder_id)}>
+                              <Text className="text-latte-500 dark:text-latte-600 text-lg">×</Text>
+                            </TouchableOpacity>
+                          )}
+                        </View>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        onPress={() => router.push(`/grinder/${grinder_id}`)}
+                        className="flex-row items-center gap-1 px-1 pb-2 -mt-1"
+                      >
+                        <Text className="text-harvest-400 text-xs">Dial-In Guide</Text>
+                        <Text className="text-harvest-400 text-xs">›</Text>
+                      </TouchableOpacity>
                     </View>
                   ))}
                   {grinders.some((g) => g.is_default) && (

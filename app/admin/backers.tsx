@@ -21,7 +21,9 @@ interface Backer {
 }
 
 async function invokeBackerAdmin<T>(body: object): Promise<T> {
-  const { data: { session } } = await supabase.auth.getSession();
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
   const { data, error } = await supabase.functions.invoke('admin-backer', {
     body,
     headers: { Authorization: `Bearer ${session?.access_token}` },
@@ -30,7 +32,7 @@ async function invokeBackerAdmin<T>(body: object): Promise<T> {
   return data as T;
 }
 
-export default function AdminBackersScreen() {
+function useAdminBackers() {
   const [backers, setBackers] = useState<Backer[]>([]);
   const [loading, setLoading] = useState(true);
   const [actioningId, setActioningId] = useState<string | null>(null);
@@ -50,7 +52,9 @@ export default function AdminBackersScreen() {
     }
   }, []);
 
-  useEffect(() => { fetchBackers(); }, [fetchBackers]);
+  useEffect(() => {
+    fetchBackers();
+  }, [fetchBackers]);
 
   async function handleGrant() {
     const email = grantEmail.trim();
@@ -69,29 +73,53 @@ export default function AdminBackersScreen() {
   }
 
   async function handleRevoke(backer: Backer) {
-    Alert.alert(
-      'Revoke Backer',
-      `Remove backer status from ${backer.email}?`,
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Revoke',
-          style: 'destructive',
-          onPress: async () => {
-            setActioningId(backer.userId);
-            try {
-              await invokeBackerAdmin({ action: 'revoke', userId: backer.userId });
-              setBackers((prev) => prev.filter((b) => b.userId !== backer.userId));
-            } catch {
-              Alert.alert('Error', 'Failed to revoke backer status.');
-            } finally {
-              setActioningId(null);
-            }
-          },
+    Alert.alert('Revoke Backer', `Remove backer status from ${backer.email}?`, [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Revoke',
+        style: 'destructive',
+        onPress: async () => {
+          setActioningId(backer.userId);
+          try {
+            await invokeBackerAdmin({ action: 'revoke', userId: backer.userId });
+            setBackers((prev) => prev.filter((b) => b.userId !== backer.userId));
+          } catch {
+            Alert.alert('Error', 'Failed to revoke backer status.');
+          } finally {
+            setActioningId(null);
+          }
         },
-      ],
-    );
+      },
+    ]);
   }
+
+  return {
+    backers,
+    loading,
+    actioningId,
+    grantEmail,
+    setGrantEmail,
+    grantTier,
+    setGrantTier,
+    granting,
+    handleGrant,
+    handleRevoke,
+  };
+}
+
+export default function AdminBackersScreen() {
+  const {
+    backers,
+    loading,
+    actioningId,
+    grantEmail,
+    setGrantEmail,
+    grantTier,
+    setGrantTier,
+    granting,
+    handleGrant,
+    handleRevoke,
+  } = useAdminBackers();
 
   return (
     <View className="flex-1 bg-latte-50 dark:bg-ristretto-900">

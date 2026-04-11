@@ -1,5 +1,6 @@
 import { Alert } from 'react-native';
 import { supabase } from '@/lib/supabase';
+import { db } from '@/lib/db';
 
 type TargetType = 'recipe' | 'grinder' | 'machine';
 
@@ -15,8 +16,7 @@ async function submitReport(targetType: TargetType, targetId: string, reason: st
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return;
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { error } = await (supabase as any).from('reports').insert({
+  const { error } = await db.from('reports').insert({
     reporter_id: user.id,
     target_type: targetType,
     target_id: targetId,

@@ -36,7 +36,9 @@ function useEquipment() {
     const [gRes, mRes] = await Promise.all([
       supabase
         .from('grinders')
-        .select('id, brand, model, burr_type, adjustment_type, verified, grinder_verifications(user_id)')
+        .select(
+          'id, brand, model, burr_type, adjustment_type, verified, grinder_verifications(user_id)',
+        )
         .order('verified', { ascending: true })
         .order('created_at', { ascending: false }),
       supabase
@@ -46,17 +48,21 @@ function useEquipment() {
         .order('created_at', { ascending: false }),
     ]);
 
-    const grinders: EquipmentItem[] = ((gRes.data ?? []) as unknown as AdminGrinder[]).map(
-      (g) => ({ kind: 'grinder', data: g }),
-    );
-    const machines: EquipmentItem[] = ((mRes.data ?? []) as unknown as AdminMachine[]).map(
-      (m) => ({ kind: 'machine', data: m }),
-    );
+    const grinders: EquipmentItem[] = ((gRes.data ?? []) as AdminGrinder[]).map((g) => ({
+      kind: 'grinder',
+      data: g,
+    }));
+    const machines: EquipmentItem[] = ((mRes.data ?? []) as AdminMachine[]).map((m) => ({
+      kind: 'machine',
+      data: m,
+    }));
     setItems([...grinders, ...machines]);
     setLoading(false);
   }, []);
 
-  useEffect(() => { fetch(); }, [fetch]);
+  useEffect(() => {
+    fetch();
+  }, [fetch]);
 
   return { items, setItems, loading };
 }
@@ -87,7 +93,9 @@ export default function AdminEquipmentScreen() {
     if (!confirmed) return;
 
     setActioningId(id);
-    const { data: { session } } = await supabase.auth.getSession();
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
 
     const { error } = await supabase.functions.invoke('admin-verify-equipment', {
       body: { equipmentId: id, equipmentType, action },
@@ -115,7 +123,8 @@ export default function AdminEquipmentScreen() {
             data: {
               ...i.data,
               verified: action === 'verify',
-              machine_verifications: action === 'unverify' ? [] : (i.data as AdminMachine).machine_verifications,
+              machine_verifications:
+                action === 'unverify' ? [] : (i.data as AdminMachine).machine_verifications,
             },
           };
         }),
@@ -130,9 +139,10 @@ export default function AdminEquipmentScreen() {
     verified: items.filter((i) => i.data.verified).length,
   };
 
-  const filtered = filter === 'all' ? items : items.filter((i) =>
-    filter === 'verified' ? i.data.verified : !i.data.verified,
-  );
+  const filtered =
+    filter === 'all'
+      ? items
+      : items.filter((i) => (filter === 'verified' ? i.data.verified : !i.data.verified));
 
   return (
     <View className="flex-1 bg-latte-50 dark:bg-ristretto-900">
@@ -161,7 +171,11 @@ export default function AdminEquipmentScreen() {
             <Text
               className={`text-sm font-medium capitalize ${filter === f ? 'text-white' : 'text-latte-700 dark:text-latte-400'}`}
             >
-              {f === 'all' ? `All (${counts.all})` : f === 'unverified' ? `Unverified (${counts.unverified})` : `Verified (${counts.verified})`}
+              {f === 'all'
+                ? `All (${counts.all})`
+                : f === 'unverified'
+                  ? `Unverified (${counts.unverified})`
+                  : `Verified (${counts.verified})`}
             </Text>
           </TouchableOpacity>
         ))}
@@ -178,12 +192,14 @@ export default function AdminEquipmentScreen() {
       ) : (
         <ScrollView className="flex-1 px-4 pt-3">
           {filtered.map((item) => {
-            const voteCount = item.kind === 'grinder'
-              ? item.data.grinder_verifications.length
-              : (item.data as AdminMachine).machine_verifications.length;
-            const subtitle = item.kind === 'grinder'
-              ? [item.data.burr_type, item.data.adjustment_type].filter(Boolean).join(' · ')
-              : item.data.machine_type;
+            const voteCount =
+              item.kind === 'grinder'
+                ? item.data.grinder_verifications.length
+                : (item.data as AdminMachine).machine_verifications.length;
+            const subtitle =
+              item.kind === 'grinder'
+                ? [item.data.burr_type, item.data.adjustment_type].filter(Boolean).join(' · ')
+                : item.data.machine_type;
 
             return (
               <View

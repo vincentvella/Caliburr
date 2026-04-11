@@ -48,6 +48,7 @@ export type Database = {
           process: string | null
           roast_level: Database["public"]["Enums"]["roast_level"] | null
           roaster: string
+          tasting_notes: string[]
         }
         Insert: {
           created_at?: string
@@ -57,6 +58,7 @@ export type Database = {
           process?: string | null
           roast_level?: Database["public"]["Enums"]["roast_level"] | null
           roaster: string
+          tasting_notes?: string[]
         }
         Update: {
           created_at?: string
@@ -66,6 +68,7 @@ export type Database = {
           process?: string | null
           roast_level?: Database["public"]["Enums"]["roast_level"] | null
           roaster?: string
+          tasting_notes?: string[]
         }
         Relationships: []
       }
@@ -75,6 +78,7 @@ export type Database = {
           created_at: string
           created_by: string | null
           id: string
+          image_status: Database["public"]["Enums"]["equipment_edit_status"] | null
           image_url: string | null
           machine_type: Database["public"]["Enums"]["machine_type"]
           model: string
@@ -85,6 +89,7 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           id?: string
+          image_status?: Database["public"]["Enums"]["equipment_edit_status"] | null
           image_url?: string | null
           machine_type: Database["public"]["Enums"]["machine_type"]
           model: string
@@ -95,6 +100,7 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           id?: string
+          image_status?: Database["public"]["Enums"]["equipment_edit_status"] | null
           image_url?: string | null
           machine_type?: Database["public"]["Enums"]["machine_type"]
           model?: string
@@ -230,6 +236,7 @@ export type Database = {
           created_at: string
           created_by: string | null
           id: string
+          image_status: Database["public"]["Enums"]["equipment_edit_status"] | null
           image_url: string | null
           model: string
           range_max: number | null
@@ -246,6 +253,7 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           id?: string
+          image_status?: Database["public"]["Enums"]["equipment_edit_status"] | null
           image_url?: string | null
           model: string
           range_max?: number | null
@@ -262,6 +270,7 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           id?: string
+          image_status?: Database["public"]["Enums"]["equipment_edit_status"] | null
           image_url?: string | null
           model?: string
           range_max?: number | null
@@ -530,6 +539,7 @@ export type Database = {
           created_at: string
           email: string
           id: string
+          is_backer: boolean
           message: string
           name: string
           status: string
@@ -539,6 +549,7 @@ export type Database = {
           created_at?: string
           email: string
           id?: string
+          is_backer?: boolean
           message: string
           name: string
           status?: string
@@ -548,6 +559,7 @@ export type Database = {
           created_at?: string
           email?: string
           id?: string
+          is_backer?: boolean
           message?: string
           name?: string
           status?: string

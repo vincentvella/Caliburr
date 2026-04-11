@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Image,
+  type DimensionValue,
 } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
 import { useState, useEffect, useMemo } from 'react';
@@ -42,7 +43,9 @@ function useGrinderDetail(id: string) {
         supabase.from('grinders').select('*').eq('id', id).single(),
         supabase
           .from('recipes')
-          .select('id, brew_method, grind_setting, dose_g, yield_g, upvotes, bean:beans(name, roaster)')
+          .select(
+            'id, brew_method, grind_setting, dose_g, yield_g, upvotes, bean:beans(name, roaster)',
+          )
           .eq('grinder_id', id)
           .order('upvotes', { ascending: false })
           .limit(200),
@@ -51,8 +54,8 @@ function useGrinderDetail(id: string) {
       if (grinderRes.error || !grinderRes.data) {
         setError('Grinder not found.');
       } else {
-        setGrinder(grinderRes.data as unknown as Grinder);
-        setRecipes((recipesRes.data ?? []) as unknown as GrinderRecipe[]);
+        setGrinder(grinderRes.data);
+        setRecipes((recipesRes.data ?? []) as GrinderRecipe[]);
       }
       setLoading(false);
     }
@@ -68,11 +71,14 @@ function useDialInStats(recipes: GrinderRecipe[]) {
     const grouped: Partial<Record<BrewMethod, GrinderRecipe[]>> = {};
     for (const r of recipes) {
       if (!grouped[r.brew_method]) grouped[r.brew_method] = [];
-      grouped[r.brew_method]!.push(r);
+      (grouped[r.brew_method] as GrinderRecipe[]).push(r);
     }
 
     const stats: Partial<Record<BrewMethod, GrindStats | null>> = {};
-    for (const [method, methodRecipes] of Object.entries(grouped) as [BrewMethod, GrinderRecipe[]][]) {
+    for (const [method, methodRecipes] of Object.entries(grouped) as [
+      BrewMethod,
+      GrinderRecipe[],
+    ][]) {
       stats[method] = computeGrindStats(methodRecipes.map((r) => r.grind_setting));
     }
 
@@ -139,7 +145,9 @@ export default function GrinderDetailScreen() {
               {grinder.verified && (
                 <View className="flex-row items-center gap-1.5">
                   <View className="bg-bloom-100 dark:bg-bloom-900 border border-bloom-300 dark:border-bloom-700 rounded-full px-2.5 py-0.5">
-                    <Text className="text-bloom-700 dark:text-bloom-400 text-xs">✓ Community Verified</Text>
+                    <Text className="text-bloom-700 dark:text-bloom-400 text-xs">
+                      ✓ Community Verified
+                    </Text>
                   </View>
                 </View>
               )}
@@ -151,7 +159,10 @@ export default function GrinderDetailScreen() {
                 <SpecRow label="Burr Type" value={BURR_TYPE_LABELS[grinder.burr_type]} />
               )}
               {grinder.adjustment_type && (
-                <SpecRow label="Adjustment" value={ADJUSTMENT_TYPE_LABELS[grinder.adjustment_type]} />
+                <SpecRow
+                  label="Adjustment"
+                  value={ADJUSTMENT_TYPE_LABELS[grinder.adjustment_type]}
+                />
               )}
               {grinder.range_min != null && grinder.range_max != null && (
                 <SpecRow label="Range" value={`${grinder.range_min} – ${grinder.range_max}`} />
@@ -201,7 +212,8 @@ export default function GrinderDetailScreen() {
                 ) : (
                   <View className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-2xl px-4 py-5 items-center">
                     <Text className="text-latte-500 dark:text-latte-600 text-sm">
-                      Not enough numeric data yet ({activeRecipes.length} recipe{activeRecipes.length !== 1 ? 's' : ''})
+                      Not enough numeric data yet ({activeRecipes.length} recipe
+                      {activeRecipes.length !== 1 ? 's' : ''})
                     </Text>
                   </View>
                 )}
@@ -263,8 +275,8 @@ function StatsCard({ stats, grinder }: { stats: GrindStats; grinder: Grinder }) 
   const barMax = hasRange ? rangeMax : dataMax;
   const barRange = barMax - barMin || 1;
 
-  function pct(val: number): string {
-    return `${Math.max(0, Math.min(100, ((val - barMin) / barRange) * 100)).toFixed(1)}%`;
+  function pct(val: number): DimensionValue {
+    return `${Math.max(0, Math.min(100, ((val - barMin) / barRange) * 100)).toFixed(1)}%` as DimensionValue;
   }
 
   return (
@@ -295,16 +307,14 @@ function StatsCard({ stats, grinder }: { stats: GrindStats; grinder: Grinder }) 
       <View className="gap-1.5">
         <View className="h-3 bg-latte-200 dark:bg-ristretto-700 rounded-full overflow-hidden relative">
           {/* IQR band */}
-          {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
           <View
             className="absolute h-full bg-harvest-400/50 rounded-full"
-            style={{ left: pct(stats.q1) as any, width: pct(stats.q3 + barMin - stats.q1) as any }}
+            style={{ left: pct(stats.q1), width: pct(stats.q3 + barMin - stats.q1) }}
           />
           {/* Median tick */}
-          {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
           <View
             className="absolute h-full w-0.5 bg-harvest-500"
-            style={{ left: pct(stats.median) as any }}
+            style={{ left: pct(stats.median) }}
           />
         </View>
         {hasRange && (

@@ -28,7 +28,9 @@ function useBeanDetail(id: string) {
         supabase.from('beans').select('*').eq('id', id).single(),
         supabase
           .from('recipes')
-          .select('id, brew_method, grind_setting, dose_g, yield_g, upvotes, grinder:grinders(brand, model)')
+          .select(
+            'id, brew_method, grind_setting, dose_g, yield_g, upvotes, grinder:grinders(brand, model)',
+          )
           .eq('bean_id', id)
           .order('upvotes', { ascending: false })
           .limit(50),
@@ -37,8 +39,8 @@ function useBeanDetail(id: string) {
       if (beanRes.error || !beanRes.data) {
         setError('Bean not found.');
       } else {
-        setBean(beanRes.data as unknown as Bean);
-        setRecipes((recipesRes.data ?? []) as unknown as BeanRecipe[]);
+        setBean(beanRes.data);
+        setRecipes((recipesRes.data ?? []) as BeanRecipe[]);
       }
       setLoading(false);
     }
@@ -91,12 +93,8 @@ export default function BeanDetailScreen() {
 
           {/* Meta chips */}
           <View className="flex-row flex-wrap gap-2 mb-5">
-            {bean.origin && (
-              <InfoChip label="Origin" value={bean.origin} />
-            )}
-            {bean.process && (
-              <InfoChip label="Process" value={bean.process} />
-            )}
+            {bean.origin && <InfoChip label="Origin" value={bean.origin} />}
+            {bean.process && <InfoChip label="Process" value={bean.process} />}
             {bean.roast_level && (
               <InfoChip label="Roast" value={ROAST_LEVEL_LABELS[bean.roast_level]} />
             )}
@@ -110,10 +108,7 @@ export default function BeanDetailScreen() {
               </Text>
               <View className="flex-row flex-wrap gap-2">
                 {bean.tasting_notes.map((note) => (
-                  <View
-                    key={note}
-                    className="bg-bloom-600/15 rounded-full px-3 py-1"
-                  >
+                  <View key={note} className="bg-bloom-600/15 rounded-full px-3 py-1">
                     <Text className="text-bloom-600 dark:text-bloom-400 text-sm capitalize">
                       {note}
                     </Text>
@@ -125,7 +120,9 @@ export default function BeanDetailScreen() {
 
           {/* Recipes using this bean */}
           <Text className="text-latte-700 dark:text-latte-400 text-xs font-semibold uppercase tracking-wider mb-3">
-            {recipes.length > 0 ? `${recipes.length} Recipe${recipes.length !== 1 ? 's' : ''}` : 'No Recipes Yet'}
+            {recipes.length > 0
+              ? `${recipes.length} Recipe${recipes.length !== 1 ? 's' : ''}`
+              : 'No Recipes Yet'}
           </Text>
           {recipes.map((recipe) => (
             <TouchableOpacity
@@ -139,7 +136,8 @@ export default function BeanDetailScreen() {
                     {recipe.grinder.brand} {recipe.grinder.model}
                   </Text>
                   <Text className="text-latte-600 dark:text-latte-500 text-xs mt-0.5">
-                    {BREW_METHOD_LABELS[recipe.brew_method as keyof typeof BREW_METHOD_LABELS] ?? recipe.brew_method}
+                    {BREW_METHOD_LABELS[recipe.brew_method as keyof typeof BREW_METHOD_LABELS] ??
+                      recipe.brew_method}
                     {recipe.grind_setting ? ` · Setting ${recipe.grind_setting}` : ''}
                   </Text>
                 </View>
