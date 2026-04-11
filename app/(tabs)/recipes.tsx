@@ -352,7 +352,7 @@ export default function RecipesScreen() {
         }
       >
         <Text className="text-latte-950 dark:text-latte-100 text-2xl mb-1 font-display-bold">
-          My Recipes
+          My Brews
         </Text>
         <Text className="text-latte-600 dark:text-latte-500 text-sm mb-5">
           Your submitted dials.
@@ -364,12 +364,12 @@ export default function RecipesScreen() {
             onPress={() => setTab('mine')}
             className={`flex-1 py-2 rounded-lg items-center ${tab === 'mine' ? 'bg-oat-200 dark:bg-ristretto-700' : ''}`}
             accessibilityRole="button"
-            accessibilityLabel="My Recipes tab"
+            accessibilityLabel="My Brews tab"
           >
             <Text
               className={`text-sm font-medium ${tab === 'mine' ? 'text-latte-950 dark:text-latte-100' : 'text-latte-600 dark:text-latte-500'}`}
             >
-              My Recipes
+              My Brews
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
