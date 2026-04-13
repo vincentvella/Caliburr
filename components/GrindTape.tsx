@@ -1,3 +1,4 @@
+import { textInputStyle } from '@/lib/styles';
 import { View, Text, ScrollView, TextInput, useWindowDimensions } from 'react-native';
 import { useRef, useEffect, useState, useCallback, useMemo } from 'react';
 import type { AdjustmentType } from '@/lib/types';
@@ -363,7 +364,7 @@ export function GrindTape(props: GrindTapeProps) {
         <View className="flex-1">
           <TextInput
             className="bg-latte-50 dark:bg-ristretto-900 border border-latte-200 dark:border-ristretto-700 rounded-xl px-3 py-2.5 text-latte-800 dark:text-latte-200 text-sm text-center"
-            style={{ lineHeight: undefined }}
+            style={textInputStyle}
             placeholder="or type directly"
             placeholderTextColor="#4a3728"
             keyboardType="decimal-pad"

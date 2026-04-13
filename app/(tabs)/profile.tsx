@@ -313,7 +313,7 @@ export default function ProfileScreen() {
   return (
     <MaxWidth>
       <View className="flex-1 bg-latte-50 dark:bg-ristretto-900">
-        <ScrollView className="flex-1 px-6 pt-16">
+        <ScrollView className="flex-1 px-6 pt-16" contentContainerClassName="pb-32">
           {/* Header */}
           <Text className="text-latte-950 dark:text-latte-100 text-2xl mb-0.5 font-display-bold">
             My Gear
@@ -325,25 +325,25 @@ export default function ProfileScreen() {
           {!backerLoading && !isBacker && (
             <TouchableOpacity
               onPress={() => router.push('/backer')}
-              className="flex-row items-center gap-3 bg-crema-900/20 border border-crema-700 rounded-2xl px-4 py-3 mb-8"
+              className="flex-row items-center gap-3 bg-crema-50 dark:bg-crema-900/20 border border-crema-400 dark:border-crema-700 rounded-2xl px-4 py-3 mb-8"
             >
               <Text style={{ fontSize: 22 }}>☕</Text>
               <View className="flex-1">
-                <Text className="text-crema-300 font-semibold text-sm">Support Caliburr</Text>
-                <Text className="text-crema-500 text-xs mt-0.5">
+                <Text className="text-crema-800 dark:text-crema-300 font-semibold text-sm">Support Caliburr</Text>
+                <Text className="text-crema-700 dark:text-crema-500 text-xs mt-0.5">
                   Get a backer badge on your brews
                 </Text>
               </View>
-              <Text className="text-crema-500 text-lg">›</Text>
+              <Text className="text-crema-600 dark:text-crema-500 text-lg">›</Text>
             </TouchableOpacity>
           )}
 
           {!backerLoading && isBacker && (
-            <View className="flex-row items-center gap-3 bg-crema-900/20 border border-crema-700 rounded-2xl px-4 py-3 mb-8">
+            <View className="flex-row items-center gap-3 bg-crema-50 dark:bg-crema-900/20 border border-crema-400 dark:border-crema-700 rounded-2xl px-4 py-3 mb-8">
               <Text style={{ fontSize: 22 }}>☕</Text>
               <View className="flex-1">
-                <Text className="text-crema-300 font-semibold text-sm">Caliburr Backer</Text>
-                <Text className="text-crema-500 text-xs mt-0.5">Thank you for your support</Text>
+                <Text className="text-crema-800 dark:text-crema-300 font-semibold text-sm">Caliburr Backer</Text>
+                <Text className="text-crema-700 dark:text-crema-500 text-xs mt-0.5">Thank you for your support</Text>
               </View>
             </View>
           )}

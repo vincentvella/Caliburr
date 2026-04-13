@@ -1,3 +1,4 @@
+import { textInputStyle } from '@/lib/styles';
 import {
   View,
   Text,
@@ -482,7 +483,7 @@ export default function EditRecipeScreen() {
                   </View>
                   <TextInput
                     className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-950 dark:text-latte-100 text-base"
-                    style={{ lineHeight: undefined }}
+                    style={textInputStyle}
                     placeholder="16"
                     placeholderTextColor="#6e5a47"
                     keyboardType="decimal-pad"
@@ -578,7 +579,7 @@ export default function EditRecipeScreen() {
               <SectionLabel label="Notes" />
               <TextInput
                 className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-950 dark:text-latte-100 text-base"
-                style={{ lineHeight: undefined }}
+                style={textInputStyle}
                 placeholder="Tasting notes, tips, adjustments..."
                 placeholderTextColor="#6e5a47"
                 multiline

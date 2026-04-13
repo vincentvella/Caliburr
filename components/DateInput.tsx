@@ -1,3 +1,4 @@
+import { textInputStyle } from '@/lib/styles';
 import { View, Text, TextInput, TouchableOpacity, Modal, Platform } from 'react-native';
 import { useState } from 'react';
 import DateTimePicker, { type DateTimePickerEvent } from '@react-native-community/datetimepicker';
@@ -49,7 +50,7 @@ export function DateInput({ value, onChange, label }: Props) {
         <Text className="text-latte-700 dark:text-latte-400 text-xs px-1">{label}</Text>
         <TextInput
           className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-950 dark:text-latte-100 text-base"
-          style={{ lineHeight: undefined }}
+          style={textInputStyle}
           placeholder="YYYY-MM-DD"
           placeholderTextColor="#6e5a47"
           keyboardType="number-pad"

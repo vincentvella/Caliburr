@@ -1,3 +1,4 @@
+import { textInputStyle } from '@/lib/styles';
 import {
   View,
   Text,
@@ -148,7 +149,7 @@ export default function AdminBackersScreen() {
             autoCapitalize="none"
             keyboardType="email-address"
             className="bg-oat-200 dark:bg-ristretto-700 border border-latte-200 dark:border-ristretto-600 rounded-xl px-4 py-3 text-latte-950 dark:text-latte-100 text-sm mb-3"
-            style={{ lineHeight: undefined }}
+            style={textInputStyle}
           />
           <View className="flex-row gap-2 mb-3">
             {(['annual', 'monthly'] as BackerTier[]).map((t) => (

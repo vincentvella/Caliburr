@@ -1,3 +1,4 @@
+import { textInputStyle } from '@/lib/styles';
 import { View, Text, TextInput, TouchableOpacity } from 'react-native';
 import { useState, useEffect, useRef } from 'react';
 import { haptics } from '@/lib/haptics';
@@ -133,7 +134,7 @@ export function BrewTimer({ value, onChange }: { value: string; onChange: (v: st
         </Text>
         <TextInput
           className="flex-1 bg-latte-50 dark:bg-ristretto-900 border border-latte-200 dark:border-ristretto-800 rounded-lg px-3 py-2 text-latte-700 dark:text-latte-300 text-sm"
-          style={{ lineHeight: undefined }}
+          style={textInputStyle}
           placeholder="e.g. 28"
           placeholderTextColor="#4a3728"
           keyboardType="number-pad"

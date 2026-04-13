@@ -48,7 +48,7 @@ Coffee-themed Tailwind color palette. Use these instead of generic grays/blacks:
 
 Default to dark mode using `ristretto` backgrounds with `latte` text.
 
-Always add `style={{ lineHeight: undefined }}` to `TextInput` to prevent iOS text clipping.
+Always use `style={textInputStyle}` (from `@/lib/styles`) on `TextInput` — this applies `lineHeight: undefined` on iOS only to prevent text clipping, and is a no-op on Android where `lineHeight: undefined` collapses the field.
 
 ## Data Model
 

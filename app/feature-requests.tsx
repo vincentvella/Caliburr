@@ -1,3 +1,4 @@
+import { textInputStyle } from '@/lib/styles';
 import {
   View,
   Text,
@@ -307,7 +308,7 @@ export default function FeatureRequestsScreen() {
             </Text>
             <TextInput
               className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-950 dark:text-latte-100 text-base mb-4"
-              style={{ lineHeight: undefined }}
+              style={textInputStyle}
               placeholder="What would you like to see?"
               placeholderTextColor="#6e5a47"
               value={title}
@@ -322,7 +323,7 @@ export default function FeatureRequestsScreen() {
             </Text>
             <TextInput
               className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-950 dark:text-latte-100 text-base mb-6"
-              style={{ lineHeight: undefined }}
+              style={textInputStyle}
               placeholder="Any extra context..."
               placeholderTextColor="#6e5a47"
               multiline

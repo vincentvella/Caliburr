@@ -141,7 +141,7 @@ export default function AccountScreen() {
         </Text>
         <TouchableOpacity
           onPress={() => router.push('/backer')}
-          className="flex-row items-center justify-between bg-oat-100 dark:bg-ristretto-800 border border-crema-600 dark:border-crema-700 rounded-2xl px-4 py-3.5 mb-6"
+          className="flex-row items-center justify-between bg-crema-50 dark:bg-ristretto-800 border border-crema-400 dark:border-crema-700 rounded-2xl px-4 py-3.5 mb-6"
         >
           <View className="flex-row items-center gap-2">
             <Text style={{ fontSize: 18 }}>☕</Text>

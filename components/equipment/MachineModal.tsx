@@ -1,3 +1,4 @@
+import { textInputStyle } from '@/lib/styles';
 import {
   View,
   Text,
@@ -183,7 +184,7 @@ export function MachineModal({ visible, onClose, onAdded, existingIds }: Props) 
           <View className="flex-1 px-6 pt-4">
             <TextInput
               className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-950 dark:text-latte-100 text-base mb-4"
-              style={{ lineHeight: undefined }}
+              style={textInputStyle}
               placeholder="Search brand or model..."
               placeholderTextColor="#6e5a47"
               value={query}
@@ -509,7 +510,7 @@ function MachineForm({
             <Text className="text-latte-700 dark:text-latte-400 text-xs px-1 mb-1">Brand</Text>
             <TextInput
               className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-950 dark:text-latte-100 text-base"
-              style={{ lineHeight: undefined }}
+              style={textInputStyle}
               placeholder="e.g. La Marzocco"
               placeholderTextColor="#6e5a47"
               value={field.state.value}
@@ -541,7 +542,7 @@ function MachineForm({
             <Text className="text-latte-700 dark:text-latte-400 text-xs px-1 mb-1">Model</Text>
             <TextInput
               className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-950 dark:text-latte-100 text-base"
-              style={{ lineHeight: undefined }}
+              style={textInputStyle}
               placeholder="e.g. Linea Mini"
               placeholderTextColor="#6e5a47"
               value={field.state.value}

@@ -1,3 +1,4 @@
+import { textInputStyle } from '@/lib/styles';
 import {
   View,
   Text,
@@ -182,7 +183,7 @@ export function GrinderModal({ visible, onClose, onAdded, existingIds, editGrind
           <View className="flex-1 px-6 pt-4">
             <TextInput
               className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-950 dark:text-latte-100 text-base mb-4"
-              style={{ lineHeight: undefined }}
+              style={textInputStyle}
               placeholder="Search brand or model..."
               placeholderTextColor="#6e5a47"
               value={query}
@@ -597,7 +598,7 @@ function GrinderForm({
             <Text className="text-latte-700 dark:text-latte-400 text-xs px-1 mb-1">Brand</Text>
             <TextInput
               className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-950 dark:text-latte-100 text-base"
-              style={{ lineHeight: undefined }}
+              style={textInputStyle}
               placeholder="e.g. Niche"
               placeholderTextColor="#6e5a47"
               value={field.state.value}
@@ -628,7 +629,7 @@ function GrinderForm({
             <Text className="text-latte-700 dark:text-latte-400 text-xs px-1 mb-1">Model</Text>
             <TextInput
               className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-950 dark:text-latte-100 text-base"
-              style={{ lineHeight: undefined }}
+              style={textInputStyle}
               placeholder="e.g. Zero"
               placeholderTextColor="#6e5a47"
               value={field.state.value}
@@ -718,7 +719,7 @@ function GrinderForm({
                       </Text>
                       <TextInput
                         className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-950 dark:text-latte-100 text-base"
-                        style={{ lineHeight: undefined }}
+                        style={textInputStyle}
                         placeholder="10"
                         placeholderTextColor="#6e5a47"
                         keyboardType="number-pad"
@@ -739,7 +740,7 @@ function GrinderForm({
                         <Text className="text-latte-500 dark:text-latte-600 text-xs px-1">Min</Text>
                         <TextInput
                           className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-950 dark:text-latte-100 text-base"
-                          style={{ lineHeight: undefined }}
+                          style={textInputStyle}
                           placeholder="0"
                           placeholderTextColor="#6e5a47"
                           keyboardType="decimal-pad"
@@ -755,7 +756,7 @@ function GrinderForm({
                         <Text className="text-latte-500 dark:text-latte-600 text-xs px-1">Max</Text>
                         <TextInput
                           className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-950 dark:text-latte-100 text-base"
-                          style={{ lineHeight: undefined }}
+                          style={textInputStyle}
                           placeholder={
                             adjType === 'stepped' ? '40' : adjType === 'micro_stepped' ? '10' : '10'
                           }

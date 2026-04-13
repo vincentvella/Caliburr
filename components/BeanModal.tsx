@@ -1,3 +1,4 @@
+import { textInputStyle } from '@/lib/styles';
 import {
   View,
   Text,
@@ -126,7 +127,7 @@ export function BeanModal({ visible, onClose, onSelected, selectedId }: Props) {
           <View className="flex-1 px-6 pt-4">
             <TextInput
               className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-950 dark:text-latte-100 text-base mb-4"
-              style={{ lineHeight: undefined }}
+              style={textInputStyle}
               placeholder="Search bean or roaster..."
               placeholderTextColor="#6e5a47"
               value={query}
@@ -328,7 +329,7 @@ function BeanForm({
         <TextInput
           ref={noteInputRef}
           className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-950 dark:text-latte-100 text-base"
-          style={{ lineHeight: undefined }}
+          style={textInputStyle}
           placeholder="e.g. chocolate, citrus, floral"
           placeholderTextColor="#6e5a47"
           value={noteInput}
@@ -428,7 +429,7 @@ function FormField({
       </Text>
       <TextInput
         className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-950 dark:text-latte-100 text-base"
-        style={{ lineHeight: undefined }}
+        style={textInputStyle}
         placeholder={placeholder}
         placeholderTextColor="#6e5a47"
         value={field.state.value}
