@@ -2,7 +2,7 @@
 
 ## 🔴 Blockers — must fix before shipping
 
-- [ ] **Privacy policy** — Apple requires a privacy policy URL in App Store Connect and a link accessible within the app. No screen or link exists.
+- [x] **Privacy policy** — `app/privacy.tsx` screen exists; registered in `_layout.tsx` and exempt from auth gating; linked from sign-up and account settings; `PRIVACY_URL` referenced in terms screen.
 - [x] **Onboarding** — 3-step flow (Welcome → Add grinder → Done); triggered on first sign-in via `onboarding_completed` user metadata; existing users with gear are fast-pathed through; `_layout.tsx` routes new users to `/onboarding` instead of `/(tabs)`.
 - [x] **Liked recipes & clone** — users have no way to browse recipes they've upvoted, and no way to clone a recipe as a starting point for their own.
 
