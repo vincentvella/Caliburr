@@ -47,7 +47,9 @@ export function GrindTape({
   const { min, max, step, format } = getRangeConfig(adjustmentType, n, rMin, rMax);
 
   const numeric = parseFloat(value);
-  const sliderValue = isNaN(numeric) ? min + (max - min) * 0.25 : Math.min(max, Math.max(min, numeric));
+  const sliderValue = isNaN(numeric)
+    ? min + (max - min) * 0.25
+    : Math.min(max, Math.max(min, numeric));
   const displayValue = isNaN(numeric) ? format(sliderValue) : value;
 
   return (
@@ -80,10 +82,7 @@ export function GrindTape({
       {/* Value display + manual override */}
       <View className="flex-row items-center gap-3">
         <View className="flex-1 items-center">
-          <Text
-            className="text-harvest-400 font-bold"
-            style={{ fontSize: 28, letterSpacing: 0.5 }}
-          >
+          <Text className="text-harvest-400 font-bold" style={{ fontSize: 28, letterSpacing: 0.5 }}>
             {displayValue}
           </Text>
         </View>

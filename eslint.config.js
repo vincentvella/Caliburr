@@ -94,7 +94,7 @@ module.exports = defineConfig([
   eslintPluginPrettierRecommended,
   reactCompiler.configs.recommended,
   {
-    ignores: ['dist/*'],
+    ignores: ['dist/**', '.expo/**', 'web-build/**'],
   },
   {
     plugins: {

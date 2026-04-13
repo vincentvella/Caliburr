@@ -51,7 +51,12 @@ Deno.serve(async (req) => {
       const tier = tierFromProductId(event.product_id);
       if (!tier) break;
       await adminClient.from('profiles').upsert(
-        { user_id: userId, backer_tier: tier, backer_since: new Date().toISOString(), updated_at: new Date().toISOString() },
+        {
+          user_id: userId,
+          backer_tier: tier,
+          backer_since: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        },
         { onConflict: 'user_id' },
       );
       break;
@@ -75,10 +80,12 @@ Deno.serve(async (req) => {
         .eq('user_id', userId)
         .single();
       if (existing) {
-        await adminClient.from('profiles').upsert(
-          { ...existing, user_id: newUserId, updated_at: new Date().toISOString() },
-          { onConflict: 'user_id' },
-        );
+        await adminClient
+          .from('profiles')
+          .upsert(
+            { ...existing, user_id: newUserId, updated_at: new Date().toISOString() },
+            { onConflict: 'user_id' },
+          );
         await adminClient.from('profiles').delete().eq('user_id', userId);
       }
       break;

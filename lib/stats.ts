@@ -5,9 +5,7 @@ function sorted(values: number[]): number[] {
 
 function median(sorted: number[]): number {
   const mid = Math.floor(sorted.length / 2);
-  return sorted.length % 2 === 0
-    ? (sorted[mid - 1] + sorted[mid]) / 2
-    : sorted[mid];
+  return sorted.length % 2 === 0 ? (sorted[mid - 1] + sorted[mid]) / 2 : sorted[mid];
 }
 
 function quartiles(values: number[]): { q1: number; q3: number } {
@@ -40,9 +38,7 @@ export interface GrindStats {
  * numeric grind settings. Returns null if fewer than 2 parseable values.
  */
 export function computeGrindStats(rawSettings: string[]): GrindStats | null {
-  const values = rawSettings
-    .map((s) => parseFloat(s))
-    .filter((n) => !isNaN(n));
+  const values = rawSettings.map((s) => parseFloat(s)).filter((n) => !isNaN(n));
 
   if (values.length < 2) return null;
 

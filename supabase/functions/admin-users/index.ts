@@ -23,9 +23,10 @@ Deno.serve(async (req) => {
     Deno.env.get('SUPABASE_ANON_KEY')!,
   );
 
-  const { data: { user }, error: userError } = await anonClient.auth.getUser(
-    authHeader.replace('Bearer ', ''),
-  );
+  const {
+    data: { user },
+    error: userError,
+  } = await anonClient.auth.getUser(authHeader.replace('Bearer ', ''));
 
   if (userError || !user || user.user_metadata?.is_admin !== true) {
     return new Response(JSON.stringify({ error: 'Forbidden' }), {
@@ -40,13 +41,16 @@ Deno.serve(async (req) => {
     { auth: { autoRefreshToken: false, persistSession: false } },
   );
 
-  const body = await req.json() as
+  const body = (await req.json()) as
     | { action: 'search'; email: string }
     | { action: 'ban'; userId: string }
     | { action: 'unban'; userId: string };
 
   if (body.action === 'search') {
-    const { data: { users }, error } = await adminClient.auth.admin.listUsers({ perPage: 1000 });
+    const {
+      data: { users },
+      error,
+    } = await adminClient.auth.admin.listUsers({ perPage: 1000 });
     if (error) {
       return new Response(JSON.stringify({ error: 'Failed to list users' }), {
         status: 500,

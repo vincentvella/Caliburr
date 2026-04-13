@@ -29,7 +29,9 @@ export function BackerProvider({ children }: { children: ReactNode }) {
   }, []);
 
   // Check once on mount — RevenueCat is already configured + logged in by this point
-  useEffect(() => { refresh(); }, [refresh]);
+  useEffect(() => {
+    refresh();
+  }, [refresh]);
 
   return (
     <BackerContext.Provider value={{ isBacker, loading, refresh }}>

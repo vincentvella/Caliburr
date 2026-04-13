@@ -317,200 +317,196 @@ export default function ExploreScreen() {
 
   return (
     <View className="flex-1 bg-latte-50 dark:bg-ristretto-900">
-        {/* Header */}
-        <View className={`px-4 pb-3 gap-3 ${isWeb ? 'pt-4' : 'pt-16'}`}>
-          {!isWeb && (
-            <View>
-              <Text className="text-harvest-600 dark:text-crema-300 text-3xl leading-tight font-display-bold">
-                Caliburr
-              </Text>
-              <Text className="text-latte-600 dark:text-latte-500 text-sm">
-                Dial in your perfect cup.
-              </Text>
-            </View>
-          )}
-
-          {/* Search */}
-          <TextInput
-            className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-xl px-4 py-3 text-latte-950 dark:text-latte-100 text-sm"
-            style={textInputStyle}
-            placeholder="Search grinder, bean, method..."
-            placeholderTextColor="#6e5a47"
-            value={search}
-            onChangeText={handleSearchChange}
-            clearButtonMode="while-editing"
-          />
-
-          {/* Sort mode + My Gear */}
-          <View className="flex-row gap-2 flex-wrap">
-            {(['top', 'trending', 'new'] as const).map((mode) => (
-              <TouchableOpacity
-                key={mode}
-                onPress={() => setSortMode(mode)}
-                className={`px-3 py-1.5 rounded-full border ${
-                  sortMode === mode
-                    ? 'bg-harvest-500 border-harvest-500'
-                    : 'border-latte-200 dark:border-ristretto-700'
-                }`}
-              >
-                <Text
-                  className={`text-xs font-medium capitalize ${sortMode === mode ? 'text-white' : 'text-latte-700 dark:text-latte-400'}`}
-                >
-                  {mode === 'trending' ? '🔥 Trending' : mode === 'top' ? '▲ Top' : '✦ New'}
-                </Text>
-              </TouchableOpacity>
-            ))}
-            <TouchableOpacity
-              onPress={() => setMyGearOnly((v) => !v)}
-              accessibilityLabel={myGearOnly ? 'My Gear filter on' : 'My Gear filter off'}
-              accessibilityRole="button"
-              className={`px-3 py-1.5 rounded-full border ${
-                myGearOnly
-                  ? 'bg-harvest-500 border-harvest-500'
-                  : 'border-latte-200 dark:border-ristretto-700'
-              }`}
-            >
-              <Text
-                className={`text-xs font-medium ${myGearOnly ? 'text-white' : 'text-latte-700 dark:text-latte-400'}`}
-              >
-                ⚙ My Gear
-              </Text>
-            </TouchableOpacity>
+      {/* Header */}
+      <View className={`px-4 pb-3 gap-3 ${isWeb ? 'pt-4' : 'pt-16'}`}>
+        {!isWeb && (
+          <View>
+            <Text className="text-harvest-600 dark:text-crema-300 text-3xl leading-tight font-display-bold">
+              Caliburr
+            </Text>
+            <Text className="text-latte-600 dark:text-latte-500 text-sm">
+              Dial in your perfect cup.
+            </Text>
           </View>
+        )}
 
-          {/* Method filter chips */}
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{ gap: 8 }}
-          >
+        {/* Search */}
+        <TextInput
+          className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-xl px-4 py-3 text-latte-950 dark:text-latte-100 text-sm"
+          style={textInputStyle}
+          placeholder="Search grinder, bean, method..."
+          placeholderTextColor="#6e5a47"
+          value={search}
+          onChangeText={handleSearchChange}
+          clearButtonMode="while-editing"
+        />
+
+        {/* Sort mode + My Gear */}
+        <View className="flex-row gap-2 flex-wrap">
+          {(['top', 'trending', 'new'] as const).map((mode) => (
             <TouchableOpacity
-              onPress={() => setMethodFilter(null)}
-              accessibilityLabel={methodFilter === null ? 'All methods, selected' : 'All methods'}
-              accessibilityRole="button"
+              key={mode}
+              onPress={() => setSortMode(mode)}
               className={`px-3 py-1.5 rounded-full border ${
-                methodFilter === null
+                sortMode === mode
                   ? 'bg-harvest-500 border-harvest-500'
                   : 'border-latte-200 dark:border-ristretto-700'
               }`}
             >
               <Text
-                className={`text-xs font-medium ${methodFilter === null ? 'text-white' : 'text-latte-700 dark:text-latte-400'}`}
+                className={`text-xs font-medium capitalize ${sortMode === mode ? 'text-white' : 'text-latte-700 dark:text-latte-400'}`}
               >
-                All
+                {mode === 'trending' ? '🔥 Trending' : mode === 'top' ? '▲ Top' : '✦ New'}
               </Text>
             </TouchableOpacity>
-            {BREW_METHODS.map((method) => (
-              <TouchableOpacity
-                key={method}
-                onPress={() => setMethodFilter(methodFilter === method ? null : method)}
-                accessibilityLabel={
-                  methodFilter === method
-                    ? `${BREW_METHOD_LABELS[method]}, selected`
-                    : BREW_METHOD_LABELS[method]
-                }
-                accessibilityRole="button"
-                className={`px-3 py-1.5 rounded-full border ${
-                  methodFilter === method
-                    ? 'bg-harvest-500 border-harvest-500'
-                    : 'border-latte-200 dark:border-ristretto-700'
-                }`}
-              >
-                <Text
-                  className={`text-xs font-medium ${methodFilter === method ? 'text-white' : 'text-latte-700 dark:text-latte-400'}`}
-                >
-                  {BREW_METHOD_LABELS[method]}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
+          ))}
+          <TouchableOpacity
+            onPress={() => setMyGearOnly((v) => !v)}
+            accessibilityLabel={myGearOnly ? 'My Gear filter on' : 'My Gear filter off'}
+            accessibilityRole="button"
+            className={`px-3 py-1.5 rounded-full border ${
+              myGearOnly
+                ? 'bg-harvest-500 border-harvest-500'
+                : 'border-latte-200 dark:border-ristretto-700'
+            }`}
+          >
+            <Text
+              className={`text-xs font-medium ${myGearOnly ? 'text-white' : 'text-latte-700 dark:text-latte-400'}`}
+            >
+              ⚙ My Gear
+            </Text>
+          </TouchableOpacity>
         </View>
 
-        {/* Recipe list */}
-        {loading ? (
-          <View className="flex-1 items-center justify-center">
-            <ActivityIndicator color="#ff9d37" />
-          </View>
-        ) : error ? (
-          <View className="flex-1 items-center justify-center px-8">
-            <Text className="text-latte-600 dark:text-latte-500 text-sm text-center">{error}</Text>
-          </View>
-        ) : (
-          <LegendList
-            data={recipes}
-            keyExtractor={(r) => r.id}
-            numColumns={numColumns}
-            key={numColumns}
-            contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 96 }}
-            refreshControl={
-              <RefreshControl
-                refreshing={refreshing}
-                onRefresh={handleRefresh}
-                tintColor="#ff9d37"
-              />
-            }
-            onEndReached={fetchMore}
-            onEndReachedThreshold={0.3}
-            ListHeaderComponent={
-              recipes.length > 0 ? (
-                <Text className="text-latte-500 dark:text-latte-600 text-xs mb-3 mt-2">
-                  {recipes.length} recipe{recipes.length !== 1 ? 's' : ''}
-                </Text>
-              ) : null
-            }
-            ListFooterComponent={
-              loadingMore ? (
-                <View className="py-4 items-center">
-                  <ActivityIndicator color="#ff9d37" />
-                </View>
-              ) : null
-            }
-            ListEmptyComponent={
-              <View className="items-center py-16">
-                <Text className="text-latte-600 dark:text-latte-500 text-sm text-center">
-                  {myGearOnly && myGrinderId.length === 0
-                    ? 'Add grinders in your profile to filter by gear.'
-                    : 'No brews found. Be the first to submit one.'}
-                </Text>
-              </View>
-            }
-            renderItem={({ item }) => (
-              <TouchableOpacity
-                testID="recipe-item"
-                activeOpacity={0.85}
-                onPress={() => router.push(`/recipe/${item.id}`)}
-                style={numColumns > 1 ? { flex: 1, marginHorizontal: 4 } : undefined}
-              >
-                <RecipeCard
-                  recipe={item}
-                  upvoted={upvotedIds.has(item.id)}
-                  onUpvote={() => toggleUpvote(item.id)}
-                  isAuthorBacker={backerIds.has(item.user_id)}
-                />
-              </TouchableOpacity>
-            )}
-          />
-        )}
-
-        {/* FAB — native only; web uses the nav bar button */}
-        {!isWeb && (
+        {/* Method filter chips */}
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ gap: 8 }}
+        >
           <TouchableOpacity
-            onPress={() => router.push('/recipe/new')}
-            accessibilityLabel="New brew"
+            onPress={() => setMethodFilter(null)}
+            accessibilityLabel={methodFilter === null ? 'All methods, selected' : 'All methods'}
             accessibilityRole="button"
-            testID="fab-new-recipe"
-            className="absolute bottom-8 right-6 w-14 h-14 rounded-full bg-harvest-500 items-center justify-center"
-            style={{
-              elevation: 6,
-              shadowColor: '#000',
-              shadowOpacity: 0.3,
-              shadowRadius: 8,
-              shadowOffset: { width: 0, height: 3 },
-            }}
+            className={`px-3 py-1.5 rounded-full border ${
+              methodFilter === null
+                ? 'bg-harvest-500 border-harvest-500'
+                : 'border-latte-200 dark:border-ristretto-700'
+            }`}
           >
-            <Text className="text-white text-3xl font-light">+</Text>
+            <Text
+              className={`text-xs font-medium ${methodFilter === null ? 'text-white' : 'text-latte-700 dark:text-latte-400'}`}
+            >
+              All
+            </Text>
           </TouchableOpacity>
-        )}
+          {BREW_METHODS.map((method) => (
+            <TouchableOpacity
+              key={method}
+              onPress={() => setMethodFilter(methodFilter === method ? null : method)}
+              accessibilityLabel={
+                methodFilter === method
+                  ? `${BREW_METHOD_LABELS[method]}, selected`
+                  : BREW_METHOD_LABELS[method]
+              }
+              accessibilityRole="button"
+              className={`px-3 py-1.5 rounded-full border ${
+                methodFilter === method
+                  ? 'bg-harvest-500 border-harvest-500'
+                  : 'border-latte-200 dark:border-ristretto-700'
+              }`}
+            >
+              <Text
+                className={`text-xs font-medium ${methodFilter === method ? 'text-white' : 'text-latte-700 dark:text-latte-400'}`}
+              >
+                {BREW_METHOD_LABELS[method]}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
       </View>
+
+      {/* Recipe list */}
+      {loading ? (
+        <View className="flex-1 items-center justify-center">
+          <ActivityIndicator color="#ff9d37" />
+        </View>
+      ) : error ? (
+        <View className="flex-1 items-center justify-center px-8">
+          <Text className="text-latte-600 dark:text-latte-500 text-sm text-center">{error}</Text>
+        </View>
+      ) : (
+        <LegendList
+          data={recipes}
+          keyExtractor={(r) => r.id}
+          numColumns={numColumns}
+          key={numColumns}
+          contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 96 }}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor="#ff9d37" />
+          }
+          onEndReached={fetchMore}
+          onEndReachedThreshold={0.3}
+          ListHeaderComponent={
+            recipes.length > 0 ? (
+              <Text className="text-latte-500 dark:text-latte-600 text-xs mb-3 mt-2">
+                {recipes.length} recipe{recipes.length !== 1 ? 's' : ''}
+              </Text>
+            ) : null
+          }
+          ListFooterComponent={
+            loadingMore ? (
+              <View className="py-4 items-center">
+                <ActivityIndicator color="#ff9d37" />
+              </View>
+            ) : null
+          }
+          ListEmptyComponent={
+            <View className="items-center py-16">
+              <Text className="text-latte-600 dark:text-latte-500 text-sm text-center">
+                {myGearOnly && myGrinderId.length === 0
+                  ? 'Add grinders in your profile to filter by gear.'
+                  : 'No brews found. Be the first to submit one.'}
+              </Text>
+            </View>
+          }
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              testID="recipe-item"
+              activeOpacity={0.85}
+              onPress={() => router.push(`/recipe/${item.id}`)}
+              style={numColumns > 1 ? { flex: 1, marginHorizontal: 4 } : undefined}
+            >
+              <RecipeCard
+                recipe={item}
+                upvoted={upvotedIds.has(item.id)}
+                onUpvote={() => toggleUpvote(item.id)}
+                isAuthorBacker={backerIds.has(item.user_id)}
+              />
+            </TouchableOpacity>
+          )}
+        />
+      )}
+
+      {/* FAB — native only; web uses the nav bar button */}
+      {!isWeb && (
+        <TouchableOpacity
+          onPress={() => router.push('/recipe/new')}
+          accessibilityLabel="New brew"
+          accessibilityRole="button"
+          testID="fab-new-recipe"
+          className="absolute bottom-8 right-6 w-14 h-14 rounded-full bg-harvest-500 items-center justify-center"
+          style={{
+            elevation: 6,
+            shadowColor: '#000',
+            shadowOpacity: 0.3,
+            shadowRadius: 8,
+            shadowOffset: { width: 0, height: 3 },
+          }}
+        >
+          <Text className="text-white text-3xl font-light">+</Text>
+        </TouchableOpacity>
+      )}
+    </View>
   );
 }

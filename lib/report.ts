@@ -13,7 +13,9 @@ const REASONS: { label: string; value: string }[] = [
 ];
 
 async function submitReport(targetType: TargetType, targetId: string, reason: string) {
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) return;
 
   const { error } = await db.from('reports').insert({
@@ -32,15 +34,13 @@ async function submitReport(targetType: TargetType, targetId: string, reason: st
 }
 
 export function promptReport(targetType: TargetType, targetId: string) {
-  Alert.alert(
-    'Report',
-    'Why are you reporting this?',
-    [
-      ...REASONS.map(({ label, value }) => ({
-        text: label,
-        onPress: () => { submitReport(targetType, targetId, value); },
-      })),
-      { text: 'Cancel', style: 'cancel' as const },
-    ],
-  );
+  Alert.alert('Report', 'Why are you reporting this?', [
+    ...REASONS.map(({ label, value }) => ({
+      text: label,
+      onPress: () => {
+        submitReport(targetType, targetId, value);
+      },
+    })),
+    { text: 'Cancel', style: 'cancel' as const },
+  ]);
 }

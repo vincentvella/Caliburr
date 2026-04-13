@@ -1,4 +1,7 @@
 node_modules
-uniwind-types.d.ts
+.expo
+dist
+web-build
 expo-env.d.ts
+uniwind-types.d.ts
 lib/database.types.ts

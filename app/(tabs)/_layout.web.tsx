@@ -56,7 +56,7 @@ function Sidebar({ onClose, isWide }: { onClose?: () => void; isWide: boolean })
   }
 
   function navigate(href: string) {
-    router.push(href as any);
+    router.push(href as Parameters<typeof router.push>[0]);
     onClose?.();
   }
 
@@ -117,7 +117,9 @@ function Sidebar({ onClose, isWide }: { onClose?: () => void; isWide: boolean })
           accessibilityLabel={`Theme: ${preference}. Tap to cycle.`}
         >
           <Ionicons name={THEME_ICONS[preference]} size={18} color={iconColor} />
-          <Text className="text-latte-600 dark:text-latte-500 text-sm capitalize">{preference}</Text>
+          <Text className="text-latte-600 dark:text-latte-500 text-sm capitalize">
+            {preference}
+          </Text>
         </TouchableOpacity>
 
         <TouchableOpacity

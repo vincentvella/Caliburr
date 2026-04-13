@@ -47,7 +47,9 @@ export async function pickAndUploadImage(folder: string): Promise<string | null>
     { compress: JPEG_QUALITY, format: SaveFormat.JPEG },
   );
 
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) return null;
 
   const fileName = `${user.id}/${folder}/${Date.now()}.jpg`;

@@ -12,7 +12,10 @@ interface WebhookPayload {
   record: Record<string, unknown>;
 }
 
-function buildNotification(table: string, record: Record<string, unknown>): { title: string; body: string } | null {
+function buildNotification(
+  table: string,
+  record: Record<string, unknown>,
+): { title: string; body: string } | null {
   switch (table) {
     case 'reports':
       return {
@@ -58,7 +61,7 @@ Deno.serve(async (req) => {
     }
   }
 
-  const payload = await req.json() as WebhookPayload;
+  const payload = (await req.json()) as WebhookPayload;
 
   if (payload.type !== 'INSERT') {
     return new Response(JSON.stringify({ ok: true, skipped: true }), { status: 200 });
@@ -70,9 +73,7 @@ Deno.serve(async (req) => {
   }
 
   // Fetch all admin push tokens
-  const { data: tokens, error } = await adminClient
-    .from('admin_push_tokens')
-    .select('token');
+  const { data: tokens, error } = await adminClient.from('admin_push_tokens').select('token');
 
   if (error || !tokens?.length) {
     return new Response(JSON.stringify({ ok: true, noTokens: true }), { status: 200 });

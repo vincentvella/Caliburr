@@ -23,9 +23,10 @@ Deno.serve(async (req) => {
     Deno.env.get('SUPABASE_ANON_KEY')!,
   );
 
-  const { data: { user }, error: userError } = await anonClient.auth.getUser(
-    authHeader.replace('Bearer ', ''),
-  );
+  const {
+    data: { user },
+    error: userError,
+  } = await anonClient.auth.getUser(authHeader.replace('Bearer ', ''));
 
   if (userError || !user || user.user_metadata?.is_admin !== true) {
     return new Response(JSON.stringify({ error: 'Forbidden' }), {
@@ -47,7 +48,8 @@ Deno.serve(async (req) => {
   );
 
   const table = equipmentType === 'grinder' ? 'grinders' : 'brew_machines';
-  const verificationsTable = equipmentType === 'grinder' ? 'grinder_verifications' : 'machine_verifications';
+  const verificationsTable =
+    equipmentType === 'grinder' ? 'grinder_verifications' : 'machine_verifications';
   const fkColumn = equipmentType === 'grinder' ? 'grinder_id' : 'brew_machine_id';
 
   if (action === 'verify') {

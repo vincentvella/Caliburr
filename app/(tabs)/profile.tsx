@@ -7,6 +7,7 @@ import {
   ActivityIndicator,
   Alert,
   useWindowDimensions,
+  Platform,
 } from 'react-native';
 import { useUniwind } from 'uniwind';
 import { useState, useEffect } from 'react';
@@ -20,7 +21,6 @@ import { MachineModal } from '@/components/equipment/MachineModal';
 import type { Grinder, BrewMachine } from '@/lib/types';
 import { MACHINE_TYPE_LABELS } from '@/lib/types';
 import { useBetaAccess } from '@/hooks/useBetaAccess';
-import { Platform } from 'react-native';
 
 interface UserGrinder {
   grinder_id: string;
@@ -316,48 +316,57 @@ export default function ProfileScreen() {
 
   return (
     <View className="flex-1 bg-latte-50 dark:bg-ristretto-900">
-        <ScrollView className={`flex-1 px-6 ${Platform.OS === 'web' ? 'pt-4' : 'pt-16'}`} contentContainerClassName="pb-32">
-          {/* Header */}
-          <Text className="text-latte-950 dark:text-latte-100 text-2xl mb-0.5 font-display-bold">
-            My Gear
-          </Text>
-          {email && !screenshotMode && (
-            <Text className="text-latte-600 dark:text-latte-500 text-sm mb-4">{email}</Text>
-          )}
+      <ScrollView
+        className={`flex-1 px-6 ${Platform.OS === 'web' ? 'pt-4' : 'pt-16'}`}
+        contentContainerClassName="pb-32"
+      >
+        {/* Header */}
+        <Text className="text-latte-950 dark:text-latte-100 text-2xl mb-0.5 font-display-bold">
+          My Gear
+        </Text>
+        {email && !screenshotMode && (
+          <Text className="text-latte-600 dark:text-latte-500 text-sm mb-4">{email}</Text>
+        )}
 
-          {!backerLoading && !isBacker && (
-            <TouchableOpacity
-              onPress={() => router.push('/backer')}
-              className="flex-row items-center gap-3 bg-crema-50 dark:bg-crema-900/20 border border-crema-400 dark:border-crema-700 rounded-2xl px-4 py-3 mb-8"
-            >
-              <Text style={{ fontSize: 22 }}>☕</Text>
-              <View className="flex-1">
-                <Text className="text-crema-800 dark:text-crema-300 font-semibold text-sm">Support Caliburr</Text>
-                <Text className="text-crema-700 dark:text-crema-500 text-xs mt-0.5">
-                  Get a backer badge on your brews
-                </Text>
-              </View>
-              <Text className="text-crema-600 dark:text-crema-500 text-lg">›</Text>
-            </TouchableOpacity>
-          )}
-
-          {!backerLoading && isBacker && (
-            <View className="flex-row items-center gap-3 bg-crema-50 dark:bg-crema-900/20 border border-crema-400 dark:border-crema-700 rounded-2xl px-4 py-3 mb-8">
-              <Text style={{ fontSize: 22 }}>☕</Text>
-              <View className="flex-1">
-                <Text className="text-crema-800 dark:text-crema-300 font-semibold text-sm">Caliburr Backer</Text>
-                <Text className="text-crema-700 dark:text-crema-500 text-xs mt-0.5">Thank you for your support</Text>
-              </View>
+        {!backerLoading && !isBacker && (
+          <TouchableOpacity
+            onPress={() => router.push('/backer')}
+            className="flex-row items-center gap-3 bg-crema-50 dark:bg-crema-900/20 border border-crema-400 dark:border-crema-700 rounded-2xl px-4 py-3 mb-8"
+          >
+            <Text style={{ fontSize: 22 }}>☕</Text>
+            <View className="flex-1">
+              <Text className="text-crema-800 dark:text-crema-300 font-semibold text-sm">
+                Support Caliburr
+              </Text>
+              <Text className="text-crema-700 dark:text-crema-500 text-xs mt-0.5">
+                Get a backer badge on your brews
+              </Text>
             </View>
-          )}
+            <Text className="text-crema-600 dark:text-crema-500 text-lg">›</Text>
+          </TouchableOpacity>
+        )}
 
-          {loadingEquipment ? (
-            <ActivityIndicator color="#ff9d37" style={{ marginTop: 32 }} />
-          ) : equipmentError ? (
-            <Text className="text-red-400 text-sm text-center mt-8">{equipmentError}</Text>
-          ) : (
-            <>
-              <View className={isWide ? 'flex-row gap-6 mb-8' : ''}>
+        {!backerLoading && isBacker && (
+          <View className="flex-row items-center gap-3 bg-crema-50 dark:bg-crema-900/20 border border-crema-400 dark:border-crema-700 rounded-2xl px-4 py-3 mb-8">
+            <Text style={{ fontSize: 22 }}>☕</Text>
+            <View className="flex-1">
+              <Text className="text-crema-800 dark:text-crema-300 font-semibold text-sm">
+                Caliburr Backer
+              </Text>
+              <Text className="text-crema-700 dark:text-crema-500 text-xs mt-0.5">
+                Thank you for your support
+              </Text>
+            </View>
+          </View>
+        )}
+
+        {loadingEquipment ? (
+          <ActivityIndicator color="#ff9d37" style={{ marginTop: 32 }} />
+        ) : equipmentError ? (
+          <Text className="text-red-400 text-sm text-center mt-8">{equipmentError}</Text>
+        ) : (
+          <>
+            <View className={isWide ? 'flex-row gap-6 mb-8' : ''}>
               {/* Grinders */}
               <View className={isWide ? 'flex-1' : 'mb-8'}>
                 <View className="flex-row items-center justify-between mb-3">
@@ -561,12 +570,14 @@ export default function ProfileScreen() {
                   </>
                 )}
               </View>
-              </View>{/* end isWide row */}
-            </>
-          )}
+            </View>
+            {/* end isWide row */}
+          </>
+        )}
 
-          {/* Appearance — hidden on web, controlled via nav bar */}
-          {Platform.OS !== 'web' && <View className="mb-4">
+        {/* Appearance — hidden on web, controlled via nav bar */}
+        {Platform.OS !== 'web' && (
+          <View className="mb-4">
             <Text className="text-latte-600 dark:text-latte-500 text-xs font-semibold uppercase tracking-wider mb-2 px-1">
               Appearance
             </Text>
@@ -589,36 +600,37 @@ export default function ProfileScreen() {
                 </TouchableOpacity>
               ))}
             </View>
-          </View>}
+          </View>
+        )}
 
-          {/* Account Settings */}
-          <TouchableOpacity
-            onPress={() => router.push('/account')}
-            testID="account-settings-row"
-            className="flex-row items-center justify-between bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-2xl px-4 py-3.5 mb-12"
-          >
-            <Text className="text-latte-950 dark:text-latte-100 font-medium">Account Settings</Text>
-            <Text className="text-latte-600 dark:text-latte-500 text-lg">›</Text>
-          </TouchableOpacity>
-        </ScrollView>
+        {/* Account Settings */}
+        <TouchableOpacity
+          onPress={() => router.push('/account')}
+          testID="account-settings-row"
+          className="flex-row items-center justify-between bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-2xl px-4 py-3.5 mb-12"
+        >
+          <Text className="text-latte-950 dark:text-latte-100 font-medium">Account Settings</Text>
+          <Text className="text-latte-600 dark:text-latte-500 text-lg">›</Text>
+        </TouchableOpacity>
+      </ScrollView>
 
-        <GrinderModal
-          visible={grinderModalOpen}
-          onClose={() => {
-            setGrinderModalOpen(false);
-            setEditingGrinder(null);
-          }}
-          onAdded={fetchEquipment}
-          existingIds={grinders.map((g) => g.grinder_id)}
-          editGrinder={editingGrinder ?? undefined}
-        />
+      <GrinderModal
+        visible={grinderModalOpen}
+        onClose={() => {
+          setGrinderModalOpen(false);
+          setEditingGrinder(null);
+        }}
+        onAdded={fetchEquipment}
+        existingIds={grinders.map((g) => g.grinder_id)}
+        editGrinder={editingGrinder ?? undefined}
+      />
 
-        <MachineModal
-          visible={machineModalOpen}
-          onClose={() => setMachineModalOpen(false)}
-          onAdded={fetchEquipment}
-          existingIds={machines.map((m) => m.brew_machine_id)}
-        />
-      </View>
+      <MachineModal
+        visible={machineModalOpen}
+        onClose={() => setMachineModalOpen(false)}
+        onAdded={fetchEquipment}
+        existingIds={machines.map((m) => m.brew_machine_id)}
+      />
+    </View>
   );
 }
