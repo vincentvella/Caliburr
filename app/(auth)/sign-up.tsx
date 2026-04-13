@@ -52,10 +52,14 @@ export default function SignUpScreen() {
         contentContainerClassName="flex-grow justify-center px-6"
         keyboardShouldPersistTaps="handled"
       >
-        <Text className="text-crema-300 text-4xl mb-1 font-display-bold">Caliburr</Text>
-        <Text className="text-latte-700 dark:text-latte-400 text-base mb-10">
-          Create an account to start dialling in.
-        </Text>
+        {Platform.OS !== 'web' && (
+          <>
+            <Text className="text-crema-300 text-4xl mb-1 font-display-bold">Caliburr</Text>
+            <Text className="text-latte-700 dark:text-latte-400 text-base mb-10">
+              Create an account to start dialling in.
+            </Text>
+          </>
+        )}
 
         <View className="gap-3 mb-4">
           <form.Field

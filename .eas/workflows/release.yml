@@ -6,7 +6,7 @@ on:
       - 'v[0-9]+.[0-9]+.[0-9]+'
 
 jobs:
-  # iOS, Android, and web run in parallel
+  # iOS and Android builds run in parallel
   build_ios:
     name: Build iOS (production)
     type: build
@@ -20,12 +20,6 @@ jobs:
     params:
       platform: android
       profile: production
-
-  deploy_web:
-    name: Deploy web to EAS Hosting
-    type: deploy
-    params:
-      prod: true
 
   # Submissions wait for their respective builds
   submit_ios:
