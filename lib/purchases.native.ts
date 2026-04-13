@@ -1,13 +1,18 @@
 import Purchases, { LOG_LEVEL, PURCHASES_ERROR_CODE } from 'react-native-purchases';
 import type { PurchasesOffering, PurchasesPackage } from 'react-native-purchases';
+import { Platform } from 'react-native';
 
 export { PURCHASES_ERROR_CODE };
 
 export type { PurchasesOffering, PurchasesPackage };
 
 export function configure() {
+  const apiKey =
+    Platform.OS === 'android'
+      ? process.env.EXPO_PUBLIC_REVENUE_CAT_ANDROID_KEY!
+      : process.env.EXPO_PUBLIC_REVENUE_CAT_IOS_KEY!;
   Purchases.setLogLevel(LOG_LEVEL.ERROR);
-  Purchases.configure({ apiKey: process.env.EXPO_PUBLIC_REVENUE_CAT_SDK_KEY! });
+  Purchases.configure({ apiKey });
 }
 
 export async function logIn(userId: string) {

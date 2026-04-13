@@ -5,12 +5,19 @@ on:
     types: [opened, synchronize]
 
 jobs:
-  # iOS simulator build and web preview run in parallel
+  # iOS simulator, Android device build, and web preview run in parallel
   build_ios_simulator:
     name: Build iOS simulator
     type: build
     params:
       platform: ios
+      profile: preview
+
+  build_android_preview:
+    name: Build Android (internal)
+    type: build
+    params:
+      platform: android
       profile: preview
 
   deploy_web_preview:
