@@ -8,6 +8,8 @@ import {
   RefreshControl,
   ActivityIndicator,
   Alert,
+  Platform,
+  useWindowDimensions,
 } from 'react-native';
 
 import { LegendList } from '@legendapp/list';
@@ -19,7 +21,6 @@ import { haptics } from '@/lib/haptics';
 import { type RecipeWithJoins, type BrewMethod, BREW_METHOD_LABELS } from '@/lib/types';
 import { Constants } from '@/lib/database.types';
 import { RecipeCard } from '@/components/RecipeCard';
-import { MaxWidth } from '@/components/MaxWidth';
 
 const BREW_METHODS = [...Constants.public.Enums.brew_method];
 
@@ -216,6 +217,10 @@ function useRecipes(myGrinderId: string[]) {
 // ─── Explore screen ───────────────────────────────────────────────────────────
 
 export default function ExploreScreen() {
+  const { width } = useWindowDimensions();
+  const numColumns = Platform.OS === 'web' && width >= 900 ? 2 : 1;
+  const isWeb = Platform.OS === 'web';
+
   const { currentUserId, myGrinderId, upvotedIds, setUpvotedIds } = useUserContext();
   const backerIds = useBackerIds();
   const {
@@ -311,11 +316,10 @@ export default function ExploreScreen() {
   // ── Render ─────────────────────────────────────────────────────────────────
 
   return (
-    <MaxWidth>
-      <View className="flex-1 bg-latte-50 dark:bg-ristretto-900">
+    <View className="flex-1 bg-latte-50 dark:bg-ristretto-900">
         {/* Header */}
-        <View className="px-4 pt-16 pb-3 gap-3">
-          <View className="flex-row items-end justify-between">
+        <View className={`px-4 pb-3 gap-3 ${isWeb ? 'pt-4' : 'pt-16'}`}>
+          {!isWeb && (
             <View>
               <Text className="text-harvest-600 dark:text-crema-300 text-3xl leading-tight font-display-bold">
                 Caliburr
@@ -324,23 +328,7 @@ export default function ExploreScreen() {
                 Dial in your perfect cup.
               </Text>
             </View>
-            <TouchableOpacity
-              onPress={() => setMyGearOnly((v) => !v)}
-              accessibilityLabel={myGearOnly ? 'My Gear filter on' : 'My Gear filter off'}
-              accessibilityRole="button"
-              className={`px-3 py-2 rounded-xl border ${
-                myGearOnly
-                  ? 'bg-harvest-500 border-harvest-500'
-                  : 'border-latte-200 dark:border-ristretto-700'
-              }`}
-            >
-              <Text
-                className={`text-xs font-semibold ${myGearOnly ? 'text-white' : 'text-latte-700 dark:text-latte-400'}`}
-              >
-                My Gear
-              </Text>
-            </TouchableOpacity>
-          </View>
+          )}
 
           {/* Search */}
           <TextInput
@@ -353,8 +341,8 @@ export default function ExploreScreen() {
             clearButtonMode="while-editing"
           />
 
-          {/* Sort mode */}
-          <View className="flex-row gap-2">
+          {/* Sort mode + My Gear */}
+          <View className="flex-row gap-2 flex-wrap">
             {(['top', 'trending', 'new'] as const).map((mode) => (
               <TouchableOpacity
                 key={mode}
@@ -372,6 +360,22 @@ export default function ExploreScreen() {
                 </Text>
               </TouchableOpacity>
             ))}
+            <TouchableOpacity
+              onPress={() => setMyGearOnly((v) => !v)}
+              accessibilityLabel={myGearOnly ? 'My Gear filter on' : 'My Gear filter off'}
+              accessibilityRole="button"
+              className={`px-3 py-1.5 rounded-full border ${
+                myGearOnly
+                  ? 'bg-harvest-500 border-harvest-500'
+                  : 'border-latte-200 dark:border-ristretto-700'
+              }`}
+            >
+              <Text
+                className={`text-xs font-medium ${myGearOnly ? 'text-white' : 'text-latte-700 dark:text-latte-400'}`}
+              >
+                ⚙ My Gear
+              </Text>
+            </TouchableOpacity>
           </View>
 
           {/* Method filter chips */}
@@ -435,6 +439,8 @@ export default function ExploreScreen() {
           <LegendList
             data={recipes}
             keyExtractor={(r) => r.id}
+            numColumns={numColumns}
+            key={numColumns}
             contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 96 }}
             refreshControl={
               <RefreshControl
@@ -473,6 +479,7 @@ export default function ExploreScreen() {
                 testID="recipe-item"
                 activeOpacity={0.85}
                 onPress={() => router.push(`/recipe/${item.id}`)}
+                style={numColumns > 1 ? { flex: 1, marginHorizontal: 4 } : undefined}
               >
                 <RecipeCard
                   recipe={item}
@@ -485,24 +492,25 @@ export default function ExploreScreen() {
           />
         )}
 
-        {/* FAB */}
-        <TouchableOpacity
-          onPress={() => router.push('/recipe/new')}
-          accessibilityLabel="New brew"
-          accessibilityRole="button"
-          testID="fab-new-recipe"
-          className="absolute bottom-8 right-6 w-14 h-14 rounded-full bg-harvest-500 items-center justify-center"
-          style={{
-            elevation: 6,
-            shadowColor: '#000',
-            shadowOpacity: 0.3,
-            shadowRadius: 8,
-            shadowOffset: { width: 0, height: 3 },
-          }}
-        >
-          <Text className="text-white text-3xl font-light">+</Text>
-        </TouchableOpacity>
+        {/* FAB — native only; web uses the nav bar button */}
+        {!isWeb && (
+          <TouchableOpacity
+            onPress={() => router.push('/recipe/new')}
+            accessibilityLabel="New brew"
+            accessibilityRole="button"
+            testID="fab-new-recipe"
+            className="absolute bottom-8 right-6 w-14 h-14 rounded-full bg-harvest-500 items-center justify-center"
+            style={{
+              elevation: 6,
+              shadowColor: '#000',
+              shadowOpacity: 0.3,
+              shadowRadius: 8,
+              shadowOffset: { width: 0, height: 3 },
+            }}
+          >
+            <Text className="text-white text-3xl font-light">+</Text>
+          </TouchableOpacity>
+        )}
       </View>
-    </MaxWidth>
   );
 }

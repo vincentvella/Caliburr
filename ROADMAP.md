@@ -57,6 +57,8 @@
 - [x] **Grind setting aggregation** — median + IQR across all recipes for a given grinder + brew method combination. Outlier flagging at 2 std deviations. Mentioned in product decisions but no query or UI exists.
 - [x] **Trending / ranking** — Trending/Top/New sort modes on Explore feed; Trending filters to last 7 days by upvotes.
 - [x] **Push notifications** — Admin push notifications for reports, equipment edits, support requests, and feature requests via Expo Push API + Supabase Database Webhooks.
+- [ ] **RevenueCat Android** — configure Google Play billing products in RevenueCat dashboard; wire up Android entitlements so backer purchases work on Android.
+- [ ] **RevenueCat web** — web platform doesn't support IAP; decide on web-specific purchase flow (Stripe, web paywall, or hide backer upsell on web).
 - [ ] **Draft saving** — auto-save new recipe form to AsyncStorage so work isn't lost if the user navigates away or the app crashes.
 - [ ] **Offline support** — local cache with sync-on-reconnect. Low priority until core product is stable.
 

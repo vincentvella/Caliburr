@@ -254,7 +254,7 @@ export default function EditRecipeScreen() {
       className="flex-1 bg-latte-50 dark:bg-ristretto-900"
     >
       {/* Header */}
-      <View className="flex-row items-center justify-between px-6 pt-14 pb-4 border-b border-latte-200 dark:border-ristretto-700">
+      <View className={`flex-row items-center justify-between px-6 pb-4 border-b border-latte-200 dark:border-ristretto-700 ${Platform.OS === 'web' ? 'pt-4' : 'pt-14'}`}>
         <TouchableOpacity onPress={() => router.back()}>
           <Text className="text-harvest-400 font-semibold">Cancel</Text>
         </TouchableOpacity>
@@ -274,7 +274,8 @@ export default function EditRecipeScreen() {
 
       <ScrollView
         className="flex-1"
-        contentContainerClassName="px-6 pt-6 pb-16 gap-6"
+        contentContainerClassName={`pt-6 pb-16 gap-6 ${Platform.OS === 'web' ? 'px-0' : 'px-6'}`}
+        contentContainerStyle={Platform.OS === 'web' ? { maxWidth: 720, alignSelf: 'center', width: '100%', paddingHorizontal: 24 } : undefined}
         keyboardShouldPersistTaps="handled"
       >
         {/* Grinder */}

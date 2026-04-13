@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Alert,
+  useWindowDimensions,
 } from 'react-native';
 import { useUniwind } from 'uniwind';
 import { useState, useEffect } from 'react';
@@ -19,7 +20,7 @@ import { MachineModal } from '@/components/equipment/MachineModal';
 import type { Grinder, BrewMachine } from '@/lib/types';
 import { MACHINE_TYPE_LABELS } from '@/lib/types';
 import { useBetaAccess } from '@/hooks/useBetaAccess';
-import { MaxWidth } from '@/components/MaxWidth';
+import { Platform } from 'react-native';
 
 interface UserGrinder {
   grinder_id: string;
@@ -310,10 +311,12 @@ export default function ProfileScreen() {
     }
   }
 
+  const { width } = useWindowDimensions();
+  const isWide = Platform.OS === 'web' && width >= 768;
+
   return (
-    <MaxWidth>
-      <View className="flex-1 bg-latte-50 dark:bg-ristretto-900">
-        <ScrollView className="flex-1 px-6 pt-16" contentContainerClassName="pb-32">
+    <View className="flex-1 bg-latte-50 dark:bg-ristretto-900">
+        <ScrollView className={`flex-1 px-6 ${Platform.OS === 'web' ? 'pt-4' : 'pt-16'}`} contentContainerClassName="pb-32">
           {/* Header */}
           <Text className="text-latte-950 dark:text-latte-100 text-2xl mb-0.5 font-display-bold">
             My Gear
@@ -354,8 +357,9 @@ export default function ProfileScreen() {
             <Text className="text-red-400 text-sm text-center mt-8">{equipmentError}</Text>
           ) : (
             <>
+              <View className={isWide ? 'flex-row gap-6 mb-8' : ''}>
               {/* Grinders */}
-              <View className="mb-8">
+              <View className={isWide ? 'flex-1' : 'mb-8'}>
                 <View className="flex-row items-center justify-between mb-3">
                   <Text className="text-latte-800 dark:text-latte-200 text-lg font-semibold">
                     Grinders
@@ -465,7 +469,7 @@ export default function ProfileScreen() {
               </View>
 
               {/* Machines */}
-              <View className="mb-8">
+              <View className={isWide ? 'flex-1' : 'mb-8'}>
                 <View className="flex-row items-center justify-between mb-3">
                   <Text className="text-latte-800 dark:text-latte-200 text-lg font-semibold">
                     Machines
@@ -557,11 +561,12 @@ export default function ProfileScreen() {
                   </>
                 )}
               </View>
+              </View>{/* end isWide row */}
             </>
           )}
 
-          {/* Appearance */}
-          <View className="mb-4">
+          {/* Appearance — hidden on web, controlled via nav bar */}
+          {Platform.OS !== 'web' && <View className="mb-4">
             <Text className="text-latte-600 dark:text-latte-500 text-xs font-semibold uppercase tracking-wider mb-2 px-1">
               Appearance
             </Text>
@@ -584,7 +589,7 @@ export default function ProfileScreen() {
                 </TouchableOpacity>
               ))}
             </View>
-          </View>
+          </View>}
 
           {/* Account Settings */}
           <TouchableOpacity
@@ -615,6 +620,5 @@ export default function ProfileScreen() {
           existingIds={machines.map((m) => m.brew_machine_id)}
         />
       </View>
-    </MaxWidth>
   );
 }

@@ -12,7 +12,7 @@ import { supabase } from '@/lib/supabase';
 import { type RecipeWithJoins } from '@/lib/types';
 import { useScreenshotMode } from '@/lib/useScreenshotMode';
 import { MyRecipeCard } from '@/components/MyRecipeCard';
-import { MaxWidth } from '@/components/MaxWidth';
+import { Platform } from 'react-native';
 
 const GRINDER = {
   brand: 'Niche',
@@ -345,10 +345,9 @@ export default function RecipesScreen() {
   }
 
   return (
-    <MaxWidth>
-      <View className="flex-1 bg-latte-50 dark:bg-ristretto-900">
+    <View className="flex-1 bg-latte-50 dark:bg-ristretto-900">
         <ScrollView
-          className="flex-1 px-4 pt-16"
+          className={`flex-1 px-4 ${Platform.OS === 'web' ? 'pt-4' : 'pt-16'}`}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor="#ff9d37" />
           }
@@ -445,6 +444,5 @@ export default function RecipesScreen() {
           </TouchableOpacity>
         )}
       </View>
-    </MaxWidth>
   );
 }
