@@ -212,7 +212,7 @@ export default function GrinderDetailScreen() {
                 ) : (
                   <View className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-2xl px-4 py-5 items-center">
                     <Text className="text-latte-500 dark:text-latte-600 text-sm">
-                      Not enough numeric data yet ({activeRecipes.length} recipe
+                      Not enough numeric data yet ({activeRecipes.length} brew
                       {activeRecipes.length !== 1 ? 's' : ''})
                     </Text>
                   </View>
@@ -220,7 +220,7 @@ export default function GrinderDetailScreen() {
 
                 {/* Recipe list for selected method */}
                 <Text className="text-latte-700 dark:text-latte-400 text-xs font-semibold uppercase tracking-wider">
-                  {activeRecipes.length} Recipe{activeRecipes.length !== 1 ? 's' : ''}
+                  {activeRecipes.length} Brew{activeRecipes.length !== 1 ? 's' : ''}
                 </Text>
                 {activeRecipes.map((recipe) => (
                   <TouchableOpacity

@@ -97,14 +97,11 @@ function usePendingEdits() {
         .select('*, machine:brew_machines(brand, model, machine_type, image_url)')
         .eq('status', 'pending')
         .order('created_at', { ascending: true }),
-      supabase
-        .from('grinders')
-        .select('id, brand, model, image_url')
-        .eq('image_status' as never, 'pending'),
+      supabase.from('grinders').select('id, brand, model, image_url').eq('image_status', 'pending'),
       supabase
         .from('brew_machines')
         .select('id, brand, model, image_url')
-        .eq('image_status' as never, 'pending'),
+        .eq('image_status', 'pending'),
     ]);
 
     setGrinderEdits((gRes.data ?? []) as GrinderEdit[]);

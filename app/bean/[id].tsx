@@ -1,8 +1,8 @@
 import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { supabase } from '@/lib/supabase';
-import { BREW_METHOD_LABELS, ROAST_LEVEL_LABELS, type Bean } from '@/lib/types';
+import { BREW_METHOD_LABELS, ROAST_LEVEL_LABELS, type Bean, type BrewMethod } from '@/lib/types';
 
 interface BeanRecipe {
   id: string;
@@ -53,6 +53,15 @@ function useBeanDetail(id: string) {
 export default function BeanDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { bean, recipes, loading, error } = useBeanDetail(id);
+  const [methodFilter, setMethodFilter] = useState<BrewMethod | null>(null);
+
+  const methods = useMemo(
+    () => [...new Set(recipes.map((r) => r.brew_method as BrewMethod))],
+    [recipes],
+  );
+  const visibleRecipes = methodFilter
+    ? recipes.filter((r) => r.brew_method === methodFilter)
+    : recipes;
 
   return (
     <View className="flex-1 bg-latte-50 dark:bg-ristretto-900">
@@ -119,12 +128,65 @@ export default function BeanDetailScreen() {
           )}
 
           {/* Recipes using this bean */}
-          <Text className="text-latte-700 dark:text-latte-400 text-xs font-semibold uppercase tracking-wider mb-3">
-            {recipes.length > 0
-              ? `${recipes.length} Brew${recipes.length !== 1 ? 's' : ''}`
-              : 'No Brews Yet'}
-          </Text>
-          {recipes.map((recipe) => (
+          <View className="flex-row items-center justify-between mb-3">
+            <Text className="text-latte-700 dark:text-latte-400 text-xs font-semibold uppercase tracking-wider">
+              {recipes.length > 0
+                ? `${visibleRecipes.length} Brew${visibleRecipes.length !== 1 ? 's' : ''}`
+                : 'No Brews Yet'}
+            </Text>
+          </View>
+          {methods.length > 1 && (
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              style={{ flexGrow: 0 }}
+              contentContainerClassName="gap-2 mb-4"
+            >
+              <TouchableOpacity
+                onPress={() => setMethodFilter(null)}
+                className={`px-3 py-1.5 rounded-full border ${
+                  methodFilter === null
+                    ? 'bg-harvest-500 border-harvest-500'
+                    : 'border-latte-300 dark:border-ristretto-600'
+                }`}
+              >
+                <Text
+                  className={`text-xs font-medium ${methodFilter === null ? 'text-white' : 'text-latte-700 dark:text-latte-400'}`}
+                >
+                  All
+                </Text>
+              </TouchableOpacity>
+              {methods.map((m) => (
+                <TouchableOpacity
+                  key={m}
+                  onPress={() => setMethodFilter(m === methodFilter ? null : m)}
+                  className={`px-3 py-1.5 rounded-full border ${
+                    methodFilter === m
+                      ? 'bg-harvest-500 border-harvest-500'
+                      : 'border-latte-300 dark:border-ristretto-600'
+                  }`}
+                >
+                  <Text
+                    className={`text-xs font-medium ${methodFilter === m ? 'text-white' : 'text-latte-700 dark:text-latte-400'}`}
+                  >
+                    {BREW_METHOD_LABELS[m]}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          )}
+          {recipes.length === 0 && (
+            <TouchableOpacity
+              onPress={() => router.push('/recipe/new')}
+              className="bg-oat-100 dark:bg-ristretto-800 border border-dashed border-latte-300 dark:border-ristretto-600 rounded-2xl px-4 py-6 items-center gap-2"
+            >
+              <Text className="text-latte-500 dark:text-latte-600 text-sm">
+                No brews with this bean yet.
+              </Text>
+              <Text className="text-harvest-400 font-semibold text-sm">Be the first →</Text>
+            </TouchableOpacity>
+          )}
+          {visibleRecipes.map((recipe) => (
             <TouchableOpacity
               key={recipe.id}
               onPress={() => router.push(`/recipe/${recipe.id}`)}

@@ -77,7 +77,8 @@ export default function SignInScreen() {
                   className="text-xs px-1"
                   style={{
                     color: '#f87171',
-                    opacity: field.state.meta.isBlurred && field.state.meta.errors.length > 0 ? 1 : 0,
+                    opacity:
+                      field.state.meta.isBlurred && field.state.meta.errors.length > 0 ? 1 : 0,
                   }}
                 >
                   {field.state.meta.errors[0] ?? ' '}
@@ -116,7 +117,8 @@ export default function SignInScreen() {
                   className="text-xs px-1"
                   style={{
                     color: '#f87171',
-                    opacity: field.state.meta.isBlurred && field.state.meta.errors.length > 0 ? 1 : 0,
+                    opacity:
+                      field.state.meta.isBlurred && field.state.meta.errors.length > 0 ? 1 : 0,
                   }}
                 >
                   {field.state.meta.errors[0] ?? ' '}

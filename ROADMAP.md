@@ -34,6 +34,14 @@
 - [x] **My Recipes edit shortcut** — `RecipeCard` in My Recipes now has an Edit button in the action row that navigates directly to the edit screen.
 - [x] **Profile account info** — email displayed in profile header; inline Change Password form added (new + confirm fields, calls `supabase.auth.updateUser`).
 
+## 🟡 UX gaps — needed for a complete product (continued)
+
+- [x] **`as never` cleanup** — `admin/index.tsx` and `admin/edits.tsx` still have `.eq('image_status' as never, ...)` casts that can be removed now that `image_status` is in the generated types.
+- [x] **Empty states on grinder/bean detail** — bean detail now shows "No brews with this bean yet. Be the first →" CTA when zero brews; grinder detail already handled.
+- [x] **User brew history** — `app/user/[id].tsx` screen shows all public brews from a user; linked from brew detail ("More brews from this user →") when recipe has a non-null user_id.
+- [x] **Brew method filter on bean detail** — horizontal filter chips appear when a bean has brews in more than one method; "All" chip resets filter.
+- [x] **Web layout** — `MaxWidth` component (native pass-through, web constrains to 680px centred) wraps the three main tab screens.
+
 ## 🟢 Features — post-launch
 
 - [x] **Admin interface** — hub with equipment edit review, support queue, and feature request triage. Role-gated via `is_admin` user metadata.

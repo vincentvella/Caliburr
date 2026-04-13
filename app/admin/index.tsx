@@ -29,11 +29,11 @@ function useAdminCounts() {
         supabase
           .from('grinders')
           .select('*', { count: 'exact', head: true })
-          .eq('image_status' as never, 'pending'),
+          .eq('image_status', 'pending'),
         supabase
           .from('brew_machines')
           .select('*', { count: 'exact', head: true })
-          .eq('image_status' as never, 'pending'),
+          .eq('image_status', 'pending'),
         supabase.from('grinders').select('*', { count: 'exact', head: true }).eq('verified', false),
         supabase
           .from('brew_machines')

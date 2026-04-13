@@ -69,8 +69,8 @@ export default function PrivacyPolicyScreen() {
               Provided directly by you at sign-up.
             </Li>
             <Li>
-              <Strong>User-generated content</Strong> — grind brews, equipment entries (grinders
-              and brew machines), upvotes, and verification actions you submit within the app.
+              <Strong>User-generated content</Strong> — grind brews, equipment entries (grinders and
+              brew machines), upvotes, and verification actions you submit within the app.
             </Li>
             <Li>
               <Strong>Account metadata</Strong> — flags such as onboarding completion status, stored
@@ -112,9 +112,9 @@ export default function PrivacyPolicyScreen() {
 
           <Section title="Community Content">
             <P>
-              Brews and equipment entries you submit are visible to all users of Caliburr as part
-              of the community feed. Do not include personal information in brew notes or
-              equipment descriptions.
+              Brews and equipment entries you submit are visible to all users of Caliburr as part of
+              the community feed. Do not include personal information in brew notes or equipment
+              descriptions.
             </P>
             <P>
               We reserve the right to remove content that violates our Terms of Service or that is

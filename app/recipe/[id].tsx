@@ -367,6 +367,17 @@ export default function RecipeDetailScreen() {
           </View>
         )}
 
+        {!isOwner && recipe.user_id && (
+          <TouchableOpacity
+            onPress={() => router.push(`/user/${recipe.user_id}`)}
+            className="items-center py-2"
+          >
+            <Text className="text-harvest-400 text-sm font-medium">
+              More brews from this user →
+            </Text>
+          </TouchableOpacity>
+        )}
+
         {!isOwner && (
           <TouchableOpacity
             onPress={() => promptReport('recipe', recipe.id)}

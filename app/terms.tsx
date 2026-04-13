@@ -75,9 +75,9 @@ export default function TermsOfServiceScreen() {
 
           <Section title="The Service">
             <P>
-              Caliburr is a community-driven database for coffee brews and equipment. It
-              lets you log and share espresso and brew dials, discover settings from other users,
-              and contribute to a shared library of grinder and machine data.
+              Caliburr is a community-driven database for coffee brews and equipment. It lets you
+              log and share espresso and brew dials, discover settings from other users, and
+              contribute to a shared library of grinder and machine data.
             </P>
             <P>
               We reserve the right to modify, suspend, or discontinue any part of the service at any
@@ -100,9 +100,9 @@ export default function TermsOfServiceScreen() {
 
           <Section title="User Content">
             <P>
-              You retain ownership of the content you submit — brews, notes, and equipment
-              entries. By submitting content, you grant Caliburr a worldwide, royalty-free licence
-              to store, display, and distribute it to other users of the service.
+              You retain ownership of the content you submit — brews, notes, and equipment entries.
+              By submitting content, you grant Caliburr a worldwide, royalty-free licence to store,
+              display, and distribute it to other users of the service.
             </P>
             <P>
               When you delete your account, your brews and equipment entries are{' '}
@@ -115,9 +115,7 @@ export default function TermsOfServiceScreen() {
 
           <Section title="Community Guidelines">
             <P>You agree not to:</P>
-            <Li>
-              Submit false or deliberately misleading equipment specifications or brew data.
-            </Li>
+            <Li>Submit false or deliberately misleading equipment specifications or brew data.</Li>
             <Li>
               Abuse the verification system — verifying equipment you have not personally used.
             </Li>
@@ -147,8 +145,8 @@ export default function TermsOfServiceScreen() {
               reproduce or use them without our written permission.
             </P>
             <P>
-              Community-contributed brew and equipment data is owned by its respective
-              contributors and shared under the licence described in the User Content section above.
+              Community-contributed brew and equipment data is owned by its respective contributors
+              and shared under the licence described in the User Content section above.
             </P>
             <P>
               Equipment image URLs submitted by users link to third-party content. Caliburr does not

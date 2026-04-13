@@ -147,6 +147,7 @@ export default function RootLayout() {
             <Stack.Screen name="backer" />
             <Stack.Screen name="admin" />
             <Stack.Screen name="recipe/new" options={{ presentation: 'modal' }} />
+            <Stack.Screen name="user/[id]" />
             <Stack.Screen name="+not-found" />
           </Stack>
         </ErrorBoundary>
