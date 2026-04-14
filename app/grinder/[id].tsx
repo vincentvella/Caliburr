@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Image,
+  Platform,
   type DimensionValue,
 } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
@@ -100,9 +101,13 @@ export default function GrinderDetailScreen() {
   const activeRecipes = activeMethod ? (grouped[activeMethod] ?? []) : [];
   const activeStats = activeMethod ? stats[activeMethod] : null;
 
+  const isWeb = Platform.OS === 'web';
+
   return (
     <View className="flex-1 bg-latte-50 dark:bg-ristretto-900">
-      <View className="flex-row items-center justify-between px-6 pt-14 pb-4 border-b border-latte-200 dark:border-ristretto-700">
+      <View
+        className={`flex-row items-center justify-between px-6 pb-4 border-b border-latte-200 dark:border-ristretto-700 ${isWeb ? 'pt-6' : 'pt-14'}`}
+      >
         <TouchableOpacity
           onPress={() => router.back()}
           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
@@ -125,137 +130,141 @@ export default function GrinderDetailScreen() {
         </View>
       ) : (
         <ScrollView className="flex-1" contentContainerClassName="pb-12">
-          {/* Image */}
-          {grinder.image_url && grinder.image_status === 'approved' && (
-            <Image
-              source={{ uri: grinder.image_url }}
-              className="w-full h-52 bg-oat-100 dark:bg-ristretto-800"
-              resizeMode="contain"
-            />
-          )}
+          <View className={isWeb ? 'max-w-3xl self-center w-full' : ''}>
+            {/* Image */}
+            {grinder.image_url && grinder.image_status === 'approved' && (
+              <Image
+                source={{ uri: grinder.image_url }}
+                className="w-full h-52 bg-oat-100 dark:bg-ristretto-800"
+                resizeMode="contain"
+              />
+            )}
 
-          <View className="px-4 pt-5 gap-5">
-            {/* Header */}
-            <View>
-              <View className="flex-row items-center gap-2 mb-1">
-                <Text className="text-latte-950 dark:text-latte-100 text-2xl font-display-bold">
-                  {grinder.brand} {grinder.model}
-                </Text>
-              </View>
-              {grinder.verified && (
-                <View className="flex-row items-center gap-1.5">
-                  <View className="bg-bloom-100 dark:bg-bloom-900 border border-bloom-300 dark:border-bloom-700 rounded-full px-2.5 py-0.5">
-                    <Text className="text-bloom-700 dark:text-bloom-400 text-xs">
-                      ✓ Community Verified
-                    </Text>
+            <View className="px-4 pt-5 gap-5">
+              {/* Header */}
+              <View>
+                <View className="flex-row items-center gap-2 mb-1">
+                  <Text className="text-latte-950 dark:text-latte-100 text-2xl font-display-bold">
+                    {grinder.brand} {grinder.model}
+                  </Text>
+                </View>
+                {grinder.verified && (
+                  <View className="flex-row items-center gap-1.5">
+                    <View className="bg-bloom-100 dark:bg-bloom-900 border border-bloom-300 dark:border-bloom-700 rounded-full px-2.5 py-0.5">
+                      <Text className="text-bloom-700 dark:text-bloom-400 text-xs">
+                        ✓ Community Verified
+                      </Text>
+                    </View>
                   </View>
+                )}
+              </View>
+
+              {/* Specs */}
+              <View className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-2xl px-4 py-4 gap-3">
+                {grinder.burr_type && (
+                  <SpecRow label="Burr Type" value={BURR_TYPE_LABELS[grinder.burr_type]} />
+                )}
+                {grinder.adjustment_type && (
+                  <SpecRow
+                    label="Adjustment"
+                    value={ADJUSTMENT_TYPE_LABELS[grinder.adjustment_type]}
+                  />
+                )}
+                {grinder.range_min != null && grinder.range_max != null && (
+                  <SpecRow label="Range" value={`${grinder.range_min} – ${grinder.range_max}`} />
+                )}
+              </View>
+
+              {/* Dial-in section */}
+              {methods.length > 0 ? (
+                <View className="gap-4">
+                  <Text className="text-latte-700 dark:text-latte-400 text-xs font-semibold uppercase tracking-wider">
+                    Dial-In Guide
+                  </Text>
+
+                  {/* Brew method filter */}
+                  <ScrollView
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    style={{ flexGrow: 0 }}
+                    contentContainerClassName="gap-2 pr-4"
+                  >
+                    {methods.map((method) => (
+                      <TouchableOpacity
+                        key={method}
+                        onPress={() => setSelectedMethod(method)}
+                        className={`px-3 py-1.5 rounded-full border ${
+                          activeMethod === method
+                            ? 'bg-harvest-500 border-harvest-500'
+                            : 'border-latte-300 dark:border-ristretto-600'
+                        }`}
+                      >
+                        <Text
+                          className={`text-sm font-medium ${
+                            activeMethod === method
+                              ? 'text-white'
+                              : 'text-latte-700 dark:text-latte-400'
+                          }`}
+                        >
+                          {BREW_METHOD_LABELS[method]}
+                        </Text>
+                      </TouchableOpacity>
+                    ))}
+                  </ScrollView>
+
+                  {/* Stats card */}
+                  {activeStats ? (
+                    <StatsCard stats={activeStats} grinder={grinder} />
+                  ) : (
+                    <View className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-2xl px-4 py-5 items-center">
+                      <Text className="text-latte-500 dark:text-latte-600 text-sm">
+                        Not enough numeric data yet ({activeRecipes.length} brew
+                        {activeRecipes.length !== 1 ? 's' : ''})
+                      </Text>
+                    </View>
+                  )}
+
+                  {/* Recipe list for selected method */}
+                  <Text className="text-latte-700 dark:text-latte-400 text-xs font-semibold uppercase tracking-wider">
+                    {activeRecipes.length} Brew{activeRecipes.length !== 1 ? 's' : ''}
+                  </Text>
+                  {activeRecipes.map((recipe) => (
+                    <TouchableOpacity
+                      key={recipe.id}
+                      onPress={() => router.push(`/recipe/${recipe.id}`)}
+                      className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-2xl px-4 py-3.5"
+                    >
+                      <View className="flex-row items-start justify-between">
+                        <View className="flex-1 mr-3">
+                          <Text className="text-latte-950 dark:text-latte-100 font-medium text-sm">
+                            {recipe.bean
+                              ? `${recipe.bean.name} · ${recipe.bean.roaster}`
+                              : 'No bean'}
+                          </Text>
+                          <Text className="text-latte-600 dark:text-latte-500 text-xs mt-0.5">
+                            Setting {recipe.grind_setting}
+                            {recipe.dose_g && recipe.yield_g
+                              ? ` · ${recipe.dose_g}g → ${recipe.yield_g}g`
+                              : ''}
+                          </Text>
+                        </View>
+                        {recipe.upvotes > 0 && (
+                          <Text className="text-harvest-500 text-xs font-semibold">
+                            ▲ {recipe.upvotes}
+                          </Text>
+                        )}
+                      </View>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              ) : (
+                <View className="items-center py-8">
+                  <Text className="text-latte-500 dark:text-latte-600 text-sm">
+                    No recipes yet for this grinder.
+                  </Text>
                 </View>
               )}
             </View>
-
-            {/* Specs */}
-            <View className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-2xl px-4 py-4 gap-3">
-              {grinder.burr_type && (
-                <SpecRow label="Burr Type" value={BURR_TYPE_LABELS[grinder.burr_type]} />
-              )}
-              {grinder.adjustment_type && (
-                <SpecRow
-                  label="Adjustment"
-                  value={ADJUSTMENT_TYPE_LABELS[grinder.adjustment_type]}
-                />
-              )}
-              {grinder.range_min != null && grinder.range_max != null && (
-                <SpecRow label="Range" value={`${grinder.range_min} – ${grinder.range_max}`} />
-              )}
-            </View>
-
-            {/* Dial-in section */}
-            {methods.length > 0 ? (
-              <View className="gap-4">
-                <Text className="text-latte-700 dark:text-latte-400 text-xs font-semibold uppercase tracking-wider">
-                  Dial-In Guide
-                </Text>
-
-                {/* Brew method filter */}
-                <ScrollView
-                  horizontal
-                  showsHorizontalScrollIndicator={false}
-                  style={{ flexGrow: 0 }}
-                  contentContainerClassName="gap-2 pr-4"
-                >
-                  {methods.map((method) => (
-                    <TouchableOpacity
-                      key={method}
-                      onPress={() => setSelectedMethod(method)}
-                      className={`px-3 py-1.5 rounded-full border ${
-                        activeMethod === method
-                          ? 'bg-harvest-500 border-harvest-500'
-                          : 'border-latte-300 dark:border-ristretto-600'
-                      }`}
-                    >
-                      <Text
-                        className={`text-sm font-medium ${
-                          activeMethod === method
-                            ? 'text-white'
-                            : 'text-latte-700 dark:text-latte-400'
-                        }`}
-                      >
-                        {BREW_METHOD_LABELS[method]}
-                      </Text>
-                    </TouchableOpacity>
-                  ))}
-                </ScrollView>
-
-                {/* Stats card */}
-                {activeStats ? (
-                  <StatsCard stats={activeStats} grinder={grinder} />
-                ) : (
-                  <View className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-2xl px-4 py-5 items-center">
-                    <Text className="text-latte-500 dark:text-latte-600 text-sm">
-                      Not enough numeric data yet ({activeRecipes.length} brew
-                      {activeRecipes.length !== 1 ? 's' : ''})
-                    </Text>
-                  </View>
-                )}
-
-                {/* Recipe list for selected method */}
-                <Text className="text-latte-700 dark:text-latte-400 text-xs font-semibold uppercase tracking-wider">
-                  {activeRecipes.length} Brew{activeRecipes.length !== 1 ? 's' : ''}
-                </Text>
-                {activeRecipes.map((recipe) => (
-                  <TouchableOpacity
-                    key={recipe.id}
-                    onPress={() => router.push(`/recipe/${recipe.id}`)}
-                    className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-2xl px-4 py-3.5"
-                  >
-                    <View className="flex-row items-start justify-between">
-                      <View className="flex-1 mr-3">
-                        <Text className="text-latte-950 dark:text-latte-100 font-medium text-sm">
-                          {recipe.bean ? `${recipe.bean.name} · ${recipe.bean.roaster}` : 'No bean'}
-                        </Text>
-                        <Text className="text-latte-600 dark:text-latte-500 text-xs mt-0.5">
-                          Setting {recipe.grind_setting}
-                          {recipe.dose_g && recipe.yield_g
-                            ? ` · ${recipe.dose_g}g → ${recipe.yield_g}g`
-                            : ''}
-                        </Text>
-                      </View>
-                      {recipe.upvotes > 0 && (
-                        <Text className="text-harvest-500 text-xs font-semibold">
-                          ▲ {recipe.upvotes}
-                        </Text>
-                      )}
-                    </View>
-                  </TouchableOpacity>
-                ))}
-              </View>
-            ) : (
-              <View className="items-center py-8">
-                <Text className="text-latte-500 dark:text-latte-600 text-sm">
-                  No recipes yet for this grinder.
-                </Text>
-              </View>
-            )}
           </View>
         </ScrollView>
       )}

@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
+  Pressable,
   ScrollView,
 } from 'react-native';
 import { LegendList } from '@legendapp/list';
@@ -144,7 +145,6 @@ export function MachineModal({ visible, onClose, onAdded, existingIds }: Props) 
   }
 
   function handleClose() {
-    setView('search');
     setQuery('');
     setSelectedMachine(null);
     onClose();
@@ -160,120 +160,229 @@ export function MachineModal({ visible, onClose, onAdded, existingIds }: Props) 
   const rightLabel = view === 'search' ? 'Cancel' : 'Back';
   const rightAction = view === 'search' ? handleClose : () => setView('search');
 
+  const isWeb = Platform.OS === 'web';
+
   return (
     <Modal
       visible={visible}
-      animationType="slide"
-      presentationStyle="pageSheet"
+      animationType={isWeb ? 'fade' : 'slide'}
+      presentationStyle={isWeb ? 'overFullScreen' : 'pageSheet'}
+      transparent={isWeb}
       onRequestClose={handleClose}
     >
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        className="flex-1 bg-latte-50 dark:bg-ristretto-900"
-      >
-        <View className="flex-row items-center justify-between px-6 pt-6 pb-4 border-b border-latte-200 dark:border-ristretto-700">
-          <Text className="text-latte-950 dark:text-latte-100 text-xl font-bold">
-            {titles[view]}
-          </Text>
-          <TouchableOpacity onPress={rightAction}>
-            <Text className="text-harvest-400 font-semibold">{rightLabel}</Text>
-          </TouchableOpacity>
-        </View>
+      {isWeb ? (
+        <Pressable
+          onPress={handleClose}
+          className="flex-1 items-center justify-center"
+          style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
+        >
+          <Pressable
+            onPress={(e) => e.stopPropagation()}
+            className="bg-latte-50 dark:bg-ristretto-900 rounded-2xl overflow-hidden w-full"
+            style={{ maxWidth: 560, maxHeight: '85%' }}
+          >
+            <View className="flex-row items-center justify-between px-6 pt-6 pb-4 border-b border-latte-200 dark:border-ristretto-700">
+              <Text className="text-latte-950 dark:text-latte-100 text-xl font-bold">
+                {titles[view]}
+              </Text>
+              <TouchableOpacity onPress={rightAction}>
+                <Text className="text-harvest-400 font-semibold">{rightLabel}</Text>
+              </TouchableOpacity>
+            </View>
 
-        {view === 'search' && (
-          <View className="flex-1 px-6 pt-4">
-            <TextInput
-              className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-950 dark:text-latte-100 text-base mb-4"
-              style={textInputStyle}
-              placeholder="Search brand or model..."
-              placeholderTextColor="#6e5a47"
-              value={query}
-              onChangeText={setQuery}
-              autoFocus
-            />
-            {searching ? (
-              <ActivityIndicator color="#ff9d37" style={{ marginTop: 16 }} />
-            ) : (
-              <LegendList
-                data={query.trim() ? results : defaults}
-                keyExtractor={(item) => item.id}
-                keyboardShouldPersistTaps="handled"
-                ListHeaderComponent={
-                  !query.trim() && defaults.length > 0 ? (
-                    <Text className="text-latte-500 dark:text-latte-600 text-xs mb-2">
-                      Popular machines
-                    </Text>
-                  ) : null
-                }
-                renderItem={({ item }) => (
-                  <TouchableOpacity
-                    onPress={() => openMachine(item)}
-                    className="flex-row items-center justify-between py-4 border-b border-latte-100 dark:border-ristretto-800"
-                  >
-                    <View>
-                      <Text className="text-latte-950 dark:text-latte-100 font-medium">
-                        {item.brand} {item.model}
+            {view === 'search' && (
+              <View className="flex-1 px-6 pt-4" style={{ minHeight: 400 }}>
+                <TextInput
+                  className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-950 dark:text-latte-100 text-base mb-4"
+                  placeholder="Search brand or model..."
+                  placeholderTextColor="#6e5a47"
+                  value={query}
+                  onChangeText={setQuery}
+                  autoFocus
+                />
+                {searching ? (
+                  <ActivityIndicator color="#ff9d37" style={{ marginTop: 16 }} />
+                ) : (
+                  <ScrollView keyboardShouldPersistTaps="handled">
+                    {!query.trim() && defaults.length > 0 && (
+                      <Text className="text-latte-500 dark:text-latte-600 text-xs mb-2">
+                        Popular machines
                       </Text>
-                      <Text className="text-latte-600 dark:text-latte-500 text-xs mt-0.5">
-                        {MACHINE_TYPE_LABELS[item.machine_type]}
-                      </Text>
-                    </View>
-                    {item.verified ? (
-                      <View className="bg-bloom-100 dark:bg-bloom-900 border border-bloom-300 dark:border-bloom-700 rounded-full px-2 py-0.5">
-                        <Text className="text-bloom-700 dark:text-bloom-400 text-xs">Verified</Text>
-                      </View>
-                    ) : currentUserId && item.created_by === currentUserId ? (
-                      <Text className="text-latte-500 dark:text-latte-600 text-xs">Add →</Text>
-                    ) : (
-                      <Text className="text-latte-500 dark:text-latte-600 text-xs">Review →</Text>
                     )}
-                  </TouchableOpacity>
+                    {(query.trim() ? results : defaults).map((item) => (
+                      <TouchableOpacity
+                        key={item.id}
+                        onPress={() => openMachine(item)}
+                        className="flex-row items-center justify-between py-4 border-b border-latte-100 dark:border-ristretto-800"
+                      >
+                        <View>
+                          <Text className="text-latte-950 dark:text-latte-100 font-medium">
+                            {item.brand} {item.model}
+                          </Text>
+                          <Text className="text-latte-600 dark:text-latte-500 text-xs mt-0.5">
+                            {MACHINE_TYPE_LABELS[item.machine_type]}
+                          </Text>
+                        </View>
+                        {item.verified ? (
+                          <View className="bg-bloom-100 dark:bg-bloom-900 border border-bloom-300 dark:border-bloom-700 rounded-full px-2 py-0.5">
+                            <Text className="text-bloom-700 dark:text-bloom-400 text-xs">
+                              Verified
+                            </Text>
+                          </View>
+                        ) : currentUserId && item.created_by === currentUserId ? (
+                          <Text className="text-latte-500 dark:text-latte-600 text-xs">Add →</Text>
+                        ) : (
+                          <Text className="text-latte-500 dark:text-latte-600 text-xs">
+                            Review →
+                          </Text>
+                        )}
+                      </TouchableOpacity>
+                    ))}
+                    {!!query.trim() && results.length === 0 && (
+                      <TouchableOpacity
+                        onPress={() => setView('create')}
+                        className="flex-row items-center gap-3 py-4"
+                      >
+                        <View className="w-8 h-8 rounded-full bg-harvest-500 items-center justify-center">
+                          <Text className="text-white font-bold text-lg">+</Text>
+                        </View>
+                        <Text className="text-latte-700 dark:text-latte-300">{`Add "${query}" as new machine`}</Text>
+                      </TouchableOpacity>
+                    )}
+                  </ScrollView>
                 )}
-                ListEmptyComponent={
-                  query.trim() ? (
-                    <TouchableOpacity
-                      onPress={() => setView('create')}
-                      className="flex-row items-center gap-3 py-4"
-                    >
-                      <View className="w-8 h-8 rounded-full bg-harvest-500 items-center justify-center">
-                        <Text className="text-white font-bold text-lg">+</Text>
-                      </View>
-                      <Text className="text-latte-700 dark:text-latte-300">{`Add "${query}" as new machine`}</Text>
-                    </TouchableOpacity>
-                  ) : null
-                }
+              </View>
+            )}
+            {view === 'create' && (
+              <MachineForm initialBrand={query} onDone={async (m) => await handleAdd(m)} />
+            )}
+            {view === 'review' && selectedMachine && (
+              <MachineForm
+                reviewMachine={selectedMachine}
+                verificationCount={verificationCount}
+                onDone={async (m) => await handleAdd(m)}
               />
             )}
+            {view === 'view' && selectedMachine && (
+              <MachineReadOnly
+                machine={selectedMachine}
+                adding={adding}
+                onAdd={() => handleAdd(selectedMachine)}
+              />
+            )}
+          </Pressable>
+        </Pressable>
+      ) : (
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          className="flex-1 bg-latte-50 dark:bg-ristretto-900"
+        >
+          <View className="flex-row items-center justify-between px-6 pt-6 pb-4 border-b border-latte-200 dark:border-ristretto-700">
+            <Text className="text-latte-950 dark:text-latte-100 text-xl font-bold">
+              {titles[view]}
+            </Text>
+            <TouchableOpacity onPress={rightAction}>
+              <Text className="text-harvest-400 font-semibold">{rightLabel}</Text>
+            </TouchableOpacity>
           </View>
-        )}
 
-        {view === 'create' && (
-          <MachineForm
-            initialBrand={query}
-            onDone={async (machine) => {
-              await handleAdd(machine);
-            }}
-          />
-        )}
+          {view === 'search' && (
+            <View className="flex-1 px-6 pt-4">
+              <TextInput
+                className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-950 dark:text-latte-100 text-base mb-4"
+                style={textInputStyle}
+                placeholder="Search brand or model..."
+                placeholderTextColor="#6e5a47"
+                value={query}
+                onChangeText={setQuery}
+                autoFocus
+              />
+              {searching ? (
+                <ActivityIndicator color="#ff9d37" style={{ marginTop: 16 }} />
+              ) : (
+                <LegendList
+                  data={query.trim() ? results : defaults}
+                  keyExtractor={(item) => item.id}
+                  keyboardShouldPersistTaps="handled"
+                  ListHeaderComponent={
+                    !query.trim() && defaults.length > 0 ? (
+                      <Text className="text-latte-500 dark:text-latte-600 text-xs mb-2">
+                        Popular machines
+                      </Text>
+                    ) : null
+                  }
+                  renderItem={({ item }) => (
+                    <TouchableOpacity
+                      onPress={() => openMachine(item)}
+                      className="flex-row items-center justify-between py-4 border-b border-latte-100 dark:border-ristretto-800"
+                    >
+                      <View>
+                        <Text className="text-latte-950 dark:text-latte-100 font-medium">
+                          {item.brand} {item.model}
+                        </Text>
+                        <Text className="text-latte-600 dark:text-latte-500 text-xs mt-0.5">
+                          {MACHINE_TYPE_LABELS[item.machine_type]}
+                        </Text>
+                      </View>
+                      {item.verified ? (
+                        <View className="bg-bloom-100 dark:bg-bloom-900 border border-bloom-300 dark:border-bloom-700 rounded-full px-2 py-0.5">
+                          <Text className="text-bloom-700 dark:text-bloom-400 text-xs">
+                            Verified
+                          </Text>
+                        </View>
+                      ) : currentUserId && item.created_by === currentUserId ? (
+                        <Text className="text-latte-500 dark:text-latte-600 text-xs">Add →</Text>
+                      ) : (
+                        <Text className="text-latte-500 dark:text-latte-600 text-xs">Review →</Text>
+                      )}
+                    </TouchableOpacity>
+                  )}
+                  ListEmptyComponent={
+                    query.trim() ? (
+                      <TouchableOpacity
+                        onPress={() => setView('create')}
+                        className="flex-row items-center gap-3 py-4"
+                      >
+                        <View className="w-8 h-8 rounded-full bg-harvest-500 items-center justify-center">
+                          <Text className="text-white font-bold text-lg">+</Text>
+                        </View>
+                        <Text className="text-latte-700 dark:text-latte-300">{`Add "${query}" as new machine`}</Text>
+                      </TouchableOpacity>
+                    ) : null
+                  }
+                />
+              )}
+            </View>
+          )}
 
-        {view === 'review' && selectedMachine && (
-          <MachineForm
-            reviewMachine={selectedMachine}
-            verificationCount={verificationCount}
-            onDone={async (machine) => {
-              await handleAdd(machine);
-            }}
-          />
-        )}
+          {view === 'create' && (
+            <MachineForm
+              initialBrand={query}
+              onDone={async (machine) => {
+                await handleAdd(machine);
+              }}
+            />
+          )}
 
-        {view === 'view' && selectedMachine && (
-          <MachineReadOnly
-            machine={selectedMachine}
-            adding={adding}
-            onAdd={() => handleAdd(selectedMachine)}
-          />
-        )}
-      </KeyboardAvoidingView>
+          {view === 'review' && selectedMachine && (
+            <MachineForm
+              reviewMachine={selectedMachine}
+              verificationCount={verificationCount}
+              onDone={async (machine) => {
+                await handleAdd(machine);
+              }}
+            />
+          )}
+
+          {view === 'view' && selectedMachine && (
+            <MachineReadOnly
+              machine={selectedMachine}
+              adding={adding}
+              onAdd={() => handleAdd(selectedMachine)}
+            />
+          )}
+        </KeyboardAvoidingView>
+      )}
     </Modal>
   );
 }
