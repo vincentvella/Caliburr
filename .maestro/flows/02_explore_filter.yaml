@@ -8,4 +8,4 @@ name: 'Screenshot — Explore with filter active'
 - tapOn:
     text: 'Espresso'
 - waitForAnimationToEnd
-- takeScreenshot: screenshots/02_explore_filter
+- takeScreenshot: .maestro/screenshots/02_explore_filter

@@ -245,7 +245,7 @@ export default function NewRecipeScreen() {
         <TouchableOpacity onPress={() => router.back()}>
           <Text className="text-harvest-400 font-semibold">Cancel</Text>
         </TouchableOpacity>
-        <Text className="text-latte-950 dark:text-latte-100 text-lg font-bold">
+        <Text className="text-latte-950 dark:text-latte-100 text-lg font-display-semibold">
           {templateId ? 'Clone Brew' : 'New Brew'}
         </Text>
         <form.Subscribe selector={(s) => s.isSubmitting}>

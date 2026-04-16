@@ -130,6 +130,8 @@ export default function RootLayout() {
   useHideSplash(fontsLoaded);
   useAuthGate(session, ready, isRecovery);
 
+  if (!fontsLoaded) return null;
+
   return (
     <ThemeProvider>
       <BackerProvider>

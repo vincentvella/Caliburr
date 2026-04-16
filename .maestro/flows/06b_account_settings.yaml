@@ -14,4 +14,4 @@ name: 'Screenshot — Account Settings'
 - tapOn:
     id: 'account-settings-row'
 - waitForAnimationToEnd
-- takeScreenshot: screenshots/06b_account_settings
+- takeScreenshot: .maestro/screenshots/06b_account_settings

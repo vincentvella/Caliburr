@@ -35,7 +35,7 @@ export default function BackerScreenWeb() {
           {/* Hero */}
           <View className="items-center mb-10">
             <Text style={{ fontSize: 56 }}>☕</Text>
-            <Text className="text-latte-950 dark:text-latte-100 text-2xl font-bold mt-4 text-center">
+            <Text className="text-latte-950 dark:text-latte-100 text-2xl font-display-bold mt-4 text-center">
               Caliburr Backer
             </Text>
             <Text className="text-latte-600 dark:text-latte-500 text-base text-center mt-2 leading-6">

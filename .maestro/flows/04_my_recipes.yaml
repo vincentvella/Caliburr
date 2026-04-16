@@ -12,4 +12,4 @@ name: 'Screenshot — My Recipes (Mine tab)'
       - tapOn:
           text: 'Open'
 - waitForAnimationToEnd
-- takeScreenshot: screenshots/04_my_recipes
+- takeScreenshot: .maestro/screenshots/04_my_recipes

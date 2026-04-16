@@ -1,0 +1,6 @@
+appId: coffee.caliburr.app
+name: 'Screenshot — Backer badge preview'
+---
+- openLink: caliburr://screenshot/backer-badge
+- waitForAnimationToEnd
+- takeScreenshot: .maestro/screenshots/08_backer_badge

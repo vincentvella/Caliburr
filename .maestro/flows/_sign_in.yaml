@@ -5,17 +5,25 @@ appId: coffee.caliburr.app
 ---
 # Wait for the app to finish loading
 - waitForAnimationToEnd
+- extendedWaitUntil:
+    visible: 'Caliburr'
+    timeout: 10000
+# If the Expo dev client launcher is showing, open the app from it
+- runFlow:
+    when:
+      visible: 'Development Build'
+    commands:
+      - tapOn:
+          text: 'Caliburr'
+          index: 1
+      - waitForAnimationToEnd
 # Dismiss any lingering "Open in Caliburr?" system dialog from a prior openLink
-# then tap the Explore tab to ensure we're in the right place
 - runFlow:
     when:
       visible: 'Open'
     commands:
       - tapOn:
           text: 'Open'
-      - waitForAnimationToEnd
-      - tapOn:
-          point: '17%,95%'
       - waitForAnimationToEnd
 # Only sign in if we're on the sign-in screen
 - runFlow:
@@ -45,6 +53,10 @@ appId: coffee.caliburr.app
             - tapOn:
                 text: 'Explore recipes'
             - waitForAnimationToEnd
+# Always navigate to Explore tab to ensure consistent starting state
+- tapOn:
+    point: '17%,95%'
+- waitForAnimationToEnd
 # Assert we're on the main app (search bar only exists on Explore tab)
 - assertVisible:
     text: 'Search grinder, bean, method...'

@@ -46,6 +46,8 @@ google-service-account.json
 # Maestro screenshot output
 .maestro/screenshots/*.png
 .maestro/screenshots/*.jpg
+.maestro/screenshots/processed/
+screenshots/
 credentials.json
 
 # Generated from store.config.js — contains PII (review email/phone)
