@@ -1,8 +1,10 @@
-import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
-import { Stack, router } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
+import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
+import { Stack, router, useLocalSearchParams } from 'expo-router';
+import { useState, useEffect } from 'react';
 import { BackerBadge } from '@/components/BackerBadge';
 import { useBackerContext } from '@/lib/backerContext';
+import * as purchases from '@/lib/purchases';
+import type { PurchasesPackage } from '@/lib/purchases';
 
 const PERKS = [
   { icon: '☕', title: 'Backer badge', desc: 'Shown on every brew you share' },
@@ -11,7 +13,43 @@ const PERKS = [
 ];
 
 export default function BackerScreenWeb() {
-  const { isBacker } = useBackerContext();
+  const { isBacker, refresh } = useBackerContext();
+  const { success } = useLocalSearchParams<{ success?: string }>();
+
+  const [selected, setSelected] = useState<'annual' | 'monthly'>('annual');
+  const [monthly, setMonthly] = useState<PurchasesPackage | null>(null);
+  const [annual, setAnnual] = useState<PurchasesPackage | null>(null);
+  const [purchasing, setPurchasing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    purchases.getBackerOffering().then((offering) => {
+      setMonthly(offering?.monthly ?? null);
+      setAnnual(offering?.annual ?? null);
+    });
+  }, []);
+
+  // Refresh backer status when returning from Stripe with ?success=1
+  useEffect(() => {
+    if (success === '1') refresh();
+  }, [success, refresh]);
+
+  const annualPrice = annual?.product.priceString ?? '$14.99';
+  const monthlyPrice = monthly?.product.priceString ?? '$1.99';
+
+  async function handleSubscribe() {
+    const pkg = selected === 'annual' ? annual : monthly;
+    if (!pkg) return;
+    setError(null);
+    setPurchasing(true);
+    try {
+      await purchases.purchasePackage(pkg);
+      // purchasePackage redirects to Stripe — execution stops here
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Something went wrong. Please try again.');
+      setPurchasing(false);
+    }
+  }
 
   return (
     <>
@@ -91,14 +129,95 @@ export default function BackerScreenWeb() {
               </Text>
             </View>
           ) : (
-            <View className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-2xl px-5 py-6 items-center gap-3">
-              <Ionicons name="phone-portrait-outline" size={32} color="#ff9d37" />
-              <Text className="text-latte-950 dark:text-latte-100 font-semibold text-base text-center">
-                Subscribe on iOS
-              </Text>
-              <Text className="text-latte-600 dark:text-latte-500 text-sm text-center leading-5">
-                Caliburr Backer subscriptions are managed through the iOS app. Download it on the
-                App Store to become a Backer.
+            <View className="gap-3 mb-8">
+              {/* Plan selector */}
+              <View className="flex-row gap-3">
+                {/* Annual */}
+                <TouchableOpacity
+                  onPress={() => setSelected('annual')}
+                  className={`flex-1 rounded-2xl border p-4 ${
+                    selected === 'annual'
+                      ? 'bg-harvest-500 border-harvest-400'
+                      : 'bg-oat-100 dark:bg-ristretto-800 border-latte-200 dark:border-ristretto-700'
+                  }`}
+                >
+                  <View className="flex-row items-center justify-between mb-1">
+                    <Text
+                      className={`text-xs font-semibold ${selected === 'annual' ? 'text-white' : 'text-latte-950 dark:text-latte-100'}`}
+                    >
+                      Annual
+                    </Text>
+                    <View
+                      className={`rounded-full px-2 py-0.5 ${selected === 'annual' ? 'bg-white/20' : 'bg-bloom-900 border border-bloom-700'}`}
+                    >
+                      <Text
+                        className={`text-xs font-semibold ${selected === 'annual' ? 'text-white' : 'text-bloom-400'}`}
+                      >
+                        Save 37%
+                      </Text>
+                    </View>
+                  </View>
+                  <Text
+                    className={`text-2xl font-display-bold ${selected === 'annual' ? 'text-white' : 'text-latte-950 dark:text-latte-100'}`}
+                  >
+                    {annualPrice}
+                  </Text>
+                  <Text
+                    className={`text-xs mt-0.5 ${selected === 'annual' ? 'text-white/80' : 'text-latte-600 dark:text-latte-500'}`}
+                  >
+                    per year
+                  </Text>
+                </TouchableOpacity>
+
+                {/* Monthly */}
+                <TouchableOpacity
+                  onPress={() => setSelected('monthly')}
+                  className={`flex-1 rounded-2xl border p-4 ${
+                    selected === 'monthly'
+                      ? 'bg-harvest-500 border-harvest-400'
+                      : 'bg-oat-100 dark:bg-ristretto-800 border-latte-200 dark:border-ristretto-700'
+                  }`}
+                >
+                  <Text
+                    className={`text-xs font-semibold mb-1 ${selected === 'monthly' ? 'text-white' : 'text-latte-950 dark:text-latte-100'}`}
+                  >
+                    Monthly
+                  </Text>
+                  <Text
+                    className={`text-2xl font-display-bold ${selected === 'monthly' ? 'text-white' : 'text-latte-950 dark:text-latte-100'}`}
+                  >
+                    {monthlyPrice}
+                  </Text>
+                  <Text
+                    className={`text-xs mt-0.5 ${selected === 'monthly' ? 'text-white/80' : 'text-latte-600 dark:text-latte-500'}`}
+                  >
+                    per month
+                  </Text>
+                </TouchableOpacity>
+              </View>
+
+              {/* Subscribe button */}
+              <TouchableOpacity
+                onPress={handleSubscribe}
+                disabled={purchasing}
+                className="bg-harvest-500 rounded-2xl items-center justify-center"
+                style={{ height: 52 }}
+              >
+                {purchasing ? (
+                  <ActivityIndicator color="#fff" />
+                ) : (
+                  <Text className="text-white font-bold text-base">
+                    Become a Backer →
+                  </Text>
+                )}
+              </TouchableOpacity>
+
+              {error && (
+                <Text className="text-red-500 text-xs text-center">{error}</Text>
+              )}
+
+              <Text className="text-latte-500 dark:text-latte-600 text-xs text-center">
+                Secure checkout via Stripe. Cancel any time.
               </Text>
             </View>
           )}
