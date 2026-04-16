@@ -30,10 +30,10 @@ import * as purchases from '@/lib/purchases';
 
 SplashScreen.preventAutoHideAsync();
 
-function useHideSplash(fontsLoaded: boolean) {
+function useHideSplash(fontsLoaded: boolean, authReady: boolean) {
   useEffect(() => {
-    if (fontsLoaded) SplashScreen.hideAsync();
-  }, [fontsLoaded]);
+    if (fontsLoaded && authReady) SplashScreen.hideAsync();
+  }, [fontsLoaded, authReady]);
 }
 
 function useSetupAuth() {
@@ -127,10 +127,10 @@ export default function RootLayout() {
     DMSans_700Bold,
   });
 
-  useHideSplash(fontsLoaded);
+  useHideSplash(fontsLoaded, ready);
   useAuthGate(session, ready, isRecovery);
 
-  if (!fontsLoaded) return null;
+  if (!fontsLoaded || !ready) return null;
 
   return (
     <ThemeProvider>
