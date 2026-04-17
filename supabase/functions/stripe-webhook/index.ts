@@ -1,4 +1,4 @@
-import Stripe from 'npm:stripe';
+import Stripe from 'https://esm.sh/stripe@17?target=deno';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 function tierFromPriceId(priceId: string): 'monthly' | 'annual' | null {

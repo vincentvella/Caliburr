@@ -1,4 +1,4 @@
-import Stripe from 'npm:stripe';
+import Stripe from 'https://esm.sh/stripe@17?target=deno';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 const corsHeaders = {
@@ -6,11 +6,6 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, content-type',
 };
 
-function tierFromPriceId(priceId: string): 'monthly' | 'annual' | null {
-  if (priceId === Deno.env.get('STRIPE_MONTHLY_PRICE_ID')) return 'monthly';
-  if (priceId === Deno.env.get('STRIPE_ANNUAL_PRICE_ID')) return 'annual';
-  return null;
-}
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
