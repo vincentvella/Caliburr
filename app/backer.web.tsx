@@ -118,7 +118,7 @@ export default function BackerScreenWeb() {
           </View>
 
           {/* Status / CTA */}
-          {isBacker ? (
+          {isBacker || success === '1' ? (
             <View className="bg-crema-900/20 border border-crema-700 rounded-2xl px-4 py-5 items-center mb-8">
               <Text style={{ fontSize: 32 }}>☕</Text>
               <Text className="text-crema-300 font-semibold text-base mt-3">
@@ -206,15 +206,11 @@ export default function BackerScreenWeb() {
                 {purchasing ? (
                   <ActivityIndicator color="#fff" />
                 ) : (
-                  <Text className="text-white font-bold text-base">
-                    Become a Backer →
-                  </Text>
+                  <Text className="text-white font-bold text-base">Become a Backer →</Text>
                 )}
               </TouchableOpacity>
 
-              {error && (
-                <Text className="text-red-500 text-xs text-center">{error}</Text>
-              )}
+              {error && <Text className="text-red-500 text-xs text-center">{error}</Text>}
 
               <Text className="text-latte-500 dark:text-latte-600 text-xs text-center">
                 Secure checkout via Stripe. Cancel any time.
