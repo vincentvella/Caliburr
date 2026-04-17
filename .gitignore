@@ -49,6 +49,7 @@ google-service-account.json
 .maestro/screenshots/processed/
 screenshots/
 credentials.json
+supabase/functions/.env.local
 
 # Generated from store.config.js — contains PII (review email/phone)
 store.config.json

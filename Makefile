@@ -1,4 +1,4 @@
-.PHONY: screenshots screenshots-clean screenshots-process screenshots-all
+.PHONY: screenshots screenshots-clean screenshots-process screenshots-all stripe-dev
 
 MAESTRO_DIR := .maestro
 SCREENSHOT_DIR := $(MAESTRO_DIR)/screenshots
@@ -28,3 +28,7 @@ screenshots-process:
 
 ## Full pipeline: clean → capture → process
 screenshots-all: screenshots-clean screenshots screenshots-process
+
+## Run stripe-webhook locally with Stripe CLI forwarding (requires supabase/functions/.env.local)
+stripe-dev:
+	supabase/functions/stripe-dev.sh
