@@ -3,7 +3,7 @@
     "name": "Caliburr",
     "slug": "caliburr",
     "version": "1.0.0",
-    "orientation": "portrait",
+    "orientation": "default",
     "icon": "./assets/images/icon.png",
     "scheme": "caliburr",
     "userInterfaceStyle": "automatic",
@@ -51,6 +51,7 @@
     },
     "plugins": [
       "expo-router",
+      "expo-screen-orientation",
       "expo-font",
       "expo-web-browser",
       "expo-system-ui",

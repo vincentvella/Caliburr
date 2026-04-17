@@ -24,7 +24,7 @@ export default function VerifyEmailScreen() {
 
   return (
     <View className="flex-1 bg-latte-50 dark:bg-ristretto-900 justify-center px-6">
-      <Text className="text-crema-300 text-4xl font-bold mb-1">Check your inbox</Text>
+      <Text className="text-harvest-500 text-4xl font-bold mb-1">Check your inbox</Text>
       <Text className="text-latte-700 dark:text-latte-400 text-base mb-2">
         We sent a confirmation link to:
       </Text>
@@ -55,7 +55,9 @@ export default function VerifyEmailScreen() {
           {resending ? (
             <ActivityIndicator color="#ff9d37" />
           ) : (
-            <Text className="text-harvest-400 font-semibold">Resend Email</Text>
+            <Text className="text-harvest-600 dark:text-harvest-400 font-semibold">
+              Resend Email
+            </Text>
           )}
         </TouchableOpacity>
       )}
@@ -63,7 +65,7 @@ export default function VerifyEmailScreen() {
       <View className="flex-row justify-center gap-1">
         <Text className="text-latte-600 dark:text-latte-500">Already verified?</Text>
         <Link href="/(auth)/sign-in">
-          <Text className="text-harvest-400 font-semibold">Sign In</Text>
+          <Text className="text-harvest-600 dark:text-harvest-400 font-semibold">Sign In</Text>
         </Link>
       </View>
     </View>

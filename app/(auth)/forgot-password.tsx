@@ -47,7 +47,7 @@ export default function ForgotPasswordScreen() {
         contentContainerClassName="flex-grow justify-center px-6"
         keyboardShouldPersistTaps="handled"
       >
-        <Text className="text-crema-300 text-4xl font-bold mb-1">Reset Password</Text>
+        <Text className="text-harvest-500 text-4xl font-bold mb-1">Reset Password</Text>
         <Text className="text-latte-700 dark:text-latte-400 text-base mb-10">
           {sent
             ? 'Check your email for a reset link. It may take a minute to arrive.'
@@ -61,7 +61,7 @@ export default function ForgotPasswordScreen() {
                 className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-950 dark:text-latte-100 text-base"
                 style={textInputStyle}
                 placeholder="Email"
-                placeholderTextColor="#6e5a47"
+                placeholderTextColor="#9c7a5e"
                 autoCapitalize="none"
                 keyboardType="email-address"
                 textContentType="emailAddress"
@@ -93,7 +93,9 @@ export default function ForgotPasswordScreen() {
         )}
 
         <TouchableOpacity onPress={() => router.back()} className="items-center">
-          <Text className="text-harvest-400 font-semibold">Back to Sign In</Text>
+          <Text className="text-harvest-600 dark:text-harvest-400 font-semibold">
+            Back to Sign In
+          </Text>
         </TouchableOpacity>
       </ScrollView>
     </KeyboardAvoidingView>

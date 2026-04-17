@@ -13,33 +13,7 @@ async function markOnboardingComplete() {
   await supabase.auth.updateUser({ data: { onboarding_completed: true } });
 }
 
-function useSkipIfOnboarded(preview: string | undefined) {
-  useEffect(() => {
-    if (preview) return;
-    checkExistingGear();
-  }, [preview]);
-
-  async function checkExistingGear() {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) return;
-
-    const { data } = await supabase
-      .from('user_grinders')
-      .select('grinder_id')
-      .eq('user_id', user.id)
-      .limit(1);
-
-    if (data && data.length > 0) {
-      await markOnboardingComplete();
-      router.replace('/(tabs)');
-    }
-  }
-}
-
 export default function OnboardingScreen() {
-  const { preview } = useLocalSearchParams<{ preview?: string }>();
   const [step, setStep] = useState<Step>('welcome');
   const [grinderModalOpen, setGrinderModalOpen] = useState(false);
   const [machineModalOpen, setMachineModalOpen] = useState(false);
@@ -48,8 +22,6 @@ export default function OnboardingScreen() {
   const [finishing, setFinishing] = useState(false);
 
   const fadeAnim = useRef(new Animated.Value(1)).current;
-
-  useSkipIfOnboarded(preview);
 
   function transition(next: Step) {
     Animated.timing(fadeAnim, {

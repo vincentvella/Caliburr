@@ -8,6 +8,7 @@ import {
   ScrollView,
   Platform,
   ActivityIndicator,
+  useWindowDimensions,
 } from 'react-native';
 import { useRef } from 'react';
 import { Link, router } from 'expo-router';
@@ -16,6 +17,8 @@ import { supabase } from '@/lib/supabase';
 
 export default function SignInScreen() {
   const passwordRef = useRef<TextInput>(null);
+  const { width } = useWindowDimensions();
+  const showLogo = Platform.OS !== 'web' && width < 768;
 
   const form = useForm({
     defaultValues: {
@@ -44,9 +47,9 @@ export default function SignInScreen() {
         contentContainerClassName="flex-grow justify-center px-6"
         keyboardShouldPersistTaps="handled"
       >
-        {Platform.OS !== 'web' && (
+        {showLogo && (
           <>
-            <Text className="text-crema-300 text-4xl mb-1 font-display-bold">Caliburr</Text>
+            <Text className="text-harvest-500 text-4xl mb-1 font-display-bold">Caliburr</Text>
             <Text className="text-latte-700 dark:text-latte-400 text-base mb-10">
               Dial in your perfect cup.
             </Text>
@@ -67,7 +70,7 @@ export default function SignInScreen() {
                   className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-950 dark:text-latte-100 text-base"
                   style={textInputStyle}
                   placeholder="Email"
-                  placeholderTextColor="#6e5a47"
+                  placeholderTextColor="#9c7a5e"
                   autoCapitalize="none"
                   keyboardType="email-address"
                   textContentType="emailAddress"
@@ -108,7 +111,7 @@ export default function SignInScreen() {
                   className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-950 dark:text-latte-100 text-base"
                   style={textInputStyle}
                   placeholder="Password"
-                  placeholderTextColor="#6e5a47"
+                  placeholderTextColor="#9c7a5e"
                   secureTextEntry
                   textContentType="password"
                   autoComplete="current-password"
@@ -162,7 +165,7 @@ export default function SignInScreen() {
         <View className="flex-row justify-center gap-1 mb-4">
           <Text className="text-latte-600 dark:text-latte-500">{`Don't have an account?`}</Text>
           <Link href="/(auth)/sign-up">
-            <Text className="text-harvest-400 font-semibold">Sign Up</Text>
+            <Text className="text-harvest-600 dark:text-harvest-400 font-semibold">Sign Up</Text>
           </Link>
         </View>
 

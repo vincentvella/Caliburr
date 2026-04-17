@@ -8,6 +8,7 @@ import {
   ScrollView,
   Platform,
   ActivityIndicator,
+  useWindowDimensions,
 } from 'react-native';
 import { useRef, useState } from 'react';
 import { Link, router } from 'expo-router';
@@ -21,6 +22,8 @@ const TOS_URL = 'https://caliburr.coffee/terms';
 export default function SignUpScreen() {
   const passwordRef = useRef<TextInput>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const { width } = useWindowDimensions();
+  const showLogo = Platform.OS !== 'web' && width < 768;
 
   const form = useForm({
     defaultValues: {
@@ -52,9 +55,9 @@ export default function SignUpScreen() {
         contentContainerClassName="flex-grow justify-center px-6"
         keyboardShouldPersistTaps="handled"
       >
-        {Platform.OS !== 'web' && (
+        {showLogo && (
           <>
-            <Text className="text-crema-300 text-4xl mb-1 font-display-bold">Caliburr</Text>
+            <Text className="text-harvest-500 text-4xl mb-1 font-display-bold">Caliburr</Text>
             <Text className="text-latte-700 dark:text-latte-400 text-base mb-10">
               Create an account to start dialling in.
             </Text>
@@ -74,7 +77,7 @@ export default function SignUpScreen() {
                   className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-950 dark:text-latte-100 text-base"
                   style={textInputStyle}
                   placeholder="Email"
-                  placeholderTextColor="#6e5a47"
+                  placeholderTextColor="#9c7a5e"
                   autoCapitalize="none"
                   keyboardType="email-address"
                   textContentType="emailAddress"
@@ -112,7 +115,7 @@ export default function SignUpScreen() {
                   className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-950 dark:text-latte-100 text-base"
                   style={textInputStyle}
                   placeholder="Password"
-                  placeholderTextColor="#6e5a47"
+                  placeholderTextColor="#9c7a5e"
                   secureTextEntry
                   textContentType="newPassword"
                   autoComplete="new-password"
@@ -161,12 +164,15 @@ export default function SignUpScreen() {
 
         <Text className="text-latte-500 dark:text-latte-600 text-xs text-center mb-6 leading-5">
           By creating an account you agree to our{' '}
-          <Text className="text-harvest-400" onPress={() => WebBrowser.openBrowserAsync(TOS_URL)}>
+          <Text
+            className="text-harvest-600 dark:text-harvest-400"
+            onPress={() => WebBrowser.openBrowserAsync(TOS_URL)}
+          >
             Terms of Service
           </Text>{' '}
           and{' '}
           <Text
-            className="text-harvest-400"
+            className="text-harvest-600 dark:text-harvest-400"
             onPress={() => WebBrowser.openBrowserAsync(PRIVACY_POLICY_URL)}
           >
             Privacy Policy
@@ -177,7 +183,7 @@ export default function SignUpScreen() {
         <View className="flex-row justify-center gap-1">
           <Text className="text-latte-600 dark:text-latte-500">Already have an account?</Text>
           <Link href="/(auth)/sign-in">
-            <Text className="text-harvest-400 font-semibold">Sign In</Text>
+            <Text className="text-harvest-600 dark:text-harvest-400 font-semibold">Sign In</Text>
           </Link>
         </View>
       </ScrollView>

@@ -2,11 +2,13 @@ import '../global.css';
 import 'react-native-url-polyfill/auto';
 
 import { useEffect, useState } from 'react';
+import { Platform } from 'react-native';
 import { Stack, router, useSegments } from 'expo-router';
 import { useUniwind } from 'uniwind';
 import { StatusBar } from 'expo-status-bar';
 import * as Linking from 'expo-linking';
 import * as SplashScreen from 'expo-splash-screen';
+import * as ScreenOrientation from 'expo-screen-orientation';
 import { useFonts } from 'expo-font';
 import {
   Fraunces_400Regular,
@@ -29,6 +31,11 @@ import { BackerProvider } from '@/lib/backerContext';
 import * as purchases from '@/lib/purchases';
 
 SplashScreen.preventAutoHideAsync();
+
+// Lock phones to portrait; let iPads rotate freely
+if (Platform.OS === 'ios' && !Platform.isPad) {
+  ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
+}
 
 function useHideSplash(fontsLoaded: boolean, authReady: boolean) {
   useEffect(() => {
