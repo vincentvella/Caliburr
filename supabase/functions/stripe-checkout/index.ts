@@ -20,16 +20,18 @@ Deno.serve(async (req) => {
     });
   }
 
-  const token = authHeader.replace('Bearer ', '');
   const supabase = createClient(
     Deno.env.get('SUPABASE_URL')!,
     Deno.env.get('SUPABASE_ANON_KEY')!,
-    { auth: { autoRefreshToken: false, persistSession: false } },
+    {
+      auth: { autoRefreshToken: false, persistSession: false },
+      global: { headers: { Authorization: authHeader } },
+    },
   );
 
   const {
     data: { user },
-  } = await supabase.auth.getUser(token);
+  } = await supabase.auth.getUser();
   if (!user) {
     return new Response(JSON.stringify({ error: 'Unauthorized' }), {
       status: 401,
