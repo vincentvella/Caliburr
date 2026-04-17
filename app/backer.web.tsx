@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
-import { Stack, router, useLocalSearchParams } from 'expo-router';
+import { Stack, router, useLocalSearchParams, useNavigation } from 'expo-router';
 import { useState, useEffect } from 'react';
 import { BackerBadge } from '@/components/BackerBadge';
 import { useBackerContext } from '@/lib/backerContext';
@@ -12,15 +12,9 @@ const PERKS = [
   { icon: '🎧', title: 'Priority support', desc: 'Your messages are reviewed first' },
 ];
 
-export default function BackerScreenWeb() {
-  const { isBacker, refresh } = useBackerContext();
-  const { success } = useLocalSearchParams<{ success?: string }>();
-
-  const [selected, setSelected] = useState<'annual' | 'monthly'>('annual');
+function useBackerOffering() {
   const [monthly, setMonthly] = useState<PurchasesPackage | null>(null);
   const [annual, setAnnual] = useState<PurchasesPackage | null>(null);
-  const [purchasing, setPurchasing] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     purchases.getBackerOffering().then((offering) => {
@@ -29,10 +23,34 @@ export default function BackerScreenWeb() {
     });
   }, []);
 
-  // Refresh backer status when returning from Stripe with ?success=1
+  return { monthly, annual };
+}
+
+function useRefreshOnSuccess(success: string | undefined, refresh: () => void) {
   useEffect(() => {
     if (success === '1') refresh();
   }, [success, refresh]);
+}
+
+export default function BackerScreenWeb() {
+  const { isBacker, refresh } = useBackerContext();
+  const { success } = useLocalSearchParams<{ success?: string }>();
+  const navigation = useNavigation();
+  const { monthly, annual } = useBackerOffering();
+
+  useRefreshOnSuccess(success, refresh);
+
+  function goBack() {
+    if (navigation.canGoBack()) {
+      router.back();
+    } else {
+      router.replace('/(tabs)/profile');
+    }
+  }
+
+  const [selected, setSelected] = useState<'annual' | 'monthly'>('annual');
+  const [purchasing, setPurchasing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const annualPrice = annual?.product.priceString ?? '$14.99';
   const monthlyPrice = monthly?.product.priceString ?? '$1.99';
@@ -58,10 +76,7 @@ export default function BackerScreenWeb() {
         <View className="max-w-2xl self-center w-full px-6 pb-16">
           {/* Header */}
           <View className="flex-row items-center justify-between pt-8 pb-4 mb-6">
-            <TouchableOpacity
-              onPress={() => router.back()}
-              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-            >
+            <TouchableOpacity onPress={goBack} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
               <Text className="text-harvest-400 font-semibold">‹ Back</Text>
             </TouchableOpacity>
             <Text className="text-latte-950 dark:text-latte-100 font-semibold">

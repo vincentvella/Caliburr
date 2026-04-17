@@ -22,6 +22,22 @@ Deno.serve(async (req) => {
     return new Response('ok', { headers: corsHeaders });
   }
 
+  // GET /stripe-checkout — return price info for display (no auth required)
+  if (req.method === 'GET') {
+    const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY')!);
+    const [monthly, annual] = await Promise.all([
+      stripe.prices.retrieve(Deno.env.get('STRIPE_MONTHLY_PRICE_ID')!),
+      stripe.prices.retrieve(Deno.env.get('STRIPE_ANNUAL_PRICE_ID')!),
+    ]);
+    return new Response(
+      JSON.stringify({
+        monthly: { amount: monthly.unit_amount, currency: monthly.currency },
+        annual: { amount: annual.unit_amount, currency: annual.currency },
+      }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+    );
+  }
+
   const authHeader = req.headers.get('Authorization');
   if (!authHeader) {
     return new Response(JSON.stringify({ error: 'Unauthorized' }), {

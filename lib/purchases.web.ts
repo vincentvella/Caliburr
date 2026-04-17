@@ -22,40 +22,68 @@ export interface PurchasesOffering {
 
 export const PURCHASES_ERROR_CODE = {} as Record<string, number>;
 
-// Static web offering — prices match App Store / Play Store tiers
-const MONTHLY_PACKAGE: PurchasesPackage = {
-  identifier: 'monthly',
-  packageType: 'MONTHLY',
-  product: {
-    identifier: 'coffee.caliburr.backer.monthly',
-    priceString: '$1.99',
-    localizedTitle: 'Caliburr Backer Monthly',
-    localizedDescription: 'Support Caliburr monthly',
-  },
-};
+function formatPrice(amount: number | null, currency: string): string {
+  if (amount === null) return '';
+  return new Intl.NumberFormat(navigator.language, {
+    style: 'currency',
+    currency: currency.toUpperCase(),
+  }).format(amount / 100);
+}
 
-const ANNUAL_PACKAGE: PurchasesPackage = {
-  identifier: 'annual',
-  packageType: 'ANNUAL',
-  product: {
-    identifier: 'coffee.caliburr.backer.annual',
-    priceString: '$14.99',
-    localizedTitle: 'Caliburr Backer Annual',
-    localizedDescription: 'Support Caliburr annually — save 37%',
-  },
-};
+function makePackage(
+  tier: 'monthly' | 'annual',
+  amount: number | null,
+  currency: string,
+): PurchasesPackage {
+  const isAnnual = tier === 'annual';
+  return {
+    identifier: tier,
+    packageType: isAnnual ? 'ANNUAL' : 'MONTHLY',
+    product: {
+      identifier: `coffee.caliburr.backer.${tier}`,
+      priceString: formatPrice(amount, currency),
+      localizedTitle: `Caliburr Backer ${isAnnual ? 'Annual' : 'Monthly'}`,
+      localizedDescription: isAnnual
+        ? 'Support Caliburr annually — save 37%'
+        : 'Support Caliburr monthly',
+    },
+  };
+}
 
 export function configure() {}
 export async function logIn(_userId: string) {}
 export async function logOut() {}
 
 export async function getBackerOffering(): Promise<PurchasesOffering | null> {
+  let monthly: PurchasesPackage;
+  let annual: PurchasesPackage;
+
+  try {
+    const res = await fetch(
+      `${process.env.EXPO_PUBLIC_SUPABASE_URL}/functions/v1/stripe-checkout`,
+    );
+    if (res.ok) {
+      const data = (await res.json()) as {
+        monthly: { amount: number | null; currency: string };
+        annual: { amount: number | null; currency: string };
+      };
+      monthly = makePackage('monthly', data.monthly.amount, data.monthly.currency);
+      annual = makePackage('annual', data.annual.amount, data.annual.currency);
+    } else {
+      throw new Error('Failed to fetch prices');
+    }
+  } catch {
+    // Fallback to USD defaults if the fetch fails
+    monthly = makePackage('monthly', 199, 'usd');
+    annual = makePackage('annual', 1499, 'usd');
+  }
+
   return {
     identifier: 'backer_web',
     serverDescription: 'Caliburr Backer',
-    availablePackages: [MONTHLY_PACKAGE, ANNUAL_PACKAGE],
-    monthly: MONTHLY_PACKAGE,
-    annual: ANNUAL_PACKAGE,
+    availablePackages: [monthly, annual],
+    monthly,
+    annual,
   };
 }
 
