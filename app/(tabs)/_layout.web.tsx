@@ -1,6 +1,7 @@
 import { Slot, router, usePathname } from 'expo-router';
 import { View, Text, TouchableOpacity, Pressable, useWindowDimensions } from 'react-native';
 import { useState } from 'react';
+import { PlayStoreBanner } from '@/components/PlayStoreBanner';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme, type ThemePreference } from '@/lib/theme';
 import { useUniwind } from 'uniwind';
@@ -174,6 +175,9 @@ export default function WebLayout() {
 
       {/* Main content */}
       <View className="flex-1">
+        {/* Android Play Store banner — narrow only */}
+        {!isWide && <PlayStoreBanner />}
+
         {/* Top bar — narrow only */}
         {!isWide && (
           <View

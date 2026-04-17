@@ -8,8 +8,20 @@ const corsHeaders = {
 type BackerTier = 'monthly' | 'annual';
 
 function tierFromProductId(productId: string): BackerTier | null {
-  if (productId === 'coffee.caliburr.backer.monthly') return 'monthly';
-  if (productId === 'coffee.caliburr.backer.annual') return 'annual';
+  const annualIds = [
+    Deno.env.get('STRIPE_ANNUAL_PRICE_ID'),
+    Deno.env.get('STRIPE_ANNUAL_PRICE_ID_TEST'),
+  ];
+  const monthlyIds = [
+    Deno.env.get('STRIPE_MONTHLY_PRICE_ID'),
+    Deno.env.get('STRIPE_MONTHLY_PRICE_ID_TEST'),
+  ];
+  if (annualIds.includes(productId)) return 'annual';
+  if (monthlyIds.includes(productId)) return 'monthly';
+  // Fallback: infer from product identifier naming convention
+  const id = productId.toLowerCase();
+  if (id.includes('annual') || id.includes('yearly')) return 'annual';
+  if (id.includes('monthly')) return 'monthly';
   return null;
 }
 
@@ -35,6 +47,8 @@ Deno.serve(async (req) => {
     product_id: string;
     transferred_to?: string[];
   };
+
+  console.log(`RC webhook: type=${event.type} product_id=${event.product_id} user=${event.app_user_id}`);
 
   const adminClient = createClient(
     Deno.env.get('SUPABASE_URL')!,

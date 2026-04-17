@@ -1,4 +1,4 @@
-.PHONY: screenshots screenshots-clean screenshots-process screenshots-all stripe-dev
+.PHONY: screenshots screenshots-clean screenshots-process screenshots-all deploy-functions deploy
 
 MAESTRO_DIR := .maestro
 SCREENSHOT_DIR := $(MAESTRO_DIR)/screenshots
@@ -29,6 +29,8 @@ screenshots-process:
 ## Full pipeline: clean → capture → process
 screenshots-all: screenshots-clean screenshots screenshots-process
 
-## Run stripe-webhook locally with Stripe CLI forwarding (requires supabase/functions/.env.local)
-stripe-dev:
-	supabase/functions/stripe-dev.sh
+## Deploy all Supabase Edge Functions and push DB migrations
+deploy:
+	bunx supabase db push --linked
+	bunx supabase functions deploy --use-api --prune
+

@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
-import { Stack, router, useLocalSearchParams, useNavigation } from 'expo-router';
+import { Stack, router, useNavigation } from 'expo-router';
 import { useState, useEffect } from 'react';
 import { BackerBadge } from '@/components/BackerBadge';
 import { useBackerContext } from '@/lib/backerContext';
@@ -15,30 +15,33 @@ const PERKS = [
 function useBackerOffering() {
   const [monthly, setMonthly] = useState<PurchasesPackage | null>(null);
   const [annual, setAnnual] = useState<PurchasesPackage | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [offeringError, setOfferingError] = useState<string | null>(null);
 
   useEffect(() => {
-    purchases.getBackerOffering().then((offering) => {
-      setMonthly(offering?.monthly ?? null);
-      setAnnual(offering?.annual ?? null);
-    });
+    purchases
+      .getBackerOffering()
+      .then((offering) => {
+        setMonthly(offering?.monthly ?? null);
+        setAnnual(offering?.annual ?? null);
+        if (!offering?.monthly && !offering?.annual) {
+          setOfferingError('Pricing unavailable — please try again later.');
+        }
+      })
+      .catch((e: unknown) => {
+        console.error('getBackerOffering failed:', e);
+        setOfferingError('Pricing unavailable — please try again later.');
+      })
+      .finally(() => setLoading(false));
   }, []);
 
-  return { monthly, annual };
-}
-
-function useRefreshOnSuccess(success: string | undefined, refresh: () => void) {
-  useEffect(() => {
-    if (success === '1') refresh();
-  }, [success, refresh]);
+  return { monthly, annual, loading, offeringError };
 }
 
 export default function BackerScreenWeb() {
   const { isBacker, refresh } = useBackerContext();
-  const { success } = useLocalSearchParams<{ success?: string }>();
   const navigation = useNavigation();
-  const { monthly, annual } = useBackerOffering();
-
-  useRefreshOnSuccess(success, refresh);
+  const { monthly, annual, loading: offeringLoading, offeringError } = useBackerOffering();
 
   function goBack() {
     if (navigation.canGoBack()) {
@@ -62,9 +65,13 @@ export default function BackerScreenWeb() {
     setPurchasing(true);
     try {
       await purchases.purchasePackage(pkg);
-      // purchasePackage redirects to Stripe — execution stops here
-    } catch (e) {
-      setError(e instanceof Error ? e.message : 'Something went wrong. Please try again.');
+      await refresh();
+    } catch (e: unknown) {
+      // User cancelled — don't show an error
+      const msg = e instanceof Error ? e.message : '';
+      if (!msg.toLowerCase().includes('cancel')) {
+        setError(msg || 'Something went wrong. Please try again.');
+      }
       setPurchasing(false);
     }
   }
@@ -133,7 +140,7 @@ export default function BackerScreenWeb() {
           </View>
 
           {/* Status / CTA */}
-          {isBacker || success === '1' ? (
+          {isBacker ? (
             <View className="bg-crema-900/20 border border-crema-700 rounded-2xl px-4 py-5 items-center mb-8">
               <Text style={{ fontSize: 32 }}>☕</Text>
               <Text className="text-crema-300 font-semibold text-base mt-3">
@@ -214,21 +221,23 @@ export default function BackerScreenWeb() {
               {/* Subscribe button */}
               <TouchableOpacity
                 onPress={handleSubscribe}
-                disabled={purchasing}
+                disabled={purchasing || offeringLoading || !!offeringError}
                 className="bg-harvest-500 rounded-2xl items-center justify-center"
-                style={{ height: 52 }}
+                style={{ height: 52, opacity: offeringLoading || !!offeringError ? 0.5 : 1 }}
               >
-                {purchasing ? (
+                {purchasing || offeringLoading ? (
                   <ActivityIndicator color="#fff" />
                 ) : (
                   <Text className="text-white font-bold text-base">Become a Backer →</Text>
                 )}
               </TouchableOpacity>
 
-              {error && <Text className="text-red-500 text-xs text-center">{error}</Text>}
+              {(error || offeringError) && (
+                <Text className="text-red-500 text-xs text-center">{error ?? offeringError}</Text>
+              )}
 
               <Text className="text-latte-500 dark:text-latte-600 text-xs text-center">
-                Secure checkout via Stripe. Cancel any time.
+                Secure checkout. Cancel any time.
               </Text>
             </View>
           )}

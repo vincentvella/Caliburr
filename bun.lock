@@ -11,6 +11,7 @@
         "@react-native-async-storage/async-storage": "2.2.0",
         "@react-native-community/datetimepicker": "8.6.0",
         "@react-navigation/native": "^7.1.8",
+        "@revenuecat/purchases-js": "^1.34.0",
         "@supabase/supabase-js": "^2.101.0",
         "@tanstack/react-form": "^1.28.6",
         "expo": "~55.0.15",
@@ -461,7 +462,7 @@
 
     "@react-navigation/routers": ["@react-navigation/routers@7.5.3", "", { "dependencies": { "nanoid": "^3.3.11" } }, "sha512-1tJHg4KKRJuQ1/EvJxatrMef3NZXEPzwUIUZ3n1yJ2t7Q97siwRtbynRpQG9/69ebbtiZ8W3ScOZF/OmhvM4Rg=="],
 
-    "@revenuecat/purchases-js": ["@revenuecat/purchases-js@1.30.0", "", {}, "sha512-aNlk6lPWrJ1DncPnw0WZh8nZKbd5S++EcsQxlLnv3HX/jOnMO54zr0SKsz3GJyFa6zh04N6b3qHAgWWm51EWpg=="],
+    "@revenuecat/purchases-js": ["@revenuecat/purchases-js@1.34.0", "", {}, "sha512-p3hpHHvyllAckqnjpjaCoj+lVK0gNJwqR1F8EwZPw7eMKFummE0UItbGzBCfncJIPxGA1NJHrgZb1dLflEmjhg=="],
 
     "@revenuecat/purchases-js-hybrid-mappings": ["@revenuecat/purchases-js-hybrid-mappings@17.55.1", "", { "dependencies": { "@revenuecat/purchases-js": "1.30.0" } }, "sha512-hXnaWqbedzoAQOGcJUT0WtXBa/NyDUp6X5ntQ0F79FdgdceMGIGIS3QtLVC6CgNRUmZlt1xgBOkq+MX3bsBYSQ=="],
 
@@ -1866,6 +1867,8 @@
     "@react-native/codegen/hermes-parser": ["hermes-parser@0.32.0", "", { "dependencies": { "hermes-estree": "0.32.0" } }, "sha512-g4nBOWFpuiTqjR3LZdRxKUkij9iyveWeuks7INEsMX741f3r9xxrOe8TeQfUxtda0eXmiIFiMQzoeSQEno33Hw=="],
 
     "@react-native/community-cli-plugin/semver": ["semver@7.7.4", "", { "bin": { "semver": "bin/semver.js" } }, "sha512-vFKC2IEtQnVhpT78h1Yp8wzwrf8CM+MzKMHGJZfBtzhZNycRFnXsHk6E5TxIkkMsgNS7mdX3AGB7x2QM2di4lA=="],
+
+    "@revenuecat/purchases-js-hybrid-mappings/@revenuecat/purchases-js": ["@revenuecat/purchases-js@1.30.0", "", {}, "sha512-aNlk6lPWrJ1DncPnw0WZh8nZKbd5S++EcsQxlLnv3HX/jOnMO54zr0SKsz3GJyFa6zh04N6b3qHAgWWm51EWpg=="],
 
     "@supabase/realtime-js/ws": ["ws@8.20.0", "", { "peerDependencies": { "bufferutil": "^4.0.1", "utf-8-validate": ">=5.0.2" }, "optionalPeers": ["bufferutil", "utf-8-validate"] }, "sha512-sAt8BhgNbzCtgGbt2OxmpuryO63ZoDk/sqaB/znQm94T4fCEsy/yV+7CdC1kJhOU9lboAEU7R3kquuycDoibVA=="],
 

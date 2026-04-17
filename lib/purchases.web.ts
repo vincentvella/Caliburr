@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase';
+import { Purchases, type Package as RCPackage } from '@revenuecat/purchases-js';
 
 // Local types matching the .d.ts shim — avoids importing RevenueCat's stricter native types
 export interface PurchasesPackage {
@@ -22,98 +22,78 @@ export interface PurchasesOffering {
 
 export const PURCHASES_ERROR_CODE = {} as Record<string, number>;
 
-function formatPrice(amount: number | null, currency: string): string {
-  if (amount === null) return '';
-  return new Intl.NumberFormat(navigator.language, {
-    style: 'currency',
-    currency: currency.toUpperCase(),
-  }).format(amount / 100);
+// Cache of RC package objects by identifier for use in purchasePackage
+const _rcPackageCache = new Map<string, RCPackage>();
+
+function getInstance(): Purchases {
+  if (Purchases.isConfigured()) {
+    return Purchases.getSharedInstance();
+  }
+  // Configure with anonymous ID for unauthenticated price fetching
+  return Purchases.configure({
+    apiKey: process.env.EXPO_PUBLIC_REVENUE_CAT_WEB_KEY!,
+    appUserId: Purchases.generateRevenueCatAnonymousAppUserId(),
+  });
 }
 
-function makePackage(
-  tier: 'monthly' | 'annual',
-  amount: number | null,
-  currency: string,
-): PurchasesPackage {
-  const isAnnual = tier === 'annual';
+function adaptPackage(rcPkg: RCPackage): PurchasesPackage {
+  const product = rcPkg.webBillingProduct;
   return {
-    identifier: tier,
-    packageType: isAnnual ? 'ANNUAL' : 'MONTHLY',
+    identifier: rcPkg.identifier,
+    packageType: rcPkg.packageType as string,
     product: {
-      identifier: `coffee.caliburr.backer.${tier}`,
-      priceString: formatPrice(amount, currency),
-      localizedTitle: `Caliburr Backer ${isAnnual ? 'Annual' : 'Monthly'}`,
-      localizedDescription: isAnnual
-        ? 'Support Caliburr annually — save 37%'
-        : 'Support Caliburr monthly',
+      identifier: product.identifier,
+      priceString: product.currentPrice.formattedPrice,
+      localizedTitle: product.title,
+      localizedDescription: product.description ?? '',
     },
   };
 }
 
-export function configure() {}
-export async function logIn(_userId: string) {}
-export async function logOut() {}
+export function configure() {
+  // No-op — RC web SDK is configured on logIn or first use via getInstance()
+}
+
+export async function logIn(userId: string) {
+  if (Purchases.isConfigured()) {
+    await Purchases.getSharedInstance().changeUser(userId);
+  } else {
+    Purchases.configure({
+      apiKey: process.env.EXPO_PUBLIC_REVENUE_CAT_WEB_KEY!,
+      appUserId: userId,
+    });
+  }
+}
+
+export async function logOut() {
+  if (Purchases.isConfigured()) {
+    await Purchases.getSharedInstance().changeUser(
+      Purchases.generateRevenueCatAnonymousAppUserId(),
+    );
+  }
+}
 
 export async function getBackerOffering(): Promise<PurchasesOffering | null> {
-  let monthly: PurchasesPackage;
-  let annual: PurchasesPackage;
+  const offerings = await getInstance().getOfferings();
+  const offering = offerings.all['caliburr_backer'] ?? offerings.current;
+  if (!offering) return null;
 
-  try {
-    const res = await fetch(
-      `${process.env.EXPO_PUBLIC_SUPABASE_URL}/functions/v1/stripe-checkout`,
-    );
-    if (res.ok) {
-      const data = (await res.json()) as {
-        monthly: { amount: number | null; currency: string };
-        annual: { amount: number | null; currency: string };
-      };
-      monthly = makePackage('monthly', data.monthly.amount, data.monthly.currency);
-      annual = makePackage('annual', data.annual.amount, data.annual.currency);
-    } else {
-      throw new Error('Failed to fetch prices');
-    }
-  } catch {
-    // Fallback to USD defaults if the fetch fails
-    monthly = makePackage('monthly', 199, 'usd');
-    annual = makePackage('annual', 1499, 'usd');
-  }
+  _rcPackageCache.clear();
+  offering.availablePackages.forEach((pkg) => _rcPackageCache.set(pkg.identifier, pkg));
 
   return {
-    identifier: 'backer_web',
-    serverDescription: 'Caliburr Backer',
-    availablePackages: [monthly, annual],
-    monthly,
-    annual,
+    identifier: offering.identifier,
+    serverDescription: offering.serverDescription,
+    availablePackages: offering.availablePackages.map(adaptPackage),
+    monthly: offering.monthly ? adaptPackage(offering.monthly) : null,
+    annual: offering.annual ? adaptPackage(offering.annual) : null,
   };
 }
 
 export async function purchasePackage(pkg: PurchasesPackage): Promise<void> {
-  const tier = pkg.identifier === 'annual' ? 'annual' : 'monthly';
-
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
-  if (!session) throw new Error('Not authenticated');
-
-  const response = await fetch(
-    `${process.env.EXPO_PUBLIC_SUPABASE_URL}/functions/v1/stripe-checkout`,
-    {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${session.access_token}`,
-      },
-      body: JSON.stringify({ tier }),
-    },
-  );
-
-  if (!response.ok) {
-    const err = await response.json().catch(() => ({}));
-    throw new Error((err as { error?: string }).error ?? 'Failed to create checkout session');
-  }
-
-  const { url } = (await response.json()) as { url: string };
-  window.location.href = url;
+  const rcPkg = _rcPackageCache.get(pkg.identifier);
+  if (!rcPkg) throw new Error('Package not found — call getBackerOffering first');
+  await getInstance().purchase({ rcPackage: rcPkg });
 }
 
 export async function restorePurchases(): Promise<boolean> {
@@ -121,17 +101,10 @@ export async function restorePurchases(): Promise<boolean> {
 }
 
 export async function isBackerActive(): Promise<boolean> {
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return false;
-
-  // profiles table may not be in generated types yet — cast to any
-  const { data } = await (supabase as any)
-    .from('profiles')
-    .select('backer_tier')
-    .eq('user_id', user.id)
-    .single();
-
-  return !!(data as { backer_tier?: string | null } | null)?.backer_tier;
+  try {
+    const info = await getInstance().getCustomerInfo();
+    return !!info.entitlements.active['backer'];
+  } catch {
+    return false;
+  }
 }

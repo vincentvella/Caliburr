@@ -22,13 +22,13 @@ export function BackerProvider({ children }: { children: ReactNode }) {
       const active = await purchases.isBackerActive();
       setIsBacker(active);
     } catch {
-      // Not a backer if RevenueCat is unavailable (e.g. web)
+      // Not a backer if RevenueCat is unavailable
     } finally {
       setLoading(false);
     }
   }, []);
 
-  // Check once on mount — RevenueCat is already configured + logged in by this point
+  // Check once on mount — RC is configured + logged in before BackerProvider renders
   useEffect(() => {
     refresh();
   }, [refresh]);
