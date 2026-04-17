@@ -2,14 +2,16 @@
 
 MAESTRO_DIR := .maestro
 SCREENSHOT_DIR := $(MAESTRO_DIR)/screenshots
+DEVICE_DIR ?= iphone
 
-## Wipe existing screenshots
+## Wipe existing screenshots for the current device
 screenshots-clean:
-	rm -f $(SCREENSHOT_DIR)/*.png
-	rm -rf $(SCREENSHOT_DIR)/processed
-	@echo "✓ Screenshots cleared"
+	rm -rf $(SCREENSHOT_DIR)/$(DEVICE_DIR)
+	@echo "✓ Screenshots cleared ($(DEVICE_DIR))"
 
-## Run Maestro flows to capture screenshots (requires booted iOS simulator)
+## Run Maestro flows to capture screenshots (requires booted simulator)
+## Usage: make screenshots              → iPhone (default)
+##        make screenshots DEVICE_DIR=ipad → iPad
 screenshots:
 	@if [ -z "$$MAESTRO_EMAIL" ]; then \
 		read -r -p "Maestro account email: " MAESTRO_EMAIL; \
@@ -20,11 +22,15 @@ screenshots:
 		echo; \
 		export MAESTRO_PASSWORD; \
 	fi; \
-	MAESTRO_EMAIL=$$MAESTRO_EMAIL MAESTRO_PASSWORD=$$MAESTRO_PASSWORD maestro test $(MAESTRO_DIR)/screenshots.yaml
+	mkdir -p $(SCREENSHOT_DIR)/$(DEVICE_DIR); \
+	MAESTRO_EMAIL=$$MAESTRO_EMAIL MAESTRO_PASSWORD=$$MAESTRO_PASSWORD \
+	maestro test --env DEVICE_DIR=$(DEVICE_DIR) $(MAESTRO_DIR)/screenshots.yaml
 
 ## Process raw screenshots (crop + resize backer badge to 1024x1024)
 screenshots-process:
-	INPUT_DIR="$(CURDIR)/$(SCREENSHOT_DIR)" OUTPUT_DIR="$(CURDIR)/$(SCREENSHOT_DIR)/processed" $(MAESTRO_DIR)/process-screenshots.sh
+	INPUT_DIR="$(CURDIR)/$(SCREENSHOT_DIR)/$(DEVICE_DIR)" \
+	OUTPUT_DIR="$(CURDIR)/$(SCREENSHOT_DIR)/$(DEVICE_DIR)/processed" \
+	$(MAESTRO_DIR)/process-screenshots.sh
 
 ## Full pipeline: clean → capture → process
 screenshots-all: screenshots-clean screenshots screenshots-process

@@ -44,9 +44,8 @@ google-service-account.json
 /android
 
 # Maestro screenshot output
-.maestro/screenshots/*.png
-.maestro/screenshots/*.jpg
-.maestro/screenshots/processed/
+.maestro/screenshots/iphone/
+.maestro/screenshots/ipad/
 screenshots/
 credentials.json
 supabase/functions/.env.local

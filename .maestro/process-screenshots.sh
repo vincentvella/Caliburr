@@ -21,7 +21,7 @@ for INPUT in "$INPUT_DIR"/*.png; do
   FILENAME="$(basename "$INPUT")"
   OUTPUT="$OUTPUT_DIR/$FILENAME"
 
-  if [[ "$FILENAME" == "08_backer_badge.png" ]]; then
+  if [[ "$FILENAME" == *"08_backer_badge.png" ]]; then
     # Crop to centered square, then resize to 1024x1024
     WIDTH=$(sips -g pixelWidth "$INPUT" | awk '/pixelWidth/ {print $2}')
     HEIGHT=$(sips -g pixelHeight "$INPUT" | awk '/pixelHeight/ {print $2}')

@@ -9,4 +9,4 @@ name: 'Screenshot — Recipe detail'
     id: 'recipe-item'
     index: 0
 - waitForAnimationToEnd
-- takeScreenshot: .maestro/screenshots/03_recipe_detail
+- takeScreenshot: .maestro/screenshots/${DEVICE_DIR}/03_recipe_detail
