@@ -68,6 +68,14 @@
           "color": "#ff9d37",
           "defaultChannel": "default"
         }
+      ],
+      [
+        "@sentry/react-native/expo",
+        {
+          "url": "https://sentry.io/",
+          "project": "caliburr",
+          "organization": "vellapps-s1"
+        }
       ]
     ],
     "experiments": {

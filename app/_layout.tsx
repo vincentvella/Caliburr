@@ -29,6 +29,21 @@ import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { ThemeProvider } from '@/lib/theme';
 import { BackerProvider } from '@/lib/backerContext';
 import * as purchases from '@/lib/purchases';
+import * as Sentry from '@sentry/react-native';
+
+Sentry.init({
+  dsn: 'https://ec665051bfa92a01b6c78be7ca49b630@o917174.ingest.us.sentry.io/4511239753433088',
+
+  // Adds more context data to events (IP address, cookies, user, etc.)
+  // For more information, visit: https://docs.sentry.io/platforms/react-native/data-management/data-collected/
+  sendDefaultPii: true,
+
+  // Enable Logs
+  enableLogs: true,
+
+  // uncomment the line below to enable Spotlight (https://spotlightjs.com)
+  // spotlight: __DEV__,
+});
 
 SplashScreen.preventAutoHideAsync();
 
@@ -113,12 +128,12 @@ async function handleDeepLink(url: string) {
   if (url.includes('code=')) {
     const { error } = await supabase.auth.exchangeCodeForSession(url);
     if (error) {
-      console.warn('Failed to exchange auth code:', error.message);
+      Sentry.captureException(error, { extra: { context: 'auth_code_exchange' } });
     }
   }
 }
 
-export default function RootLayout() {
+export default Sentry.wrap(function RootLayout() {
   const { session, ready, isRecovery } = useSetupAuth();
   const { theme } = useUniwind();
 
@@ -163,4 +178,4 @@ export default function RootLayout() {
       </BackerProvider>
     </ThemeProvider>
   );
-}
+});

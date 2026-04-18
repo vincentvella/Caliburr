@@ -1,6 +1,7 @@
 import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 import { useState, useEffect } from 'react';
 import { router } from 'expo-router';
+import * as Sentry from '@sentry/react-native';
 import * as WebBrowser from 'expo-web-browser';
 import { supabase } from '@/lib/supabase';
 
@@ -190,6 +191,12 @@ export default function AccountScreen() {
               className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-xl px-4 py-3 mb-2"
             >
               <Text className="text-latte-700 dark:text-latte-300 text-sm">Preview onboarding</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => Sentry.captureException(new Error('Sentry test error'))}
+              className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-xl px-4 py-3 mb-2"
+            >
+              <Text className="text-latte-700 dark:text-latte-300 text-sm">Test Sentry</Text>
             </TouchableOpacity>
           </View>
         )}

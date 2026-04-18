@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
+import * as Sentry from '@sentry/react-native';
 
 interface State {
   hasError: boolean;
@@ -14,7 +15,7 @@ export class ErrorBoundary extends React.Component<{ children: React.ReactNode }
   }
 
   componentDidCatch(error: Error) {
-    console.error('Uncaught render error:', error);
+    Sentry.captureException(error);
   }
 
   render() {

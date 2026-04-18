@@ -1,6 +1,7 @@
 import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
 import { Stack, router, useNavigation } from 'expo-router';
 import { useState, useEffect } from 'react';
+import * as Sentry from '@sentry/react-native';
 import { BackerBadge } from '@/components/BackerBadge';
 import { useBackerContext } from '@/lib/backerContext';
 import * as purchases from '@/lib/purchases';
@@ -29,7 +30,7 @@ function useBackerOffering() {
         }
       })
       .catch((e: unknown) => {
-        console.error('getBackerOffering failed:', e);
+        Sentry.captureException(e, { extra: { context: 'backer_offering_load' } });
         setOfferingError('Pricing unavailable — please try again later.');
       })
       .finally(() => setLoading(false));
@@ -70,6 +71,7 @@ export default function BackerScreenWeb() {
       // User cancelled — don't show an error
       const msg = e instanceof Error ? e.message : '';
       if (!msg.toLowerCase().includes('cancel')) {
+        Sentry.captureException(e, { extra: { context: 'backer_purchase', plan: selected } });
         setError(msg || 'Something went wrong. Please try again.');
       }
       setPurchasing(false);
