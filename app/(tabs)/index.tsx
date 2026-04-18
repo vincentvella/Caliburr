@@ -218,8 +218,9 @@ function useRecipes(myGrinderId: string[]) {
 
 export default function ExploreScreen() {
   const { width } = useWindowDimensions();
-  const numColumns = Platform.OS === 'web' && width >= 900 ? 2 : 1;
   const isWeb = Platform.OS === 'web';
+  const isWide = width >= 768;
+  const numColumns = (isWeb || isWide) && width >= 900 ? 2 : 1;
 
   const { currentUserId, myGrinderId, upvotedIds, setUpvotedIds } = useUserContext();
   const backerIds = useBackerIds();
@@ -318,8 +319,8 @@ export default function ExploreScreen() {
   return (
     <View className="flex-1 bg-latte-50 dark:bg-ristretto-900">
       {/* Header */}
-      <View className={`px-4 pb-3 gap-3 ${isWeb ? 'pt-4' : 'pt-16'}`}>
-        {!isWeb && (
+      <View className={`px-4 pb-3 gap-3 ${isWeb || isWide ? 'pt-8' : 'pt-16'}`}>
+        {!isWeb && !isWide && (
           <View>
             <Text className="text-harvest-600 dark:text-crema-300 text-3xl leading-tight font-display-bold">
               Caliburr

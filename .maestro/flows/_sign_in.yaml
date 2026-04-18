@@ -3,11 +3,15 @@ appId: coffee.caliburr.app
 # If already signed in, skips sign-in entirely.
 # Usage: runFlow: _sign_in.yaml
 ---
-# Wait for the app to finish loading
+# Wait for the app to finish loading.
+# Two waitForAnimationToEnd passes (screenshot-based, no hierarchy query) give
+# the XCTest accessibility tree time to stabilize after launchApp before we
+# start asserting element visibility — prevents kAXErrorInvalidUIElement crashes.
+- waitForAnimationToEnd
 - waitForAnimationToEnd
 - extendedWaitUntil:
     visible: 'Caliburr'
-    timeout: 10000
+    timeout: 15000
 # If the Expo dev client launcher is showing, open the app from it
 - runFlow:
     when:
@@ -55,7 +59,7 @@ appId: coffee.caliburr.app
             - waitForAnimationToEnd
 # Always navigate to Explore tab to ensure consistent starting state
 - tapOn:
-    point: '17%,95%'
+    id: 'nav-explore'
 - waitForAnimationToEnd
 # Assert we're on the main app (search bar only exists on Explore tab)
 - assertVisible:

@@ -75,6 +75,7 @@ export function NativeSidebar() {
           return (
             <TouchableOpacity
               key={href}
+              testID={`nav-${label.toLowerCase().replace(/\s+/g, '-')}`}
               onPress={() => router.push(href as Parameters<typeof router.push>[0])}
               className={`flex-row items-center gap-3 px-3 py-2.5 rounded-xl ${
                 isActive ? 'bg-harvest-50 dark:bg-ristretto-800' : ''

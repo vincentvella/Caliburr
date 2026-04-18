@@ -166,12 +166,12 @@ export default function BackerScreen() {
         </View>
 
         {isBacker ? (
-          <View className="bg-crema-900/20 border border-crema-700 rounded-2xl px-4 py-5 items-center mb-8">
+          <View className="bg-crema-50 dark:bg-crema-900/20 border border-crema-300 dark:border-crema-700 rounded-2xl px-4 py-5 items-center mb-8">
             <Text style={{ fontSize: 32 }}>☕</Text>
-            <Text className="text-crema-300 font-semibold text-base mt-3">
+            <Text className="text-crema-800 dark:text-crema-300 font-semibold text-base mt-3">
               You&apos;re a Caliburr Backer
             </Text>
-            <Text className="text-crema-500 text-sm text-center mt-1">
+            <Text className="text-crema-600 dark:text-crema-500 text-sm text-center mt-1">
               Thank you for your support!
             </Text>
           </View>

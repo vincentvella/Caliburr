@@ -5,4 +5,4 @@ name: 'Screenshot — Explore feed'
 - runFlow: _sign_in.yaml
 # Let the feed load
 - waitForAnimationToEnd
-- takeScreenshot: .maestro/screenshots/${DEVICE_DIR}/01_explore
+- takeScreenshot: screenshots/${DEVICE_DIR}/01_explore

@@ -7,7 +7,7 @@ name: 'Screenshot — Onboarding'
 - runFlow: _sign_in.yaml
 # Navigate to the Preview onboarding dev tool
 - tapOn:
-    point: '83%,95%'
+    id: 'nav-profile'
 - waitForAnimationToEnd
 - scrollUntilVisible:
     element:
@@ -25,14 +25,14 @@ name: 'Screenshot — Onboarding'
 # Step 0: Welcome
 - assertVisible:
     text: 'Caliburr'
-- takeScreenshot: .maestro/screenshots/${DEVICE_DIR}/00a_onboarding_welcome
+- takeScreenshot: screenshots/${DEVICE_DIR}/00a_onboarding_welcome
 - tapOn:
     text: 'Get started'
 - waitForAnimationToEnd
 # Step 1: Add grinder
 - assertVisible:
     text: 'Add your grinder'
-- takeScreenshot: .maestro/screenshots/${DEVICE_DIR}/00b_onboarding_grinder
+- takeScreenshot: screenshots/${DEVICE_DIR}/00b_onboarding_grinder
 - tapOn:
     text: 'Skip for now →'
 - waitForAnimationToEnd

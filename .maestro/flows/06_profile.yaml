@@ -12,4 +12,4 @@ name: 'Screenshot — Profile (My Gear)'
       - tapOn:
           text: 'Open'
 - waitForAnimationToEnd
-- takeScreenshot: .maestro/screenshots/${DEVICE_DIR}/06_profile
+- takeScreenshot: screenshots/${DEVICE_DIR}/06_profile

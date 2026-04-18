@@ -27,12 +27,12 @@ export default function TabLayout() {
           tabBarActiveTintColor: isDark ? '#ff9d37' : '#f97c0f',
           tabBarInactiveTintColor: isDark ? '#8e8eac' : '#b5693a',
         }}
-        style={{ flex: 1 }}
       >
         <Tabs.Screen
           name="index"
           options={{
             title: 'Explore',
+            tabBarButtonTestID: 'nav-explore',
             tabBarIcon: ({ color, size }) => (
               <Ionicons name="compass-outline" size={size} color={color} />
             ),
@@ -42,6 +42,7 @@ export default function TabLayout() {
           name="recipes"
           options={{
             title: 'My Brews',
+            tabBarButtonTestID: 'nav-my-brews',
             tabBarIcon: ({ color, size }) => (
               <Ionicons name="book-outline" size={size} color={color} />
             ),
@@ -51,6 +52,7 @@ export default function TabLayout() {
           name="profile"
           options={{
             title: 'Profile',
+            tabBarButtonTestID: 'nav-profile',
             tabBarIcon: ({ color, size }) => (
               <Ionicons name="person-outline" size={size} color={color} />
             ),

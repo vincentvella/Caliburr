@@ -10,6 +10,7 @@ import {
 import { useState, useEffect, useCallback } from 'react';
 import { router } from 'expo-router';
 import { supabase } from '@/lib/supabase';
+import { adminInvoke } from '@/lib/adminInvoke';
 
 interface GrinderEdit {
   id: string;
@@ -145,14 +146,8 @@ export default function AdminScreen() {
     action: 'approve' | 'reject',
   ) {
     setActioningId(editId);
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
 
-    const { error } = await supabase.functions.invoke('review-equipment-edit', {
-      body: { editId, editType, action },
-      headers: { Authorization: `Bearer ${session?.access_token}` },
-    });
+    const { error } = await adminInvoke('review-equipment-edit', { editId, editType, action });
 
     if (error) {
       Alert.alert('Error', 'Failed to process edit. Please try again.');
@@ -168,13 +163,11 @@ export default function AdminScreen() {
 
   async function handleImageAction(image: PendingImage, action: 'approve' | 'reject') {
     setActioningId(image.id);
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
 
-    const { error } = await supabase.functions.invoke('approve-equipment-image', {
-      body: { equipmentId: image.id, equipmentType: image.type, action },
-      headers: { Authorization: `Bearer ${session?.access_token}` },
+    const { error } = await adminInvoke('approve-equipment-image', {
+      equipmentId: image.id,
+      equipmentType: image.type,
+      action,
     });
 
     if (error) {

@@ -2,7 +2,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, content-content, authorization',
+  'Access-Control-Allow-Headers': 'authorization, content-type',
 };
 
 Deno.serve(async (req) => {

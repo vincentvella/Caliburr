@@ -254,7 +254,8 @@ export default function RecipesScreen() {
   const screenshotMode = useScreenshotMode();
   const { width } = useWindowDimensions();
   const isWeb = Platform.OS === 'web';
-  const numColumns = isWeb && width >= 900 ? 2 : 1;
+  const isWide = width >= 768;
+  const numColumns = (isWeb || isWide) && width >= 900 ? 2 : 1;
   const [tab, setTab] = useState<'mine' | 'liked'>('mine');
   const [recipes, setRecipes] = useState<RecipeWithJoins[]>([]);
   const [loading, setLoading] = useState(!screenshotMode);
@@ -359,12 +360,12 @@ export default function RecipesScreen() {
           <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor="#ff9d37" />
         }
         contentContainerStyle={
-          isWeb
+          isWeb || isWide
             ? { maxWidth: 960, alignSelf: 'center', width: '100%', paddingHorizontal: 16 }
             : { paddingHorizontal: 16 }
         }
         ListHeaderComponent={
-          <View className={isWeb ? 'pt-4 pb-2' : 'pt-16 pb-2'}>
+          <View className={isWeb || isWide ? 'pt-8 pb-2' : 'pt-16 pb-2'}>
             <Text className="text-latte-950 dark:text-latte-100 text-2xl mb-1 font-display-bold">
               My Brews
             </Text>

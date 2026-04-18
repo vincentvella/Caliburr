@@ -5,7 +5,7 @@ name: 'Screenshot — Account Settings'
 - runFlow: _sign_in.yaml
 - waitForAnimationToEnd
 - tapOn:
-    point: '83%,95%'
+    id: 'nav-profile'
 - waitForAnimationToEnd
 - scrollUntilVisible:
     element:
@@ -14,4 +14,4 @@ name: 'Screenshot — Account Settings'
 - tapOn:
     id: 'account-settings-row'
 - waitForAnimationToEnd
-- takeScreenshot: .maestro/screenshots/06b_account_settings
+- takeScreenshot: screenshots/06b_account_settings

@@ -8,4 +8,4 @@ name: 'Screenshot — New recipe form'
 - tapOn:
     id: 'fab-new-recipe'
 - waitForAnimationToEnd
-- takeScreenshot: .maestro/screenshots/${DEVICE_DIR}/07_new_recipe
+- takeScreenshot: screenshots/${DEVICE_DIR}/07_new_recipe

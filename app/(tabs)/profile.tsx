@@ -312,13 +312,18 @@ export default function ProfileScreen() {
   }
 
   const { width } = useWindowDimensions();
-  const isWide = Platform.OS === 'web' && width >= 768;
+  const isWide = width >= 768;
 
   return (
     <View className="flex-1 bg-latte-50 dark:bg-ristretto-900">
       <ScrollView
-        className={`flex-1 px-6 ${Platform.OS === 'web' ? 'pt-4' : 'pt-16'}`}
+        className={`flex-1 px-6 ${Platform.OS === 'web' || isWide ? 'pt-8' : 'pt-16'}`}
         contentContainerClassName="pb-32"
+        contentContainerStyle={
+          Platform.OS === 'web' || isWide
+            ? { maxWidth: 800, alignSelf: 'center', width: '100%' }
+            : undefined
+        }
       >
         {/* Header */}
         <Text className="text-latte-950 dark:text-latte-100 text-2xl mb-0.5 font-display-bold">

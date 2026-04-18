@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react';
-import * as purchases from '@/lib/purchases';
+import { db } from '@/lib/db';
 
 interface BackerContextValue {
   isBacker: boolean;
@@ -19,10 +19,16 @@ export function BackerProvider({ children }: { children: ReactNode }) {
 
   const refresh = useCallback(async () => {
     try {
-      const active = await purchases.isBackerActive();
-      setIsBacker(active);
+      const { data: { user } } = await db.auth.getUser();
+      if (!user) { setIsBacker(false); return; }
+      const { data } = await db
+        .from('profiles')
+        .select('backer_tier')
+        .eq('user_id', user.id)
+        .single();
+      setIsBacker(!!data?.backer_tier);
     } catch {
-      // Not a backer if RevenueCat is unavailable
+      // leave as false
     } finally {
       setLoading(false);
     }

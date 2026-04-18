@@ -11,6 +11,7 @@ import {
 import { useState, useEffect, useCallback } from 'react';
 import { router } from 'expo-router';
 import { supabase } from '@/lib/supabase';
+import { adminInvoke } from '@/lib/adminInvoke';
 
 type BackerTier = 'monthly' | 'annual';
 
@@ -22,13 +23,7 @@ interface Backer {
 }
 
 async function invokeBackerAdmin<T>(body: object): Promise<T> {
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
-  const { data, error } = await supabase.functions.invoke('admin-backer', {
-    body,
-    headers: { Authorization: `Bearer ${session?.access_token}` },
-  });
+  const { data, error } = await adminInvoke<T>('admin-backer', body);
   if (error) throw error;
   return data as T;
 }

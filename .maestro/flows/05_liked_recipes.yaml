@@ -16,4 +16,4 @@ name: 'Screenshot — Liked Recipes tab'
 - tapOn:
     id: 'tab-liked'
 - waitForAnimationToEnd
-- takeScreenshot: .maestro/screenshots/05_liked_recipes
+- takeScreenshot: screenshots/05_liked_recipes

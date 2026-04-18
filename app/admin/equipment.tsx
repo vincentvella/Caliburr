@@ -2,6 +2,7 @@ import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Alert } fr
 import { useState, useEffect, useCallback } from 'react';
 import { router } from 'expo-router';
 import { supabase } from '@/lib/supabase';
+import { adminInvoke } from '@/lib/adminInvoke';
 
 type FilterType = 'all' | 'unverified' | 'verified';
 
@@ -93,17 +94,16 @@ export default function AdminEquipmentScreen() {
     if (!confirmed) return;
 
     setActioningId(id);
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
 
-    const { error } = await supabase.functions.invoke('admin-verify-equipment', {
-      body: { equipmentId: id, equipmentType, action },
-      headers: { Authorization: `Bearer ${session?.access_token}` },
+    const { error, data } = await adminInvoke<{ error?: string }>('admin-verify-equipment', {
+      equipmentId: id,
+      equipmentType,
+      action,
     });
 
-    if (error) {
-      Alert.alert('Error', 'Failed to update verification status.');
+    if (error || data?.error) {
+      const msg = data?.error ?? error?.message ?? 'Unknown error';
+      Alert.alert('Error', msg);
     } else {
       setItems((prev) =>
         prev.map((i) => {

@@ -11,6 +11,7 @@ import {
 import { useState, useRef } from 'react';
 import { router } from 'expo-router';
 import { supabase } from '@/lib/supabase';
+import { adminInvoke } from '@/lib/adminInvoke';
 
 interface AdminUser {
   id: string;
@@ -29,13 +30,7 @@ interface UserRecipe {
 }
 
 async function invokeUsersAdmin<T>(body: object): Promise<T> {
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
-  const { data, error } = await supabase.functions.invoke('admin-users', {
-    body,
-    headers: { Authorization: `Bearer ${session?.access_token}` },
-  });
+  const { data, error } = await adminInvoke<T>('admin-users', body);
   if (error) throw error;
   return data as T;
 }

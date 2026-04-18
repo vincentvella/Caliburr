@@ -387,3 +387,22 @@ s3_secret_key = "env(S3_SECRET_KEY)"
 [functions.revenuecat-webhook]
 verify_jwt = false
 
+# Admin functions verify the token themselves via anonClient.auth.getUser()
+[functions.admin-verify-equipment]
+verify_jwt = false
+
+[functions.admin-backer]
+verify_jwt = false
+
+[functions.admin-users]
+verify_jwt = false
+
+[functions.review-equipment-edit]
+verify_jwt = false
+
+[functions.approve-equipment-image]
+verify_jwt = false
+
+[functions.notify-equipment-edit]
+verify_jwt = false
+
