@@ -7,24 +7,9 @@ on:
 
 jobs:
   deploy_web:
-    name: Export, upload source maps, deploy
+    name: Deploy web to EAS Hosting
+    type: deploy
     environment:
       name: production
-    steps:
-      - uses: eas/checkout
-      - uses: eas/install_node_modules
-
-      - name: Export web
-        run: bunx expo export --platform web
-
-      - name: Inject + upload source maps to Sentry
-        run: |
-          bunx @sentry/cli sourcemaps inject dist/
-          bunx @sentry/cli sourcemaps upload \
-            --org vellapps-s1 \
-            --project caliburr \
-            --release ${{ github.ref_name }} \
-            dist/
-
-      - name: Deploy to EAS Hosting
-        run: bunx eas-cli@latest deploy --prod --non-interactive
+    params:
+      prod: true
