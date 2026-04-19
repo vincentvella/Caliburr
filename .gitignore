@@ -53,4 +53,7 @@ supabase/functions/.env.local
 # Generated from store.config.js — contains PII (review email/phone)
 store.config.json
 
+# Internal tooling — not for public consumption
+scripts/sync-catalog-assets.ts
+
 .env.local

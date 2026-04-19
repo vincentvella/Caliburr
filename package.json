@@ -66,6 +66,7 @@
     "eslint-plugin-react-compiler": "^19.1.0-rc.2",
     "prettier": "^3.8.1",
     "react-test-renderer": "19.1.0",
+    "sharp": "^0.34.5",
     "typescript": "~5.9.2"
   },
   "private": true
