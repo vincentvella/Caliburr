@@ -30,7 +30,7 @@ Deno.serve(async (req) => {
     error: userError,
   } = await anonClient.auth.getUser(authHeader.replace('Bearer ', ''));
 
-  if (userError || !user || user.user_metadata?.is_admin !== true) {
+  if (userError || !user || user.app_metadata?.is_admin !== true) {
     return new Response(JSON.stringify({ error: 'Forbidden' }), {
       status: 403,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

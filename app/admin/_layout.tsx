@@ -10,7 +10,7 @@ function useAdminGuard() {
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
-      if (!user || user.user_metadata?.is_admin !== true) {
+      if (!user || user.app_metadata?.is_admin !== true) {
         router.replace('/(tabs)');
       }
       setChecked(true);

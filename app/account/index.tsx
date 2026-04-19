@@ -18,7 +18,7 @@ function useCurrentUser() {
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
       setEmail(user?.email ?? null);
-      setIsAdmin(user?.user_metadata?.is_admin === true);
+      setIsAdmin(user?.app_metadata?.is_admin === true);
     });
   }, []);
 
