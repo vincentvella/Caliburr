@@ -34,6 +34,12 @@ export default function SignUpScreen() {
       const { error } = await supabase.auth.signUp({
         email: value.email,
         password: value.password,
+        options: {
+          emailRedirectTo:
+            Platform.OS === 'web'
+              ? 'https://caliburr.coffee'
+              : 'caliburr://auth/confirm',
+        },
       });
       if (error) {
         setSubmitError(error.message);
