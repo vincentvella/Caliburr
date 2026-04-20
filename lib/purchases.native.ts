@@ -20,7 +20,10 @@ export async function logIn(userId: string) {
 }
 
 export async function logOut() {
-  await Purchases.logOut();
+  const info = await Purchases.getCustomerInfo();
+  if (!info.originalAppUserId.startsWith('$RCAnonymousID:')) {
+    await Purchases.logOut();
+  }
 }
 
 export async function getBackerOffering(): Promise<PurchasesOffering | null> {
