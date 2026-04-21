@@ -6,6 +6,7 @@ import * as WebBrowser from 'expo-web-browser';
 import { supabase } from '@/lib/supabase';
 
 const PRIVACY_POLICY_URL = 'https://caliburr.coffee/privacy';
+const TOS_URL = 'https://caliburr.coffee/terms';
 
 async function resetOnboardingFlag() {
   await supabase.auth.updateUser({ data: { onboarding_completed: null } });
@@ -62,7 +63,13 @@ export default function AccountScreen() {
             });
             if (error) {
               setDeletingAccount(false);
-              Alert.alert('Error', 'Failed to delete account. Please try again.');
+              let message = 'Failed to delete account. Please try again.';
+              try {
+                const body = await (error as { context?: Response }).context?.json();
+                if (body?.error) message = body.error;
+              } catch {}
+              console.error('[delete-account]', message);
+              Alert.alert('Error', message);
             } else {
               await supabase.auth.signOut();
             }
@@ -132,6 +139,13 @@ export default function AccountScreen() {
             className="flex-row items-center justify-between bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-2xl px-4 py-3.5"
           >
             <Text className="text-latte-950 dark:text-latte-100 font-medium">Privacy Policy</Text>
+            <Text className="text-latte-600 dark:text-latte-500 text-lg">›</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => WebBrowser.openBrowserAsync(TOS_URL)}
+            className="flex-row items-center justify-between bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-2xl px-4 py-3.5"
+          >
+            <Text className="text-latte-950 dark:text-latte-100 font-medium">Terms of Use</Text>
             <Text className="text-latte-600 dark:text-latte-500 text-lg">›</Text>
           </TouchableOpacity>
         </View>

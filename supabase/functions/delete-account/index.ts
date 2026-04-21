@@ -18,18 +18,19 @@ Deno.serve(async (req) => {
     });
   }
 
-  const jwt = authHeader.replace('Bearer ', '');
-
   // Verify the JWT server-side — user_id is derived from the token,
   // so a caller cannot target a different user's account.
-  const anonClient = createClient(
+  // Pass the JWT via the Authorization header (not as a parameter) so it
+  // works with both HS256 and ES256 token algorithms.
+  const userClient = createClient(
     Deno.env.get('SUPABASE_URL')!,
     Deno.env.get('SUPABASE_ANON_KEY')!,
+    { global: { headers: { Authorization: authHeader } } },
   );
   const {
     data: { user },
     error: userError,
-  } = await anonClient.auth.getUser(jwt);
+  } = await userClient.auth.getUser();
 
   if (userError || !user) {
     return new Response(JSON.stringify({ error: 'Invalid or expired token' }), {

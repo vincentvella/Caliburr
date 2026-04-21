@@ -1,12 +1,16 @@
 import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator, Alert } from 'react-native';
 import { useState, useEffect } from 'react';
 import { Stack, router } from 'expo-router';
+import * as WebBrowser from 'expo-web-browser';
 import * as purchases from '@/lib/purchases';
 import type { PurchasesPackage } from '@/lib/purchases';
 import { PURCHASES_ERROR_CODE } from '@/lib/purchases';
 import { BackerBadge } from '@/components/BackerBadge';
 import { haptics } from '@/lib/haptics';
 import { useBackerContext } from '@/lib/backerContext';
+
+const PRIVACY_POLICY_URL = 'https://caliburr.coffee/privacy';
+const TOS_URL = 'https://caliburr.coffee/terms';
 
 function useOffering() {
   const [monthly, setMonthly] = useState<PurchasesPackage | null>(null);
@@ -269,6 +273,20 @@ export default function BackerScreen() {
               Subscriptions auto-renew unless cancelled at least 24 hours before the end of the
               current period. Manage or cancel in your App Store account settings.
             </Text>
+            <View className="flex-row justify-center gap-4 mt-3">
+              <Text
+                className="text-latte-400 dark:text-latte-700 text-xs underline"
+                onPress={() => WebBrowser.openBrowserAsync(PRIVACY_POLICY_URL)}
+              >
+                Privacy Policy
+              </Text>
+              <Text
+                className="text-latte-400 dark:text-latte-700 text-xs underline"
+                onPress={() => WebBrowser.openBrowserAsync(TOS_URL)}
+              >
+                Terms of Use
+              </Text>
+            </View>
           </>
         )}
       </ScrollView>

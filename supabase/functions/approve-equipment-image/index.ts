@@ -24,15 +24,16 @@ Deno.serve(async (req) => {
     });
   }
 
-  const anonClient = createClient(
+  const userClient = createClient(
     Deno.env.get('SUPABASE_URL')!,
     Deno.env.get('SUPABASE_ANON_KEY')!,
+    { global: { headers: { Authorization: authHeader } } },
   );
 
   const {
     data: { user },
     error: userError,
-  } = await anonClient.auth.getUser(authHeader.replace('Bearer ', ''));
+  } = await userClient.auth.getUser();
 
   if (userError || !user || user.app_metadata?.is_admin !== true) {
     return new Response(JSON.stringify({ error: 'Forbidden' }), {
