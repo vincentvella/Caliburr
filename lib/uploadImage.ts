@@ -54,11 +54,11 @@ export async function pickAndUploadImage(folder: string): Promise<string | null>
 
   const fileName = `${user.id}/${folder}/${Date.now()}.jpg`;
   const response = await fetch(processed.uri);
-  const blob = await response.blob();
+  const arrayBuffer = await response.arrayBuffer();
 
   const { error } = await supabase.storage
     .from('equipment-images')
-    .upload(fileName, blob, { contentType: 'image/jpeg', upsert: false });
+    .upload(fileName, arrayBuffer, { contentType: 'image/jpeg', upsert: false });
 
   if (error) {
     Alert.alert('Upload failed', 'Could not upload image. Please try again.');
