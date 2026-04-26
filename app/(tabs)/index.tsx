@@ -322,7 +322,7 @@ export default function ExploreScreen() {
       <View className={`px-4 pb-3 gap-3 ${isWeb || isWide ? 'pt-8' : 'pt-16'}`}>
         {!isWeb && !isWide && (
           <View>
-            <Text className="text-harvest-600 dark:text-crema-300 text-3xl leading-tight font-display-bold">
+            <Text className="text-harvest-600 dark:text-crema-300 text-2xl leading-tight font-display-bold">
               Caliburr
             </Text>
             <Text className="text-latte-600 dark:text-latte-500 text-sm">
