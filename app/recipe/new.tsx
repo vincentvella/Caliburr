@@ -12,6 +12,7 @@ import {
 import { useEffect, useState, useRef } from 'react';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useForm, useStore } from '@tanstack/react-form';
+import * as Sentry from '@sentry/react-native';
 import { supabase } from '@/lib/supabase';
 import { haptics } from '@/lib/haptics';
 import {
@@ -150,6 +151,7 @@ function useLoadNewRecipe(form: AnyForm, templateId: string | undefined) {
 
         setLoadingEquipment(false);
       } catch (e) {
+        Sentry.captureException(e, { tags: { feature: 'recipe-new-load-equipment' } });
         setEquipmentError(e instanceof Error ? e.message : 'Something went wrong');
         setLoadingEquipment(false);
       }
@@ -219,6 +221,10 @@ export default function NewRecipeScreen() {
         haptics.success();
         router.back();
       } else {
+        Sentry.captureException(error, {
+          tags: { feature: 'recipe-create' },
+          extra: { userId: user.id, grinderId: value.grinder_id, brewMethod: value.brew_method },
+        });
         haptics.error();
         setSubmitError(error.message);
       }

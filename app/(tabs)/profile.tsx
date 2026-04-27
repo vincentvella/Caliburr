@@ -12,6 +12,7 @@ import {
 import { useUniwind } from 'uniwind';
 import { useState, useEffect } from 'react';
 import { router } from 'expo-router';
+import * as Sentry from '@sentry/react-native';
 import { useScreenshotMode } from '@/lib/useScreenshotMode';
 import { supabase } from '@/lib/supabase';
 import { haptics } from '@/lib/haptics';
@@ -184,6 +185,10 @@ export default function ProfileScreen() {
               .eq('user_id', user.id)
               .eq('grinder_id', grinderId);
             if (error) {
+              Sentry.captureException(error, {
+                tags: { feature: 'equipment-remove', kind: 'grinder' },
+                extra: { grinderId, userId: user.id },
+              });
               Alert.alert('Error', 'Failed to remove grinder. Please try again.');
             } else {
               setGrinders((prev) => prev.filter((g) => g.grinder_id !== grinderId));
@@ -213,6 +218,10 @@ export default function ProfileScreen() {
               .eq('user_id', user.id)
               .eq('brew_machine_id', machineId);
             if (error) {
+              Sentry.captureException(error, {
+                tags: { feature: 'equipment-remove', kind: 'machine' },
+                extra: { machineId, userId: user.id },
+              });
               Alert.alert('Error', 'Failed to remove machine. Please try again.');
             } else {
               setMachines((prev) => prev.filter((m) => m.brew_machine_id !== machineId));
@@ -260,7 +269,11 @@ export default function ProfileScreen() {
         if (r1.error) throw r1.error;
         if (r2.error) throw r2.error;
       }
-    } catch {
+    } catch (e) {
+      Sentry.captureException(e, {
+        tags: { feature: 'set-default', kind: 'grinder' },
+        extra: { grinderId, userId: user.id, isAlreadyDefault },
+      });
       // Revert optimistic update
       await fetchEquipment();
       Alert.alert('Error', 'Failed to update default grinder. Please try again.');
@@ -304,7 +317,11 @@ export default function ProfileScreen() {
         if (r1.error) throw r1.error;
         if (r2.error) throw r2.error;
       }
-    } catch {
+    } catch (e) {
+      Sentry.captureException(e, {
+        tags: { feature: 'set-default', kind: 'machine' },
+        extra: { machineId, userId: user.id, isAlreadyDefault },
+      });
       // Revert optimistic update
       await fetchEquipment();
       Alert.alert('Error', 'Failed to update default machine. Please try again.');

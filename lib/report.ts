@@ -1,4 +1,5 @@
 import { Alert } from 'react-native';
+import * as Sentry from '@sentry/react-native';
 import { supabase } from '@/lib/supabase';
 import { db } from '@/lib/db';
 
@@ -27,6 +28,10 @@ async function submitReport(targetType: TargetType, targetId: string, reason: st
 
   if (error && error.code !== '23505') {
     // 23505 = unique violation (already reported) — silently ignore
+    Sentry.captureException(error, {
+      tags: { feature: 'report-submit', targetType },
+      extra: { targetId, reason, userId: user.id },
+    });
     Alert.alert('Error', 'Failed to submit report. Please try again.');
   } else {
     Alert.alert('Reported', "Thank you. We'll review this shortly.");

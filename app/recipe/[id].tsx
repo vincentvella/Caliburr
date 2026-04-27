@@ -10,6 +10,7 @@ import {
 import { useEffect, useState } from 'react';
 import { useLocalSearchParams, router } from 'expo-router';
 import * as Clipboard from 'expo-clipboard';
+import * as Sentry from '@sentry/react-native';
 import { supabase } from '@/lib/supabase';
 import { haptics } from '@/lib/haptics';
 import { promptReport } from '@/lib/report';
@@ -109,6 +110,10 @@ export default function RecipeDetailScreen() {
         .eq('recipe_id', recipe.id)
         .eq('user_id', currentUserId);
       if (err) {
+        Sentry.captureException(err, {
+          tags: { feature: 'upvote', stage: 'remove', surface: 'recipe-detail' },
+          extra: { recipeId: recipe.id, userId: currentUserId },
+        });
         haptics.error();
         setUpvoted(true);
         setRecipe((r) => (r ? { ...r, upvotes: r.upvotes + 1 } : r));
@@ -119,6 +124,10 @@ export default function RecipeDetailScreen() {
         .from('recipe_upvotes')
         .insert({ recipe_id: recipe.id, user_id: currentUserId });
       if (err) {
+        Sentry.captureException(err, {
+          tags: { feature: 'upvote', stage: 'add', surface: 'recipe-detail' },
+          extra: { recipeId: recipe.id, userId: currentUserId },
+        });
         haptics.error();
         setUpvoted(false);
         setRecipe((r) => (r ? { ...r, upvotes: r.upvotes - 1 } : r));
@@ -181,6 +190,10 @@ export default function RecipeDetailScreen() {
             .eq('id', recipe.id)
             .eq('user_id', currentUserId);
           if (error) {
+            Sentry.captureException(error, {
+              tags: { feature: 'recipe-delete' },
+              extra: { recipeId: recipe.id, userId: currentUserId },
+            });
             setDeleting(false);
             Alert.alert('Error', 'Failed to delete recipe. Please try again.');
           } else {

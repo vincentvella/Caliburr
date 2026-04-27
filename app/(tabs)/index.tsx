@@ -15,6 +15,7 @@ import {
 import { LegendList } from '@legendapp/list';
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { useFocusEffect, router } from 'expo-router';
+import * as Sentry from '@sentry/react-native';
 import { supabase } from '@/lib/supabase';
 import { db } from '@/lib/db';
 import { haptics } from '@/lib/haptics';
@@ -288,6 +289,10 @@ export default function ExploreScreen() {
         .eq('recipe_id', recipeId)
         .eq('user_id', currentUserId);
       if (error) {
+        Sentry.captureException(error, {
+          tags: { feature: 'upvote', stage: 'remove', surface: 'feed' },
+          extra: { recipeId, userId: currentUserId },
+        });
         haptics.error();
         setUpvotedIds((prev) => new Set(prev).add(recipeId));
         setRecipes((prev) =>
@@ -300,6 +305,10 @@ export default function ExploreScreen() {
         .from('recipe_upvotes')
         .insert({ recipe_id: recipeId, user_id: currentUserId });
       if (error) {
+        Sentry.captureException(error, {
+          tags: { feature: 'upvote', stage: 'add', surface: 'feed' },
+          extra: { recipeId, userId: currentUserId },
+        });
         haptics.error();
         setUpvotedIds((prev) => {
           const next = new Set(prev);

@@ -35,6 +35,7 @@ export default function AccountScreen() {
     setSigningOut(true);
     const { error } = await supabase.auth.signOut();
     if (error) {
+      Sentry.captureException(error, { tags: { feature: 'sign-out' } });
       setSigningOut(false);
       Alert.alert('Error', 'Failed to sign out. Please try again.');
     }
@@ -68,7 +69,10 @@ export default function AccountScreen() {
                 const body = await (error as { context?: Response }).context?.json();
                 if (body?.error) message = body.error;
               } catch {}
-              console.error('[delete-account]', message);
+              Sentry.captureException(error, {
+                tags: { feature: 'delete-account', stage: 'edge-function' },
+                extra: { message },
+              });
               Alert.alert('Error', message);
             } else {
               await supabase.auth.signOut();

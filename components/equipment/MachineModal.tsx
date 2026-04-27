@@ -15,6 +15,7 @@ import {
 import { LegendList } from '@legendapp/list';
 import { useState, useEffect } from 'react';
 import { useForm } from '@tanstack/react-form';
+import * as Sentry from '@sentry/react-native';
 import { supabase } from '@/lib/supabase';
 import { useQuery } from '@/hooks/useQuery';
 import { unwrap } from '@/lib/api';
@@ -519,14 +520,23 @@ function MachineForm({
             );
 
             // Fire-and-forget email notification
-            supabase.functions.invoke('notify-equipment-edit', {
-              body: {
-                editType: 'machine',
-                equipmentName: `${reviewMachine.brand} ${reviewMachine.model}`,
-                payload,
-                editId: edit.id,
-              },
-            });
+            supabase.functions
+              .invoke('notify-equipment-edit', {
+                body: {
+                  editType: 'machine',
+                  equipmentName: `${reviewMachine.brand} ${reviewMachine.model}`,
+                  payload,
+                  editId: edit.id,
+                },
+              })
+              .then(({ error }) => {
+                if (error) {
+                  Sentry.captureException(error, {
+                    tags: { feature: 'notify-equipment-edit', kind: 'machine' },
+                    extra: { editId: edit.id, machineId: reviewMachine.id },
+                  });
+                }
+              });
           } else {
             if (user) {
               await supabase
@@ -559,6 +569,9 @@ function MachineForm({
         haptics.success();
         onDone(machine);
       } catch (e) {
+        Sentry.captureException(e, {
+          tags: { feature: 'machine-form-submit', mode: isReview ? 'review' : 'create' },
+        });
         haptics.error();
         setSubmitError(e instanceof Error ? e.message : 'Something went wrong');
       }

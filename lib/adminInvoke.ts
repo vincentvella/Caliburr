@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/react-native';
 import { supabase } from './supabase';
 
 /**
@@ -21,13 +22,26 @@ export async function adminInvoke<T = unknown>(
   }
 
   if (!session?.access_token) {
-    return { data: null, error: new Error('Not authenticated') };
+    const err = new Error('Not authenticated');
+    Sentry.captureException(err, { tags: { feature: 'edge-function', fn, stage: 'no-session' } });
+    return { data: null, error: err };
   }
 
   const { data, error } = await supabase.functions.invoke<T>(fn, {
     body,
     headers: { Authorization: `Bearer ${session.access_token}` },
   });
+
+  if (error) {
+    let responseBody: unknown;
+    try {
+      responseBody = await (error as { context?: Response }).context?.json();
+    } catch {}
+    Sentry.captureException(error, {
+      tags: { feature: 'edge-function', fn },
+      extra: { responseBody, userId: session.user?.id },
+    });
+  }
 
   return { data, error };
 }

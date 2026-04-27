@@ -16,6 +16,7 @@ import { LegendList } from '@legendapp/list';
 import { useState, useEffect } from 'react';
 import { router } from 'expo-router';
 import { useForm } from '@tanstack/react-form';
+import * as Sentry from '@sentry/react-native';
 import { supabase } from '@/lib/supabase';
 import { useQuery } from '@/hooks/useQuery';
 import { unwrap } from '@/lib/api';
@@ -598,14 +599,23 @@ function GrinderForm({
             );
 
             // Fire-and-forget email notification
-            supabase.functions.invoke('notify-equipment-edit', {
-              body: {
-                editType: 'grinder',
-                equipmentName: `${reviewGrinder.brand} ${reviewGrinder.model}`,
-                payload,
-                editId: edit.id,
-              },
-            });
+            supabase.functions
+              .invoke('notify-equipment-edit', {
+                body: {
+                  editType: 'grinder',
+                  equipmentName: `${reviewGrinder.brand} ${reviewGrinder.model}`,
+                  payload,
+                  editId: edit.id,
+                },
+              })
+              .then(({ error }) => {
+                if (error) {
+                  Sentry.captureException(error, {
+                    tags: { feature: 'notify-equipment-edit', kind: 'grinder' },
+                    extra: { editId: edit.id, grinderId: reviewGrinder.id },
+                  });
+                }
+              });
           } else {
             // No changes — just count the verification
             if (user) {
@@ -664,6 +674,12 @@ function GrinderForm({
           onDone(data);
         }
       } catch (e) {
+        Sentry.captureException(e, {
+          tags: {
+            feature: 'grinder-form-submit',
+            mode: isReview ? 'review' : editGrinder ? 'edit' : 'create',
+          },
+        });
         haptics.error();
         setSubmitError(e instanceof Error ? e.message : 'Something went wrong');
       }
