@@ -30,10 +30,18 @@ jobs:
       build_id: ${{ needs.build_ios.outputs.build_id }}
       profile: production
 
+  # Workaround: `type: submit` shells out to fastlane without quoting
+  # `--track`, which truncates track names containing spaces (e.g. "Beta
+  # Testers"). The CLI submit path uses spawn-with-args and preserves the
+  # value, so we invoke it from a custom step instead.
   submit_android:
-    name: Submit to Google Play (internal)
-    type: submit
+    name: Submit to Google Play (Beta Testers)
     needs: [build_android]
-    params:
-      build_id: ${{ needs.build_android.outputs.build_id }}
-      profile: production
+    steps:
+      - name: Submit via eas-cli
+        run: |
+          npx -y eas-cli@latest submit \
+            --platform android \
+            --profile production \
+            --id ${{ needs.build_android.outputs.build_id }} \
+            --non-interactive
