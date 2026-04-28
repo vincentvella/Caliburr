@@ -79,7 +79,9 @@ function useSetupAuth() {
       if (event === 'SIGNED_IN' && session?.user.id) {
         purchases.logIn(session.user.id);
       } else if (event === 'SIGNED_OUT') {
-        purchases.logOut();
+        purchases
+          .logOut()
+          .catch((e) => Sentry.captureException(e, { tags: { feature: 'rc-logout' } }));
       } else if (event === 'PASSWORD_RECOVERY') {
         setIsRecovery(true);
         router.replace('/(auth)/reset-password');

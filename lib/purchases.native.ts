@@ -20,8 +20,11 @@ export async function logIn(userId: string) {
 }
 
 export async function logOut() {
-  const info = await Purchases.getCustomerInfo();
-  if (!info.originalAppUserId.startsWith('$RCAnonymousID:')) {
+  // Check the *current* app user ID, not originalAppUserId — the latter is the
+  // first ID ever set on this install and stays as a real user ID even after a
+  // prior logOut, which makes the guard miss subsequent anonymous sessions.
+  const appUserId = await Purchases.getAppUserID();
+  if (!appUserId.startsWith('$RCAnonymousID:')) {
     await Purchases.logOut();
   }
 }

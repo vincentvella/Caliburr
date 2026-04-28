@@ -31,8 +31,7 @@
         "appleTeamId": "T7Z4ML4MH6"
       },
       "android": {
-        "serviceAccountKeyPath": "$GOOGLE_SERVICE_ACCOUNT_KEY_PATH",
-        "track": "internal"
+        "track": "Beta Testers"
       }
     }
   }
