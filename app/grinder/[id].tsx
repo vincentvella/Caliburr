@@ -11,6 +11,7 @@ import {
 import { useLocalSearchParams, router } from 'expo-router';
 import { useState, useEffect, useMemo } from 'react';
 import { supabase } from '@/lib/supabase';
+import { db } from '@/lib/db';
 import { computeGrindStats, type GrindStats } from '@/lib/stats';
 import {
   type Grinder,
@@ -28,6 +29,7 @@ interface GrinderRecipe {
   yield_g: number | null;
   upvotes: number;
   bean: { name: string; roaster: string } | null;
+  worked_tries: number;
 }
 
 function useGrinderDetail(id: string) {
@@ -54,10 +56,31 @@ function useGrinderDetail(id: string) {
 
       if (grinderRes.error || !grinderRes.data) {
         setError('Grinder not found.');
-      } else {
-        setGrinder(grinderRes.data);
-        setRecipes((recipesRes.data ?? []) as GrinderRecipe[]);
+        setLoading(false);
+        return;
       }
+
+      setGrinder(grinderRes.data);
+
+      const baseRecipes = (recipesRes.data ?? []) as Omit<GrinderRecipe, 'worked_tries'>[];
+      const recipeIds = baseRecipes.map((r) => r.id);
+
+      // Count successful tries per recipe so the aggregation can weight by them.
+      const workedCounts = new Map<string, number>();
+      if (recipeIds.length > 0) {
+        const { data: triesData } = await db
+          .from('recipe_tries')
+          .select('recipe_id, worked')
+          .in('recipe_id', recipeIds)
+          .eq('worked', true);
+        for (const t of triesData ?? []) {
+          workedCounts.set(t.recipe_id, (workedCounts.get(t.recipe_id) ?? 0) + 1);
+        }
+      }
+
+      setRecipes(
+        baseRecipes.map((r) => ({ ...r, worked_tries: workedCounts.get(r.id) ?? 0 })),
+      );
       setLoading(false);
     }
     load();
@@ -80,7 +103,12 @@ function useDialInStats(recipes: GrinderRecipe[]) {
       BrewMethod,
       GrinderRecipe[],
     ][]) {
-      stats[method] = computeGrindStats(methodRecipes.map((r) => r.grind_setting));
+      // Weight by 1 + worked_tries: a recipe with no tries contributes once;
+      // a recipe confirmed N times contributes N+1 entries to the dataset.
+      const expanded = methodRecipes.flatMap((r) =>
+        Array<string>(1 + r.worked_tries).fill(r.grind_setting),
+      );
+      stats[method] = computeGrindStats(expanded);
     }
 
     // Methods sorted by recipe count descending

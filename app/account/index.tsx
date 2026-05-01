@@ -109,6 +109,13 @@ export default function AccountScreen() {
         {/* Settings rows */}
         <View className="mb-8 gap-2">
           <TouchableOpacity
+            onPress={() => router.push('/account/edit-profile')}
+            className="flex-row items-center justify-between bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-2xl px-4 py-3.5"
+          >
+            <Text className="text-latte-950 dark:text-latte-100 font-medium">Edit Profile</Text>
+            <Text className="text-latte-600 dark:text-latte-500 text-lg">›</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
             onPress={() => router.push('/account/change-password')}
             className="flex-row items-center justify-between bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-2xl px-4 py-3.5"
           >

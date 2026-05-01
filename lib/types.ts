@@ -95,6 +95,29 @@ export interface RecipeWithJoins extends Recipe {
   brew_machine: Pick<BrewMachine, 'brand' | 'model' | 'machine_type' | 'verified'> | null;
 }
 
+export interface Profile {
+  user_id: string;
+  display_name: string | null;
+  avatar_url: string | null;
+  backer_tier: 'monthly' | 'annual' | null;
+}
+
+export interface RecipeTry {
+  id: string;
+  recipe_id: string;
+  user_id: string;
+  worked: boolean;
+  grind_delta: string | null;
+  yield_delta_g: number | null;
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface RecipeTryWithAuthor extends RecipeTry {
+  profile: Pick<Profile, 'display_name' | 'avatar_url'> | null;
+}
+
 export const MACHINE_TYPE_LABELS: Record<MachineType, string> = {
   espresso: 'Espresso Machine',
   super_automatic: 'Super Automatic',

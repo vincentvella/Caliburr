@@ -2,8 +2,10 @@ import { View, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { LegendList } from '@legendapp/list';
 import { useLocalSearchParams, router } from 'expo-router';
 import { supabase } from '@/lib/supabase';
+import { db } from '@/lib/db';
 import { useQuery } from '@/hooks/useQuery';
 import { BREW_METHOD_LABELS } from '@/lib/types';
+import { AuthorRow } from '@/components/AuthorRow';
 
 interface UserBrew {
   id: string;
@@ -15,23 +17,41 @@ interface UserBrew {
   bean: { name: string; roaster: string } | null;
 }
 
-function useUserBrews(userId: string) {
+interface UserProfile {
+  display_name: string | null;
+  avatar_url: string | null;
+}
+
+function useUserScreen(userId: string) {
   return useQuery(async () => {
-    const { data } = await supabase
-      .from('recipes')
-      .select(
-        'id, brew_method, grind_setting, upvotes, created_at, grinder:grinders(brand, model), bean:beans(name, roaster)',
-      )
-      .eq('user_id', userId)
-      .order('created_at', { ascending: false })
-      .limit(100);
-    return (data ?? []) as UserBrew[];
+    const [recipesRes, profileRes] = await Promise.all([
+      supabase
+        .from('recipes')
+        .select(
+          'id, brew_method, grind_setting, upvotes, created_at, grinder:grinders(brand, model), bean:beans(name, roaster)',
+        )
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false })
+        .limit(100),
+      db
+        .from('profiles')
+        .select('display_name, avatar_url')
+        .eq('user_id', userId)
+        .maybeSingle(),
+    ]);
+
+    return {
+      brews: (recipesRes.data ?? []) as UserBrew[],
+      profile: (profileRes.data ?? null) as UserProfile | null,
+    };
   }, [userId]);
 }
 
 export default function UserBrewsScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { data: brews, loading, error } = useUserBrews(id);
+  const { data, loading, error } = useUserScreen(id);
+  const brews = data?.brews;
+  const profile = data?.profile ?? null;
 
   return (
     <View className="flex-1 bg-latte-50 dark:bg-ristretto-900">
@@ -42,7 +62,7 @@ export default function UserBrewsScreen() {
         >
           <Text className="text-harvest-400 font-semibold">‹ Back</Text>
         </TouchableOpacity>
-        <Text className="text-latte-950 dark:text-latte-100 font-semibold">{"User's Brews"}</Text>
+        <Text className="text-latte-950 dark:text-latte-100 font-semibold">Profile</Text>
         <View style={{ width: 64 }} />
       </View>
 
@@ -61,11 +81,22 @@ export default function UserBrewsScreen() {
           contentContainerClassName="px-4 pt-4 pb-12"
           estimatedItemSize={80}
           ListHeaderComponent={
-            brews && brews.length > 0 ? (
-              <Text className="text-latte-500 dark:text-latte-600 text-xs mb-4">
-                {brews.length} brew{brews.length !== 1 ? 's' : ''}
-              </Text>
-            ) : null
+            <View className="mb-5 px-2">
+              <View className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-2xl px-4 py-4 mb-4">
+                <AuthorRow
+                  userId={id}
+                  displayName={profile?.display_name ?? null}
+                  avatarUrl={profile?.avatar_url ?? null}
+                  variant="header"
+                  pressable={false}
+                  subtitle={
+                    brews && brews.length > 0
+                      ? `${brews.length} brew${brews.length !== 1 ? 's' : ''}`
+                      : 'No public brews yet'
+                  }
+                />
+              </View>
+            </View>
           }
           ListEmptyComponent={
             <View className="items-center mt-16">

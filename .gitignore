@@ -57,3 +57,6 @@ store.config.json
 scripts/sync-catalog-assets.ts
 
 .env.local
+
+# Local-only planning notes
+plans/

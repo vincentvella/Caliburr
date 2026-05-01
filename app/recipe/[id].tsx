@@ -12,11 +12,13 @@ import { useLocalSearchParams, router } from 'expo-router';
 import * as Clipboard from 'expo-clipboard';
 import * as Sentry from '@sentry/react-native';
 import { supabase } from '@/lib/supabase';
+import { db } from '@/lib/db';
 import { haptics } from '@/lib/haptics';
 import { promptReport } from '@/lib/report';
 import {
   type RecipeWithJoins,
   type RecipeHistory,
+  type RecipeTry,
   BREW_METHOD_LABELS,
   ROAST_LEVEL_LABELS,
   MACHINE_TYPE_LABELS,
@@ -25,6 +27,17 @@ import { StatCard } from '@/components/recipe/StatCard';
 import { HistoryCard } from '@/components/recipe/HistoryCard';
 import { EquipmentRow } from '@/components/recipe/EquipmentRow';
 import { formatTime } from '@/components/recipe/RecipeStats';
+import { AuthorRow } from '@/components/AuthorRow';
+import { TriedThisModal } from '@/components/recipe/TriedThisModal';
+
+interface AuthorProfile {
+  display_name: string | null;
+  avatar_url: string | null;
+}
+
+interface TryWithAuthor extends RecipeTry {
+  profile: AuthorProfile | null;
+}
 
 function useRecipeScreen(id: string) {
   const [recipe, setRecipe] = useState<RecipeWithJoins | null>(null);
@@ -33,6 +46,10 @@ function useRecipeScreen(id: string) {
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [upvoted, setUpvoted] = useState(false);
   const [history, setHistory] = useState<RecipeHistory[]>([]);
+  const [author, setAuthor] = useState<AuthorProfile | null>(null);
+  const [tries, setTries] = useState<TryWithAuthor[]>([]);
+  const [myTry, setMyTry] = useState<RecipeTry | null>(null);
+  const [myProfile, setMyProfile] = useState<AuthorProfile | null>(null);
 
   useEffect(() => {
     async function load() {
@@ -43,7 +60,7 @@ function useRecipeScreen(id: string) {
         } = await supabase.auth.getUser();
         setCurrentUserId(user?.id ?? null);
 
-        const [recipeRes, upvoteRes] = await Promise.all([
+        const [recipeRes, upvoteRes, triesRes] = await Promise.all([
           supabase
             .from('recipes')
             .select(
@@ -64,11 +81,50 @@ function useRecipeScreen(id: string) {
                 .eq('user_id', user.id)
                 .maybeSingle()
             : Promise.resolve({ data: null }),
+          db
+            .from('recipe_tries')
+            .select('*')
+            .eq('recipe_id', id)
+            .order('created_at', { ascending: false }),
         ]);
 
         if (recipeRes.error) throw new Error(recipeRes.error.message);
         setRecipe(recipeRes.data as RecipeWithJoins);
         setUpvoted(!!upvoteRes.data);
+
+        // Fetch author + try authors profiles in one round-trip.
+        const tryRows = (triesRes.data ?? []) as RecipeTry[];
+        const profileIds = Array.from(
+          new Set(
+            [recipeRes.data!.user_id, user?.id, ...tryRows.map((t) => t.user_id)].filter(
+              (v): v is string => Boolean(v),
+            ),
+          ),
+        );
+        const profilesMap = new Map<string, AuthorProfile>();
+        if (profileIds.length > 0) {
+          const { data: profilesData } = await db
+            .from('profiles')
+            .select('user_id, display_name, avatar_url')
+            .in('user_id', profileIds);
+          for (const p of profilesData ?? []) {
+            profilesMap.set(p.user_id, {
+              display_name: p.display_name,
+              avatar_url: p.avatar_url,
+            });
+          }
+        }
+
+        const recipeAuthorId = recipeRes.data!.user_id;
+        setAuthor(recipeAuthorId ? (profilesMap.get(recipeAuthorId) ?? null) : null);
+        setMyProfile(user ? (profilesMap.get(user.id) ?? null) : null);
+        setTries(
+          tryRows.map((t) => ({
+            ...t,
+            profile: profilesMap.get(t.user_id) ?? null,
+          })),
+        );
+        setMyTry(user ? (tryRows.find((t) => t.user_id === user.id) ?? null) : null);
 
         if (user && recipeRes.data?.user_id === user.id) {
           const { data: historyData } = await supabase
@@ -87,15 +143,45 @@ function useRecipeScreen(id: string) {
     load();
   }, [id]);
 
-  return { recipe, setRecipe, loading, error, currentUserId, upvoted, setUpvoted, history };
+  return {
+    recipe,
+    setRecipe,
+    loading,
+    error,
+    currentUserId,
+    upvoted,
+    setUpvoted,
+    history,
+    author,
+    tries,
+    setTries,
+    myTry,
+    setMyTry,
+    myProfile,
+  };
 }
 
 export default function RecipeDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { recipe, setRecipe, loading, error, currentUserId, upvoted, setUpvoted, history } =
-    useRecipeScreen(id);
+  const {
+    recipe,
+    setRecipe,
+    loading,
+    error,
+    currentUserId,
+    upvoted,
+    setUpvoted,
+    history,
+    author,
+    tries,
+    setTries,
+    myTry,
+    setMyTry,
+    myProfile,
+  } = useRecipeScreen(id);
   const [deleting, setDeleting] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [tryModalOpen, setTryModalOpen] = useState(false);
 
   async function toggleUpvote() {
     if (!currentUserId || !recipe) return;
@@ -281,6 +367,18 @@ export default function RecipeDetailScreen() {
           </Text>
         </View>
 
+        {/* Author */}
+        {!isOwner && recipe.user_id && (
+          <View className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-2xl px-4 py-3">
+            <AuthorRow
+              userId={recipe.user_id}
+              displayName={author?.display_name ?? null}
+              avatarUrl={author?.avatar_url ?? null}
+              subtitle="Recipe by"
+            />
+          </View>
+        )}
+
         {/* Grind setting — hero stat */}
         <View className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-2xl px-5 py-4 items-center">
           <Text className="text-latte-600 dark:text-latte-500 text-xs mb-1">Grind Setting</Text>
@@ -380,16 +478,63 @@ export default function RecipeDetailScreen() {
           </View>
         )}
 
-        {!isOwner && recipe.user_id && (
-          <TouchableOpacity
-            onPress={() => router.push(`/user/${recipe.user_id}`)}
-            className="items-center py-2"
-          >
-            <Text className="text-harvest-400 text-sm font-medium">
-              More brews from this user →
+        {/* Tries — community try feedback */}
+        <View className="gap-2">
+          <View className="flex-row items-center justify-between">
+            <Text className="text-latte-700 dark:text-latte-400 text-xs font-semibold uppercase tracking-wider">
+              {tries.length === 0
+                ? 'Tries'
+                : `${tries.length} ${tries.length === 1 ? 'try' : 'tries'}`}
             </Text>
-          </TouchableOpacity>
-        )}
+            {!isOwner && currentUserId && (
+              <TouchableOpacity onPress={() => setTryModalOpen(true)}>
+                <Text className="text-harvest-400 text-sm font-semibold">
+                  {myTry ? 'Edit my try' : 'I tried this'}
+                </Text>
+              </TouchableOpacity>
+            )}
+          </View>
+          {tries.length === 0 ? (
+            <Text className="text-latte-500 dark:text-latte-600 text-sm">
+              No one&apos;s tried this yet. Be the first.
+            </Text>
+          ) : (
+            tries.map((t) => {
+              const deltas = [
+                t.grind_delta ? `Grind: ${t.grind_delta}` : null,
+                t.yield_delta_g != null ? `Yield: ${t.yield_delta_g > 0 ? '+' : ''}${t.yield_delta_g}g` : null,
+              ]
+                .filter(Boolean)
+                .join(' · ');
+              return (
+                <View
+                  key={t.id}
+                  className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-xl px-4 py-3"
+                >
+                  <View className="flex-row items-center gap-3 mb-1">
+                    <Text className={t.worked ? 'text-bloom-500' : 'text-red-400'}>
+                      {t.worked ? '👍' : '👎'}
+                    </Text>
+                    <Text
+                      className="text-latte-950 dark:text-latte-100 text-sm font-medium flex-1"
+                      numberOfLines={1}
+                    >
+                      {t.profile?.display_name ?? 'Anonymous'}
+                    </Text>
+                  </View>
+                  {deltas ? (
+                    <Text className="text-latte-600 dark:text-latte-500 text-xs">{deltas}</Text>
+                  ) : null}
+                  {t.notes ? (
+                    <Text className="text-latte-700 dark:text-latte-300 text-sm mt-1">
+                      {t.notes}
+                    </Text>
+                  ) : null}
+                </View>
+              );
+            })
+          )}
+        </View>
 
         {!isOwner && (
           <TouchableOpacity
@@ -425,6 +570,20 @@ export default function RecipeDetailScreen() {
           </Text>
         </TouchableOpacity>
       </View>
+
+      <TriedThisModal
+        visible={tryModalOpen}
+        onClose={() => setTryModalOpen(false)}
+        recipeId={recipe.id}
+        existing={myTry}
+        onSaved={(saved) => {
+          setMyTry(saved);
+          setTries((prev) => {
+            const others = prev.filter((t) => t.id !== saved.id);
+            return [{ ...saved, profile: myProfile }, ...others];
+          });
+        }}
+      />
     </View>
   );
 }

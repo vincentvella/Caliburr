@@ -169,6 +169,7 @@ export default Sentry.wrap(function RootLayout() {
             <Stack.Screen name="support" />
             <Stack.Screen name="account/index" />
             <Stack.Screen name="account/change-password" />
+            <Stack.Screen name="account/edit-profile" />
             <Stack.Screen name="feature-requests" />
             <Stack.Screen name="backer" />
             <Stack.Screen name="admin" />

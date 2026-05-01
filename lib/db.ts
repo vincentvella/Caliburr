@@ -4,6 +4,7 @@
  *   - reports
  *   - profiles
  *   - admin_push_tokens
+ *   - recipe_tries
  *
  * When types are regenerated (bunx supabase gen types typescript --local > lib/database.types.ts)
  * these tables will move into the generated types and this file can be simplified.
@@ -38,17 +39,55 @@ type ExtendedTables = {
       user_id: string;
       backer_tier: string | null;
       backer_since: string | null;
+      display_name: string | null;
+      avatar_url: string | null;
       updated_at: string;
     };
     Insert: {
       user_id: string;
       backer_tier?: string | null;
       backer_since?: string | null;
+      display_name?: string | null;
+      avatar_url?: string | null;
       updated_at?: string;
     };
     Update: {
       backer_tier?: string | null;
       backer_since?: string | null;
+      display_name?: string | null;
+      avatar_url?: string | null;
+      updated_at?: string;
+    };
+    Relationships: [];
+  };
+  recipe_tries: {
+    Row: {
+      id: string;
+      recipe_id: string;
+      user_id: string;
+      worked: boolean;
+      grind_delta: string | null;
+      yield_delta_g: number | null;
+      notes: string | null;
+      created_at: string;
+      updated_at: string;
+    };
+    Insert: {
+      id?: string;
+      recipe_id: string;
+      user_id: string;
+      worked: boolean;
+      grind_delta?: string | null;
+      yield_delta_g?: number | null;
+      notes?: string | null;
+      created_at?: string;
+      updated_at?: string;
+    };
+    Update: {
+      worked?: boolean;
+      grind_delta?: string | null;
+      yield_delta_g?: number | null;
+      notes?: string | null;
       updated_at?: string;
     };
     Relationships: [];

@@ -1,13 +1,25 @@
-import { View, Text, TouchableOpacity, ActivityIndicator, Animated } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  ActivityIndicator,
+  Animated,
+} from 'react-native';
+import { textInputStyle } from '@/lib/styles';
 import { useRef, useState, useEffect } from 'react';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { supabase } from '@/lib/supabase';
+import { db } from '@/lib/db';
+import { pickAndUploadAvatar } from '@/lib/uploadImage';
 import { GrinderModal } from '@/components/equipment/GrinderModal';
 import { MachineModal } from '@/components/equipment/MachineModal';
+import { EditableAvatar } from '@/components/EditableAvatar';
+import * as Sentry from '@sentry/react-native';
 
-type Step = 'welcome' | 'grinder' | 'machine' | 'done';
-const STEP_ORDER: Step[] = ['welcome', 'grinder', 'machine', 'done'];
+type Step = 'welcome' | 'profile' | 'grinder' | 'machine' | 'done';
+const STEP_ORDER: Step[] = ['welcome', 'profile', 'grinder', 'machine', 'done'];
 
 async function markOnboardingComplete() {
   await supabase.auth.updateUser({ data: { onboarding_completed: true } });
@@ -20,6 +32,76 @@ export default function OnboardingScreen() {
   const [addedGrinder, setAddedGrinder] = useState(false);
   const [addedMachine, setAddedMachine] = useState(false);
   const [finishing, setFinishing] = useState(false);
+
+  const [userId, setUserId] = useState<string | null>(null);
+  const [email, setEmail] = useState<string | null>(null);
+  const [displayName, setDisplayName] = useState('');
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const [savingProfile, setSavingProfile] = useState(false);
+  const [nameError, setNameError] = useState<string | null>(null);
+
+  // Load the user's current profile (display_name backfilled from email handle)
+  useEffect(() => {
+    let cancelled = false;
+    async function load() {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (cancelled || !user) return;
+      setUserId(user.id);
+      setEmail(user.email ?? null);
+      const { data: profile } = await db
+        .from('profiles')
+        .select('display_name, avatar_url')
+        .eq('user_id', user.id)
+        .maybeSingle();
+      if (cancelled) return;
+      setDisplayName(profile?.display_name ?? '');
+      setAvatarUrl(profile?.avatar_url ?? null);
+    }
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  async function persistProfile(): Promise<boolean> {
+    if (!userId) return true;
+    const normalized = displayName.trim().toLowerCase();
+    if (normalized.length === 0) return true; // no change → just continue
+    setSavingProfile(true);
+    setNameError(null);
+    const { error } = await db
+      .from('profiles')
+      .update({ display_name: normalized })
+      .eq('user_id', userId);
+    setSavingProfile(false);
+    if (error) {
+      if (error.code === '23505') {
+        setNameError('That handle is already taken. Try another.');
+        return false;
+      }
+      Sentry.captureException(error, {
+        tags: { feature: 'onboarding', stage: 'profile-save' },
+      });
+      setNameError('Could not save. Please try again.');
+      return false;
+    }
+    setDisplayName(normalized);
+    return true;
+  }
+
+  async function handlePickAvatar() {
+    if (!userId) return;
+    setUploadingAvatar(true);
+    const url = await pickAndUploadAvatar();
+    if (url) {
+      const { error } = await db.from('profiles').update({ avatar_url: url }).eq('user_id', userId);
+      if (!error) setAvatarUrl(url);
+    }
+    setUploadingAvatar(false);
+  }
 
   const fadeAnim = useRef(new Animated.Value(1)).current;
 
@@ -53,6 +135,11 @@ export default function OnboardingScreen() {
     { name: React.ComponentProps<typeof Ionicons>['name']; color: string; containerClass: string }
   > = {
     welcome: { name: 'cafe', color: '#fff', containerClass: 'bg-harvest-500 border-harvest-400' },
+    profile: {
+      name: 'person-outline',
+      color: '#ff9d37',
+      containerClass: 'bg-oat-100 dark:bg-ristretto-800 border-latte-200 dark:border-ristretto-700',
+    },
     grinder: {
       name: 'settings-outline',
       color: '#ff9d37',
@@ -72,6 +159,7 @@ export default function OnboardingScreen() {
 
   const heading: Record<Step, string> = {
     welcome: 'Caliburr',
+    profile: 'Pick a handle',
     grinder: 'Add your grinder',
     machine: 'Add your machine',
     done: addedGrinder || addedMachine ? "You're all set!" : 'Ready to explore',
@@ -80,6 +168,8 @@ export default function OnboardingScreen() {
   const body: Record<Step, string> = {
     welcome:
       'A community brew database for coffee nerds — share and discover grind settings across every bean, brewer, and dial.',
+    profile:
+      'This is what the community sees on your recipes and tries. Pick a handle and an avatar — you can change them any time from the Account screen.',
     grinder:
       'Your grinder is the foundation of every brew. Adding it now lets you track grind settings and see what the community is dialling in on the same hardware.',
     machine:
@@ -92,6 +182,7 @@ export default function OnboardingScreen() {
 
   const primaryLabel: Record<Step, string> = {
     welcome: 'Get started',
+    profile: 'Continue →',
     grinder: addedGrinder ? 'Continue →' : 'Skip for now →',
     machine: addedMachine ? 'Continue →' : 'Skip for now →',
     done: 'Explore brews',
@@ -111,7 +202,7 @@ export default function OnboardingScreen() {
         style={{ height: 24, alignItems: 'center', justifyContent: 'center', marginBottom: 24 }}
       >
         <Animated.View style={{ opacity: step === 'welcome' ? 0 : 1 }}>
-          <AnimatedProgressDots total={3} active={stepIndex - 1} />
+          <AnimatedProgressDots total={4} active={stepIndex - 1} />
         </Animated.View>
       </View>
 
@@ -119,11 +210,24 @@ export default function OnboardingScreen() {
       <Animated.View style={{ flex: 1, opacity: fadeAnim }}>
         {/* Icon + text */}
         <View style={{ flex: 1, justifyContent: 'center' }}>
-          <View
-            className={`w-20 h-20 rounded-3xl border items-center justify-center mb-8 ${containerClass}`}
-          >
-            <Ionicons name={iconName} size={step === 'welcome' ? 40 : 32} color={iconColor} />
-          </View>
+          {step === 'profile' ? (
+            <View style={{ marginBottom: 32 }}>
+              <EditableAvatar
+                size={80}
+                email={email}
+                displayName={displayName}
+                avatarUrl={avatarUrl}
+                uploading={uploadingAvatar}
+                onPress={handlePickAvatar}
+              />
+            </View>
+          ) : (
+            <View
+              className={`w-20 h-20 rounded-3xl border items-center justify-center mb-8 ${containerClass}`}
+            >
+              <Ionicons name={iconName} size={step === 'welcome' ? 40 : 32} color={iconColor} />
+            </View>
+          )}
 
           <Text
             className={`text-latte-950 dark:text-latte-100 mb-2 ${step === 'welcome' ? 'font-display-bold' : 'font-display-semibold'}`}
@@ -141,6 +245,31 @@ export default function OnboardingScreen() {
           <Text className="text-latte-600 dark:text-latte-500 text-sm leading-relaxed mb-8">
             {body[step]}
           </Text>
+
+          {/* Handle input — only shown on the profile step */}
+          {step === 'profile' && (
+            <View className="mb-4">
+              <TextInput
+                className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-2xl px-4 text-latte-950 dark:text-latte-100 text-base"
+                style={[textInputStyle, { height: 56 }]}
+                placeholder="your_handle"
+                placeholderTextColor="#9c7a5e"
+                value={displayName}
+                onChangeText={(v) => {
+                  setDisplayName(v);
+                  if (nameError) setNameError(null);
+                }}
+                autoCapitalize="none"
+                autoCorrect={false}
+                returnKeyType="done"
+              />
+              {nameError ? (
+                <Text className="text-xs mt-2 px-1" style={{ color: '#f87171' }}>
+                  {nameError}
+                </Text>
+              ) : null}
+            </View>
+          )}
 
           {/* Gear search row — fixed-height slot shared by grinder + machine steps */}
           <View style={{ height: 56 }}>
@@ -194,17 +323,20 @@ export default function OnboardingScreen() {
         {/* Buttons — pinned to bottom of fading area */}
         <View style={{ gap: 12 }}>
           <TouchableOpacity
-            onPress={() => {
-              if (step === 'welcome') transition('grinder');
-              else if (step === 'grinder') transition('machine');
+            onPress={async () => {
+              if (step === 'welcome') transition('profile');
+              else if (step === 'profile') {
+                const ok = await persistProfile();
+                if (ok) transition('grinder');
+              } else if (step === 'grinder') transition('machine');
               else if (step === 'machine') transition('done');
               else handleFinish();
             }}
-            disabled={finishing}
+            disabled={finishing || savingProfile}
             className="bg-harvest-500 rounded-2xl items-center"
             style={{ height: 52 }}
           >
-            {finishing && step === 'done' ? (
+            {(finishing && step === 'done') || (savingProfile && step === 'profile') ? (
               <ActivityIndicator color="#fff" style={{ flex: 1 }} />
             ) : (
               <Text className="text-white font-bold text-base" style={{ lineHeight: 52 }}>

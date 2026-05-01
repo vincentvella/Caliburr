@@ -9,6 +9,9 @@ const OUTPUT_WIDTH = 1200;
 const OUTPUT_HEIGHT = 900; // 4:3
 const JPEG_QUALITY = 0.8;
 
+const AVATAR_SIZE = 512;
+const AVATAR_QUALITY = 0.85;
+
 /**
  * Opens the system image picker with an in-app 4:3 crop tool, resizes and
  * compresses on-device to a fixed 1200×900 JPEG, then uploads to Supabase
@@ -119,6 +122,78 @@ export async function pickAndUploadImage(folder: string): Promise<string | null>
     Sentry.captureException(e, {
       tags: { feature: 'image-upload', folder, stage: 'unhandled' },
     });
+    Alert.alert('Upload failed', 'Something went wrong. Please try again.');
+    return null;
+  }
+}
+
+/**
+ * Avatar variant: 1:1 crop, 512×512 JPEG, uploaded to the `avatars` bucket
+ * under {user_id}/avatar.jpg with upsert=true so re-uploads replace the old.
+ * Returns the public URL with a cache-buster, or null on cancel/error.
+ */
+export async function pickAndUploadAvatar(): Promise<string | null> {
+  try {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert(
+        'Permission required',
+        'Please allow photo library access in Settings to choose an avatar.',
+      );
+      return null;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 1,
+    });
+
+    if (result.canceled || !result.assets[0]) return null;
+    const asset = result.assets[0];
+
+    // Center-crop to square (the cropper isn't strict on every platform).
+    const side = Math.min(asset.width, asset.height);
+    const cropX = Math.round((asset.width - side) / 2);
+    const cropY = Math.round((asset.height - side) / 2);
+
+    const processed = await manipulateAsync(
+      asset.uri,
+      [
+        { crop: { originX: cropX, originY: cropY, width: side, height: side } },
+        { resize: { width: AVATAR_SIZE, height: AVATAR_SIZE } },
+      ],
+      { compress: AVATAR_QUALITY, format: SaveFormat.JPEG },
+    );
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) return null;
+
+    const fileName = `${user.id}/avatar.jpg`;
+    const response = await fetch(processed.uri);
+    const arrayBuffer = await response.arrayBuffer();
+
+    const { error } = await supabase.storage
+      .from('avatars')
+      .upload(fileName, arrayBuffer, { contentType: 'image/jpeg', upsert: true });
+
+    if (error) {
+      Sentry.captureException(error, {
+        tags: { feature: 'avatar-upload', stage: 'storage-upload' },
+        extra: { fileName, userId: user.id },
+      });
+      Alert.alert('Upload failed', 'Could not upload avatar. Please try again.');
+      return null;
+    }
+
+    const { data } = supabase.storage.from('avatars').getPublicUrl(fileName);
+    // Cache-buster: same path is reused, so URLs need to change to refresh.
+    return `${data.publicUrl}?v=${Date.now()}`;
+  } catch (e) {
+    Sentry.captureException(e, { tags: { feature: 'avatar-upload', stage: 'unhandled' } });
     Alert.alert('Upload failed', 'Something went wrong. Please try again.');
     return null;
   }
