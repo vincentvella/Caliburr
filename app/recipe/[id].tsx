@@ -5,9 +5,10 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Alert,
+  RefreshControl,
   Share,
 } from 'react-native';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useLocalSearchParams, router } from 'expo-router';
 import * as Clipboard from 'expo-clipboard';
 import * as Sentry from '@sentry/react-native';
@@ -51,10 +52,9 @@ function useRecipeScreen(id: string) {
   const [myTry, setMyTry] = useState<RecipeTry | null>(null);
   const [myProfile, setMyProfile] = useState<AuthorProfile | null>(null);
 
-  useEffect(() => {
-    async function load() {
-      setError(null);
-      try {
+  const load = useCallback(async () => {
+    setError(null);
+    try {
         const {
           data: { user },
         } = await supabase.auth.getUser();
@@ -134,14 +134,16 @@ function useRecipeScreen(id: string) {
             .order('edited_at', { ascending: false });
           setHistory(historyData ?? []);
         }
-      } catch (e) {
-        setError(e instanceof Error ? e.message : 'Something went wrong');
-      } finally {
-        setLoading(false);
-      }
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Something went wrong');
+    } finally {
+      setLoading(false);
     }
-    load();
   }, [id]);
+
+  useEffect(() => {
+    load();
+  }, [load]);
 
   return {
     recipe,
@@ -158,6 +160,7 @@ function useRecipeScreen(id: string) {
     myTry,
     setMyTry,
     myProfile,
+    refetch: load,
   };
 }
 
@@ -178,10 +181,18 @@ export default function RecipeDetailScreen() {
     myTry,
     setMyTry,
     myProfile,
+    refetch,
   } = useRecipeScreen(id);
   const [deleting, setDeleting] = useState(false);
   const [copied, setCopied] = useState(false);
   const [tryModalOpen, setTryModalOpen] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+
+  async function handleRefresh() {
+    setRefreshing(true);
+    await refetch();
+    setRefreshing(false);
+  }
 
   async function toggleUpvote() {
     if (!currentUserId || !recipe) return;
@@ -345,7 +356,13 @@ export default function RecipeDetailScreen() {
         </View>
       </View>
 
-      <ScrollView className="flex-1" contentContainerClassName="px-6 pt-6 pb-24 gap-6">
+      <ScrollView
+        className="flex-1"
+        contentContainerClassName="px-6 pt-6 pb-24 gap-6"
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor="#ff9d37" />
+        }
+      >
         {/* Title */}
         <View className="gap-1">
           {recipe.bean ? (

@@ -20,6 +20,7 @@ interface UserBrew {
 interface UserProfile {
   display_name: string | null;
   avatar_url: string | null;
+  backer_tier: string | null;
 }
 
 function useUserScreen(userId: string) {
@@ -35,13 +36,27 @@ function useUserScreen(userId: string) {
         .limit(100),
       db
         .from('profiles')
-        .select('display_name, avatar_url')
+        .select('display_name, avatar_url, backer_tier')
         .eq('user_id', userId)
         .maybeSingle(),
     ]);
 
+    const brews = (recipesRes.data ?? []) as UserBrew[];
+    const recipeIds = brews.map((b) => b.id);
+
+    let triesReceived = 0;
+    if (recipeIds.length > 0) {
+      const { count } = await db
+        .from('recipe_tries')
+        .select('id', { count: 'exact', head: true })
+        .in('recipe_id', recipeIds)
+        .eq('worked', true);
+      triesReceived = count ?? 0;
+    }
+
     return {
-      brews: (recipesRes.data ?? []) as UserBrew[],
+      brews,
+      triesReceived,
       profile: (profileRes.data ?? null) as UserProfile | null,
     };
   }, [userId]);
@@ -52,6 +67,8 @@ export default function UserBrewsScreen() {
   const { data, loading, error } = useUserScreen(id);
   const brews = data?.brews;
   const profile = data?.profile ?? null;
+  const triesReceived = data?.triesReceived ?? 0;
+  const isBacker = !!profile?.backer_tier;
 
   return (
     <View className="flex-1 bg-latte-50 dark:bg-ristretto-900">
@@ -91,10 +108,24 @@ export default function UserBrewsScreen() {
                   pressable={false}
                   subtitle={
                     brews && brews.length > 0
-                      ? `${brews.length} brew${brews.length !== 1 ? 's' : ''}`
+                      ? `${brews.length} brew${brews.length !== 1 ? 's' : ''}${
+                          triesReceived > 0
+                            ? ` · ${triesReceived} successful tr${
+                                triesReceived === 1 ? 'y' : 'ies'
+                              }`
+                            : ''
+                        }`
                       : 'No public brews yet'
                   }
                 />
+                {isBacker && (
+                  <View className="flex-row items-center gap-1.5 self-start mt-3 bg-crema-50 dark:bg-crema-900/30 border border-crema-400 dark:border-crema-700 rounded-full px-2.5 py-1">
+                    <Text style={{ fontSize: 12 }}>☕</Text>
+                    <Text className="text-crema-700 dark:text-crema-300 text-xs font-semibold">
+                      Caliburr Backer
+                    </Text>
+                  </View>
+                )}
               </View>
             </View>
           }
