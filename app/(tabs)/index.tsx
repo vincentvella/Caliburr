@@ -22,6 +22,8 @@ import { haptics } from '@/lib/haptics';
 import { type RecipeWithJoins, type BrewMethod, BREW_METHOD_LABELS } from '@/lib/types';
 import { Constants } from '@/lib/database.types';
 import { RecipeCard } from '@/components/RecipeCard';
+import { RecipeCardSkeleton } from '@/components/RecipeCardSkeleton';
+import { Skeleton } from '@/components/Skeleton';
 
 const BREW_METHODS = [...Constants.public.Enums.brew_method];
 
@@ -78,6 +80,15 @@ function useRecipes(myGrinderId: string[]) {
   const [sortMode, setSortMode] = useState<SortMode>('top');
   const searchTimer = useRef<ReturnType<typeof setTimeout>>(null);
 
+  // Held in a ref so an async grinder fetch on app start doesn't invalidate
+  // buildQuery → fetchRecipes → useEffect → setLoading(true), which would
+  // hide already-rendered cards and re-fetch them. We only need the current
+  // value at call time.
+  const myGrinderIdRef = useRef<string[]>(myGrinderId);
+  useEffect(() => {
+    myGrinderIdRef.current = myGrinderId;
+  }, [myGrinderId]);
+
   const PAGE_SIZE = 50;
 
   const buildQuery = useCallback(
@@ -106,7 +117,9 @@ function useRecipes(myGrinderId: string[]) {
       }
 
       if (methodFilter) q = q.eq('brew_method', methodFilter);
-      if (myGearOnly && myGrinderId.length) q = q.in('grinder_id', myGrinderId);
+      if (myGearOnly && myGrinderIdRef.current.length) {
+        q = q.in('grinder_id', myGrinderIdRef.current);
+      }
 
       if (searchText.trim()) {
         const term = `%${searchText.trim()}%`;
@@ -136,7 +149,7 @@ function useRecipes(myGrinderId: string[]) {
 
       return q;
     },
-    [sortMode, methodFilter, myGearOnly, myGrinderId],
+    [sortMode, methodFilter, myGearOnly],
   );
 
   const fetchRecipes = useCallback(
@@ -331,7 +344,7 @@ export default function ExploreScreen() {
       <View className={`px-4 pb-3 gap-3 ${isWeb || isWide ? 'pt-8' : 'pt-16'}`}>
         {!isWeb && !isWide && (
           <View>
-            <Text className="text-harvest-600 dark:text-crema-300 text-2xl leading-tight font-display-bold">
+            <Text className="text-harvest-600 dark:text-crema-300 text-2xl mb-1 font-display-bold">
               Caliburr
             </Text>
             <Text className="text-latte-600 dark:text-latte-500 text-sm">
@@ -438,8 +451,26 @@ export default function ExploreScreen() {
 
       {/* Recipe list */}
       {loading ? (
-        <View className="flex-1 items-center justify-center">
-          <ActivityIndicator color="#ff9d37" />
+        <View className="flex-1 px-4 pt-2">
+          {/* Mirrors the "N recipes" header line that ListHeaderComponent
+              renders so cards don't shift down when content lands. */}
+          <View className="mb-3 mt-2 h-3 justify-center">
+            <Skeleton
+              className="bg-oat-200 dark:bg-ristretto-700 rounded"
+              style={{ height: 9, width: 60 }}
+            />
+          </View>
+          {numColumns > 1 ? (
+            <View className="flex-row flex-wrap">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <View key={i} style={{ width: '50%', paddingHorizontal: 4 }}>
+                  <RecipeCardSkeleton />
+                </View>
+              ))}
+            </View>
+          ) : (
+            Array.from({ length: 6 }).map((_, i) => <RecipeCardSkeleton key={i} />)
+          )}
         </View>
       ) : error ? (
         <View className="flex-1 items-center justify-center px-8">
@@ -498,25 +529,6 @@ export default function ExploreScreen() {
         />
       )}
 
-      {/* FAB — native only; web uses the nav bar button */}
-      {!isWeb && (
-        <TouchableOpacity
-          onPress={() => router.push('/recipe/new')}
-          accessibilityLabel="New brew"
-          accessibilityRole="button"
-          testID="fab-new-recipe"
-          className="absolute bottom-8 right-6 w-14 h-14 rounded-full bg-harvest-500 items-center justify-center"
-          style={{
-            elevation: 6,
-            shadowColor: '#000',
-            shadowOpacity: 0.3,
-            shadowRadius: 8,
-            shadowOffset: { width: 0, height: 3 },
-          }}
-        >
-          <Text className="text-white text-3xl font-light">+</Text>
-        </TouchableOpacity>
-      )}
     </View>
   );
 }

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useMemo, useEffect, useState } from 'react';
 import { View, Text, Image, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { gravatarUrlForEmail } from '@/lib/gravatar';
 
@@ -29,13 +29,11 @@ export function EditableAvatar({
   uploading,
   onPress,
 }: Props) {
-  const [gravatarUrl, setGravatarUrl] = useState<string | null>(null);
+  const gravatarUrl = useMemo(
+    () => (email ? gravatarUrlForEmail(email, size * 2) : null),
+    [email, size],
+  );
   const [gravatarFailed, setGravatarFailed] = useState(false);
-
-  useEffect(() => {
-    if (!email) return;
-    gravatarUrlForEmail(email, size * 2).then(setGravatarUrl);
-  }, [email, size]);
 
   // Reset failure state when the inputs that drive the URL change.
   useEffect(() => {

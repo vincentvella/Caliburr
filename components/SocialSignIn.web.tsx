@@ -56,8 +56,9 @@ export function SocialSignIn({ onError }: { onError?: (msg: string) => void }) {
           <>
             <Ionicons
               name="logo-apple"
-              size={18}
-              color={theme === 'dark' ? '#1c1917' : '#f6efe7'}
+              size={22}
+              color={theme === 'dark' ? '#000000' : '#ffffff'}
+              style={{ marginTop: -2 }}
             />
             <Text className="text-latte-50 dark:text-ristretto-900 font-semibold text-base">
               Continue with Apple

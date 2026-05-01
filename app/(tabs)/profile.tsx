@@ -1,39 +1,25 @@
 import {
   View,
   Text,
-  Image,
   ScrollView,
   TouchableOpacity,
   ActivityIndicator,
   Alert,
-  useWindowDimensions,
   Platform,
 } from 'react-native';
-import { useUniwind } from 'uniwind';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { router } from 'expo-router';
 import * as Sentry from '@sentry/react-native';
-import { useScreenshotMode } from '@/lib/useScreenshotMode';
+import * as WebBrowser from 'expo-web-browser';
 import { supabase } from '@/lib/supabase';
-import { haptics } from '@/lib/haptics';
+import { db } from '@/lib/db';
 import { useTheme, type ThemePreference } from '@/lib/theme';
-import { GrinderModal } from '@/components/equipment/GrinderModal';
-import { MachineModal } from '@/components/equipment/MachineModal';
-import type { Grinder, BrewMachine } from '@/lib/types';
-import { MACHINE_TYPE_LABELS } from '@/lib/types';
 import { useBetaAccess } from '@/hooks/useBetaAccess';
+import { AuthorRow } from '@/components/AuthorRow';
+import { Skeleton } from '@/components/Skeleton';
 
-interface UserGrinder {
-  grinder_id: string;
-  grinder: Grinder;
-  is_default: boolean;
-}
-
-interface UserMachine {
-  brew_machine_id: string;
-  brew_machine: BrewMachine;
-  is_default: boolean;
-}
+const PRIVACY_POLICY_URL = 'https://caliburr.coffee/privacy';
+const TOS_URL = 'https://caliburr.coffee/terms';
 
 const THEME_OPTIONS: { value: ThemePreference; label: string }[] = [
   { value: 'system', label: 'System' },
@@ -41,319 +27,216 @@ const THEME_OPTIONS: { value: ThemePreference; label: string }[] = [
   { value: 'dark', label: 'Dark' },
 ];
 
-function useEquipment() {
-  const [email, setEmail] = useState<string | null>(null);
-  const [grinders, setGrinders] = useState<UserGrinder[]>([]);
-  const [machines, setMachines] = useState<UserMachine[]>([]);
-  const [loadingEquipment, setLoadingEquipment] = useState(true);
-  const [equipmentError, setEquipmentError] = useState<string | null>(null);
-  const [pendingGrinderEditIds, setPendingGrinderEditIds] = useState<Set<string>>(new Set());
-  const [pendingMachineEditIds, setPendingMachineEditIds] = useState<Set<string>>(new Set());
+interface ProfileSummary {
+  email: string | null;
+  isAdmin: boolean;
+  userId: string | null;
+  displayName: string | null;
+  avatarUrl: string | null;
+  recipeCount: number;
+  triesReceived: number;
+  loaded: boolean;
+}
+
+function useProfileSummary(): ProfileSummary {
+  const [state, setState] = useState<ProfileSummary>({
+    email: null,
+    isAdmin: false,
+    userId: null,
+    displayName: null,
+    avatarUrl: null,
+    recipeCount: 0,
+    triesReceived: 0,
+    loaded: false,
+  });
 
   useEffect(() => {
-    fetchEquipment();
-  }, []);
-
-  async function fetchEquipment() {
-    setEquipmentError(null);
-    try {
+    let cancelled = false;
+    async function load() {
       const {
         data: { user },
       } = await supabase.auth.getUser();
-      if (!user) return;
+      if (cancelled || !user) return;
 
-      setEmail(user.email ?? null);
-
-      const [userGrindersRes, userMachinesRes] = await Promise.all([
-        supabase
-          .from('user_grinders')
-          .select('grinder_id, is_default')
+      const [profileRes, recipeIdsRes] = await Promise.all([
+        db
+          .from('profiles')
+          .select('display_name, avatar_url')
           .eq('user_id', user.id)
-          .order('created_at', { ascending: false }),
-        supabase
-          .from('user_brew_machines')
-          .select('brew_machine_id, is_default')
-          .eq('user_id', user.id)
-          .order('created_at', { ascending: false }),
+          .maybeSingle(),
+        supabase.from('recipes').select('id').eq('user_id', user.id),
       ]);
+      if (cancelled) return;
 
-      if (userGrindersRes.error) throw new Error(userGrindersRes.error.message);
-      if (userMachinesRes.error) throw new Error(userMachinesRes.error.message);
+      const recipeIds = (recipeIdsRes.data ?? []).map((r) => r.id);
+      let triesReceived = 0;
+      if (recipeIds.length > 0) {
+        const { count } = await db
+          .from('recipe_tries')
+          .select('id', { count: 'exact', head: true })
+          .in('recipe_id', recipeIds)
+          .eq('worked', true);
+        if (cancelled) return;
+        triesReceived = count ?? 0;
+      }
 
-      const grinderIds = (userGrindersRes.data ?? []).map((r) => r.grinder_id);
-      const machineIds = (userMachinesRes.data ?? []).map((r) => r.brew_machine_id);
-
-      const [grindersRes, machinesRes, grinderEditsRes, machineEditsRes] = await Promise.all([
-        supabase.from('grinders').select('*').in('id', grinderIds),
-        supabase.from('brew_machines').select('*').in('id', machineIds),
-        grinderIds.length
-          ? supabase
-              .from('grinder_edits')
-              .select('grinder_id')
-              .in('grinder_id', grinderIds)
-              .eq('status', 'pending')
-          : Promise.resolve({ data: [] }),
-        machineIds.length
-          ? supabase
-              .from('machine_edits')
-              .select('machine_id')
-              .in('machine_id', machineIds)
-              .eq('status', 'pending')
-          : Promise.resolve({ data: [] }),
-      ]);
-
-      const grindersById = new Map((grindersRes.data ?? []).map((g) => [g.id, g]));
-      const machinesById = new Map((machinesRes.data ?? []).map((m) => [m.id, m]));
-
-      setGrinders(
-        (userGrindersRes.data ?? []).flatMap((row) => {
-          const grinder = grindersById.get(row.grinder_id);
-          if (!grinder) return [];
-          return [{ grinder_id: row.grinder_id, is_default: row.is_default, grinder }];
-        }),
-      );
-      setMachines(
-        (userMachinesRes.data ?? []).flatMap((row) => {
-          const brew_machine = machinesById.get(row.brew_machine_id);
-          if (!brew_machine) return [];
-          return [
-            { brew_machine_id: row.brew_machine_id, is_default: row.is_default, brew_machine },
-          ];
-        }),
-      );
-      setPendingGrinderEditIds(new Set((grinderEditsRes.data ?? []).map((e) => e.grinder_id)));
-      setPendingMachineEditIds(new Set((machineEditsRes.data ?? []).map((e) => e.machine_id)));
-    } catch (e) {
-      setEquipmentError(e instanceof Error ? e.message : 'Something went wrong');
-    } finally {
-      setLoadingEquipment(false);
+      setState({
+        email: user.email ?? null,
+        isAdmin: user.app_metadata?.is_admin === true,
+        userId: user.id,
+        displayName: profileRes.data?.display_name ?? null,
+        avatarUrl: profileRes.data?.avatar_url ?? null,
+        recipeCount: recipeIds.length,
+        triesReceived,
+        loaded: true,
+      });
     }
-  }
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
-  return {
-    email,
-    grinders,
-    setGrinders,
-    machines,
-    setMachines,
-    loadingEquipment,
-    equipmentError,
-    pendingGrinderEditIds,
-    pendingMachineEditIds,
-    fetchEquipment,
-  };
+  return state;
+}
+
+async function resetOnboardingFlag() {
+  await supabase.auth.updateUser({ data: { onboarding_completed: null } });
 }
 
 export default function ProfileScreen() {
-  const screenshotMode = useScreenshotMode();
   const { preference, setPreference } = useTheme();
-  const { theme } = useUniwind();
-  const isDark = theme === 'dark';
-  const {
-    email,
-    grinders,
-    setGrinders,
-    machines,
-    setMachines,
-    loadingEquipment,
-    equipmentError,
-    pendingGrinderEditIds,
-    pendingMachineEditIds,
-    fetchEquipment,
-  } = useEquipment();
+  const summary = useProfileSummary();
   const { isBacker, loading: backerLoading } = useBetaAccess();
-  const [removingId, setRemovingId] = useState<string | null>(null);
-  const [grinderModalOpen, setGrinderModalOpen] = useState(false);
-  const [machineModalOpen, setMachineModalOpen] = useState(false);
-  const [editingGrinder, setEditingGrinder] = useState<Grinder | null>(null);
+  const [signingOut, setSigningOut] = useState(false);
+  const [deletingAccount, setDeletingAccount] = useState(false);
 
-  function removeGrinder(grinderId: string) {
-    Alert.alert('Remove Grinder', 'Remove this grinder from your gear?', [
-      { text: 'Cancel', style: 'cancel' },
-      {
-        text: 'Remove',
-        style: 'destructive',
-        onPress: async () => {
-          setRemovingId(grinderId);
-          const {
-            data: { user },
-          } = await supabase.auth.getUser();
-          if (user) {
-            const { error } = await supabase
-              .from('user_grinders')
-              .delete()
-              .eq('user_id', user.id)
-              .eq('grinder_id', grinderId);
-            if (error) {
-              Sentry.captureException(error, {
-                tags: { feature: 'equipment-remove', kind: 'grinder' },
-                extra: { grinderId, userId: user.id },
-              });
-              Alert.alert('Error', 'Failed to remove grinder. Please try again.');
-            } else {
-              setGrinders((prev) => prev.filter((g) => g.grinder_id !== grinderId));
-            }
-          }
-          setRemovingId(null);
-        },
-      },
-    ]);
-  }
-
-  function removeMachine(machineId: string) {
-    Alert.alert('Remove Machine', 'Remove this machine from your gear?', [
-      { text: 'Cancel', style: 'cancel' },
-      {
-        text: 'Remove',
-        style: 'destructive',
-        onPress: async () => {
-          setRemovingId(machineId);
-          const {
-            data: { user },
-          } = await supabase.auth.getUser();
-          if (user) {
-            const { error } = await supabase
-              .from('user_brew_machines')
-              .delete()
-              .eq('user_id', user.id)
-              .eq('brew_machine_id', machineId);
-            if (error) {
-              Sentry.captureException(error, {
-                tags: { feature: 'equipment-remove', kind: 'machine' },
-                extra: { machineId, userId: user.id },
-              });
-              Alert.alert('Error', 'Failed to remove machine. Please try again.');
-            } else {
-              setMachines((prev) => prev.filter((m) => m.brew_machine_id !== machineId));
-            }
-          }
-          setRemovingId(null);
-        },
-      },
-    ]);
-  }
-
-  async function toggleDefaultGrinder(grinderId: string) {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) return;
-
-    const isAlreadyDefault = grinders.find((g) => g.grinder_id === grinderId)?.is_default ?? false;
-
-    haptics.medium();
-    // Optimistic update
-    setGrinders((prev) =>
-      isAlreadyDefault
-        ? prev.map((g) => (g.grinder_id === grinderId ? { ...g, is_default: false } : g))
-        : prev.map((g) => ({ ...g, is_default: g.grinder_id === grinderId })),
-    );
-
-    try {
-      if (isAlreadyDefault) {
-        const { error } = await supabase
-          .from('user_grinders')
-          .update({ is_default: false })
-          .eq('user_id', user.id)
-          .eq('grinder_id', grinderId);
-        if (error) throw error;
-      } else {
-        const [r1, r2] = await Promise.all([
-          supabase.from('user_grinders').update({ is_default: false }).eq('user_id', user.id),
-          supabase
-            .from('user_grinders')
-            .update({ is_default: true })
-            .eq('user_id', user.id)
-            .eq('grinder_id', grinderId),
-        ]);
-        if (r1.error) throw r1.error;
-        if (r2.error) throw r2.error;
-      }
-    } catch (e) {
-      Sentry.captureException(e, {
-        tags: { feature: 'set-default', kind: 'grinder' },
-        extra: { grinderId, userId: user.id, isAlreadyDefault },
-      });
-      // Revert optimistic update
-      await fetchEquipment();
-      Alert.alert('Error', 'Failed to update default grinder. Please try again.');
+  async function handleSignOut() {
+    setSigningOut(true);
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      Sentry.captureException(error, { tags: { feature: 'sign-out' } });
+      setSigningOut(false);
+      Alert.alert('Error', 'Failed to sign out. Please try again.');
     }
   }
 
-  async function toggleDefaultMachine(machineId: string) {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) return;
-
-    const isAlreadyDefault =
-      machines.find((m) => m.brew_machine_id === machineId)?.is_default ?? false;
-
-    haptics.medium();
-    // Optimistic update
-    setMachines((prev) =>
-      isAlreadyDefault
-        ? prev.map((m) => (m.brew_machine_id === machineId ? { ...m, is_default: false } : m))
-        : prev.map((m) => ({ ...m, is_default: m.brew_machine_id === machineId })),
+  function handleDeleteAccount() {
+    Alert.alert(
+      'Delete Account',
+      'This will permanently delete your account. Your brews will remain anonymised in the community feed. This cannot be undone.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete Account',
+          style: 'destructive',
+          onPress: async () => {
+            setDeletingAccount(true);
+            const {
+              data: { session },
+            } = await supabase.auth.getSession();
+            if (!session) {
+              setDeletingAccount(false);
+              return;
+            }
+            const { error } = await supabase.functions.invoke('delete-account', {
+              headers: { Authorization: `Bearer ${session.access_token}` },
+            });
+            if (error) {
+              setDeletingAccount(false);
+              let message = 'Failed to delete account. Please try again.';
+              try {
+                const body = await (error as { context?: Response }).context?.json();
+                if (body?.error) message = body.error;
+              } catch {}
+              Sentry.captureException(error, {
+                tags: { feature: 'delete-account', stage: 'edge-function' },
+                extra: { message },
+              });
+              Alert.alert('Error', message);
+            } else {
+              await supabase.auth.signOut();
+            }
+          },
+        },
+      ],
     );
-
-    try {
-      if (isAlreadyDefault) {
-        const { error } = await supabase
-          .from('user_brew_machines')
-          .update({ is_default: false })
-          .eq('user_id', user.id)
-          .eq('brew_machine_id', machineId);
-        if (error) throw error;
-      } else {
-        const [r1, r2] = await Promise.all([
-          supabase.from('user_brew_machines').update({ is_default: false }).eq('user_id', user.id),
-          supabase
-            .from('user_brew_machines')
-            .update({ is_default: true })
-            .eq('user_id', user.id)
-            .eq('brew_machine_id', machineId),
-        ]);
-        if (r1.error) throw r1.error;
-        if (r2.error) throw r2.error;
-      }
-    } catch (e) {
-      Sentry.captureException(e, {
-        tags: { feature: 'set-default', kind: 'machine' },
-        extra: { machineId, userId: user.id, isAlreadyDefault },
-      });
-      // Revert optimistic update
-      await fetchEquipment();
-      Alert.alert('Error', 'Failed to update default machine. Please try again.');
-    }
   }
 
-  const { width } = useWindowDimensions();
-  const isWide = width >= 768;
+  const subtitleText = summary.loaded
+    ? summary.recipeCount > 0
+      ? `${summary.recipeCount} brew${summary.recipeCount !== 1 ? 's' : ''}${
+          summary.triesReceived > 0
+            ? ` · ${summary.triesReceived} successful tr${summary.triesReceived === 1 ? 'y' : 'ies'}`
+            : ''
+        }`
+      : 'No brews yet'
+    : ' '; // keep height while loading
 
   return (
     <View className="flex-1 bg-latte-50 dark:bg-ristretto-900">
       <ScrollView
-        className={`flex-1 px-6 ${Platform.OS === 'web' || isWide ? 'pt-8' : 'pt-16'}`}
-        contentContainerClassName="pb-32"
-        contentContainerStyle={
-          Platform.OS === 'web' || isWide
-            ? { maxWidth: 800, alignSelf: 'center', width: '100%' }
-            : undefined
-        }
+        className={`flex-1 px-4 ${Platform.OS === 'web' ? 'pt-8' : 'pt-16'}`}
+        contentContainerClassName="pb-12"
       >
         {/* Header */}
-        <Text className="text-latte-950 dark:text-latte-100 text-2xl mb-0.5 font-display-bold">
-          My Gear
+        <Text className="text-latte-950 dark:text-latte-100 text-2xl mb-1 font-display-bold">
+          Profile
         </Text>
-        {email && !screenshotMode && (
-          <Text className="text-latte-600 dark:text-latte-500 text-sm mb-4">{email}</Text>
-        )}
+        <View className="mb-5 h-5 justify-center">
+          {summary.email ? (
+            <Text className="text-latte-600 dark:text-latte-500 text-sm">{summary.email}</Text>
+          ) : (
+            <Skeleton
+              className="bg-oat-200 dark:bg-ristretto-700 rounded"
+              style={{ height: 12, width: 180 }}
+            />
+          )}
+        </View>
 
+        {/* Identity card */}
+        <TouchableOpacity
+          onPress={() => router.push('/account/edit-profile')}
+          className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-2xl px-4 py-4 mb-6"
+        >
+          <View className="flex-row items-center gap-3">
+            {summary.userId ? (
+              <AuthorRow
+                userId={summary.userId}
+                displayName={summary.displayName}
+                avatarUrl={summary.avatarUrl}
+                email={summary.email}
+                variant="header"
+                pressable={false}
+                subtitle={subtitleText}
+              />
+            ) : (
+              <View className="flex-row items-center gap-3 flex-1">
+                <Skeleton
+                  className="bg-oat-200 dark:bg-ristretto-700"
+                  style={{ width: 56, height: 56, borderRadius: 28 }}
+                />
+                <View className="flex-1 gap-2">
+                  <Skeleton
+                    className="bg-oat-200 dark:bg-ristretto-700 rounded"
+                    style={{ height: 18, width: '60%' }}
+                  />
+                  <Skeleton
+                    className="bg-oat-200 dark:bg-ristretto-700 rounded"
+                    style={{ height: 11, width: '40%' }}
+                  />
+                </View>
+              </View>
+            )}
+          </View>
+          <Text className="text-harvest-400 text-sm font-medium mt-3 self-end">Edit Profile ›</Text>
+        </TouchableOpacity>
+
+        {/* Backer banner */}
         {!backerLoading && !isBacker && (
           <TouchableOpacity
             onPress={() => router.push('/backer')}
-            className="flex-row items-center gap-3 bg-crema-50 dark:bg-crema-900/20 border border-crema-400 dark:border-crema-700 rounded-2xl px-4 py-3 mb-8"
+            className="flex-row items-center gap-3 bg-crema-50 dark:bg-crema-900/20 border border-crema-400 dark:border-crema-700 rounded-2xl px-4 py-3 mb-6"
           >
             <Text style={{ fontSize: 22 }}>☕</Text>
             <View className="flex-1">
@@ -367,9 +250,8 @@ export default function ProfileScreen() {
             <Text className="text-crema-600 dark:text-crema-500 text-lg">›</Text>
           </TouchableOpacity>
         )}
-
         {!backerLoading && isBacker && (
-          <View className="flex-row items-center gap-3 bg-crema-50 dark:bg-crema-900/20 border border-crema-400 dark:border-crema-700 rounded-2xl px-4 py-3 mb-8">
+          <View className="flex-row items-center gap-3 bg-crema-50 dark:bg-crema-900/20 border border-crema-400 dark:border-crema-700 rounded-2xl px-4 py-3 mb-6">
             <Text style={{ fontSize: 22 }}>☕</Text>
             <View className="flex-1">
               <Text className="text-crema-800 dark:text-crema-300 font-semibold text-sm">
@@ -382,224 +264,27 @@ export default function ProfileScreen() {
           </View>
         )}
 
-        {loadingEquipment ? (
-          <ActivityIndicator color="#ff9d37" style={{ marginTop: 32 }} />
-        ) : equipmentError ? (
-          <Text className="text-red-400 text-sm text-center mt-8">{equipmentError}</Text>
-        ) : (
-          <>
-            <View className={isWide ? 'flex-row gap-6 mb-8' : ''}>
-              {/* Grinders */}
-              <View className={isWide ? 'flex-1' : 'mb-8'}>
-                <View className="flex-row items-center justify-between mb-3">
-                  <Text className="text-latte-800 dark:text-latte-200 text-lg font-semibold">
-                    Grinders
-                  </Text>
-                  <TouchableOpacity
-                    onPress={() => setGrinderModalOpen(true)}
-                    className="flex-row items-center gap-1.5"
-                  >
-                    <Text className="text-harvest-400 font-semibold text-sm">+ Add</Text>
-                  </TouchableOpacity>
-                </View>
-
-                {grinders.length === 0 ? (
-                  <TouchableOpacity
-                    onPress={() => setGrinderModalOpen(true)}
-                    className="border border-dashed border-latte-300 dark:border-ristretto-700 rounded-2xl py-6 items-center"
-                  >
-                    <Text className="text-latte-500 dark:text-latte-600 text-sm">
-                      Add your first grinder
-                    </Text>
-                  </TouchableOpacity>
-                ) : (
-                  <>
-                    {grinders.map(({ grinder_id, grinder, is_default }) => (
-                      <View key={grinder_id}>
-                        <TouchableOpacity
-                          onPress={() => {
-                            setEditingGrinder(grinder);
-                            setGrinderModalOpen(true);
-                          }}
-                          className="flex-row items-center justify-between bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-2xl px-4 py-3.5 mb-2"
-                        >
-                          <View className="flex-row items-center gap-3 flex-1">
-                            {grinder.image_url ? (
-                              <Image
-                                source={{ uri: grinder.image_url }}
-                                className="w-12 h-12 rounded-lg bg-oat-200 dark:bg-ristretto-700"
-                                resizeMode="contain"
-                              />
-                            ) : (
-                              <View className="w-12 h-12 rounded-lg bg-oat-200 dark:bg-ristretto-700 items-center justify-center">
-                                <Text className="text-latte-500 dark:text-latte-600 text-xl">
-                                  ⚙
-                                </Text>
-                              </View>
-                            )}
-                            <View className="flex-1">
-                              <Text className="text-latte-950 dark:text-latte-100 font-medium">
-                                {grinder.brand} {grinder.model}
-                              </Text>
-                              <Text className="text-latte-600 dark:text-latte-500 text-xs mt-0.5 capitalize">
-                                {grinder.burr_type ?? '—'} · {grinder.adjustment_type ?? '—'}
-                              </Text>
-                            </View>
-                          </View>
-                          <View className="flex-row items-center gap-3">
-                            {grinder.verified ? (
-                              <View className="bg-bloom-100 dark:bg-bloom-900 border border-bloom-300 dark:border-bloom-700 rounded-full px-2 py-0.5">
-                                <Text className="text-bloom-700 dark:text-bloom-400 text-xs">
-                                  Verified
-                                </Text>
-                              </View>
-                            ) : pendingGrinderEditIds.has(grinder_id) ? (
-                              <View className="bg-crema-100 dark:bg-crema-900 border border-crema-300 dark:border-crema-700 rounded-full px-2 py-0.5">
-                                <Text className="text-crema-700 dark:text-crema-400 text-xs">
-                                  Edit pending
-                                </Text>
-                              </View>
-                            ) : null}
-                            <TouchableOpacity onPress={() => toggleDefaultGrinder(grinder_id)}>
-                              <Text
-                                style={{
-                                  fontSize: 18,
-                                  color: is_default ? '#ff9d37' : isDark ? '#c8824a' : '#b5693a',
-                                }}
-                              >
-                                {is_default || isDark ? '★' : '☆'}
-                              </Text>
-                            </TouchableOpacity>
-                            {removingId === grinder_id ? (
-                              <ActivityIndicator size="small" color="#6e5a47" />
-                            ) : (
-                              <TouchableOpacity onPress={() => removeGrinder(grinder_id)}>
-                                <Text className="text-latte-500 dark:text-latte-600 text-lg">
-                                  ×
-                                </Text>
-                              </TouchableOpacity>
-                            )}
-                          </View>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                          onPress={() => router.push(`/grinder/${grinder_id}`)}
-                          className="flex-row items-center gap-1 px-1 pb-2 -mt-1"
-                        >
-                          <Text className="text-harvest-400 text-xs">Dial-In Guide</Text>
-                          <Text className="text-harvest-400 text-xs">›</Text>
-                        </TouchableOpacity>
-                      </View>
-                    ))}
-                    {grinders.some((g) => g.is_default) && (
-                      <Text className="text-latte-500 dark:text-latte-600 text-xs px-1 mt-1">
-                        ★ Pre-selected when creating a brew
-                      </Text>
-                    )}
-                  </>
-                )}
-              </View>
-
-              {/* Machines */}
-              <View className={isWide ? 'flex-1' : 'mb-8'}>
-                <View className="flex-row items-center justify-between mb-3">
-                  <Text className="text-latte-800 dark:text-latte-200 text-lg font-semibold">
-                    Machines
-                  </Text>
-                  <TouchableOpacity
-                    onPress={() => setMachineModalOpen(true)}
-                    className="flex-row items-center gap-1.5"
-                  >
-                    <Text className="text-harvest-400 font-semibold text-sm">+ Add</Text>
-                  </TouchableOpacity>
-                </View>
-
-                {machines.length === 0 ? (
-                  <TouchableOpacity
-                    onPress={() => setMachineModalOpen(true)}
-                    className="border border-dashed border-latte-300 dark:border-ristretto-700 rounded-2xl py-6 items-center"
-                  >
-                    <Text className="text-latte-500 dark:text-latte-600 text-sm">
-                      Add your first machine
-                    </Text>
-                  </TouchableOpacity>
-                ) : (
-                  <>
-                    {machines.map(({ brew_machine_id, brew_machine, is_default }) => (
-                      <View
-                        key={brew_machine_id}
-                        className="flex-row items-center justify-between bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-2xl px-4 py-3.5 mb-2"
-                      >
-                        <View className="flex-row items-center gap-3 flex-1">
-                          {brew_machine.image_url ? (
-                            <Image
-                              source={{ uri: brew_machine.image_url }}
-                              className="w-12 h-12 rounded-lg bg-oat-200 dark:bg-ristretto-700"
-                              resizeMode="contain"
-                            />
-                          ) : (
-                            <View className="w-12 h-12 rounded-lg bg-oat-200 dark:bg-ristretto-700 items-center justify-center">
-                              <Text className="text-latte-500 dark:text-latte-600 text-xl">☕</Text>
-                            </View>
-                          )}
-                          <View className="flex-1">
-                            <Text className="text-latte-950 dark:text-latte-100 font-medium">
-                              {brew_machine.brand} {brew_machine.model}
-                            </Text>
-                            <Text className="text-latte-600 dark:text-latte-500 text-xs mt-0.5">
-                              {MACHINE_TYPE_LABELS[brew_machine.machine_type]}
-                            </Text>
-                          </View>
-                        </View>
-                        <View className="flex-row items-center gap-3">
-                          {brew_machine.verified ? (
-                            <View className="bg-bloom-100 dark:bg-bloom-900 border border-bloom-300 dark:border-bloom-700 rounded-full px-2 py-0.5">
-                              <Text className="text-bloom-700 dark:text-bloom-400 text-xs">
-                                Verified
-                              </Text>
-                            </View>
-                          ) : pendingMachineEditIds.has(brew_machine_id) ? (
-                            <View className="bg-crema-100 dark:bg-crema-900 border border-crema-300 dark:border-crema-700 rounded-full px-2 py-0.5">
-                              <Text className="text-crema-700 dark:text-crema-400 text-xs">
-                                Edit pending
-                              </Text>
-                            </View>
-                          ) : null}
-                          <TouchableOpacity onPress={() => toggleDefaultMachine(brew_machine_id)}>
-                            <Text
-                              style={{
-                                fontSize: 18,
-                                color: is_default ? '#ff9d37' : isDark ? '#c8824a' : '#b5693a',
-                              }}
-                            >
-                              {is_default || isDark ? '★' : '☆'}
-                            </Text>
-                          </TouchableOpacity>
-                          {removingId === brew_machine_id ? (
-                            <ActivityIndicator size="small" color="#6e5a47" />
-                          ) : (
-                            <TouchableOpacity onPress={() => removeMachine(brew_machine_id)}>
-                              <Text className="text-latte-500 dark:text-latte-600 text-lg">×</Text>
-                            </TouchableOpacity>
-                          )}
-                        </View>
-                      </View>
-                    ))}
-                    {machines.some((m) => m.is_default) && (
-                      <Text className="text-latte-500 dark:text-latte-600 text-xs px-1 mt-1">
-                        ★ Pre-selected when creating a brew
-                      </Text>
-                    )}
-                  </>
-                )}
-              </View>
-            </View>
-            {/* end isWide row */}
-          </>
-        )}
+        {/* Settings rows */}
+        <View className="mb-6 gap-2">
+          <SettingsRow label="Change Password" onPress={() => router.push('/account/change-password')} />
+          <SettingsRow label="Feature Requests" onPress={() => router.push('/feature-requests')} />
+          {summary.isAdmin && (
+            <SettingsRow label="Pending Edits" onPress={() => router.push('/admin')} />
+          )}
+          <SettingsRow label="Contact Support" onPress={() => router.push('/support')} />
+          <SettingsRow
+            label="Privacy Policy"
+            onPress={() => WebBrowser.openBrowserAsync(PRIVACY_POLICY_URL)}
+          />
+          <SettingsRow
+            label="Terms of Use"
+            onPress={() => WebBrowser.openBrowserAsync(TOS_URL)}
+          />
+        </View>
 
         {/* Appearance — hidden on web, controlled via nav bar */}
         {Platform.OS !== 'web' && (
-          <View className="mb-4">
+          <View className="mb-6">
             <Text className="text-latte-600 dark:text-latte-500 text-xs font-semibold uppercase tracking-wider mb-2 px-1">
               Appearance
             </Text>
@@ -625,34 +310,68 @@ export default function ProfileScreen() {
           </View>
         )}
 
-        {/* Account Settings */}
+        {/* Sign out */}
         <TouchableOpacity
-          onPress={() => router.push('/account')}
-          testID="account-settings-row"
-          className="flex-row items-center justify-between bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-2xl px-4 py-3.5 mb-12"
+          onPress={handleSignOut}
+          disabled={signingOut}
+          className="border border-latte-200 dark:border-ristretto-700 rounded-xl py-4 items-center mb-3"
         >
-          <Text className="text-latte-950 dark:text-latte-100 font-medium">Account Settings</Text>
-          <Text className="text-latte-600 dark:text-latte-500 text-lg">›</Text>
+          {signingOut ? (
+            <ActivityIndicator color="#ff9d37" />
+          ) : (
+            <Text className="text-harvest-400 font-semibold">Sign Out</Text>
+          )}
         </TouchableOpacity>
+
+        {/* Delete account */}
+        <TouchableOpacity
+          onPress={handleDeleteAccount}
+          disabled={deletingAccount}
+          className="rounded-xl py-4 items-center mb-6"
+        >
+          {deletingAccount ? (
+            <ActivityIndicator color="#f87171" />
+          ) : (
+            <Text className="text-red-400 text-sm">Delete Account</Text>
+          )}
+        </TouchableOpacity>
+
+        {/* ── Dev tools ────────────────────── */}
+        {__DEV__ && (
+          <View className="border border-dashed border-latte-300 dark:border-ristretto-700 rounded-2xl p-4 mb-12">
+            <Text className="text-latte-500 dark:text-latte-600 text-xs font-mono mb-3">
+              DEV TOOLS
+            </Text>
+            <TouchableOpacity
+              onPress={async () => {
+                await resetOnboardingFlag();
+                router.push('/onboarding?preview=1');
+              }}
+              className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-xl px-4 py-3 mb-2"
+            >
+              <Text className="text-latte-700 dark:text-latte-300 text-sm">Preview onboarding</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => Sentry.captureException(new Error('Sentry test error'))}
+              className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-xl px-4 py-3 mb-2"
+            >
+              <Text className="text-latte-700 dark:text-latte-300 text-sm">Test Sentry</Text>
+            </TouchableOpacity>
+          </View>
+        )}
       </ScrollView>
-
-      <GrinderModal
-        visible={grinderModalOpen}
-        onClose={() => {
-          setGrinderModalOpen(false);
-          setEditingGrinder(null);
-        }}
-        onAdded={fetchEquipment}
-        existingIds={grinders.map((g) => g.grinder_id)}
-        editGrinder={editingGrinder ?? undefined}
-      />
-
-      <MachineModal
-        visible={machineModalOpen}
-        onClose={() => setMachineModalOpen(false)}
-        onAdded={fetchEquipment}
-        existingIds={machines.map((m) => m.brew_machine_id)}
-      />
     </View>
+  );
+}
+
+function SettingsRow({ label, onPress }: { label: string; onPress: () => void }) {
+  return (
+    <TouchableOpacity
+      onPress={onPress}
+      className="flex-row items-center justify-between bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-2xl px-4 py-3.5"
+    >
+      <Text className="text-latte-950 dark:text-latte-100 font-medium">{label}</Text>
+      <Text className="text-latte-600 dark:text-latte-500 text-lg">›</Text>
+    </TouchableOpacity>
   );
 }

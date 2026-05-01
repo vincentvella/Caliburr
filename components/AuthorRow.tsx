@@ -1,5 +1,7 @@
+import { useMemo, useState, useEffect } from 'react';
 import { View, Text, Image, TouchableOpacity } from 'react-native';
 import { router } from 'expo-router';
+import { gravatarUrlForEmail } from '@/lib/gravatar';
 
 type Variant = 'compact' | 'header';
 
@@ -7,6 +9,10 @@ export interface AuthorRowProps {
   userId: string;
   displayName: string | null;
   avatarUrl: string | null;
+  // When provided, used to derive a Gravatar URL as a fallback before the
+  // letter circle. Only pass this when you actually have the user's email
+  // — typically only the current viewer's email.
+  email?: string | null;
   subtitle?: string;
   variant?: Variant;
   // When true the row navigates to /user/[id]; otherwise it's purely visual.
@@ -24,6 +30,7 @@ export function AuthorRow({
   userId,
   displayName,
   avatarUrl,
+  email,
   subtitle,
   variant = 'compact',
   pressable = true,
@@ -32,6 +39,17 @@ export function AuthorRow({
   const ringColor = 'border-latte-200 dark:border-ristretto-700';
   const name = displayName ?? 'Anonymous';
 
+  const gravatarUrl = useMemo(
+    () => (email ? gravatarUrlForEmail(email, size * 2) : null),
+    [email, size],
+  );
+  const [gravatarFailed, setGravatarFailed] = useState(false);
+  useEffect(() => {
+    setGravatarFailed(false);
+  }, [gravatarUrl, avatarUrl]);
+
+  const showGravatar = !avatarUrl && gravatarUrl && !gravatarFailed;
+
   const Body = (
     <View className="flex-row items-center gap-3">
       {avatarUrl ? (
@@ -39,6 +57,13 @@ export function AuthorRow({
           source={{ uri: avatarUrl }}
           style={{ width: size, height: size, borderRadius: size / 2 }}
           className={`bg-oat-100 dark:bg-ristretto-800 border ${ringColor}`}
+        />
+      ) : showGravatar ? (
+        <Image
+          source={{ uri: gravatarUrl! }}
+          style={{ width: size, height: size, borderRadius: size / 2 }}
+          className={`bg-oat-100 dark:bg-ristretto-800 border ${ringColor}`}
+          onError={() => setGravatarFailed(true)}
         />
       ) : (
         <View

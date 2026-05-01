@@ -1,4 +1,4 @@
-import { Tabs } from 'expo-router';
+import { Tabs, router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { View, useWindowDimensions } from 'react-native';
 import { useUniwind } from 'uniwind';
@@ -45,6 +45,45 @@ export default function TabLayout() {
             tabBarButtonTestID: 'nav-my-brews',
             tabBarIcon: ({ color, size }) => (
               <Ionicons name="book-outline" size={size} color={color} />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="brew"
+          options={{
+            title: 'Brew',
+            tabBarButtonTestID: 'nav-brew',
+            tabBarLabel: () => null,
+            tabBarIcon: ({ size }) => (
+              <View
+                style={{
+                  backgroundColor: '#ff9d37',
+                  borderRadius: 999,
+                  width: size + 20,
+                  height: size + 20,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginTop: 8,
+                }}
+              >
+                <Ionicons name="add" size={size + 4} color="#fff" />
+              </View>
+            ),
+          }}
+          listeners={{
+            tabPress: (e) => {
+              e.preventDefault();
+              router.push('/recipe/new');
+            },
+          }}
+        />
+        <Tabs.Screen
+          name="gear"
+          options={{
+            title: 'Gear',
+            tabBarButtonTestID: 'nav-gear',
+            tabBarIcon: ({ color, size }) => (
+              <Ionicons name="cafe-outline" size={size} color={color} />
             ),
           }}
         />
