@@ -29,6 +29,8 @@ import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { ThemeProvider } from '@/lib/theme';
 import { BackerProvider } from '@/lib/backerContext';
 import * as purchases from '@/lib/purchases';
+import { registerPushToken } from '@/lib/pushTokens';
+import { useNotificationDeepLink } from '@/lib/notifications';
 import * as Sentry from '@sentry/react-native';
 
 Sentry.init({
@@ -69,7 +71,10 @@ function useSetupAuth() {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setReady(true);
-      if (session?.user.id) purchases.logIn(session.user.id);
+      if (session?.user.id) {
+        purchases.logIn(session.user.id);
+        registerPushToken();
+      }
     });
 
     const {
@@ -78,6 +83,7 @@ function useSetupAuth() {
       setSession(session);
       if (event === 'SIGNED_IN' && session?.user.id) {
         purchases.logIn(session.user.id);
+        registerPushToken();
       } else if (event === 'SIGNED_OUT') {
         purchases
           .logOut()
@@ -153,6 +159,7 @@ export default Sentry.wrap(function RootLayout() {
 
   useHideSplash(fontsLoaded, ready);
   useAuthGate(session, ready, isRecovery);
+  useNotificationDeepLink(ready);
 
   if (!fontsLoaded || !ready) return null;
 

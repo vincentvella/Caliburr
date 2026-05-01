@@ -5,6 +5,7 @@
  *   - profiles
  *   - admin_push_tokens
  *   - recipe_tries
+ *   - push_tokens
  *
  * When types are regenerated (bunx supabase gen types typescript --local > lib/database.types.ts)
  * these tables will move into the generated types and this file can be simplified.
@@ -58,6 +59,23 @@ type ExtendedTables = {
       avatar_url?: string | null;
       updated_at?: string;
     };
+    Relationships: [];
+  };
+  push_tokens: {
+    Row: {
+      id: string;
+      user_id: string;
+      token: string;
+      platform: string;
+      updated_at: string;
+    };
+    Insert: {
+      user_id: string;
+      token: string;
+      platform: string;
+      updated_at?: string;
+    };
+    Update: { token?: string; platform?: string; updated_at?: string };
     Relationships: [];
   };
   recipe_tries: {

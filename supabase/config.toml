@@ -412,3 +412,6 @@ verify_jwt = false
 [functions.notify-equipment-edit]
 verify_jwt = false
 
+[functions.notify-recipe-try]
+verify_jwt = false
+
