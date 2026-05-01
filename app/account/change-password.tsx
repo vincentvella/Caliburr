@@ -1,4 +1,3 @@
-import { textInputStyle } from '@/lib/styles';
 import {
   View,
   Text,
@@ -11,6 +10,7 @@ import {
 import { useRef, useState } from 'react';
 import { router } from 'expo-router';
 import { supabase } from '@/lib/supabase';
+import { PasswordInput } from '@/components/PasswordInput';
 
 export default function ChangePasswordScreen() {
   const confirmRef = useRef<TextInput>(null);
@@ -61,25 +61,21 @@ export default function ChangePasswordScreen() {
       </View>
 
       <View className="px-6 pt-6 gap-3">
-        <TextInput
-          className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-950 dark:text-latte-100"
-          style={textInputStyle}
+        <PasswordInput
+          inputClassName="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-xl pl-4 pr-12 py-3.5 text-latte-950 dark:text-latte-100"
           placeholder="New password"
           placeholderTextColor="#6e5a47"
-          secureTextEntry
           autoFocus
           returnKeyType="next"
           value={newPassword}
           onChangeText={setNewPassword}
           onSubmitEditing={() => confirmRef.current?.focus()}
         />
-        <TextInput
+        <PasswordInput
           ref={confirmRef}
-          className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-950 dark:text-latte-100"
-          style={textInputStyle}
+          inputClassName="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-xl pl-4 pr-12 py-3.5 text-latte-950 dark:text-latte-100"
           placeholder="Confirm new password"
           placeholderTextColor="#6e5a47"
-          secureTextEntry
           returnKeyType="done"
           value={confirmPassword}
           onChangeText={setConfirmPassword}

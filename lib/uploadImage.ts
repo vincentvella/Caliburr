@@ -41,11 +41,29 @@ export async function pickAndUploadImage(folder: string): Promise<string | null>
       return null;
     }
 
-    // Resize to exactly OUTPUT_WIDTH × OUTPUT_HEIGHT and compress to JPEG on-device.
-    // At these settings the output is always well under 500 KB.
+    // The picker's aspect prop isn't strictly enforced on every cropper, so
+    // center-crop to 4:3 before resizing — otherwise resize to 1200×900 stretches
+    // a non-4:3 source.
+    const targetRatio = OUTPUT_WIDTH / OUTPUT_HEIGHT;
+    const sourceRatio = asset.width / asset.height;
+    let cropX = 0;
+    let cropY = 0;
+    let cropW = asset.width;
+    let cropH = asset.height;
+    if (sourceRatio > targetRatio) {
+      cropW = Math.round(asset.height * targetRatio);
+      cropX = Math.round((asset.width - cropW) / 2);
+    } else if (sourceRatio < targetRatio) {
+      cropH = Math.round(asset.width / targetRatio);
+      cropY = Math.round((asset.height - cropH) / 2);
+    }
+
     const processed = await manipulateAsync(
       asset.uri,
-      [{ resize: { width: OUTPUT_WIDTH, height: OUTPUT_HEIGHT } }],
+      [
+        { crop: { originX: cropX, originY: cropY, width: cropW, height: cropH } },
+        { resize: { width: OUTPUT_WIDTH, height: OUTPUT_HEIGHT } },
+      ],
       { compress: JPEG_QUALITY, format: SaveFormat.JPEG },
     );
 

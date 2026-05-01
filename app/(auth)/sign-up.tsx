@@ -15,6 +15,7 @@ import { Link, router } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
 import { useForm } from '@tanstack/react-form';
 import { supabase } from '@/lib/supabase';
+import { PasswordInput } from '@/components/PasswordInput';
 
 const PRIVACY_POLICY_URL = 'https://caliburr.coffee/privacy';
 const TOS_URL = 'https://caliburr.coffee/terms';
@@ -31,7 +32,7 @@ export default function SignUpScreen() {
       password: '',
     },
     onSubmit: async ({ value }) => {
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email: value.email,
         password: value.password,
         options: {
@@ -43,7 +44,11 @@ export default function SignUpScreen() {
       });
       if (error) {
         setSubmitError(error.message);
-      } else {
+        return;
+      }
+      // If a session was returned (email confirmation disabled), the auth gate
+      // will redirect to onboarding/tabs. Otherwise, prompt the user to verify.
+      if (!data.session) {
         router.replace({
           pathname: '/(auth)/verify-email',
           params: { email: value.email },
@@ -116,13 +121,10 @@ export default function SignUpScreen() {
           >
             {(field) => (
               <View className="gap-1">
-                <TextInput
+                <PasswordInput
                   ref={passwordRef}
-                  className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-950 dark:text-latte-100 text-base"
-                  style={textInputStyle}
                   placeholder="Password"
                   placeholderTextColor="#9c7a5e"
-                  secureTextEntry
                   textContentType="newPassword"
                   autoComplete="new-password"
                   passwordRules="minlength: 6;"

@@ -14,6 +14,7 @@ import { useRef } from 'react';
 import { Link, router } from 'expo-router';
 import { useForm } from '@tanstack/react-form';
 import { supabase } from '@/lib/supabase';
+import { PasswordInput } from '@/components/PasswordInput';
 
 export default function SignInScreen() {
   const passwordRef = useRef<TextInput>(null);
@@ -106,13 +107,10 @@ export default function SignInScreen() {
           >
             {(field) => (
               <View className="gap-1">
-                <TextInput
+                <PasswordInput
                   ref={passwordRef}
-                  className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-950 dark:text-latte-100 text-base"
-                  style={textInputStyle}
                   placeholder="Password"
                   placeholderTextColor="#9c7a5e"
-                  secureTextEntry
                   textContentType="password"
                   autoComplete="current-password"
                   returnKeyType="done"

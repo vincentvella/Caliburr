@@ -1,4 +1,3 @@
-import { textInputStyle } from '@/lib/styles';
 import {
   View,
   Text,
@@ -12,6 +11,7 @@ import {
 import { useRef, useState } from 'react';
 import { router } from 'expo-router';
 import { supabase } from '@/lib/supabase';
+import { PasswordInput } from '@/components/PasswordInput';
 
 export default function ResetPasswordScreen() {
   const [password, setPassword] = useState('');
@@ -55,12 +55,9 @@ export default function ResetPasswordScreen() {
         </Text>
 
         <View className="gap-3 mb-4">
-          <TextInput
-            className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-950 dark:text-latte-100 text-base"
-            style={textInputStyle}
+          <PasswordInput
             placeholder="New password"
             placeholderTextColor="#9c7a5e"
-            secureTextEntry
             textContentType="newPassword"
             autoComplete="new-password"
             returnKeyType="next"
@@ -68,13 +65,10 @@ export default function ResetPasswordScreen() {
             value={password}
             onChangeText={setPassword}
           />
-          <TextInput
+          <PasswordInput
             ref={confirmRef}
-            className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-xl px-4 py-3.5 text-latte-950 dark:text-latte-100 text-base"
-            style={textInputStyle}
             placeholder="Confirm password"
             placeholderTextColor="#9c7a5e"
-            secureTextEntry
             textContentType="newPassword"
             autoComplete="new-password"
             returnKeyType="done"
