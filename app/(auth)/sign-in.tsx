@@ -15,6 +15,7 @@ import { Link, router } from 'expo-router';
 import { useForm } from '@tanstack/react-form';
 import { supabase } from '@/lib/supabase';
 import { PasswordInput } from '@/components/PasswordInput';
+import { SocialSignIn } from '@/components/SocialSignIn';
 
 export default function SignInScreen() {
   const passwordRef = useRef<TextInput>(null);
@@ -149,7 +150,7 @@ export default function SignInScreen() {
             <TouchableOpacity
               onPress={form.handleSubmit}
               disabled={isSubmitting}
-              className="bg-harvest-500 rounded-xl py-4 items-center mb-6"
+              className="bg-harvest-500 rounded-xl py-4 items-center mb-2"
             >
               {isSubmitting ? (
                 <ActivityIndicator color="#fff" />
@@ -159,6 +160,8 @@ export default function SignInScreen() {
             </TouchableOpacity>
           )}
         </form.Subscribe>
+
+        <SocialSignIn />
 
         <View className="flex-row justify-center gap-1 mb-4">
           <Text className="text-latte-600 dark:text-latte-500">{`Don't have an account?`}</Text>

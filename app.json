@@ -15,7 +15,9 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "coffee.caliburr.app",
-      "associatedDomains": ["applinks:caliburr.coffee"],
+      "associatedDomains": [
+        "applinks:caliburr.coffee"
+      ],
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
         "NSPhotoLibraryUsageDescription": "Choose a photo of your equipment to help other users identify it."
@@ -40,7 +42,10 @@
               "host": "caliburr.coffee"
             }
           ],
-          "category": ["BROWSABLE", "DEFAULT"]
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
         }
       ]
     },
@@ -75,6 +80,13 @@
           "url": "https://sentry.io/",
           "project": "caliburr",
           "organization": "vellapps-s1"
+        }
+      ],
+      "expo-apple-authentication",
+      [
+        "@react-native-google-signin/google-signin",
+        {
+          "iosUrlScheme": "com.googleusercontent.apps.694968860911-dveckbiuj3cnc9h61ec46dckrj2plvr4"
         }
       ]
     ],

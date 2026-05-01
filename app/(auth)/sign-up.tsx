@@ -16,6 +16,7 @@ import * as WebBrowser from 'expo-web-browser';
 import { useForm } from '@tanstack/react-form';
 import { supabase } from '@/lib/supabase';
 import { PasswordInput } from '@/components/PasswordInput';
+import { SocialSignIn } from '@/components/SocialSignIn';
 
 const PRIVACY_POLICY_URL = 'https://caliburr.coffee/privacy';
 const TOS_URL = 'https://caliburr.coffee/terms';
@@ -159,7 +160,7 @@ export default function SignUpScreen() {
             <TouchableOpacity
               onPress={form.handleSubmit}
               disabled={isSubmitting}
-              className="bg-harvest-500 rounded-xl py-4 items-center mb-6"
+              className="bg-harvest-500 rounded-xl py-4 items-center mb-2"
             >
               {isSubmitting ? (
                 <ActivityIndicator color="#fff" />
@@ -169,6 +170,8 @@ export default function SignUpScreen() {
             </TouchableOpacity>
           )}
         </form.Subscribe>
+
+        <SocialSignIn />
 
         <Text className="text-latte-500 dark:text-latte-600 text-xs text-center mb-6 leading-5">
           By creating an account you agree to our{' '}
