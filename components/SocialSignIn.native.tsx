@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, ActivityIndicator, Alert, Platform } from 'react-native';
 import * as AppleAuthentication from 'expo-apple-authentication';
+import * as Crypto from 'expo-crypto';
 import {
   GoogleSignin,
   statusCodes,
@@ -46,11 +47,20 @@ export function SocialSignIn({ onError }: { onError?: (msg: string) => void }) {
   async function handleApple() {
     setAppleBusy(true);
     try {
+      // Apple identity tokens always carry a nonce. Generate a raw nonce, hash
+      // it for Apple, and pass the raw value to Supabase so it can verify the
+      // token's nonce claim (sha256(raw) === token.nonce).
+      const rawNonce = Crypto.randomUUID();
+      const hashedNonce = await Crypto.digestStringAsync(
+        Crypto.CryptoDigestAlgorithm.SHA256,
+        rawNonce,
+      );
       const credential = await AppleAuthentication.signInAsync({
         requestedScopes: [
           AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
           AppleAuthentication.AppleAuthenticationScope.EMAIL,
         ],
+        nonce: hashedNonce,
       });
       if (!credential.identityToken) {
         reportError('apple-no-token', new Error('No identityToken'), 'Apple returned no token.');
@@ -59,6 +69,7 @@ export function SocialSignIn({ onError }: { onError?: (msg: string) => void }) {
       const { error } = await supabase.auth.signInWithIdToken({
         provider: 'apple',
         token: credential.identityToken,
+        nonce: rawNonce,
       });
       if (error) reportError('apple-supabase', error, error.message);
     } catch (e) {

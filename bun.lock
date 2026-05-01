@@ -20,6 +20,7 @@
         "expo-apple-authentication": "~55.0.13",
         "expo-clipboard": "~55.0.13",
         "expo-constants": "~55.0.14",
+        "expo-crypto": "~55.0.14",
         "expo-dev-client": "~55.0.27",
         "expo-font": "~55.0.6",
         "expo-haptics": "~55.0.14",
@@ -1016,6 +1017,8 @@
     "expo-clipboard": ["expo-clipboard@55.0.13", "", { "peerDependencies": { "expo": "*", "react": "*", "react-native": "*" } }, "sha512-PrOmmuVsGW4bAkNQmGKtxMXj3invsfN+jfIKmQxHwE/dn7ODqwFWviUTa+PMUjP3XZmYCDLyu/i0GLeu7HF9Ew=="],
 
     "expo-constants": ["expo-constants@55.0.14", "", { "dependencies": { "@expo/config": "~55.0.15", "@expo/env": "~2.1.1" }, "peerDependencies": { "expo": "*", "react-native": "*" } }, "sha512-l23QVQCYBPKT5zbxxZdJeuhiunadvWdjcQ9+GC8h+02jCoLmWRk20064nCINnQTP3Hf+uLPteUiwYrJd0e446w=="],
+
+    "expo-crypto": ["expo-crypto@55.0.14", "", { "peerDependencies": { "expo": "*" } }, "sha512-TfAADBGZNNv9OOmdKFJCz54wDj87ufxtzQNSY+Roycpm8e5tuCnDIL7EjqUOmNTGH99Jj8ftPGFt4KGG2Ii2fg=="],
 
     "expo-dev-client": ["expo-dev-client@55.0.27", "", { "dependencies": { "expo-dev-launcher": "55.0.28", "expo-dev-menu": "55.0.23", "expo-dev-menu-interface": "55.0.2", "expo-manifests": "~55.0.15", "expo-updates-interface": "~55.1.5" }, "peerDependencies": { "expo": "*" } }, "sha512-Ala2ER6v1NPFySdnuQN/GpQZI9r7E9eSMvzD32vv8A4FJkPfzjvj6U5uH4IytQQLVTa837fknXRvOMwRb9ZYQQ=="],
 
