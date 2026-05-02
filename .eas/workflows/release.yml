@@ -38,6 +38,9 @@ jobs:
     name: Submit to Google Play (Beta Testers)
     needs: [build_android]
     steps:
+      # Custom steps run in an empty step dir, so check out the repo
+      # to get eas.json/app.json before invoking eas-cli.
+      - uses: eas/checkout
       - name: Submit via eas-cli
         run: |
           npx -y eas-cli@latest submit \
