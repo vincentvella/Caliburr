@@ -8,16 +8,11 @@ import type { ExpoConfig } from 'expo/config';
 const config: ExpoConfig = {
   name: 'Caliburr',
   slug: 'caliburr',
-  version: '1.0.3',
+  version: '1.0.4',
   orientation: 'default',
   icon: './assets/images/icon.png',
   scheme: 'caliburr',
   userInterfaceStyle: 'automatic',
-  splash: {
-    image: './assets/images/splash.png',
-    resizeMode: 'contain',
-    backgroundColor: '#0f0300',
-  },
   ios: {
     supportsTablet: true,
     bundleIdentifier: 'coffee.caliburr.app',
@@ -63,6 +58,29 @@ const config: ExpoConfig = {
     'expo-font',
     'expo-web-browser',
     'expo-system-ui',
+    [
+      'expo-splash-screen',
+      {
+        backgroundColor: '#0f0300',
+        // iOS handles full-bleed designed splashes natively via storyboard,
+        // so use the full lockup (Caliburr + bean + tagline).
+        ios: {
+          image: './assets/images/splash.png',
+          enableFullScreenImage_legacy: true,
+          resizeMode: 'cover',
+          backgroundColor: '#0f0300',
+        },
+        // Android 12+'s Splash Screen API expects a centered icon on a solid
+        // background — full lockups don't render well. Match the platform
+        // convention; brand text appears on the first app screen.
+        android: {
+          image: './assets/images/splash-icon.png',
+          imageWidth: 240,
+          resizeMode: 'contain',
+          backgroundColor: '#0f0300',
+        },
+      },
+    ],
     '@react-native-community/datetimepicker',
     [
       'expo-image-picker',

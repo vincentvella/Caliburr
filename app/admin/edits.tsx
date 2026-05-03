@@ -171,11 +171,26 @@ export default function AdminScreen() {
     });
 
     if (error) {
+      // Surface the underlying server message when present so it's actually
+      // diagnosable instead of the old generic "URL may be unreachable" line.
+      // supabase-js invoke may have already consumed the body, so clone first;
+      // fall back to text if the body isn't JSON.
+      let detail = (error as Error)?.message ?? '';
+      const ctx = (error as { context?: Response }).context;
+      if (ctx) {
+        try {
+          const body = await ctx.clone().json();
+          if (body?.error) detail = String(body.error);
+        } catch {
+          try {
+            const text = await ctx.clone().text();
+            if (text) detail = text.slice(0, 300);
+          } catch {}
+        }
+      }
       Alert.alert(
-        'Error',
-        action === 'approve'
-          ? 'Failed to fetch or process the image. The URL may be unreachable.'
-          : 'Failed to reject image.',
+        action === 'approve' ? 'Approve failed' : 'Reject failed',
+        detail || 'Unknown error.',
       );
     } else {
       setPendingImages((prev) => prev.filter((i) => i.id !== image.id));

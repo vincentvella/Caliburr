@@ -2,7 +2,7 @@ import '../global.css';
 import 'react-native-url-polyfill/auto';
 
 import { useEffect, useState } from 'react';
-import { Platform } from 'react-native';
+import { Platform, Dimensions } from 'react-native';
 import { Stack, router, useSegments } from 'expo-router';
 import { useUniwind } from 'uniwind';
 import { StatusBar } from 'expo-status-bar';
@@ -56,7 +56,13 @@ if (Constants.isDevice) {
 SplashScreen.preventAutoHideAsync();
 
 // Lock phones to portrait; let iPads rotate freely
-if (Platform.OS === 'ios' && !Platform.isPad) {
+// Lock phones to portrait; let tablets (iPad / large Android tablets) rotate.
+// 600dp is the Material breakpoint for "small tablet and up".
+const { width: _w, height: _h } = Dimensions.get('window');
+const isPhone =
+  (Platform.OS === 'ios' && !Platform.isPad) ||
+  (Platform.OS === 'android' && Math.min(_w, _h) < 600);
+if (isPhone) {
   ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
 }
 
