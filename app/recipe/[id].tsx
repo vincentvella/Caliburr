@@ -392,6 +392,7 @@ export default function RecipeDetailScreen() {
               displayName={author?.display_name ?? null}
               avatarUrl={author?.avatar_url ?? null}
               subtitle="Recipe by"
+              testID="recipe-author-row"
             />
           </View>
         )}
@@ -458,6 +459,7 @@ export default function RecipeDetailScreen() {
             }
             verified={recipe.grinder.verified}
             onPress={() => router.push(`/grinder/${recipe.grinder_id}`)}
+            testID="recipe-grinder-row"
           />
           {recipe.brew_machine && (
             <EquipmentRow

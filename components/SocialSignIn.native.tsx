@@ -92,6 +92,9 @@ export function SocialSignIn({ onError }: { onError?: (msg: string) => void }) {
     try {
       await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
       const result = await GoogleSignin.signIn();
+      // v16 returns `{ type: 'cancelled' }` on dismiss instead of throwing —
+      // bail silently so we don't false-positive Sentry as "no idToken".
+      if (result.type === 'cancelled') return;
       const idToken = result.data?.idToken;
       if (!idToken) {
         reportError('google-no-token', new Error('No idToken'), 'Google returned no token.');

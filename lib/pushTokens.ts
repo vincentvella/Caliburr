@@ -41,6 +41,16 @@ export async function registerPushToken(): Promise<void> {
       { onConflict: 'user_id,token' },
     );
   } catch (e) {
+    // Android without FCM credentials throws "Default FirebaseApp is not
+    // initialized" — expected until the firebase setup ships in a build,
+    // not worth Sentry-reporting on every launch.
+    const message = (e as Error)?.message ?? '';
+    if (
+      Platform.OS === 'android' &&
+      message.includes('FirebaseApp is not initialized')
+    ) {
+      return;
+    }
     Sentry.captureException(e, { tags: { feature: 'push-tokens', stage: 'register' } });
   }
 }

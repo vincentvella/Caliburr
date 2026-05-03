@@ -3,10 +3,16 @@ import { Ionicons } from '@expo/vector-icons';
 import { View, useWindowDimensions } from 'react-native';
 import { useUniwind } from 'uniwind';
 import { NativeSidebar } from '@/components/NativeSidebar';
+import { useScreenshotMode } from '@/lib/useScreenshotMode';
 
 const BREAKPOINT = 768;
 
 export default function TabLayout() {
+  // Side-effect: latches the sticky `?screenshot=1` flag on any tab landing
+  // so deep children (grinder/[id], etc.) see screenshot mode even after
+  // navigating away from the URL that set the param.
+  useScreenshotMode();
+
   const { theme } = useUniwind();
   const isDark = theme === 'dark';
   const { width } = useWindowDimensions();

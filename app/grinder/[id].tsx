@@ -13,6 +13,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { supabase } from '@/lib/supabase';
 import { db } from '@/lib/db';
 import { computeGrindStats, type GrindStats } from '@/lib/stats';
+import { useScreenshotMode } from '@/lib/useScreenshotMode';
 import {
   type Grinder,
   type BrewMethod,
@@ -32,11 +33,25 @@ interface GrinderRecipe {
   worked_tries: number;
 }
 
+// Believable fake recipes for marketing screenshots — used only in dev when
+// `?screenshot=1` was set on any route this session.
+const FAKE_AEROPRESS_RECIPES: GrinderRecipe[] = [
+  { id: 'fake-1', brew_method: 'aeropress', grind_setting: '17', dose_g: 14, yield_g: 220, upvotes: 32, bean: { name: 'Ethiopia Guji', roaster: 'Verve Coffee' }, worked_tries: 5 },
+  { id: 'fake-2', brew_method: 'aeropress', grind_setting: '18', dose_g: 14, yield_g: 230, upvotes: 24, bean: { name: 'Colombia La Palma', roaster: 'Onyx Coffee Lab' }, worked_tries: 3 },
+  { id: 'fake-3', brew_method: 'aeropress', grind_setting: '18', dose_g: 15, yield_g: 240, upvotes: 21, bean: { name: 'Kenya Nyeri', roaster: 'Sey Coffee' }, worked_tries: 4 },
+  { id: 'fake-4', brew_method: 'aeropress', grind_setting: '19', dose_g: 14, yield_g: 220, upvotes: 18, bean: { name: 'Burundi Kayanza', roaster: 'George Howell' }, worked_tries: 2 },
+  { id: 'fake-5', brew_method: 'aeropress', grind_setting: '17', dose_g: 13, yield_g: 200, upvotes: 16, bean: { name: 'Yemen Mocha', roaster: 'Mostra Coffee' }, worked_tries: 2 },
+  { id: 'fake-6', brew_method: 'aeropress', grind_setting: '20', dose_g: 15, yield_g: 250, upvotes: 14, bean: { name: 'Brazil Daterra', roaster: 'Counter Culture' }, worked_tries: 1 },
+  { id: 'fake-7', brew_method: 'aeropress', grind_setting: '18', dose_g: 14, yield_g: 230, upvotes: 12, bean: { name: 'Costa Rica Tarrazu', roaster: 'Heart Coffee' }, worked_tries: 3 },
+  { id: 'fake-8', brew_method: 'aeropress', grind_setting: '19', dose_g: 14, yield_g: 210, upvotes: 9, bean: { name: 'Guatemala Huehue', roaster: 'Blue Bottle' }, worked_tries: 1 },
+];
+
 function useGrinderDetail(id: string) {
   const [grinder, setGrinder] = useState<Grinder | null>(null);
   const [recipes, setRecipes] = useState<GrinderRecipe[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const screenshotMode = useScreenshotMode();
 
   useEffect(() => {
     async function load() {
@@ -78,13 +93,22 @@ function useGrinderDetail(id: string) {
         }
       }
 
-      setRecipes(
-        baseRecipes.map((r) => ({ ...r, worked_tries: workedCounts.get(r.id) ?? 0 })),
-      );
+      const realRecipes = baseRecipes.map((r) => ({
+        ...r,
+        worked_tries: workedCounts.get(r.id) ?? 0,
+      }));
+
+      // Marketing screenshots: if data is sparse, prepend believable fake
+      // recipes so the dial-in stats card has numbers to render.
+      if (screenshotMode && realRecipes.length < 5) {
+        setRecipes([...FAKE_AEROPRESS_RECIPES, ...realRecipes]);
+      } else {
+        setRecipes(realRecipes);
+      }
       setLoading(false);
     }
     load();
-  }, [id]);
+  }, [id, screenshotMode]);
 
   return { grinder, recipes, loading, error };
 }

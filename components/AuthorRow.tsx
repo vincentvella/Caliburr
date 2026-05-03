@@ -17,6 +17,7 @@ export interface AuthorRowProps {
   variant?: Variant;
   // When true the row navigates to /user/[id]; otherwise it's purely visual.
   pressable?: boolean;
+  testID?: string;
 }
 
 function initials(name: string | null) {
@@ -34,6 +35,7 @@ export function AuthorRow({
   subtitle,
   variant = 'compact',
   pressable = true,
+  testID,
 }: AuthorRowProps) {
   const size = variant === 'header' ? 56 : 36;
   const ringColor = 'border-latte-200 dark:border-ristretto-700';
@@ -99,12 +101,15 @@ export function AuthorRow({
     </View>
   );
 
-  if (!pressable) return Body;
+  if (!pressable) {
+    return testID ? <View testID={testID}>{Body}</View> : Body;
+  }
 
   return (
     <TouchableOpacity
       onPress={() => router.push(`/user/${userId}`)}
       hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
+      testID={testID}
     >
       {Body}
     </TouchableOpacity>

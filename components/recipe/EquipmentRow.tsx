@@ -6,12 +6,14 @@ export function EquipmentRow({
   subtitle,
   verified,
   onPress,
+  testID,
 }: {
   label: string;
   value: string;
   subtitle?: string;
   verified?: boolean;
   onPress?: () => void;
+  testID?: string;
 }) {
   const content = (
     <View className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-xl px-4 py-3 flex-row items-center justify-between">
@@ -39,11 +41,11 @@ export function EquipmentRow({
 
   if (onPress) {
     return (
-      <TouchableOpacity onPress={onPress} activeOpacity={0.7}>
+      <TouchableOpacity onPress={onPress} activeOpacity={0.7} testID={testID}>
         {content}
       </TouchableOpacity>
     );
   }
 
-  return content;
+  return testID ? <View testID={testID}>{content}</View> : content;
 }

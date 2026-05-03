@@ -1,0 +1,15 @@
+appId: coffee.caliburr.app
+name: 'Screenshot — Other-user profile'
+---
+- launchApp
+- runFlow: _sign_in.yaml
+- waitForAnimationToEnd
+- tapOn:
+    id: 'recipe-item'
+    index: 0
+- waitForAnimationToEnd
+# AuthorRow at the top of the recipe detail navigates to /user/[id].
+- tapOn:
+    id: 'recipe-author-row'
+- waitForAnimationToEnd
+- takeScreenshot: screenshots/${DEVICE_DIR}/05_user_profile

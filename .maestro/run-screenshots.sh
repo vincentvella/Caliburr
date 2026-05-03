@@ -12,16 +12,6 @@ cd "$(dirname "$0")"
 
 FLOW="${1:-}"
 
-# ── Credentials ────────────────────────────────────────────────────────────────
-if [ -z "$MAESTRO_EMAIL" ]; then
-  read -r -p "Maestro account email: " MAESTRO_EMAIL
-fi
-if [ -z "$MAESTRO_PASSWORD" ]; then
-  read -r -s -p "Maestro account password: " MAESTRO_PASSWORD
-  echo
-fi
-export MAESTRO_EMAIL MAESTRO_PASSWORD
-
 # ── Helpers ────────────────────────────────────────────────────────────────────
 find_entry() {
   # $1: "iphone" or "ipad" — prefers booted, then latest OS + best form factor
@@ -180,4 +170,11 @@ process_device iphone
 process_device ipad
 
 echo ""
-echo "✓ Done. Submission-ready screenshots → .maestro/screenshots/submission/"
+echo "════════════════════ Framing ════════════════════"
+# Already cd'd into .maestro/ at the top of this script; pop up to project root.
+( cd .. && bun run .maestro/frame-screenshots.ts )
+
+echo ""
+echo "✓ Done."
+echo "  Raw submission shots → .maestro/screenshots/submission/"
+echo "  Marketing-framed     → .maestro/screenshots/marketing/"

@@ -24,8 +24,18 @@ export async function logOut() {
   // first ID ever set on this install and stays as a real user ID even after a
   // prior logOut, which makes the guard miss subsequent anonymous sessions.
   const appUserId = await Purchases.getAppUserID();
-  if (!appUserId.startsWith('$RCAnonymousID:')) {
+  if (appUserId.startsWith('$RCAnonymousID:')) return;
+
+  try {
     await Purchases.logOut();
+  } catch (e) {
+    // Race: another SIGNED_OUT firing or a state transition can flip RC to
+    // anonymous between the getAppUserID() call above and this logOut().
+    // The library throws code "22" — swallow that, rethrow anything else.
+    if ((e as { code?: string })?.code === PURCHASES_ERROR_CODE.LOG_OUT_ANONYMOUS_USER_ERROR) {
+      return;
+    }
+    throw e;
   }
 }
 

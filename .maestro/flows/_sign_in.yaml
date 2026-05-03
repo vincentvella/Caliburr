@@ -21,6 +21,7 @@ appId: coffee.caliburr.app
           text: 'Caliburr'
           index: 1
       - waitForAnimationToEnd
+      - waitForAnimationToEnd
 # Dismiss any lingering "Open in Caliburr?" system dialog from a prior openLink
 - runFlow:
     when:
@@ -43,19 +44,43 @@ appId: coffee.caliburr.app
       - tapOn:
           text: 'Sign In'
       - waitForAnimationToEnd
-      # Skip onboarding if it appears
+# Skip onboarding regardless of how we got here (post-signin OR signed-in but
+# onboarding_completed is unset). Walks the 4-step flow:
+# welcome → profile → grinder → machine → done.
+- runFlow:
+    when:
+      visible: 'Get started'
+    commands:
+      - tapOn:
+          text: 'Get started'
+      - waitForAnimationToEnd
       - runFlow:
           when:
-            visible: 'Get started'
+            visible: 'Pick a handle'
           commands:
             - tapOn:
-                text: 'Get started'
+                text: 'Continue →'
+            - waitForAnimationToEnd
+      - runFlow:
+          when:
+            visible: 'Add your grinder'
+          commands:
             - tapOn:
                 text: 'Skip for now →'
+            - waitForAnimationToEnd
+      - runFlow:
+          when:
+            visible: 'Add your machine'
+          commands:
             - tapOn:
                 text: 'Skip for now →'
+            - waitForAnimationToEnd
+      - runFlow:
+          when:
+            visible: 'Explore brews'
+          commands:
             - tapOn:
-                text: 'Explore recipes'
+                text: 'Explore brews'
             - waitForAnimationToEnd
 # Always navigate to Explore tab to ensure consistent starting state
 - tapOn:

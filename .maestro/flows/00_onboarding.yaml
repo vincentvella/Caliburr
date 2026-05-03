@@ -1,20 +1,13 @@
 appId: coffee.caliburr.app
 name: 'Screenshot — Onboarding'
-# Uses the DEV TOOLS "Preview onboarding" button in Account Settings —
-# no fresh account needed, works with MAESTRO_EMAIL / MAESTRO_PASSWORD.
+# Uses the DEV TOOLS "Preview onboarding" button on the Profile tab —
+# no fresh account needed.
 ---
 - launchApp
 - runFlow: _sign_in.yaml
-# Navigate to the Preview onboarding dev tool
 - tapOn:
     id: 'nav-profile'
 - waitForAnimationToEnd
-- scrollUntilVisible:
-    element:
-      id: 'account-settings-row'
-    direction: DOWN
-- tapOn:
-    id: 'account-settings-row'
 - scrollUntilVisible:
     element:
       text: 'Preview onboarding'
@@ -29,19 +22,24 @@ name: 'Screenshot — Onboarding'
 - tapOn:
     text: 'Get started'
 - waitForAnimationToEnd
-# Step 1: Add grinder
+# Step 1: Pick a handle — navigate past without screenshotting
+- assertVisible:
+    text: 'Pick a handle'
+- tapOn:
+    text: 'Continue →'
+- waitForAnimationToEnd
+# Step 2: Add grinder — navigate past without screenshotting
 - assertVisible:
     text: 'Add your grinder'
-- takeScreenshot: screenshots/${DEVICE_DIR}/00b_onboarding_grinder
 - tapOn:
     text: 'Skip for now →'
 - waitForAnimationToEnd
-# Step 2: Add machine — navigate past without screenshotting
+# Step 3: Add machine — navigate past
 - assertVisible:
     text: 'Add your machine'
 - tapOn:
     text: 'Skip for now →'
 - waitForAnimationToEnd
-# Step 3: Done — navigate past without screenshotting
+# Step 4: Done
 - assertVisible:
     text: 'Ready to explore'

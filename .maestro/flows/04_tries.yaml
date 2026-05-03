@@ -1,0 +1,31 @@
+appId: coffee.caliburr.app
+name: 'Screenshot — TriedThisModal'
+---
+- launchApp
+- runFlow: _sign_in.yaml
+- waitForAnimationToEnd
+# Tap the first community recipe (the seeded user must not be the author of
+# index 0 — adjust seed if this turns out to be flaky).
+- tapOn:
+    id: 'recipe-item'
+    index: 0
+- waitForAnimationToEnd
+- scrollUntilVisible:
+    element:
+      text: 'I tried this'
+    direction: DOWN
+    centerElement: true
+- runFlow:
+    when:
+      visible: 'I tried this'
+    commands:
+      - tapOn:
+          text: 'I tried this'
+- runFlow:
+    when:
+      visible: 'Edit my try'
+    commands:
+      - tapOn:
+          text: 'Edit my try'
+- waitForAnimationToEnd
+- takeScreenshot: screenshots/${DEVICE_DIR}/04_tries

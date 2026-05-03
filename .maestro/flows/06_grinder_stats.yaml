@@ -1,0 +1,29 @@
+appId: coffee.caliburr.app
+name: 'Screenshot — Grinder dial-in stats'
+---
+- launchApp
+- runFlow: _sign_in.yaml
+# Enable screenshot mode (sticky for the rest of this app session) so
+# /grinder/[id] injects fake aggregate stats — real seed data isn't dense
+# enough to compute median + IQR.
+- openLink: 'caliburr:///?screenshot=1'
+- runFlow:
+    when:
+      visible: 'Open'
+    commands:
+      - tapOn:
+          text: 'Open'
+- waitForAnimationToEnd
+- tapOn:
+    id: 'recipe-item'
+    index: 0
+- waitForAnimationToEnd
+- scrollUntilVisible:
+    element:
+      id: 'recipe-grinder-row'
+    direction: DOWN
+    centerElement: true
+- tapOn:
+    id: 'recipe-grinder-row'
+- waitForAnimationToEnd
+- takeScreenshot: screenshots/${DEVICE_DIR}/06_grinder_stats

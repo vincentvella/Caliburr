@@ -1,0 +1,10 @@
+appId: coffee.caliburr.app
+name: 'Screenshot — Gear tab'
+---
+- launchApp
+- runFlow: _sign_in.yaml
+- waitForAnimationToEnd
+- tapOn:
+    id: 'nav-gear'
+- waitForAnimationToEnd
+- takeScreenshot: screenshots/${DEVICE_DIR}/07_gear

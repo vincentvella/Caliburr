@@ -1,5 +1,6 @@
 import { textInputStyle } from '@/lib/styles';
 import { View, Text, TextInput, TouchableOpacity, Modal, Platform } from 'react-native';
+import { useUniwind } from 'uniwind';
 import { useState } from 'react';
 import DateTimePicker, { type DateTimePickerEvent } from '@react-native-community/datetimepicker';
 
@@ -23,6 +24,7 @@ function fromDate(d: Date): string {
 }
 
 export function DateInput({ value, onChange, label }: Props) {
+  const { theme } = useUniwind();
   const [show, setShow] = useState(false);
   const [pendingDate, setPendingDate] = useState<Date>(new Date());
   const today = new Date();
@@ -80,7 +82,13 @@ export function DateInput({ value, onChange, label }: Props) {
         onPress={openPicker}
         className="bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-xl px-4 py-3.5"
       >
-        <Text style={{ color: value ? '#e8d5c0' : '#6e5a47', fontSize: 16 }}>
+        <Text
+          className={
+            value
+              ? 'text-latte-950 dark:text-latte-100 text-base'
+              : 'text-latte-500 dark:text-latte-600 text-base'
+          }
+        >
           {value || 'Select date'}
         </Text>
       </TouchableOpacity>
@@ -119,14 +127,17 @@ export function DateInput({ value, onChange, label }: Props) {
                   <Text className="text-harvest-400 font-semibold">Done</Text>
                 </TouchableOpacity>
               </View>
-              <DateTimePicker
-                mode="date"
-                display="spinner"
-                value={pendingDate}
-                maximumDate={today}
-                onChange={handleIOSChange}
-                themeVariant="dark"
-              />
+              <View style={{ alignItems: 'center' }}>
+                <DateTimePicker
+                  mode="date"
+                  display="spinner"
+                  value={pendingDate}
+                  maximumDate={today}
+                  onChange={handleIOSChange}
+                  themeVariant={theme === 'dark' ? 'dark' : 'light'}
+                  style={{ width: '100%' }}
+                />
+              </View>
             </View>
           </View>
         </Modal>

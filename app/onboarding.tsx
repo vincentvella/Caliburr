@@ -6,6 +6,7 @@ import {
   ActivityIndicator,
   Animated,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { textInputStyle } from '@/lib/styles';
 import { useRef, useState, useEffect } from 'react';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -26,6 +27,7 @@ async function markOnboardingComplete() {
 }
 
 export default function OnboardingScreen() {
+  const insets = useSafeAreaInsets();
   const [step, setStep] = useState<Step>('welcome');
   const [grinderModalOpen, setGrinderModalOpen] = useState(false);
   const [machineModalOpen, setMachineModalOpen] = useState(false);
@@ -195,7 +197,11 @@ export default function OnboardingScreen() {
   return (
     <View
       className="flex-1 bg-latte-50 dark:bg-ristretto-900"
-      style={{ paddingTop: 72, paddingBottom: 40, paddingHorizontal: 32 }}
+      style={{
+        paddingTop: insets.top + 28,
+        paddingBottom: Math.max(insets.bottom, 16) + 24,
+        paddingHorizontal: 32,
+      }}
     >
       {/* Progress dots — always occupies the same vertical slot */}
       <View
@@ -333,15 +339,13 @@ export default function OnboardingScreen() {
               else handleFinish();
             }}
             disabled={finishing || savingProfile}
-            className="bg-harvest-500 rounded-2xl items-center"
+            className="bg-harvest-500 rounded-2xl items-center justify-center"
             style={{ height: 52 }}
           >
             {(finishing && step === 'done') || (savingProfile && step === 'profile') ? (
-              <ActivityIndicator color="#fff" style={{ flex: 1 }} />
+              <ActivityIndicator color="#fff" />
             ) : (
-              <Text className="text-white font-bold text-base" style={{ lineHeight: 52 }}>
-                {primaryLabel[step]}
-              </Text>
+              <Text className="text-white font-bold text-base">{primaryLabel[step]}</Text>
             )}
           </TouchableOpacity>
 
@@ -356,13 +360,10 @@ export default function OnboardingScreen() {
                   router.push('/recipe/new');
                 }}
                 disabled={finishing}
-                className="border border-latte-200 dark:border-ristretto-700 rounded-2xl items-center"
+                className="border border-latte-200 dark:border-ristretto-700 rounded-2xl items-center justify-center"
                 style={{ height: 52 }}
               >
-                <Text
-                  className="text-latte-700 dark:text-latte-300 font-medium"
-                  style={{ lineHeight: 52 }}
-                >
+                <Text className="text-latte-700 dark:text-latte-300 font-medium">
                   Submit my first brew
                 </Text>
               </TouchableOpacity>

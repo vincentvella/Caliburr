@@ -31,21 +31,27 @@ import { BackerProvider } from '@/lib/backerContext';
 import * as purchases from '@/lib/purchases';
 import { registerPushToken } from '@/lib/pushTokens';
 import { useNotificationDeepLink } from '@/lib/notifications';
+import Constants from 'expo-constants';
 import * as Sentry from '@sentry/react-native';
 
-Sentry.init({
-  dsn: 'https://ec665051bfa92a01b6c78be7ca49b630@o917174.ingest.us.sentry.io/4511239753433088',
+// Skip Sentry on simulators/emulators — local dev noise isn't worth tracking
+// and screenshot runs hit error paths intentionally. Constants.isDevice is
+// false on iOS Simulator / Android Emulator, true on real hardware.
+if (Constants.isDevice) {
+  Sentry.init({
+    dsn: 'https://ec665051bfa92a01b6c78be7ca49b630@o917174.ingest.us.sentry.io/4511239753433088',
 
-  // Adds more context data to events (IP address, cookies, user, etc.)
-  // For more information, visit: https://docs.sentry.io/platforms/react-native/data-management/data-collected/
-  sendDefaultPii: true,
+    // Adds more context data to events (IP address, cookies, user, etc.)
+    // For more information, visit: https://docs.sentry.io/platforms/react-native/data-management/data-collected/
+    sendDefaultPii: true,
 
-  // Enable Logs
-  enableLogs: true,
+    // Enable Logs
+    enableLogs: true,
 
-  // uncomment the line below to enable Spotlight (https://spotlightjs.com)
-  // spotlight: __DEV__,
-});
+    // uncomment the line below to enable Spotlight (https://spotlightjs.com)
+    // spotlight: __DEV__,
+  });
+}
 
 SplashScreen.preventAutoHideAsync();
 
@@ -132,6 +138,11 @@ function useAuthGate(session: Session | null, ready: boolean, isRecovery: boolea
 }
 
 async function handleDeepLink(url: string) {
+  // On web, Supabase JS handles URL-based session detection automatically
+  // via `detectSessionInUrl`; calling exchangeCodeForSession ourselves
+  // consumes the PKCE verifier and races the auto-detection, causing
+  // "auth code and code verifier should be non-empty" errors.
+  if (Platform.OS === 'web') return;
   // Supabase PKCE flow sends a `code` param — exchange it for a session
   if (url.includes('code=')) {
     const { error } = await supabase.auth.exchangeCodeForSession(url);

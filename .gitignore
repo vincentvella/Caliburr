@@ -36,6 +36,9 @@ yarn-error.*
 # Google Play service account key
 google-service-account.json
 
+# Firebase Android client config — referenced via GOOGLE_SERVICES_FILE env var
+google-services.json
+
 # typescript
 *.tsbuildinfo
 
@@ -60,3 +63,6 @@ scripts/sync-catalog-assets.ts
 
 # Local-only planning notes
 plans/
+
+# Claude Code local settings + scheduled task state
+.claude/

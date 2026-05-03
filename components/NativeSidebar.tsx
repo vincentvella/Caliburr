@@ -25,6 +25,12 @@ const NAV_ITEMS: {
     match: (p) => p.includes('/recipes'),
   },
   {
+    href: '/(tabs)/gear',
+    label: 'Gear',
+    icon: 'cafe-outline',
+    match: (p) => p.includes('/gear'),
+  },
+  {
     href: '/(tabs)/profile',
     label: 'Profile',
     icon: 'person-outline',
