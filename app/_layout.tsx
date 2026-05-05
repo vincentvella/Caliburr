@@ -132,7 +132,10 @@ function useAuthGate(session: Session | null, ready: boolean, isRecovery: boolea
     if (!ready || isRecovery) return;
 
     const inAuth = segments[0] === '(auth)';
-    const inPublic = segments[0] === 'privacy' || segments[0] === 'support'; // public web-only routes, no auth required
+    const inPublic =
+      segments[0] === 'privacy' ||
+      segments[0] === 'support' ||
+      segments[0] === 'delete-account'; // public web-only routes, no auth required
 
     if (!session && !inAuth && !inPublic) {
       router.replace('/(auth)/sign-in');
@@ -191,6 +194,7 @@ export default Sentry.wrap(function RootLayout() {
             <Stack.Screen name="onboarding" />
             <Stack.Screen name="privacy" />
             <Stack.Screen name="support" />
+            <Stack.Screen name="delete-account" />
             <Stack.Screen name="account/index" />
             <Stack.Screen name="account/change-password" />
             <Stack.Screen name="account/edit-profile" />
