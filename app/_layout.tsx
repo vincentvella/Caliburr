@@ -135,10 +135,31 @@ function useAuthGate(session: Session | null, ready: boolean, isRecovery: boolea
     const inPublic =
       segments[0] === 'privacy' ||
       segments[0] === 'support' ||
-      segments[0] === 'delete-account'; // public web-only routes, no auth required
+      segments[0] === 'delete-account' ||
+      segments[0] === 'landing'; // public web-only routes, no auth required
+
+    // /landing is web-only marketing — if a mobile user lands there via universal
+    // link, kick them to the appropriate in-app destination.
+    if (Platform.OS !== 'web' && segments[0] === 'landing') {
+      if (session) {
+        const onboardingDone = session.user.user_metadata?.onboarding_completed;
+        router.replace(onboardingDone ? '/(tabs)' : '/onboarding');
+      } else {
+        router.replace('/(auth)/sign-in');
+      }
+      return;
+    }
 
     if (!session && !inAuth && !inPublic) {
-      router.replace('/(auth)/sign-in');
+      // On web, send unauthed visitors at the root to the marketing page instead
+      // of dropping them straight on the sign-in form. Native users always go to
+      // sign-in — they're already inside the installed app.
+      const atRoot = segments[0] === '(tabs)';
+      if (Platform.OS === 'web' && atRoot) {
+        router.replace('/landing');
+      } else {
+        router.replace('/(auth)/sign-in');
+      }
     } else if (session && inAuth) {
       const onboardingDone = session.user.user_metadata?.onboarding_completed;
       router.replace(onboardingDone ? '/(tabs)' : '/onboarding');
@@ -195,6 +216,7 @@ export default Sentry.wrap(function RootLayout() {
             <Stack.Screen name="privacy" />
             <Stack.Screen name="support" />
             <Stack.Screen name="delete-account" />
+            <Stack.Screen name="landing" />
             <Stack.Screen name="account/index" />
             <Stack.Screen name="account/change-password" />
             <Stack.Screen name="account/edit-profile" />
