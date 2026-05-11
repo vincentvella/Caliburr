@@ -13,15 +13,15 @@ const APP_STORE_URL = 'https://apps.apple.com/app/id6761644774';
 const PLAY_STORE_URL = 'https://play.google.com/store/apps/details?id=coffee.caliburr.app';
 
 // Raw (un-framed) screenshots — the app is dark mode so these blend with the
-// dark page; the cream-backdropped marketing frames in /marketing/iphone/ fight
-// the page background.
-const HERO_SHOT = require('../.maestro/screenshots/iphone/01_explore.png');
+// dark page. Sourced from .maestro/screenshots/iphone/ and copied into assets/
+// (which is tracked) so EAS builds can resolve them.
+const HERO_SHOT = require('../assets/landing/01_explore.png');
 const GALLERY = [
-  require('../.maestro/screenshots/iphone/02_explore_filter.png'),
-  require('../.maestro/screenshots/iphone/03_recipe_detail.png'),
-  require('../.maestro/screenshots/iphone/04_tries.png'),
-  require('../.maestro/screenshots/iphone/06_grinder_stats.png'),
-  require('../.maestro/screenshots/iphone/07_gear.png'),
+  require('../assets/landing/02_explore_filter.png'),
+  require('../assets/landing/03_recipe_detail.png'),
+  require('../assets/landing/04_tries.png'),
+  require('../assets/landing/06_grinder_stats.png'),
+  require('../assets/landing/07_gear.png'),
 ];
 
 const VALUE_PROPS = [
