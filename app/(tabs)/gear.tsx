@@ -150,6 +150,7 @@ export default function GearScreen() {
   const [grinderModalOpen, setGrinderModalOpen] = useState(false);
   const [machineModalOpen, setMachineModalOpen] = useState(false);
   const [editingGrinder, setEditingGrinder] = useState<Grinder | null>(null);
+  const [editingMachine, setEditingMachine] = useState<BrewMachine | null>(null);
 
   function removeGrinder(grinderId: string) {
     Alert.alert('Remove Grinder', 'Remove this grinder from your gear?', [
@@ -477,8 +478,12 @@ export default function GearScreen() {
                 ) : (
                   <>
                     {machines.map(({ brew_machine_id, brew_machine, is_default }) => (
-                      <View
+                      <TouchableOpacity
                         key={brew_machine_id}
+                        onPress={() => {
+                          setEditingMachine(brew_machine);
+                          setMachineModalOpen(true);
+                        }}
                         className="flex-row items-center justify-between bg-oat-100 dark:bg-ristretto-800 border border-latte-200 dark:border-ristretto-700 rounded-2xl px-4 py-3.5 mb-2"
                       >
                         <View className="flex-row items-center gap-3 flex-1">
@@ -534,7 +539,7 @@ export default function GearScreen() {
                             </TouchableOpacity>
                           )}
                         </View>
-                      </View>
+                      </TouchableOpacity>
                     ))}
                     {machines.some((m) => m.is_default) && (
                       <Text className="text-latte-500 dark:text-latte-600 text-xs px-1 mt-1">
@@ -564,8 +569,12 @@ export default function GearScreen() {
 
       <MachineModal
         visible={machineModalOpen}
-        onClose={() => setMachineModalOpen(false)}
+        onClose={() => {
+          setMachineModalOpen(false);
+          setEditingMachine(null);
+        }}
         onAdded={fetchEquipment}
+        editMachine={editingMachine ?? undefined}
         existingIds={machines.map((m) => m.brew_machine_id)}
       />
     </View>

@@ -29,27 +29,28 @@ import { pickAndUploadImage } from '@/lib/uploadImage';
 
 const VERIFICATION_THRESHOLD = 5;
 
-type ModalView = 'search' | 'create' | 'review' | 'view';
+type ModalView = 'search' | 'create' | 'edit' | 'review' | 'view';
 
 interface Props {
   visible: boolean;
   onClose: () => void;
   onAdded: () => void;
   existingIds: string[];
+  editMachine?: BrewMachine;
 }
 
-function useMachineModal(visible: boolean) {
-  const [view, setView] = useState<ModalView>('search');
+function useMachineModal(visible: boolean, editMachine: BrewMachine | undefined) {
+  const [view, setView] = useState<ModalView>(editMachine ? 'edit' : 'search');
   const [query, setQuery] = useState('');
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
   useEffect(() => {
     if (visible) {
-      setView('search');
+      setView(editMachine ? 'edit' : 'search');
       setQuery('');
       supabase.auth.getUser().then(({ data: { user } }) => setCurrentUserId(user?.id ?? null));
     }
-  }, [visible]);
+  }, [visible, editMachine]);
 
   return { view, setView, query, setQuery, currentUserId };
 }
@@ -94,8 +95,8 @@ function useMachineSearch(query: string, existingIds: string[]) {
   return { results, searching };
 }
 
-export function MachineModal({ visible, onClose, onAdded, existingIds }: Props) {
-  const { view, setView, query, setQuery, currentUserId } = useMachineModal(visible);
+export function MachineModal({ visible, onClose, onAdded, existingIds, editMachine }: Props) {
+  const { view, setView, query, setQuery, currentUserId } = useMachineModal(visible, editMachine);
   const [selectedMachine, setSelectedMachine] = useState<BrewMachine | null>(null);
   const [verificationCount, setVerificationCount] = useState(0);
   const [adding, setAdding] = useState(false);
@@ -154,12 +155,13 @@ export function MachineModal({ visible, onClose, onAdded, existingIds }: Props) 
   const titles: Record<ModalView, string> = {
     search: 'Add Machine',
     create: 'New Machine',
+    edit: 'Edit Machine',
     review: 'Confirm Details',
     view: 'Machine Details',
   };
 
-  const rightLabel = view === 'search' ? 'Cancel' : 'Back';
-  const rightAction = view === 'search' ? handleClose : () => setView('search');
+  const rightLabel = view === 'search' || view === 'edit' ? 'Cancel' : 'Back';
+  const rightAction = view === 'search' || view === 'edit' ? handleClose : () => setView('search');
 
   const isWeb = Platform.OS === 'web';
 
@@ -269,6 +271,15 @@ export function MachineModal({ visible, onClose, onAdded, existingIds }: Props) 
                 machine={selectedMachine}
                 adding={adding}
                 onAdd={() => handleAdd(selectedMachine)}
+              />
+            )}
+            {view === 'edit' && editMachine && (
+              <MachineForm
+                editMachine={editMachine}
+                onDone={() => {
+                  onAdded();
+                  handleClose();
+                }}
               />
             )}
           </Pressable>
@@ -382,6 +393,16 @@ export function MachineModal({ visible, onClose, onAdded, existingIds }: Props) 
               onAdd={() => handleAdd(selectedMachine)}
             />
           )}
+
+          {view === 'edit' && editMachine && (
+            <MachineForm
+              editMachine={editMachine}
+              onDone={() => {
+                onAdded();
+                handleClose();
+              }}
+            />
+          )}
         </KeyboardAvoidingView>
       )}
     </Modal>
@@ -461,27 +482,30 @@ function machinePayloadChanged(
 
 function MachineForm({
   initialBrand = '',
+  editMachine,
   reviewMachine,
   verificationCount = 0,
   onDone,
 }: {
   initialBrand?: string;
+  editMachine?: BrewMachine;
   reviewMachine?: BrewMachine;
   verificationCount?: number;
   onDone: (machine: BrewMachine) => void;
 }) {
   const MACHINE_TYPES = Object.keys(MACHINE_TYPE_LABELS) as MachineType[];
   const isReview = !!reviewMachine;
+  const source = reviewMachine ?? editMachine;
 
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
 
   const form = useForm({
     defaultValues: {
-      brand: reviewMachine?.brand ?? initialBrand,
-      model: reviewMachine?.model ?? '',
-      machine_type: reviewMachine?.machine_type ?? ('' as string),
-      image_url: reviewMachine?.image_url ?? '',
+      brand: source?.brand ?? initialBrand,
+      model: source?.model ?? '',
+      machine_type: source?.machine_type ?? ('' as string),
+      image_url: source?.image_url ?? '',
     },
     onSubmit: async ({ value }) => {
       setSubmitError(null);
@@ -549,6 +573,25 @@ function MachineForm({
           }
 
           machine = reviewMachine;
+        } else if (editMachine) {
+          const imageStatusChanged = payload.image_url !== (editMachine.image_url ?? null);
+          const updateObj = {
+            brand: payload.brand,
+            model: payload.model,
+            machine_type: payload.machine_type,
+            image_url: payload.image_url,
+            ...(imageStatusChanged
+              ? { image_status: payload.image_url ? ('pending' as const) : null }
+              : {}),
+          };
+          machine = unwrap(
+            await supabase
+              .from('brew_machines')
+              .update(updateObj)
+              .eq('id', editMachine.id)
+              .select()
+              .single(),
+          ) as BrewMachine;
         } else {
           const {
             data: { user },
@@ -570,7 +613,10 @@ function MachineForm({
         onDone(machine);
       } catch (e) {
         Sentry.captureException(e, {
-          tags: { feature: 'machine-form-submit', mode: isReview ? 'review' : 'create' },
+          tags: {
+            feature: 'machine-form-submit',
+            mode: isReview ? 'review' : editMachine ? 'edit' : 'create',
+          },
         });
         haptics.error();
         setSubmitError(e instanceof Error ? e.message : 'Something went wrong');
@@ -616,7 +662,9 @@ function MachineForm({
         <Text className="text-latte-700 dark:text-latte-400 text-xs px-1">
           {isReview
             ? 'Review and correct any details below, then confirm.'
-            : 'Fill in the machine details.'}
+            : editMachine
+              ? 'Update the machine details below.'
+              : 'Fill in the machine details.'}
         </Text>
       </View>
 
@@ -790,7 +838,11 @@ function MachineForm({
               <ActivityIndicator color="#fff" />
             ) : (
               <Text className="text-white font-semibold">
-                {isReview ? 'Confirm & Add to My Gear' : 'Add Machine'}
+                {isReview
+                  ? 'Confirm & Add to My Gear'
+                  : editMachine
+                    ? 'Save Changes'
+                    : 'Add Machine'}
               </Text>
             )}
           </TouchableOpacity>
