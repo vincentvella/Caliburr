@@ -12,7 +12,8 @@
     "format": "prettier --check .",
     "format:fix": "prettier --write .",
     "typecheck": "tsc",
-    "validate": "bun run typecheck && bun run lint && bun run format"
+    "validate": "bun run typecheck && bun run lint && bun run format",
+    "eas-build-on-success": "bun run scripts/sentry-release.ts"
   },
   "dependencies": {
     "@expo-google-fonts/dm-sans": "^0.4.2",
