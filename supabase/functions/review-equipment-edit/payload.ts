@@ -23,6 +23,7 @@ export const MACHINE_EDIT_FIELDS = ['brand', 'model', 'machine_type', 'image_url
 export function pickAllowed(
   raw: unknown,
   allowed: readonly string[],
+  currentImageUrl: string | null = null,
 ): { payload: Record<string, unknown>; dropped: string[] } {
   const source = (raw ?? {}) as Record<string, unknown>;
   const payload: Record<string, unknown> = {};
@@ -36,9 +37,17 @@ export function pickAllowed(
     }
   }
 
-  // An edit that changes the image queues it for a separate approval pass.
+  // The equipment modals send image_url on every submit, prefilled from the
+  // current row, so its presence alone says nothing about whether it changed.
+  // Only re-queue the image for approval when the URL actually differs —
+  // otherwise approving an unrelated edit (a brand typo, say) would knock an
+  // already-approved image back to 'pending' and hide it from the app. This
+  // mirrors the guard the client's direct-edit path already applies.
   if ('image_url' in payload) {
-    payload.image_status = payload.image_url ? 'pending' : null;
+    const next = (payload.image_url as string | null) ?? null;
+    if (next !== (currentImageUrl ?? null)) {
+      payload.image_status = next ? 'pending' : null;
+    }
   }
 
   return { payload, dropped };

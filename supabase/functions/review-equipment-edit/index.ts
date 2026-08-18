@@ -52,17 +52,31 @@ Deno.serve(async (req) => {
     { auth: { autoRefreshToken: false, persistSession: false } },
   );
 
-  const table = editType === 'grinder' ? 'grinder_edits' : 'machine_edits';
+  const isGrinder = editType === 'grinder';
+  const table = isGrinder ? 'grinder_edits' : 'machine_edits';
+  const equipmentTable = isGrinder ? 'grinders' : 'brew_machines';
+  const verificationTable = isGrinder ? 'grinder_verifications' : 'machine_verifications';
+  const verificationKey = isGrinder ? 'grinder_id' : 'brew_machine_id';
 
   if (action === 'reject') {
-    const { error: rejectError } = await adminClient
+    // `.select()` so a zero-row result is distinguishable from success: an update
+    // that matches nothing returns no error, and reporting ok would make the
+    // admin UI drop the card while the edit is still pending. Constraining to
+    // `pending` also stops a stale queue from re-reviewing a finished edit.
+    const { data: rejected, error: rejectError } = await adminClient
       .from(table)
       .update({ status: 'rejected', reviewed_at: new Date().toISOString() })
-      .eq('id', editId);
+      .eq('id', editId)
+      .eq('status', 'pending')
+      .select('id');
 
     if (rejectError) {
       console.error('reject failed', { editId, editType, error: rejectError.message });
       return json({ error: 'Could not reject edit', detail: rejectError.message }, 500);
+    }
+
+    if (!rejected || rejected.length === 0) {
+      return json({ error: 'Edit not found, or already reviewed' }, 404);
     }
 
     return json({ ok: true });
@@ -79,9 +93,30 @@ Deno.serve(async (req) => {
     return json({ error: 'Edit not found' }, 404);
   }
 
+  if (edit.status !== 'pending') {
+    // Two admins working the same queue — fail before re-applying stale values
+    // over whatever the later edit already wrote.
+    return json({ error: 'Edit already reviewed', status: edit.status }, 409);
+  }
+
+  const equipmentId = isGrinder ? edit.grinder_id : edit.machine_id;
+
+  // Needed to tell a real image change from the unchanged image_url the modal
+  // resubmits on every edit — see pickAllowed.
+  const { data: current, error: currentError } = await adminClient
+    .from(equipmentTable)
+    .select('image_url')
+    .eq('id', equipmentId)
+    .single();
+
+  if (currentError || !current) {
+    return json({ error: 'Equipment not found', detail: currentError?.message }, 404);
+  }
+
   const { payload, dropped } = pickAllowed(
     edit.payload,
-    editType === 'grinder' ? GRINDER_EDIT_FIELDS : MACHINE_EDIT_FIELDS,
+    isGrinder ? GRINDER_EDIT_FIELDS : MACHINE_EDIT_FIELDS,
+    current.image_url,
   );
 
   if (dropped.length > 0) {
@@ -95,75 +130,43 @@ Deno.serve(async (req) => {
   // Every write below is checked: the edit must only be marked approved once the
   // equipment row actually changed, otherwise a failed update would silently
   // vanish from the moderation queue with nothing applied.
-  if (editType === 'grinder') {
-    const { error: updateError } = await adminClient
-      .from('grinders')
-      .update(payload)
-      .eq('id', edit.grinder_id);
+  const { error: updateError } = await adminClient
+    .from(equipmentTable)
+    .update(payload)
+    .eq('id', equipmentId);
 
-    if (updateError) {
-      console.error('grinder update failed', { editId, error: updateError.message });
-      return json({ error: 'Could not apply edit', detail: updateError.message }, 500);
-    }
+  if (updateError) {
+    console.error('equipment update failed', { editId, editType, error: updateError.message });
+    return json({ error: 'Could not apply edit', detail: updateError.message }, 500);
+  }
 
-    if (edit.proposed_by) {
-      const { error: verifyError } = await adminClient
-        .from('grinder_verifications')
-        .upsert(
-          { grinder_id: edit.grinder_id, user_id: edit.proposed_by },
-          { onConflict: 'grinder_id,user_id', ignoreDuplicates: true },
-        );
+  if (edit.proposed_by) {
+    const { error: verifyError } = await adminClient
+      .from(verificationTable)
+      .upsert(
+        { [verificationKey]: equipmentId, user_id: edit.proposed_by },
+        { onConflict: `${verificationKey},user_id`, ignoreDuplicates: true },
+      );
 
-      if (verifyError) {
-        console.error('grinder verification upsert failed', {
-          editId,
-          error: verifyError.message,
-        });
-        return json({ error: 'Could not record verification', detail: verifyError.message }, 500);
-      }
-    }
-  } else {
-    const { error: updateError } = await adminClient
-      .from('brew_machines')
-      .update(payload)
-      .eq('id', edit.machine_id);
-
-    if (updateError) {
-      console.error('machine update failed', { editId, error: updateError.message });
-      return json({ error: 'Could not apply edit', detail: updateError.message }, 500);
-    }
-
-    if (edit.proposed_by) {
-      const { error: verifyError } = await adminClient
-        .from('machine_verifications')
-        .upsert(
-          { brew_machine_id: edit.machine_id, user_id: edit.proposed_by },
-          { onConflict: 'brew_machine_id,user_id', ignoreDuplicates: true },
-        );
-
-      if (verifyError) {
-        console.error('machine verification upsert failed', {
-          editId,
-          error: verifyError.message,
-        });
-        return json({ error: 'Could not record verification', detail: verifyError.message }, 500);
-      }
+    if (verifyError) {
+      console.error('verification upsert failed', { editId, editType, error: verifyError.message });
+      return json({ error: 'Could not record verification', detail: verifyError.message }, 500);
     }
   }
 
-  const { error: approveError } = await adminClient
+  const { data: approved, error: approveError } = await adminClient
     .from(table)
     .update({ status: 'approved', reviewed_at: new Date().toISOString() })
-    .eq('id', editId);
+    .eq('id', editId)
+    .eq('status', 'pending')
+    .select('id');
 
-  if (approveError) {
+  if (approveError || !approved || approved.length === 0) {
     // The equipment row is already updated. Leaving the edit pending is the safe
     // failure: a retry re-applies the same values idempotently.
-    console.error('marking edit approved failed', { editId, error: approveError.message });
-    return json(
-      { error: 'Edit applied but not marked approved', detail: approveError.message },
-      500,
-    );
+    const detail = approveError?.message ?? 'no rows matched';
+    console.error('marking edit approved failed', { editId, error: detail });
+    return json({ error: 'Edit applied but not marked approved', detail }, 500);
   }
 
   return json({ ok: true, dropped });

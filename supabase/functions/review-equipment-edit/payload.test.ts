@@ -43,14 +43,40 @@ Deno.test('machine allowlist rejects grinder-only fields', () => {
   assertEquals(dropped.sort(), ['burr_type', 'verified']);
 });
 
-Deno.test('image_url queues the image for approval', () => {
-  const { payload } = pickAllowed({ image_url: 'https://example.com/x.webp' }, GRINDER_EDIT_FIELDS);
+Deno.test('a changed image_url queues the new image for approval', () => {
+  const { payload } = pickAllowed(
+    { image_url: 'https://example.com/new.webp' },
+    GRINDER_EDIT_FIELDS,
+    'https://example.com/old.webp',
+  );
   assertEquals(payload.image_status, 'pending');
 });
 
-Deno.test('clearing image_url clears image_status rather than queueing it', () => {
-  const { payload } = pickAllowed({ image_url: null }, GRINDER_EDIT_FIELDS);
+Deno.test('an unchanged image_url leaves image_status alone', () => {
+  // The modals resubmit image_url on every edit, prefilled from the current
+  // row, so its presence says nothing about whether it changed. Approving a
+  // brand typo must not knock an already-approved image back to 'pending'.
+  const { payload } = pickAllowed(
+    { brand: 'Comandante', image_url: 'https://example.com/same.webp' },
+    GRINDER_EDIT_FIELDS,
+    'https://example.com/same.webp',
+  );
+  assertEquals('image_status' in payload, false);
+  assertEquals(payload.brand, 'Comandante');
+});
+
+Deno.test('clearing an existing image_url clears image_status', () => {
+  const { payload } = pickAllowed(
+    { image_url: null },
+    GRINDER_EDIT_FIELDS,
+    'https://example.com/old.webp',
+  );
   assertEquals(payload.image_status, null);
+});
+
+Deno.test('no image before or after leaves image_status alone', () => {
+  const { payload } = pickAllowed({ image_url: null }, GRINDER_EDIT_FIELDS, null);
+  assertEquals('image_status' in payload, false);
 });
 
 Deno.test('image_status cannot be forced past the allowlist', () => {
@@ -58,6 +84,7 @@ Deno.test('image_status cannot be forced past the allowlist', () => {
   const { payload, dropped } = pickAllowed(
     { image_url: 'https://example.com/x.webp', image_status: 'approved' },
     GRINDER_EDIT_FIELDS,
+    null,
   );
 
   assertEquals(payload.image_status, 'pending');
