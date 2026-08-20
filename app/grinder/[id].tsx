@@ -22,6 +22,7 @@ import {
   ADJUSTMENT_TYPE_LABELS,
 } from '@/lib/types';
 
+/** A row in the displayed recipe list — the top slice, by upvotes. */
 interface GrinderRecipe {
   id: string;
   brew_method: BrewMethod;
@@ -30,12 +31,23 @@ interface GrinderRecipe {
   yield_g: number | null;
   upvotes: number;
   bean: { name: string; roaster: string } | null;
+}
+
+/**
+ * One row per recipe across the FULL population for this grinder, carrying only
+ * what the dial-in maths needs. Kept separate from the display list on purpose:
+ * the list is a top-N slice by upvotes, but statistics computed from a top-N
+ * slice are a biased sample, which is what VEL-78 was about.
+ */
+interface GrinderStatRow {
+  brew_method: BrewMethod;
+  grind_setting: string;
   worked_tries: number;
 }
 
 // Believable fake recipes for marketing screenshots — used only in dev when
 // `?screenshot=1` was set on any route this session.
-const FAKE_AEROPRESS_RECIPES: GrinderRecipe[] = [
+const FAKE_AEROPRESS_RECIPES: (GrinderRecipe & GrinderStatRow)[] = [
   {
     id: 'fake-1',
     brew_method: 'aeropress',
@@ -121,6 +133,7 @@ const FAKE_AEROPRESS_RECIPES: GrinderRecipe[] = [
 function useGrinderDetail(id: string) {
   const [grinder, setGrinder] = useState<Grinder | null>(null);
   const [recipes, setRecipes] = useState<GrinderRecipe[]>([]);
+  const [statRows, setStatRows] = useState<GrinderStatRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const screenshotMode = useScreenshotMode();
@@ -129,7 +142,12 @@ function useGrinderDetail(id: string) {
     async function load() {
       setLoading(true);
       setError(null);
-      const [grinderRes, recipesRes] = await Promise.all([
+      // The list query stays capped: it is a leaderboard, and showing the top
+      // 200 by upvotes is the intent. The stats query is separate and
+      // deliberately uncapped — it returns three narrow columns per recipe with
+      // the worked-try weighting already folded in server-side, which also
+      // removes the second .in() round-trip this screen used to make. VEL-78.
+      const [grinderRes, recipesRes, statRowsRes] = await Promise.all([
         supabase.from('grinders').select('*').eq('id', id).single(),
         supabase
           .from('recipes')
@@ -139,6 +157,7 @@ function useGrinderDetail(id: string) {
           .eq('grinder_id', id)
           .order('upvotes', { ascending: false })
           .limit(200),
+        db.rpc('get_grinder_stat_rows', { p_grinder_id: id }),
       ]);
 
       if (grinderRes.error || !grinderRes.data) {
@@ -149,44 +168,39 @@ function useGrinderDetail(id: string) {
 
       setGrinder(grinderRes.data);
 
-      const baseRecipes = (recipesRes.data ?? []) as Omit<GrinderRecipe, 'worked_tries'>[];
-      const recipeIds = baseRecipes.map((r) => r.id);
-
-      // Count successful tries per recipe so the aggregation can weight by them.
-      const workedCounts = new Map<string, number>();
-      if (recipeIds.length > 0) {
-        const { data: triesData } = await db
-          .from('recipe_tries')
-          .select('recipe_id, worked')
-          .in('recipe_id', recipeIds)
-          .eq('worked', true);
-        for (const t of triesData ?? []) {
-          workedCounts.set(t.recipe_id, (workedCounts.get(t.recipe_id) ?? 0) + 1);
-        }
-      }
-
-      const realRecipes = baseRecipes.map((r) => ({
-        ...r,
-        worked_tries: workedCounts.get(r.id) ?? 0,
-      }));
+      const realRecipes = (recipesRes.data ?? []) as GrinderRecipe[];
+      const realStatRows = statRowsRes.data ?? [];
 
       // Marketing screenshots: if data is sparse, prepend believable fake
-      // recipes so the dial-in stats card has numbers to render.
+      // recipes so the dial-in stats card has numbers to render. They have to
+      // be added to both sets now that display and stats are fetched apart.
       if (screenshotMode && realRecipes.length < 5) {
         setRecipes([...FAKE_AEROPRESS_RECIPES, ...realRecipes]);
+        setStatRows([...FAKE_AEROPRESS_RECIPES, ...realStatRows]);
       } else {
         setRecipes(realRecipes);
+        setStatRows(realStatRows);
       }
       setLoading(false);
     }
     load();
   }, [id, screenshotMode]);
 
-  return { grinder, recipes, loading, error };
+  return { grinder, recipes, statRows, loading, error };
 }
 
-/** Group recipes by brew method and compute grind stats for each. */
-function useDialInStats(recipes: GrinderRecipe[]) {
+/**
+ * Groups the displayed recipes for the list, and computes grind stats from the
+ * full population.
+ *
+ * The two inputs are deliberately different sets. `recipes` is the top slice by
+ * upvotes and drives what the user scrolls through; `statRows` is every recipe
+ * for this grinder and drives the median/IQR. Computing stats from the display
+ * slice — which is what this used to do — meant the dial-in numbers silently
+ * described the most-upvoted 200 brews rather than the community's actual
+ * spread. See VEL-78.
+ */
+function useDialInStats(statRows: GrinderStatRow[], recipes: GrinderRecipe[]) {
   return useMemo(() => {
     const grouped: Partial<Record<BrewMethod, GrinderRecipe[]>> = {};
     for (const r of recipes) {
@@ -194,31 +208,33 @@ function useDialInStats(recipes: GrinderRecipe[]) {
       (grouped[r.brew_method] as GrinderRecipe[]).push(r);
     }
 
+    const rowsByMethod: Partial<Record<BrewMethod, GrinderStatRow[]>> = {};
+    for (const row of statRows) {
+      if (!rowsByMethod[row.brew_method]) rowsByMethod[row.brew_method] = [];
+      (rowsByMethod[row.brew_method] as GrinderStatRow[]).push(row);
+    }
+
     const stats: Partial<Record<BrewMethod, GrindStats | null>> = {};
-    for (const [method, methodRecipes] of Object.entries(grouped) as [
-      BrewMethod,
-      GrinderRecipe[],
-    ][]) {
+    for (const [method, rows] of Object.entries(rowsByMethod) as [BrewMethod, GrinderStatRow[]][]) {
       // Weight by 1 + worked_tries: a recipe with no tries contributes once;
       // a recipe confirmed N times contributes N+1 entries to the dataset.
-      const expanded = methodRecipes.flatMap((r) =>
-        Array<string>(1 + r.worked_tries).fill(r.grind_setting),
-      );
+      const expanded = rows.flatMap((r) => Array<string>(1 + r.worked_tries).fill(r.grind_setting));
       stats[method] = computeGrindStats(expanded);
     }
 
-    // Methods sorted by recipe count descending
-    const methods = Object.keys(grouped) as BrewMethod[];
-    methods.sort((a, b) => (grouped[b]?.length ?? 0) - (grouped[a]?.length ?? 0));
+    // Ordered by true recipe count, not by how many happened to make the
+    // displayed slice.
+    const methods = Object.keys(rowsByMethod) as BrewMethod[];
+    methods.sort((a, b) => (rowsByMethod[b]?.length ?? 0) - (rowsByMethod[a]?.length ?? 0));
 
     return { grouped, stats, methods };
-  }, [recipes]);
+  }, [statRows, recipes]);
 }
 
 export default function GrinderDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { grinder, recipes, loading, error } = useGrinderDetail(id);
-  const { grouped, stats, methods } = useDialInStats(recipes);
+  const { grinder, recipes, statRows, loading, error } = useGrinderDetail(id);
+  const { grouped, stats, methods } = useDialInStats(statRows, recipes);
   const [selectedMethod, setSelectedMethod] = useState<BrewMethod | null>(null);
 
   const activeMethod = selectedMethod ?? methods[0] ?? null;

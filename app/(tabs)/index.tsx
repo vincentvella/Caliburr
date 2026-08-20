@@ -29,16 +29,51 @@ const BREW_METHODS = [...Constants.public.Enums.brew_method];
 
 // ─── Hooks ────────────────────────────────────────────────────────────────────
 
-function useBackerIds() {
+/**
+ * Backer badges for the authors currently loaded into the feed.
+ *
+ * This used to fetch every backer profile in the database on each mount of the
+ * Explore tab, so the read scaled with the backer population rather than with
+ * what is on screen — for a badge on a card. It now resolves only authors it
+ * has not seen before, which bounds each query by the page size and keeps the
+ * `.in()` predicate short enough to stay well inside URL limits. See VEL-79.
+ *
+ * Joining backer_tier onto the recipes query would be tidier and the ticket
+ * suggested it, but recipes.user_id and profiles.user_id both reference
+ * auth.users and there is no foreign key between the two tables, so PostgREST
+ * cannot embed one from the other.
+ */
+function useBackerIds(recipes: RecipeWithJoins[]) {
   const [backerIds, setBackerIds] = useState<Set<string>>(new Set());
+  // Authors already looked up, backer or not, so each is queried once for the
+  // life of the screen. Not state: changing it must not trigger a render.
+  const resolvedRef = useRef<Set<string>>(new Set());
+
   useEffect(() => {
+    const unresolved = [...new Set(recipes.map((r) => r.user_id))].filter(
+      (id) => !resolvedRef.current.has(id),
+    );
+    if (unresolved.length === 0) return;
+    for (const id of unresolved) resolvedRef.current.add(id);
+
+    let cancelled = false;
     db.from('profiles')
       .select('user_id')
+      .in('user_id', unresolved)
       .not('backer_tier', 'is', null)
       .then(({ data }) => {
-        setBackerIds(new Set((data ?? []).map((p) => p.user_id)));
+        if (cancelled || !data?.length) return;
+        setBackerIds((prev) => {
+          const next = new Set(prev);
+          for (const row of data) next.add(row.user_id);
+          return next;
+        });
       });
-  }, []);
+    return () => {
+      cancelled = true;
+    };
+  }, [recipes]);
+
   return backerIds;
 }
 
@@ -237,7 +272,6 @@ export default function ExploreScreen() {
   const numColumns = (isWeb || isWide) && width >= 900 ? 2 : 1;
 
   const { currentUserId, myGrinderId, upvotedIds, setUpvotedIds } = useUserContext();
-  const backerIds = useBackerIds();
   const {
     recipes,
     setRecipes,
@@ -256,6 +290,7 @@ export default function ExploreScreen() {
     handleRefresh,
     handleSearchChange,
   } = useRecipes(myGrinderId);
+  const backerIds = useBackerIds(recipes);
 
   // Re-fetch upvoted IDs when screen comes back into focus
   useFocusEffect(

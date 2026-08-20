@@ -7,6 +7,8 @@
  *   - recipe_tries
  *   - push_tokens
  *
+ * ...and with the RPCs in ExtendedFunctions below.
+ *
  * When types are regenerated (bunx supabase gen types typescript --local > lib/database.types.ts)
  * these tables will move into the generated types and this file can be simplified.
  */
@@ -129,11 +131,28 @@ type ExtendedTables = {
   };
 };
 
+// RPCs added after the last type generation. Same story as ExtendedTables:
+// these disappear from here once types are regenerated (VEL-71).
+type ExtendedFunctions = {
+  get_profile_stats: {
+    Args: { p_user_id: string };
+    Returns: { recipe_count: number; tries_received: number }[];
+  };
+  get_grinder_stat_rows: {
+    Args: { p_grinder_id: string };
+    Returns: {
+      brew_method: Database['public']['Enums']['brew_method'];
+      grind_setting: string;
+      worked_tries: number;
+    }[];
+  };
+};
+
 type ExtendedDatabase = {
   public: {
     Tables: Database['public']['Tables'] & ExtendedTables;
     Views: Database['public']['Views'];
-    Functions: Database['public']['Functions'];
+    Functions: Database['public']['Functions'] & ExtendedFunctions;
     Enums: Database['public']['Enums'];
     CompositeTypes: Record<string, never>;
   };
