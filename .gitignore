@@ -67,5 +67,3 @@ plans/
 # Claude Code local settings + scheduled task state
 .claude/
 
-# Deno lockfile from ad-hoc `deno test` runs on supabase/functions
-deno.lock
