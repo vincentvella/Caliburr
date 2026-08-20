@@ -18,6 +18,7 @@ import { router } from 'expo-router';
 import { useForm } from '@tanstack/react-form';
 import * as Sentry from '@sentry/react-native';
 import { supabase } from '@/lib/supabase';
+import { adminInvoke } from '@/lib/adminInvoke';
 import { useQuery } from '@/hooks/useQuery';
 import { unwrap } from '@/lib/api';
 import { haptics } from '@/lib/haptics';
@@ -599,23 +600,21 @@ function GrinderForm({
             );
 
             // Fire-and-forget email notification
-            supabase.functions
-              .invoke('notify-equipment-edit', {
-                body: {
-                  editType: 'grinder',
-                  equipmentName: `${reviewGrinder.brand} ${reviewGrinder.model}`,
-                  payload,
-                  editId: edit.id,
-                },
-              })
-              .then(({ error }) => {
-                if (error) {
-                  Sentry.captureException(error, {
-                    tags: { feature: 'notify-equipment-edit', kind: 'grinder' },
-                    extra: { editId: edit.id, grinderId: reviewGrinder.id },
-                  });
-                }
-              });
+            // adminInvoke, not supabase.functions.invoke: the function now requires
+            // the caller's JWT, and plain invoke doesn't reliably attach it with
+            // this app's custom storage adapter. The function reads the edit from
+            // the database, so it only needs the id and type.
+            adminInvoke('notify-equipment-edit', {
+              editType: 'grinder',
+              editId: edit.id,
+            }).then(({ error }) => {
+              if (error) {
+                Sentry.captureException(error, {
+                  tags: { feature: 'notify-equipment-edit', kind: 'grinder' },
+                  extra: { editId: edit.id, grinderId: reviewGrinder.id },
+                });
+              }
+            });
           } else {
             // No changes — just count the verification
             if (user) {

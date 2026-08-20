@@ -17,6 +17,7 @@ import { useState, useEffect } from 'react';
 import { useForm } from '@tanstack/react-form';
 import * as Sentry from '@sentry/react-native';
 import { supabase } from '@/lib/supabase';
+import { adminInvoke } from '@/lib/adminInvoke';
 import { useQuery } from '@/hooks/useQuery';
 import { unwrap } from '@/lib/api';
 import { haptics } from '@/lib/haptics';
@@ -544,23 +545,21 @@ function MachineForm({
             );
 
             // Fire-and-forget email notification
-            supabase.functions
-              .invoke('notify-equipment-edit', {
-                body: {
-                  editType: 'machine',
-                  equipmentName: `${reviewMachine.brand} ${reviewMachine.model}`,
-                  payload,
-                  editId: edit.id,
-                },
-              })
-              .then(({ error }) => {
-                if (error) {
-                  Sentry.captureException(error, {
-                    tags: { feature: 'notify-equipment-edit', kind: 'machine' },
-                    extra: { editId: edit.id, machineId: reviewMachine.id },
-                  });
-                }
-              });
+            // adminInvoke, not supabase.functions.invoke: the function now requires
+            // the caller's JWT, and plain invoke doesn't reliably attach it with
+            // this app's custom storage adapter. The function reads the edit from
+            // the database, so it only needs the id and type.
+            adminInvoke('notify-equipment-edit', {
+              editType: 'machine',
+              editId: edit.id,
+            }).then(({ error }) => {
+              if (error) {
+                Sentry.captureException(error, {
+                  tags: { feature: 'notify-equipment-edit', kind: 'machine' },
+                  extra: { editId: edit.id, machineId: reviewMachine.id },
+                });
+              }
+            });
           } else {
             if (user) {
               await supabase
