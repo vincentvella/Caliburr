@@ -8,7 +8,7 @@ import type { ExpoConfig } from 'expo/config';
 const config: ExpoConfig = {
   name: 'Caliburr',
   slug: 'caliburr',
-  version: '1.1.0',
+  version: '1.2.0',
   orientation: 'default',
   icon: './assets/images/icon.png',
   scheme: 'caliburr',

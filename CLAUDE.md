@@ -138,25 +138,31 @@ not live anywhere argent can tell you about.
 
 ## Deployment
 
-EAS Workflows run automatically on push to `main` (release) and on pull requests (preview).
+EAS Workflows are **branch-triggered**, not triggered by merging to `master`.
 Workflow files live in `.eas/workflows/`.
 
-| Workflow      | Trigger      | Jobs                                                             |
-| ------------- | ------------ | ---------------------------------------------------------------- |
-| `release.yml` | push → main  | iOS build + App Store submit (sequential); web deploy (parallel) |
-| `preview.yml` | pull request | iOS simulator build + web preview URL (parallel)                 |
+Cutting a release means pushing `master` to a release branch. Both release
+workflows **build and submit to the store in one go** — there is no build-only
+step to inspect first.
 
-**Before first release** — set `ascAppId` in `eas.json`:
+| Workflow              | Trigger                  | Jobs                                                        |
+| --------------------- | ------------------------ | ----------------------------------------------------------- |
+| `release-ios.yml`     | push → `release-ios`     | iOS production build → submit to App Store Connect          |
+| `release-android.yml` | push → `release-android` | Android production build → submit to Google Play (internal) |
+| `deploy-web.yml`      | push → `master`          | Deploy web to EAS Hosting (production)                      |
+| `preview.yml`         | pull request             | Fingerprint → reuse or build iOS/Android → web preview URL  |
 
-1. Create the app in [App Store Connect](https://appstoreconnect.apple.com)
-2. Apps → Caliburr → App Information → **Apple ID** (numeric, e.g. `6745678901`)
-3. Paste into `eas.json` → `submit.production.ios.ascAppId`
+```bash
+git push origin master:release-ios      # cut an iOS release (builds AND submits)
+git push origin master:release-android  # cut an Android release (builds AND submits)
+```
 
 **Manual workflow trigger:**
 
 ```bash
-bunx eas-cli@latest workflow:run release.yml    # trigger release manually
-bunx eas-cli@latest workflow:run preview.yml    # trigger preview manually
+bunx eas-cli@latest workflow:run release-ios.yml      # trigger iOS release manually
+bunx eas-cli@latest workflow:run release-android.yml  # trigger Android release manually
+bunx eas-cli@latest workflow:run preview.yml          # trigger preview manually
 ```
 
 **Manual one-off commands:**
