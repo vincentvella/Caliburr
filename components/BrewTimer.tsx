@@ -24,8 +24,16 @@ function useSyncOnStop(running: boolean, elapsed: number, onChange: (v: string) 
 }
 
 function useManagedInterval(running: boolean, onTick: () => void) {
+  // Latest-callback ref: the interval must not restart every time onTick
+  // changes identity, so the effect below depends only on `running` and reads
+  // the callback at tick time. The assignment lives in an effect rather than
+  // in the render body — writing a ref during render makes the render impure,
+  // which is the assumption the compiler relies on to memoise safely. Ticks
+  // fire after commit, so the ref is always current by the time it is read.
   const onTickRef = useRef(onTick);
-  onTickRef.current = onTick;
+  useEffect(() => {
+    onTickRef.current = onTick;
+  }, [onTick]);
 
   useEffect(() => {
     if (!running) return;

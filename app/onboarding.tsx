@@ -1,7 +1,7 @@
 import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, Animated } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { textInputStyle } from '@/lib/styles';
-import { useRef, useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { supabase } from '@/lib/supabase';
@@ -109,7 +109,7 @@ export default function OnboardingScreen() {
     setUploadingAvatar(false);
   }
 
-  const fadeAnim = useRef(new Animated.Value(1)).current;
+  const [fadeAnim] = useState(() => new Animated.Value(1));
 
   function transition(next: Step) {
     Animated.timing(fadeAnim, {
@@ -426,8 +426,8 @@ function useAnimateDots(active: number, widths: Animated.Value[], fills: Animate
 }
 
 function AnimatedProgressDots({ total, active }: { total: number; active: number }) {
-  const widths = useRef(Array.from({ length: total }, () => new Animated.Value(8))).current;
-  const fills = useRef(Array.from({ length: total }, () => new Animated.Value(0))).current;
+  const [widths] = useState(() => Array.from({ length: total }, () => new Animated.Value(8)));
+  const [fills] = useState(() => Array.from({ length: total }, () => new Animated.Value(0)));
 
   useAnimateDots(active, widths, fills);
 
