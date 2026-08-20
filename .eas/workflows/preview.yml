@@ -5,9 +5,41 @@ on:
     types: [opened, synchronize]
 
 jobs:
-  # iOS simulator, Android device build, and web preview run in parallel
+  # A native build is only worth running when the native layer actually changed.
+  # The fingerprint is computed server-side from the CNG inputs, so a PR that
+  # only touches JS, edge functions, or CI config reuses the existing build
+  # instead of queueing two fresh ones.
+  #
+  # `environment` must match what the `preview` build profile resolves to —
+  # app.config.ts reads GOOGLE_SERVICES_FILE, so the fingerprint is environment
+  # sensitive. If builds stop being reused, that mismatch is the first suspect.
+  fingerprint:
+    name: Fingerprint
+    type: fingerprint
+    environment: preview
+
+  get_ios_build:
+    name: Existing iOS build?
+    needs: [fingerprint]
+    type: get-build
+    params:
+      platform: ios
+      profile: preview
+      fingerprint_hash: ${{ needs.fingerprint.outputs.ios_fingerprint_hash }}
+
+  get_android_build:
+    name: Existing Android build?
+    needs: [fingerprint]
+    type: get-build
+    params:
+      platform: android
+      profile: preview
+      fingerprint_hash: ${{ needs.fingerprint.outputs.android_fingerprint_hash }}
+
   build_ios_simulator:
     name: Build iOS simulator
+    needs: [get_ios_build]
+    if: ${{ !needs.get_ios_build.outputs.build_id }}
     type: build
     params:
       platform: ios
@@ -15,11 +47,14 @@ jobs:
 
   build_android_preview:
     name: Build Android (internal)
+    needs: [get_android_build]
+    if: ${{ !needs.get_android_build.outputs.build_id }}
     type: build
     params:
       platform: android
       profile: preview
 
+  # Web is cheap and every PR can change it, so it always runs.
   deploy_web_preview:
     name: Deploy web preview
     type: deploy

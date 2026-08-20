@@ -85,8 +85,7 @@ const config: ExpoConfig = {
     [
       'expo-image-picker',
       {
-        photosPermission:
-          'Choose a photo of your equipment to help other users identify it.',
+        photosPermission: 'Choose a photo of your equipment to help other users identify it.',
       },
     ],
     [
@@ -94,6 +93,24 @@ const config: ExpoConfig = {
       {
         color: '#ff9d37',
         defaultChannel: 'default',
+      },
+    ],
+    // AppCheckCore 11.3.1 (pulled in transitively by google-signin via
+    // GoogleSignIn ~> 9.0) is a Swift pod that depends on GoogleUtilities and
+    // RecaptchaInterop, neither of which defines a module — so CocoaPods can no
+    // longer integrate it as a static library. Pod versions float and
+    // Podfile.lock isn't committed under CNG, so this broke iOS builds with no
+    // change on our side. Opting those two into module maps is the fix
+    // CocoaPods itself recommends. See VEL-93.
+    [
+      'expo-build-properties',
+      {
+        ios: {
+          extraPods: [
+            { name: 'GoogleUtilities', modular_headers: true },
+            { name: 'RecaptchaInterop', modular_headers: true },
+          ],
+        },
       },
     ],
     [
@@ -108,8 +125,7 @@ const config: ExpoConfig = {
     [
       '@react-native-google-signin/google-signin',
       {
-        iosUrlScheme:
-          'com.googleusercontent.apps.694968860911-dveckbiuj3cnc9h61ec46dckrj2plvr4',
+        iosUrlScheme: 'com.googleusercontent.apps.694968860911-dveckbiuj3cnc9h61ec46dckrj2plvr4',
       },
     ],
   ],
