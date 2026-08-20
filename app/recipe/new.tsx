@@ -487,7 +487,9 @@ export default function NewRecipeScreen() {
                           const yield_g = form.getFieldValue('yield_g');
                           if (v && yield_g) {
                             const r = parseFloat(yield_g) / parseFloat(v);
-                            if (!isNaN(r)) form.setFieldValue('ratio', r.toFixed(2));
+                            // Number.isFinite, not !isNaN: dividing by a zero dose yields Infinity,
+                            // which is not NaN and used to be written to the field verbatim.
+                            if (Number.isFinite(r)) form.setFieldValue('ratio', r.toFixed(2));
                           }
                         }}
                       />
@@ -517,7 +519,9 @@ export default function NewRecipeScreen() {
                           const dose_g = form.getFieldValue('dose_g');
                           if (v && dose_g) {
                             const r = parseFloat(v) / parseFloat(dose_g);
-                            if (!isNaN(r)) form.setFieldValue('ratio', r.toFixed(2));
+                            // Number.isFinite, not !isNaN: dividing by a zero dose yields Infinity,
+                            // which is not NaN and used to be written to the field verbatim.
+                            if (Number.isFinite(r)) form.setFieldValue('ratio', r.toFixed(2));
                           }
                         }}
                       />
