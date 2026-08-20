@@ -1,11 +1,4 @@
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  ActivityIndicator,
-  Animated,
-} from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, Animated } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { textInputStyle } from '@/lib/styles';
 import { useRef, useState, useEffect } from 'react';

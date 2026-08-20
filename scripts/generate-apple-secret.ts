@@ -62,8 +62,7 @@ const payload = {
   sub: servicesId,
 };
 
-const b64url = (s: string) =>
-  btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+const b64url = (s: string) => btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 
 const headerB64 = b64url(JSON.stringify(header));
 const payloadB64 = b64url(JSON.stringify(payload));
@@ -81,7 +80,5 @@ const sigB64 = btoa(String.fromCharCode(...new Uint8Array(sig)))
   .replace(/=+$/, '');
 
 console.log(`${signingInput}.${sigB64}`);
-console.error(
-  `\n✓ JWT generated. Expires: ${new Date((now + sixMonths) * 1000).toISOString()}`,
-);
+console.error(`\n✓ JWT generated. Expires: ${new Date((now + sixMonths) * 1000).toISOString()}`);
 console.error('  Paste the line above into Supabase → Apple provider → Secret Key (for OAuth).');

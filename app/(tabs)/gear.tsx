@@ -553,7 +553,6 @@ export default function GearScreen() {
             {/* end isWide row */}
           </>
         )}
-
       </ScrollView>
 
       <GrinderModal

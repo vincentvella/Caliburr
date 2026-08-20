@@ -18,9 +18,7 @@ export async function registerPushToken(): Promise<void> {
   try {
     const { status: existing } = await Notifications.getPermissionsAsync();
     const status =
-      existing === 'granted'
-        ? existing
-        : (await Notifications.requestPermissionsAsync()).status;
+      existing === 'granted' ? existing : (await Notifications.requestPermissionsAsync()).status;
     if (status !== 'granted') return;
 
     const { data: token } = await Notifications.getExpoPushTokenAsync();
@@ -45,10 +43,7 @@ export async function registerPushToken(): Promise<void> {
     // initialized" — expected until the firebase setup ships in a build,
     // not worth Sentry-reporting on every launch.
     const message = (e as Error)?.message ?? '';
-    if (
-      Platform.OS === 'android' &&
-      message.includes('FirebaseApp is not initialized')
-    ) {
+    if (Platform.OS === 'android' && message.includes('FirebaseApp is not initialized')) {
       return;
     }
     Sentry.captureException(e, { tags: { feature: 'push-tokens', stage: 'register' } });
