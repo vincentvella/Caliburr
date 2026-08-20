@@ -3,6 +3,10 @@ name: CI
 # Type gate for Renovate-safe auto-merges (a dep bump that breaks types fails here).
 # Lint/format (expo lint + prettier) are not yet gated — the repo has pre-existing
 # lint debt; once cleaned, switch `bun run typecheck` → `bun run validate`.
+#
+# Two jobs, because the repo has two type systems. `bun run typecheck` covers the
+# app; tsconfig.json excludes supabase/functions, since those are Deno modules
+# importing from https://esm.sh and tsc cannot resolve them. Deno checks those.
 on:
   push:
     branches: [master]
@@ -19,3 +23,21 @@ jobs:
       - run: bun install --frozen-lockfile
       - name: Typecheck
         run: bun run typecheck
+
+  edge-functions:
+    name: Edge functions (Deno)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      # Every function runs with the service-role client and holds the
+      # moderation, admin, billing and account-deletion paths. Until this job
+      # existed none of it was type-checked by anything.
+      - name: Type-check edge functions
+        run: deno check supabase/functions/*/index.ts
+      # Discovers *.test.ts alongside the functions. Without this the suites
+      # only ever run when someone remembers to run them locally.
+      - name: Test edge functions
+        run: deno test --allow-net supabase/functions/

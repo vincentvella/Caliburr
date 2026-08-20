@@ -7,5 +7,7 @@
     }
   },
   "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts"],
+  // Deno modules importing from https://esm.sh — tsc cannot resolve them.
+  // They are type-checked by the `edge-functions` job in ci.yml instead.
   "exclude": ["supabase/functions"]
 }
