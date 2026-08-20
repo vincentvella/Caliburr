@@ -53,8 +53,17 @@ function iosVersion(): { version: string; build: string } {
 
 function androidVersion(): { version: string; build: string } {
   const gradle = readFileSync('android/app/build.gradle', 'utf8');
-  const version = gradle.match(/versionName\s+"([^"]+)"/)?.[1];
-  const build = gradle.match(/versionCode\s+(\d+)/)?.[1];
+
+  // Last match, not first. EAS injects the remote version into build.gradle in
+  // its CONFIGURE_ANDROID_VERSION phase, which runs after prebuild and leaves
+  // the template's original `versionCode 1` in place ahead of it. Gradle uses
+  // the later declaration; reading the first one gave 1 and registered a
+  // release matching no build (VEL-97). iOS is unaffected — EAS rewrites
+  // Info.plist in place, so there is only ever one value there.
+  const last = (re: RegExp) => [...gradle.matchAll(re)].at(-1)?.[1];
+  const version = last(/versionName\s+"([^"]+)"/g);
+  const build = last(/versionCode\s+(\d+)/g);
+
   if (!version || !build) throw new Error('versionName/versionCode not found in build.gradle');
   return { version, build };
 }
@@ -102,6 +111,17 @@ function main() {
   }
 
   const { version, build } = platform === 'ios' ? iosVersion() : androidVersion();
+
+  // A production build is never build 1 — that's the prebuild template default,
+  // meaning the version was read from the wrong place. Skip rather than write a
+  // release that matches nothing; the CI token can't delete one afterwards.
+  if (build === '1') {
+    console.warn(
+      `Resolved build number 1 for ${platform}, which looks like the template default — skipping registration.`,
+    );
+    return;
+  }
+
   const release = `${BUNDLE_ID}@${version}+${build}`;
 
   console.log(`Registering Sentry release ${release} (${platform})`);
