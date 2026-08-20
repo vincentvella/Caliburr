@@ -67,3 +67,13 @@ plans/
 # Claude Code local settings + scheduled task state
 .claude/
 
+# Argent (agentic simulator/emulator control) — installed globally per machine,
+# so its editor configs and skill copies are personal tooling, not project code.
+# Switch to `argent init --local` and commit these if the whole team should get it.
+.agents/
+.cursor/
+.zed/
+.vscode/mcp.json
+.mcp.json
+skills-lock.json
+

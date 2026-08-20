@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { Animated, type StyleProp, type ViewStyle } from 'react-native';
 
 interface Props {
@@ -12,7 +12,7 @@ interface Props {
  */
 /** Drives the 0.5 <-> 1.0 opacity loop for the duration of the mount. */
 function usePulse() {
-  const opacity = useRef(new Animated.Value(0.5)).current;
+  const [opacity] = useState(() => new Animated.Value(0.5));
 
   useEffect(() => {
     const loop = Animated.loop(

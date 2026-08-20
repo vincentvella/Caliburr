@@ -110,6 +110,32 @@ bun run tsc                        # type check
 bunx supabase db push              # push migrations to remote Supabase
 ```
 
+## Device testing
+
+Argent (simulator/emulator control) is installed per machine, not per repo — run
+`npx @swmansion/argent@latest init` if the MCP tools are missing. Its generated
+config lives under gitignored paths. What follows is Caliburr-specific and does
+not live anywhere argent can tell you about.
+
+- **Bundle id is `coffee.caliburr.app`** — use it with `launch-app` / `restart-app`.
+- **A dev build is required; Expo Go will not run this app.** google-signin,
+  react-native-purchases, react-native-mmkv and Sentry are all native modules.
+  Use `bun run ios` / `bun run android` to build and install first.
+- **Sentry is disabled on simulators.** `Sentry.init` is wrapped in
+  `if (Constants.isDevice)` in `app/_layout.tsx`, which is false on a simulator.
+  So no events are captured there, and `Sentry.wrap` logs "App Start Span could
+  not be finished" on every launch. That warning is expected, not a fault.
+- **`?screenshot=1` changes what the app renders.** `useScreenshotMode` latches
+  once any route is opened with it and stays on for the session, making
+  `/grinder/[id]` and the recipes tab show fabricated aggregate stats for
+  marketing capture. Never take visual-regression baselines with it set, and
+  restart the app if it may have latched.
+- **Phones are locked to portrait** (`app/_layout.tsx`), so rotation only does
+  anything on an iPad or a large Android tablet.
+- **`.maestro/` already contains a screenshot pipeline** — flows, framing and a
+  runner for store screenshots. Check there before building a new capture flow;
+  argent flows are for interaction testing, not marketing shots.
+
 ## Deployment
 
 EAS Workflows run automatically on push to `main` (release) and on pull requests (preview).
