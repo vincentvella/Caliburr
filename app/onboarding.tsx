@@ -2,7 +2,7 @@ import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, Animated } 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { textInputStyle } from '@/lib/styles';
 import { useRef, useState, useEffect } from 'react';
-import { router, useLocalSearchParams } from 'expo-router';
+import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { supabase } from '@/lib/supabase';
 import { db } from '@/lib/db';
@@ -19,24 +19,17 @@ async function markOnboardingComplete() {
   await supabase.auth.updateUser({ data: { onboarding_completed: true } });
 }
 
-export default function OnboardingScreen() {
-  const insets = useSafeAreaInsets();
-  const [step, setStep] = useState<Step>('welcome');
-  const [grinderModalOpen, setGrinderModalOpen] = useState(false);
-  const [machineModalOpen, setMachineModalOpen] = useState(false);
-  const [addedGrinder, setAddedGrinder] = useState(false);
-  const [addedMachine, setAddedMachine] = useState(false);
-  const [finishing, setFinishing] = useState(false);
-
+/**
+ * Owns the profile fields shown during onboarding and loads the user's current
+ * values once on mount. display_name is backfilled from the email handle
+ * elsewhere, so an empty string here is expected for a fresh account.
+ */
+function useOnboardingProfile() {
   const [userId, setUserId] = useState<string | null>(null);
   const [email, setEmail] = useState<string | null>(null);
   const [displayName, setDisplayName] = useState('');
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
-  const [uploadingAvatar, setUploadingAvatar] = useState(false);
-  const [savingProfile, setSavingProfile] = useState(false);
-  const [nameError, setNameError] = useState<string | null>(null);
 
-  // Load the user's current profile (display_name backfilled from email handle)
   useEffect(() => {
     let cancelled = false;
     async function load() {
@@ -60,6 +53,24 @@ export default function OnboardingScreen() {
       cancelled = true;
     };
   }, []);
+
+  return { userId, email, displayName, setDisplayName, avatarUrl, setAvatarUrl };
+}
+
+export default function OnboardingScreen() {
+  const insets = useSafeAreaInsets();
+  const [step, setStep] = useState<Step>('welcome');
+  const [grinderModalOpen, setGrinderModalOpen] = useState(false);
+  const [machineModalOpen, setMachineModalOpen] = useState(false);
+  const [addedGrinder, setAddedGrinder] = useState(false);
+  const [addedMachine, setAddedMachine] = useState(false);
+  const [finishing, setFinishing] = useState(false);
+
+  const { userId, email, displayName, setDisplayName, avatarUrl, setAvatarUrl } =
+    useOnboardingProfile();
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const [savingProfile, setSavingProfile] = useState(false);
+  const [nameError, setNameError] = useState<string | null>(null);
 
   async function persistProfile(): Promise<boolean> {
     if (!userId) return true;

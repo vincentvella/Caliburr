@@ -18,16 +18,17 @@ import { db } from '@/lib/db';
 import { pickAndUploadAvatar } from '@/lib/uploadImage';
 import { EditableAvatar } from '@/components/EditableAvatar';
 
-export default function EditProfileScreen() {
+/**
+ * Owns the profile fields and loads them once on mount. Keeping the state with
+ * the effect that populates it means the screen just consumes the result.
+ */
+function useProfileForm() {
   const [userId, setUserId] = useState<string | null>(null);
   const [email, setEmail] = useState<string | null>(null);
   const [displayName, setDisplayName] = useState('');
   const [savedDisplayName, setSavedDisplayName] = useState('');
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [uploadingAvatar, setUploadingAvatar] = useState(false);
-  const [nameError, setNameError] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -55,6 +56,35 @@ export default function EditProfileScreen() {
       cancelled = true;
     };
   }, []);
+
+  return {
+    userId,
+    email,
+    displayName,
+    setDisplayName,
+    savedDisplayName,
+    setSavedDisplayName,
+    avatarUrl,
+    setAvatarUrl,
+    loading,
+  };
+}
+
+export default function EditProfileScreen() {
+  const {
+    userId,
+    email,
+    displayName,
+    setDisplayName,
+    savedDisplayName,
+    setSavedDisplayName,
+    avatarUrl,
+    setAvatarUrl,
+    loading,
+  } = useProfileForm();
+  const [saving, setSaving] = useState(false);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const [nameError, setNameError] = useState<string | null>(null);
 
   async function persistDisplayName() {
     if (!userId) return;

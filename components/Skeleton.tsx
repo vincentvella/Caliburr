@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { View, Animated, type StyleProp, type ViewStyle } from 'react-native';
+import { Animated, type StyleProp, type ViewStyle } from 'react-native';
 
 interface Props {
   className?: string;
@@ -10,7 +10,8 @@ interface Props {
  * Pulsing placeholder block. Wraps a view that animates its opacity between
  * 0.5 and 1.0 to indicate loading. Sized via className/style by the caller.
  */
-export function Skeleton({ className, style }: Props) {
+/** Drives the 0.5 <-> 1.0 opacity loop for the duration of the mount. */
+function usePulse() {
   const opacity = useRef(new Animated.Value(0.5)).current;
 
   useEffect(() => {
@@ -31,6 +32,12 @@ export function Skeleton({ className, style }: Props) {
     loop.start();
     return () => loop.stop();
   }, [opacity]);
+
+  return opacity;
+}
+
+export function Skeleton({ className, style }: Props) {
+  const opacity = usePulse();
 
   return (
     <Animated.View

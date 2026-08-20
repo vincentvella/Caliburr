@@ -25,18 +25,23 @@ function configureGoogle() {
   googleConfigured = true;
 }
 
+/** Reports whether Apple sign-in can be offered, and configures Google once. */
+function useAppleAvailability() {
+  const [available, setAvailable] = useState(false);
+  useEffect(() => {
+    if (Platform.OS === 'ios') {
+      AppleAuthentication.isAvailableAsync().then(setAvailable);
+    }
+    configureGoogle();
+  }, []);
+  return available;
+}
+
 export function SocialSignIn({ onError }: { onError?: (msg: string) => void }) {
   const { theme } = useUniwind();
   const [googleBusy, setGoogleBusy] = useState(false);
   const [appleBusy, setAppleBusy] = useState(false);
-  const [appleAvailable, setAppleAvailable] = useState(false);
-
-  useEffect(() => {
-    if (Platform.OS === 'ios') {
-      AppleAuthentication.isAvailableAsync().then(setAppleAvailable);
-    }
-    configureGoogle();
-  }, []);
+  const appleAvailable = useAppleAvailability();
 
   function reportError(stage: string, err: unknown, msg: string) {
     Sentry.captureException(err, { tags: { feature: 'social-auth', stage } });

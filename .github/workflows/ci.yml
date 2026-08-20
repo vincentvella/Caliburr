@@ -1,8 +1,11 @@
 name: CI
 
-# Type gate for Renovate-safe auto-merges (a dep bump that breaks types fails here).
-# Lint/format (expo lint + prettier) are not yet gated — the repo has pre-existing
-# lint debt; once cleaned, switch `bun run typecheck` → `bun run validate`.
+# Gate for Renovate-safe auto-merges: a dep bump that breaks types, lint or
+# formatting fails here. `validate` = typecheck && lint && format.
+#
+# Lint warnings do not fail the build. react-hooks/set-state-in-effect and
+# react-hooks/refs are currently warnings by deliberate decision — see the note
+# in eslint.config.js. Everything else is an error.
 #
 # Two jobs, because the repo has two type systems. `bun run typecheck` covers the
 # app; tsconfig.json excludes supabase/functions, since those are Deno modules
@@ -13,7 +16,7 @@ on:
   pull_request:
 
 jobs:
-  typecheck:
+  validate:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -21,8 +24,8 @@ jobs:
         with:
           bun-version: latest
       - run: bun install --frozen-lockfile
-      - name: Typecheck
-        run: bun run typecheck
+      - name: Validate (typecheck, lint, format)
+        run: bun run validate
 
   edge-functions:
     name: Edge functions (Deno)

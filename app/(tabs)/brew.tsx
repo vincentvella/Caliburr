@@ -8,10 +8,15 @@ import { router } from 'expo-router';
  * shouldn't render in normal use. If a deep link or programmatic nav lands
  * here directly, redirect to the modal.
  */
-export default function BrewTab() {
+/** The tab layout normally intercepts this; a direct nav lands here instead. */
+function useRedirectToNewRecipe() {
   useEffect(() => {
     router.replace('/recipe/new');
   }, []);
+}
+
+export default function BrewTab() {
+  useRedirectToNewRecipe();
 
   return <View className="flex-1 bg-latte-50 dark:bg-ristretto-900" />;
 }

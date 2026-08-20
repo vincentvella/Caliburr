@@ -89,14 +89,18 @@ function useRecipeScreen(id: string) {
       ]);
 
       if (recipeRes.error) throw new Error(recipeRes.error.message);
-      setRecipe(recipeRes.data as RecipeWithJoins);
+      // Checking error alone does not narrow data; a missing recipe used to be
+      // asserted away and would have thrown on property access further down.
+      if (!recipeRes.data) throw new Error('Recipe not found');
+      const recipeData = recipeRes.data as RecipeWithJoins;
+      setRecipe(recipeData);
       setUpvoted(!!upvoteRes.data);
 
       // Fetch author + try authors profiles in one round-trip.
       const tryRows = (triesRes.data ?? []) as RecipeTry[];
       const profileIds = Array.from(
         new Set(
-          [recipeRes.data!.user_id, user?.id, ...tryRows.map((t) => t.user_id)].filter(
+          [recipeData.user_id, user?.id, ...tryRows.map((t) => t.user_id)].filter(
             (v): v is string => Boolean(v),
           ),
         ),
@@ -115,7 +119,7 @@ function useRecipeScreen(id: string) {
         }
       }
 
-      const recipeAuthorId = recipeRes.data!.user_id;
+      const recipeAuthorId = recipeData.user_id;
       setAuthor(recipeAuthorId ? (profilesMap.get(recipeAuthorId) ?? null) : null);
       setMyProfile(user ? (profilesMap.get(user.id) ?? null) : null);
       setTries(
