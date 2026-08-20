@@ -119,20 +119,53 @@ const config: ExpoConfig = {
         defaultChannel: 'default',
       },
     ],
-    // AppCheckCore 11.3.1 (pulled in transitively by google-signin via
-    // GoogleSignIn ~> 9.0) is a Swift pod that depends on GoogleUtilities and
-    // RecaptchaInterop, neither of which defines a module — so CocoaPods can no
-    // longer integrate it as a static library. Pod versions float and
-    // Podfile.lock isn't committed under CNG, so this broke iOS builds with no
-    // change on our side. Opting those two into module maps is the fix
-    // CocoaPods itself recommends. See VEL-93.
+    // Pins every CocoaPods dependency that resolves from the trunk CDN.
+    //
+    // This project uses CNG, so ios/ is generated at build time and
+    // Podfile.lock is never committed — every EAS build resolves the pod graph
+    // from scratch and takes whatever is newest. In June that silently moved
+    // AppCheckCore 11.2.0 -> 11.3.1, which added a RecaptchaInterop dependency
+    // that defines no module, and static-library integration stopped working.
+    // iOS builds were broken for roughly three months with no commit
+    // responsible, and `pod install --repo-update` does not reproduce it
+    // locally because it honours the existing lockfile. See VEL-93 / VEL-98.
+    //
+    // Only these pods can drift. Everything else in the graph — Expo, React
+    // Native, and every autolinked module — resolves from a local podspec under
+    // node_modules and is therefore already pinned by bun.lock. Pinning the
+    // trunk set is thus equivalent in coverage to committing Podfile.lock,
+    // without fighting CNG over a generated directory.
+    //
+    // Versions are exact rather than pessimistic on purpose: `~> 11.2` would
+    // still have admitted the 11.3.1 that caused the outage. Upgrading a JS
+    // package whose podspec wants a newer pod will now fail loudly at
+    // `pod install` instead of drifting silently — bump the pin alongside it.
+    //
+    // GoogleUtilities and RecaptchaInterop additionally opt into module maps,
+    // which is the fix CocoaPods recommends for the AppCheckCore case above.
+    //
+    // GTMSessionFetcher and Sentry are declared by subspec because that is what
+    // the graph actually depends on; naming the root pod would pull in its
+    // default subspecs and install more than we build today.
     [
       'expo-build-properties',
       {
         ios: {
           extraPods: [
-            { name: 'GoogleUtilities', modular_headers: true },
-            { name: 'RecaptchaInterop', modular_headers: true },
+            { name: 'AppAuth', version: '2.1.0' },
+            { name: 'AppCheckCore', version: '11.3.1' },
+            { name: 'GoogleSignIn', version: '9.2.0' },
+            { name: 'GoogleUtilities', version: '8.1.2', modular_headers: true },
+            { name: 'GTMAppAuth', version: '5.0.0' },
+            { name: 'GTMSessionFetcher/Core', version: '3.5.0' },
+            { name: 'MMKVCore', version: '2.4.0' },
+            { name: 'PromisesObjC', version: '2.4.1' },
+            { name: 'PromisesSwift', version: '2.4.1' },
+            { name: 'PurchasesHybridCommon', version: '17.55.1' },
+            { name: 'ReachabilitySwift', version: '5.2.4' },
+            { name: 'RecaptchaInterop', version: '101.0.0', modular_headers: true },
+            { name: 'RevenueCat', version: '5.67.1' },
+            { name: 'Sentry/HybridSDK', version: '8.58.0' },
           ],
         },
       },
