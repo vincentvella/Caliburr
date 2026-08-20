@@ -53,12 +53,20 @@ function capitalize(s: string): string {
 
 Deno.serve(async (req) => {
   // Verify the request is a Supabase webhook
-  const webhookSecret = Deno.env.get('SUPABASE_WEBHOOK_SECRET');
-  if (webhookSecret) {
-    const signature = req.headers.get('x-supabase-signature');
-    if (signature !== webhookSecret) {
-      return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 });
-    }
+  // Fail closed. This used to be `if (webhookSecret)`, which meant an unset
+  // secret disabled the check entirely rather than blocking the request — and
+  // the secret was never set in production, so the endpoint was open to anyone
+  // with the URL. The caller is a database trigger that signs its request from
+  // the value in Vault; see 20260820000000_sign_recipe_try_webhook.sql.
+  const webhookSecret = Deno.env.get('WEBHOOK_SIGNING_SECRET');
+  if (!webhookSecret) {
+    console.error('WEBHOOK_SIGNING_SECRET is not configured — refusing to serve unauthenticated');
+    return new Response(JSON.stringify({ error: 'Server misconfigured' }), { status: 500 });
+  }
+
+  const signature = req.headers.get('x-supabase-signature');
+  if (!signature || signature !== webhookSecret) {
+    return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 });
   }
 
   const payload = (await req.json()) as WebhookPayload;
