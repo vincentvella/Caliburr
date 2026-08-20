@@ -261,8 +261,13 @@ export default function RecipesScreen() {
   const [loading, setLoading] = useState(!screenshotMode);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [likedCapped, setLikedCapped] = useState(false);
 
   const displayRecipes = screenshotMode ? (tab === 'mine' ? MOCK_MINE : MOCK_LIKED) : recipes;
+
+  // Bounded because this screen has no infinite scroll yet. When the cap is
+  // reached the footer says so, so the list is never silently partial.
+  const LIKED_PAGE_SIZE = 200;
 
   const SELECT =
     '*, grinder:grinders(brand, model, verified, burr_type, adjustment_type), bean:beans(name, roaster, origin, process, roast_level), brew_machine:brew_machines(brand, model, machine_type, verified)';
@@ -281,6 +286,7 @@ export default function RecipesScreen() {
 
     if (error) setError(error.message);
     else setRecipes(data as RecipeWithJoins[]);
+    setLikedCapped(false);
   }, []);
 
   const fetchLiked = useCallback(async () => {
@@ -289,31 +295,33 @@ export default function RecipesScreen() {
     } = await supabase.auth.getUser();
     if (!user) return;
 
-    const { data: upvoteRows } = await supabase
+    // Read the recipes through the upvote FK in one request.
+    //
+    // This used to fetch every upvoted recipe id and pass them into .in('id',
+    // ids). PostgREST serialises that into the URL at ~38 chars per uuid, so
+    // past roughly 250 upvotes the request exceeded common header limits and
+    // the whole tab rendered a raw error — the app's most engaged users were
+    // the ones who lost it. Embedding through recipe_upvotes_recipe_id_fkey
+    // does the join server-side, so there is no id list to serialise, and the
+    // upvote order comes from the base table for free. See VEL-103.
+    const { data, error } = await supabase
       .from('recipe_upvotes')
-      .select('recipe_id')
+      .select(`created_at, recipe:recipes(${SELECT})`)
       .eq('user_id', user.id)
-      .order('created_at', { ascending: false });
+      .order('created_at', { ascending: false })
+      .range(0, LIKED_PAGE_SIZE - 1);
 
-    const ids = (upvoteRows ?? []).map((r) => r.recipe_id);
-    if (!ids.length) {
-      setRecipes([]);
+    if (error) {
+      setError(error.message);
       return;
     }
 
-    const { data, error } = await supabase.from('recipes').select(SELECT).in('id', ids);
-
-    if (error) setError(error.message);
-    else {
-      // Preserve upvote order
-      const byId = new Map((data as RecipeWithJoins[]).map((r) => [r.id, r]));
-      setRecipes(
-        ids.flatMap((id) => {
-          const r = byId.get(id);
-          return r ? [r] : [];
-        }),
-      );
-    }
+    const rows = (data ?? []) as { recipe: RecipeWithJoins | null }[];
+    // A recipe can be deleted while the upvote row survives, so drop the holes.
+    setRecipes(rows.flatMap((r) => (r.recipe ? [r.recipe] : [])));
+    // Surfaced in the footer rather than truncating quietly — the point of this
+    // fix is that the user is never shown a partial list as if it were whole.
+    setLikedCapped(rows.length === LIKED_PAGE_SIZE);
   }, []);
 
   const fetchRecipes = useCallback(async () => {
@@ -446,7 +454,15 @@ export default function RecipesScreen() {
             />
           </View>
         )}
-        ListFooterComponent={<View className="h-24" />}
+        ListFooterComponent={
+          <View className="h-24">
+            {tab === 'liked' && likedCapped && !screenshotMode ? (
+              <Text className="text-latte-500 dark:text-latte-600 text-xs text-center px-6 pt-2">
+                Showing your {LIKED_PAGE_SIZE} most recent likes.
+              </Text>
+            ) : null}
+          </View>
+        }
       />
 
       {/* FAB — only on Mine tab, not on web */}

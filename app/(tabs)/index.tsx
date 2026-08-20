@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 
 import { LegendList } from '@legendapp/list';
-import { useEffect, useState, useRef, useCallback } from 'react';
+import { useEffect, useState, useRef, useCallback, useMemo } from 'react';
 import { useFocusEffect, router } from 'expo-router';
 import * as Sentry from '@sentry/react-native';
 import { supabase } from '@/lib/supabase';
@@ -80,24 +80,87 @@ function useBackerIds(recipes: RecipeWithJoins[]) {
 function useUserContext() {
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [myGrinderId, setMyGrinderId] = useState<string[]>([]);
-  const [upvotedIds, setUpvotedIds] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     supabase.auth.getUser().then(async ({ data: { user } }) => {
       if (!user) return;
       setCurrentUserId(user.id);
 
-      const [grindersRes, upvotesRes] = await Promise.all([
-        supabase.from('user_grinders').select('grinder_id').eq('user_id', user.id),
-        supabase.from('recipe_upvotes').select('recipe_id').eq('user_id', user.id),
-      ]);
+      // Bounded by how much gear the user owns, so it can stay as-is. The
+      // upvote read that used to sit alongside it moved to useUpvotedIds —
+      // it grew with everything the user had ever upvoted. See VEL-103.
+      const { data } = await supabase
+        .from('user_grinders')
+        .select('grinder_id')
+        .eq('user_id', user.id);
 
-      setMyGrinderId((grindersRes.data ?? []).map((r) => r.grinder_id));
-      setUpvotedIds(new Set((upvotesRes.data ?? []).map((r) => r.recipe_id)));
+      setMyGrinderId((data ?? []).map((r) => r.grinder_id));
     });
   }, []);
 
-  return { currentUserId, myGrinderId, upvotedIds, setUpvotedIds };
+  return { currentUserId, myGrinderId };
+}
+
+// PostgREST serialises .in() lists into the URL at roughly 38 chars per uuid,
+// so the list is chunked to keep every request comfortably inside header
+// limits no matter how far the user has scrolled.
+const UPVOTE_LOOKUP_CHUNK = 200;
+
+async function fetchUpvotedAmong(userId: string, recipeIds: string[]): Promise<Set<string>> {
+  const found = new Set<string>();
+  for (let i = 0; i < recipeIds.length; i += UPVOTE_LOOKUP_CHUNK) {
+    const { data } = await supabase
+      .from('recipe_upvotes')
+      .select('recipe_id')
+      .eq('user_id', userId)
+      .in('recipe_id', recipeIds.slice(i, i + UPVOTE_LOOKUP_CHUNK));
+    for (const row of data ?? []) found.add(row.recipe_id);
+  }
+  return found;
+}
+
+/**
+ * Which of the currently-loaded recipes the user has upvoted.
+ *
+ * Previously this loaded every upvote the user had ever cast — once on mount
+ * and again on every focus — to decide the state of the ~50 visible cards. That
+ * read grew with user activity while the thing it fed was bounded by page size,
+ * and silently truncated at PostgREST's 1000-row cap, after which older upvotes
+ * rendered as un-upvoted. See VEL-103.
+ *
+ * Reconciling on focus (rather than only topping up) is deliberate: an upvote
+ * can be added or removed on the recipe detail screen, so returning to the feed
+ * has to be able to clear state as well as set it.
+ */
+function useUpvotedIds(recipeIds: string[], currentUserId: string | null) {
+  const [upvotedIds, setUpvotedIds] = useState<Set<string>>(new Set());
+  const key = recipeIds.join(',');
+
+  useFocusEffect(
+    useCallback(() => {
+      if (!currentUserId || !key) return;
+      const ids = key.split(',');
+      let cancelled = false;
+      fetchUpvotedAmong(currentUserId, ids).then((found) => {
+        if (cancelled) return;
+        setUpvotedIds((prev) => {
+          const next = new Set(prev);
+          for (const id of ids) {
+            if (found.has(id)) next.add(id);
+            else next.delete(id);
+          }
+          return next;
+        });
+      });
+      return () => {
+        cancelled = true;
+      };
+      // `key` stands in for recipeIds so the effect re-runs when the loaded set
+      // actually changes, not on every new array identity.
+    }, [currentUserId, key]),
+  );
+
+  return { upvotedIds, setUpvotedIds };
 }
 
 export type SortMode = 'trending' | 'top' | 'new';
@@ -271,7 +334,7 @@ export default function ExploreScreen() {
   const isWide = width >= 768;
   const numColumns = (isWeb || isWide) && width >= 900 ? 2 : 1;
 
-  const { currentUserId, myGrinderId, upvotedIds, setUpvotedIds } = useUserContext();
+  const { currentUserId, myGrinderId } = useUserContext();
   const {
     recipes,
     setRecipes,
@@ -291,20 +354,16 @@ export default function ExploreScreen() {
     handleSearchChange,
   } = useRecipes(myGrinderId);
   const backerIds = useBackerIds(recipes);
+  const recipeIds = useMemo(() => recipes.map((r) => r.id), [recipes]);
+  const { upvotedIds, setUpvotedIds } = useUpvotedIds(recipeIds, currentUserId);
 
-  // Re-fetch upvoted IDs when screen comes back into focus
-  useFocusEffect(
-    useCallback(() => {
-      supabase.auth.getUser().then(async ({ data: { user } }) => {
-        if (!user) return;
-        const { data } = await supabase
-          .from('recipe_upvotes')
-          .select('recipe_id')
-          .eq('user_id', user.id);
-        setUpvotedIds(new Set((data ?? []).map((r) => r.recipe_id)));
-      });
-    }, [setUpvotedIds]),
-  );
+  // LegendList memoises rows, so a row will not re-render just because the
+  // screen did. Both of these sets are populated by a request that resolves
+  // after the first paint — upvote state and backer badges — so without
+  // extraData the rows keep their initial "not upvoted / not a backer" render
+  // forever. Memoised on the sets themselves, which are replaced only when
+  // their contents actually change, so this does not defeat the memoisation.
+  const listExtraData = useMemo(() => ({ upvotedIds, backerIds }), [upvotedIds, backerIds]);
 
   // ── Upvote ─────────────────────────────────────────────────────────────────
 
@@ -513,6 +572,7 @@ export default function ExploreScreen() {
         </View>
       ) : (
         <LegendList
+          extraData={listExtraData}
           data={recipes}
           keyExtractor={(r) => r.id}
           numColumns={numColumns}
