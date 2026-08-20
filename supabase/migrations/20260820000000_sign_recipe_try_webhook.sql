@@ -3,7 +3,7 @@
 -- The original trigger called supabase_functions.http_request with a static
 -- header string, which meant it could only ever send Content-Type. The edge
 -- function's secret check was therefore unenforceable: with
--- SUPABASE_WEBHOOK_SECRET unset it skipped auth entirely, and setting it would
+-- WEBHOOK_SIGNING_SECRET unset it skipped auth entirely, and setting it would
 -- have started rejecting the trigger's unsigned requests.
 --
 -- Replace it with a trigger function that reads the shared secret from Vault and
@@ -11,11 +11,15 @@
 -- it never lands in git. It must already exist under this exact name — see
 -- Integrations > Vault > Secrets.
 --
+-- Not named SUPABASE_WEBHOOK_SECRET: Supabase reserves the SUPABASE_ prefix for
+-- its own injected variables and refuses to set custom secrets using it, so the
+-- edge function side could never have read that name.
+--
 -- The body deliberately reproduces the payload shape supabase_functions
 -- .http_request produced, since notify-recipe-try reads type/table/record.
 --
 -- Ordering note: applying this alone changes nothing observable. The deployed
--- function ignores the header until SUPABASE_WEBHOOK_SECRET is set in the edge
+-- function ignores the header until WEBHOOK_SIGNING_SECRET is set in the edge
 -- function secrets, which is the step that actually turns enforcement on.
 
 create extension if not exists pg_net with schema extensions;
@@ -35,13 +39,13 @@ begin
   select decrypted_secret
     into webhook_secret
     from vault.decrypted_secrets
-   where name = 'SUPABASE_WEBHOOK_SECRET'
+   where name = 'WEBHOOK_SIGNING_SECRET'
    limit 1;
 
   if webhook_secret is null then
     -- Don't drop the notification: unsigned is exactly today's behaviour, and
     -- the edge function still accepts it until its own secret is set.
-    raise warning 'SUPABASE_WEBHOOK_SECRET not found in Vault — sending unsigned';
+    raise warning 'WEBHOOK_SIGNING_SECRET not found in Vault — sending unsigned';
   else
     request_headers := request_headers
       || jsonb_build_object('x-supabase-signature', webhook_secret);

@@ -58,9 +58,9 @@ Deno.serve(async (req) => {
   // the secret was never set in production, so the endpoint was open to anyone
   // with the URL. The caller is a database trigger that signs its request from
   // the value in Vault; see 20260820000000_sign_recipe_try_webhook.sql.
-  const webhookSecret = Deno.env.get('SUPABASE_WEBHOOK_SECRET');
+  const webhookSecret = Deno.env.get('WEBHOOK_SIGNING_SECRET');
   if (!webhookSecret) {
-    console.error('SUPABASE_WEBHOOK_SECRET is not configured — refusing to serve unauthenticated');
+    console.error('WEBHOOK_SIGNING_SECRET is not configured — refusing to serve unauthenticated');
     return new Response(JSON.stringify({ error: 'Server misconfigured' }), { status: 500 });
   }
 
