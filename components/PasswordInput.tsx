@@ -9,7 +9,7 @@ type Props = Omit<TextInputProps, 'secureTextEntry' | 'style'> & {
 
 export const PasswordInput = forwardRef<TextInput, Props>(function PasswordInput(
   { inputClassName, ...props },
-  ref
+  ref,
 ) {
   const [visible, setVisible] = useState(false);
 
@@ -32,11 +32,7 @@ export const PasswordInput = forwardRef<TextInput, Props>(function PasswordInput
         accessibilityLabel={visible ? 'Hide password' : 'Show password'}
         className="absolute right-3 top-0 bottom-0 justify-center"
       >
-        <Ionicons
-          name={visible ? 'eye-off-outline' : 'eye-outline'}
-          size={20}
-          color="#9c7a5e"
-        />
+        <Ionicons name={visible ? 'eye-off-outline' : 'eye-outline'} size={20} color="#9c7a5e" />
       </TouchableOpacity>
     </View>
   );

@@ -36,7 +36,9 @@ function Strong({ children }: { children: string }) {
 function EmailLink() {
   return (
     <TouchableOpacity
-      onPress={() => Linking.openURL(`mailto:${SUPPORT_EMAIL}?subject=Account%20deletion%20request`)}
+      onPress={() =>
+        Linking.openURL(`mailto:${SUPPORT_EMAIL}?subject=Account%20deletion%20request`)
+      }
       className="mb-3"
     >
       <Text className="text-harvest-400 font-semibold underline text-sm">{SUPPORT_EMAIL}</Text>
@@ -51,13 +53,9 @@ export default function DeleteAccountScreen() {
       <ScrollView className="flex-1 bg-ristretto-950">
         <View className="max-w-2xl w-full self-center px-6 pt-16 pb-24">
           <Text className="text-latte-100 text-3xl font-bold mb-1">Delete Your Account</Text>
-          <Text className="text-latte-700 text-sm mb-12">
-            Caliburr — account and data deletion
-          </Text>
+          <Text className="text-latte-700 text-sm mb-12">Caliburr — account and data deletion</Text>
 
-          <P>
-            You can delete your Caliburr account at any time. There are two ways to do it:
-          </P>
+          <P>You can delete your Caliburr account at any time. There are two ways to do it:</P>
 
           <Section title="Option 1 — Delete from inside the app">
             <P>
@@ -117,13 +115,13 @@ export default function DeleteAccountScreen() {
 
           <Section title="What is retained">
             <P>
-              The following <Strong>community-contributed data</Strong> is retained in
-              anonymised form so other users continue to benefit from it:
+              The following <Strong>community-contributed data</Strong> is retained in anonymised
+              form so other users continue to benefit from it:
             </P>
             <Li>
-              <Strong>Recipes you submitted</Strong> — kept in the public recipe database with
-              your authorship anonymised. The recipe data itself (grind setting, dose, yield,
-              ratio, brew method) remains available.
+              <Strong>Recipes you submitted</Strong> — kept in the public recipe database with your
+              authorship anonymised. The recipe data itself (grind setting, dose, yield, ratio, brew
+              method) remains available.
             </Li>
             <Li>
               <Strong>Equipment you contributed</Strong> — community-verified grinders and brew
@@ -138,15 +136,12 @@ export default function DeleteAccountScreen() {
           <Section title="Retention timeline">
             <P>
               Anonymised contributions (above) are retained indefinitely as part of the community
-              dataset. Backups containing your personal data are purged within 30 days of
-              deletion.
+              dataset. Backups containing your personal data are purged within 30 days of deletion.
             </P>
           </Section>
 
           <Section title="Questions?">
-            <P>
-              For anything related to your data or this process, contact us at:
-            </P>
+            <P>For anything related to your data or this process, contact us at:</P>
             <EmailLink />
           </Section>
         </View>

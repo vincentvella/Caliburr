@@ -55,85 +55,89 @@ function useRecipeScreen(id: string) {
   const load = useCallback(async () => {
     setError(null);
     try {
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
-        setCurrentUserId(user?.id ?? null);
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      setCurrentUserId(user?.id ?? null);
 
-        const [recipeRes, upvoteRes, triesRes] = await Promise.all([
-          supabase
-            .from('recipes')
-            .select(
-              `
+      const [recipeRes, upvoteRes, triesRes] = await Promise.all([
+        supabase
+          .from('recipes')
+          .select(
+            `
                 *,
                 grinder:grinders(brand, model, verified, burr_type, adjustment_type),
                 bean:beans(name, roaster, origin, process, roast_level, tasting_notes),
                 brew_machine:brew_machines(brand, model, machine_type, verified)
               `,
-            )
-            .eq('id', id)
-            .single(),
-          user
-            ? supabase
-                .from('recipe_upvotes')
-                .select('recipe_id')
-                .eq('recipe_id', id)
-                .eq('user_id', user.id)
-                .maybeSingle()
-            : Promise.resolve({ data: null }),
-          db
-            .from('recipe_tries')
-            .select('*')
-            .eq('recipe_id', id)
-            .order('created_at', { ascending: false }),
-        ]);
+          )
+          .eq('id', id)
+          .single(),
+        user
+          ? supabase
+              .from('recipe_upvotes')
+              .select('recipe_id')
+              .eq('recipe_id', id)
+              .eq('user_id', user.id)
+              .maybeSingle()
+          : Promise.resolve({ data: null }),
+        db
+          .from('recipe_tries')
+          .select('*')
+          .eq('recipe_id', id)
+          .order('created_at', { ascending: false }),
+      ]);
 
-        if (recipeRes.error) throw new Error(recipeRes.error.message);
-        setRecipe(recipeRes.data as RecipeWithJoins);
-        setUpvoted(!!upvoteRes.data);
+      if (recipeRes.error) throw new Error(recipeRes.error.message);
+      // Checking error alone does not narrow data; a missing recipe used to be
+      // asserted away and would have thrown on property access further down.
+      if (!recipeRes.data) throw new Error('Recipe not found');
+      const recipeData = recipeRes.data as RecipeWithJoins;
+      setRecipe(recipeData);
+      setUpvoted(!!upvoteRes.data);
 
-        // Fetch author + try authors profiles in one round-trip.
-        const tryRows = (triesRes.data ?? []) as RecipeTry[];
-        const profileIds = Array.from(
-          new Set(
-            [recipeRes.data!.user_id, user?.id, ...tryRows.map((t) => t.user_id)].filter(
-              (v): v is string => Boolean(v),
-            ),
+      // Fetch author + try authors profiles in one round-trip.
+      const tryRows = (triesRes.data ?? []) as RecipeTry[];
+      const profileIds = Array.from(
+        new Set(
+          [recipeData.user_id, user?.id, ...tryRows.map((t) => t.user_id)].filter(
+            (v): v is string => Boolean(v),
           ),
-        );
-        const profilesMap = new Map<string, AuthorProfile>();
-        if (profileIds.length > 0) {
-          const { data: profilesData } = await db
-            .from('profiles')
-            .select('user_id, display_name, avatar_url')
-            .in('user_id', profileIds);
-          for (const p of profilesData ?? []) {
-            profilesMap.set(p.user_id, {
-              display_name: p.display_name,
-              avatar_url: p.avatar_url,
-            });
-          }
+        ),
+      );
+      const profilesMap = new Map<string, AuthorProfile>();
+      if (profileIds.length > 0) {
+        const { data: profilesData } = await db
+          .from('profiles')
+          .select('user_id, display_name, avatar_url')
+          .in('user_id', profileIds);
+        for (const p of profilesData ?? []) {
+          profilesMap.set(p.user_id, {
+            display_name: p.display_name,
+            avatar_url: p.avatar_url,
+          });
         }
+      }
 
-        const recipeAuthorId = recipeRes.data!.user_id;
-        setAuthor(recipeAuthorId ? (profilesMap.get(recipeAuthorId) ?? null) : null);
-        setMyProfile(user ? (profilesMap.get(user.id) ?? null) : null);
-        setTries(
-          tryRows.map((t) => ({
-            ...t,
-            profile: profilesMap.get(t.user_id) ?? null,
-          })),
-        );
-        setMyTry(user ? (tryRows.find((t) => t.user_id === user.id) ?? null) : null);
+      const recipeAuthorId = recipeData.user_id;
+      setAuthor(recipeAuthorId ? (profilesMap.get(recipeAuthorId) ?? null) : null);
+      setMyProfile(user ? (profilesMap.get(user.id) ?? null) : null);
+      setTries(
+        tryRows.map((t) => ({
+          ...t,
+          profile: profilesMap.get(t.user_id) ?? null,
+        })),
+      );
+      setMyTry(user ? (tryRows.find((t) => t.user_id === user.id) ?? null) : null);
 
-        if (user && recipeRes.data?.user_id === user.id) {
-          const { data: historyData } = await supabase
-            .from('recipe_history')
-            .select('*')
-            .eq('recipe_id', id)
-            .order('edited_at', { ascending: false });
-          setHistory(historyData ?? []);
-        }
+      if (user && recipeRes.data?.user_id === user.id) {
+        const { data: historyData } = await supabase
+          .from('recipe_history')
+          .select('*')
+          .eq('recipe_id', id)
+          .order('edited_at', { ascending: false });
+        setHistory(historyData ?? []);
+      }
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Something went wrong');
     } finally {
@@ -521,7 +525,9 @@ export default function RecipeDetailScreen() {
             tries.map((t) => {
               const deltas = [
                 t.grind_delta ? `Grind: ${t.grind_delta}` : null,
-                t.yield_delta_g != null ? `Yield: ${t.yield_delta_g > 0 ? '+' : ''}${t.yield_delta_g}g` : null,
+                t.yield_delta_g != null
+                  ? `Yield: ${t.yield_delta_g > 0 ? '+' : ''}${t.yield_delta_g}g`
+                  : null,
               ]
                 .filter(Boolean)
                 .join(' · ');

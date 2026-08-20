@@ -73,8 +73,8 @@ export default function LandingScreen() {
               Dial in your perfect cup.
             </Text>
             <Text className="text-latte-400 text-lg leading-8 mb-8">
-              Crowdsourced espresso, pour-over, and AeroPress recipes — pinned to the exact
-              grinder, machine, and beans you own.
+              Crowdsourced espresso, pour-over, and AeroPress recipes — pinned to the exact grinder,
+              machine, and beans you own.
             </Text>
             <View className="flex-row gap-3 mb-6 flex-wrap items-start">
               <Link href="/(auth)/sign-up" asChild>
@@ -159,11 +159,7 @@ export default function LandingScreen() {
                   borderColor: '#271d14',
                 }}
               >
-                <Image
-                  source={src}
-                  resizeMode="contain"
-                  style={{ width: 280, height: 606 }}
-                />
+                <Image source={src} resizeMode="contain" style={{ width: 280, height: 606 }} />
               </View>
             ))}
           </ScrollView>

@@ -48,7 +48,9 @@ Deno.serve(async (req) => {
     transferred_to?: string[];
   };
 
-  console.log(`RC webhook: type=${event.type} product_id=${event.product_id} user=${event.app_user_id}`);
+  console.log(
+    `RC webhook: type=${event.type} product_id=${event.product_id} user=${event.app_user_id}`,
+  );
 
   const adminClient = createClient(
     Deno.env.get('SUPABASE_URL')!,

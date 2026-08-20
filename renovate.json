@@ -15,7 +15,15 @@
     },
     {
       "description": "Expo/RN core is version-coordinated — group it and never auto-merge; a human reviews SDK moves.",
-      "matchPackageNames": ["expo", "react", "react-dom", "react-native", "react-native-*", "expo-*", "@expo/**"],
+      "matchPackageNames": [
+        "expo",
+        "react",
+        "react-dom",
+        "react-native",
+        "react-native-*",
+        "expo-*",
+        "@expo/**"
+      ],
       "groupName": "expo sdk",
       "automerge": false
     },

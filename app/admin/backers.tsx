@@ -10,7 +10,6 @@ import {
 } from 'react-native';
 import { useState, useEffect, useCallback } from 'react';
 import { router } from 'expo-router';
-import { supabase } from '@/lib/supabase';
 import { adminInvoke } from '@/lib/adminInvoke';
 
 type BackerTier = 'monthly' | 'annual';

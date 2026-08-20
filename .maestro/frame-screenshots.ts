@@ -215,7 +215,10 @@ async function frame(srcPath: string, dstPath: string, copy: Copy) {
     .join('');
 
   let subheadY =
-    headlineY + (headlineLines.length - 1) * headlineLineHeight + gap + Math.round(subheadSize * 0.85);
+    headlineY +
+    (headlineLines.length - 1) * headlineLineHeight +
+    gap +
+    Math.round(subheadSize * 0.85);
   const subheadTspans = subheadLines
     .map(
       (line, i) =>
@@ -289,7 +292,9 @@ async function frame(srcPath: string, dstPath: string, copy: Copy) {
        />
      </svg>`,
   );
-  const shadow = await sharp(shadowSvg).blur(shadowBlur / 3).toBuffer();
+  const shadow = await sharp(shadowSvg)
+    .blur(shadowBlur / 3)
+    .toBuffer();
 
   await sharp({
     create: {

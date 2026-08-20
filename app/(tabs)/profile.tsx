@@ -59,11 +59,7 @@ function useProfileSummary(): ProfileSummary {
       if (cancelled || !user) return;
 
       const [profileRes, recipeIdsRes] = await Promise.all([
-        db
-          .from('profiles')
-          .select('display_name, avatar_url')
-          .eq('user_id', user.id)
-          .maybeSingle(),
+        db.from('profiles').select('display_name, avatar_url').eq('user_id', user.id).maybeSingle(),
         supabase.from('recipes').select('id').eq('user_id', user.id),
       ]);
       if (cancelled) return;
@@ -266,7 +262,10 @@ export default function ProfileScreen() {
 
         {/* Settings rows */}
         <View className="mb-6 gap-2">
-          <SettingsRow label="Change Password" onPress={() => router.push('/account/change-password')} />
+          <SettingsRow
+            label="Change Password"
+            onPress={() => router.push('/account/change-password')}
+          />
           <SettingsRow label="Feature Requests" onPress={() => router.push('/feature-requests')} />
           {summary.isAdmin && (
             <SettingsRow label="Pending Edits" onPress={() => router.push('/admin')} />
@@ -276,10 +275,7 @@ export default function ProfileScreen() {
             label="Privacy Policy"
             onPress={() => WebBrowser.openBrowserAsync(PRIVACY_POLICY_URL)}
           />
-          <SettingsRow
-            label="Terms of Use"
-            onPress={() => WebBrowser.openBrowserAsync(TOS_URL)}
-          />
+          <SettingsRow label="Terms of Use" onPress={() => WebBrowser.openBrowserAsync(TOS_URL)} />
         </View>
 
         {/* Appearance — hidden on web, controlled via nav bar */}

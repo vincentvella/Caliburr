@@ -19,8 +19,13 @@ export function BackerProvider({ children }: { children: ReactNode }) {
 
   const refresh = useCallback(async () => {
     try {
-      const { data: { user } } = await db.auth.getUser();
-      if (!user) { setIsBacker(false); return; }
+      const {
+        data: { user },
+      } = await db.auth.getUser();
+      if (!user) {
+        setIsBacker(false);
+        return;
+      }
       const { data } = await db
         .from('profiles')
         .select('backer_tier')

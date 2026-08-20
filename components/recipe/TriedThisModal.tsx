@@ -26,12 +26,15 @@ interface Props {
   onSaved: (saved: RecipeTry) => void;
 }
 
-export function TriedThisModal({ visible, onClose, recipeId, existing, onSaved }: Props) {
+/**
+ * Owns the editable fields, seeded from the existing try each time the modal
+ * opens. Grouping them here keeps the reset effect with the state it resets.
+ */
+function useTryFormState(visible: boolean, existing: RecipeTry | null) {
   const [worked, setWorked] = useState<boolean | null>(null);
   const [grindDelta, setGrindDelta] = useState('');
   const [yieldDelta, setYieldDelta] = useState('');
   const [notes, setNotes] = useState('');
-  const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -42,6 +45,35 @@ export function TriedThisModal({ visible, onClose, recipeId, existing, onSaved }
     setNotes(existing?.notes ?? '');
     setError(null);
   }, [visible, existing]);
+
+  return {
+    worked,
+    setWorked,
+    grindDelta,
+    setGrindDelta,
+    yieldDelta,
+    setYieldDelta,
+    notes,
+    setNotes,
+    error,
+    setError,
+  };
+}
+
+export function TriedThisModal({ visible, onClose, recipeId, existing, onSaved }: Props) {
+  const {
+    worked,
+    setWorked,
+    grindDelta,
+    setGrindDelta,
+    yieldDelta,
+    setYieldDelta,
+    notes,
+    setNotes,
+    error,
+    setError,
+  } = useTryFormState(visible, existing);
+  const [saving, setSaving] = useState(false);
 
   const isWeb = Platform.OS === 'web';
 

@@ -27,6 +27,18 @@ function initials(name: string | null) {
   return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
 }
 
+/**
+ * Tracks whether the Gravatar request failed, resetting whenever the inputs
+ * that determine the URL change so a new address gets a fresh attempt.
+ */
+function useGravatarFallback(gravatarUrl: string | null, avatarUrl?: string | null) {
+  const [failed, setFailed] = useState(false);
+  useEffect(() => {
+    setFailed(false);
+  }, [gravatarUrl, avatarUrl]);
+  return [failed, setFailed] as const;
+}
+
 export function AuthorRow({
   userId,
   displayName,
@@ -45,12 +57,11 @@ export function AuthorRow({
     () => (email ? gravatarUrlForEmail(email, size * 2) : null),
     [email, size],
   );
-  const [gravatarFailed, setGravatarFailed] = useState(false);
-  useEffect(() => {
-    setGravatarFailed(false);
-  }, [gravatarUrl, avatarUrl]);
+  const [gravatarFailed, setGravatarFailed] = useGravatarFallback(gravatarUrl, avatarUrl);
 
-  const showGravatar = !avatarUrl && gravatarUrl && !gravatarFailed;
+  // Holds the url rather than a boolean so the truthy branch below narrows it
+  // to string — previously it was asserted non-null at the use site.
+  const showGravatar = !avatarUrl && !gravatarFailed ? gravatarUrl : null;
 
   const Body = (
     <View className="flex-row items-center gap-3">
@@ -62,7 +73,7 @@ export function AuthorRow({
         />
       ) : showGravatar ? (
         <Image
-          source={{ uri: gravatarUrl! }}
+          source={{ uri: showGravatar }}
           style={{ width: size, height: size, borderRadius: size / 2 }}
           className={`bg-oat-100 dark:bg-ristretto-800 border ${ringColor}`}
           onError={() => setGravatarFailed(true)}
