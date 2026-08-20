@@ -54,12 +54,20 @@ const BREW_METHOD_LABELS: Record<string, string> = {
 };
 
 Deno.serve(async (req) => {
+  // Fail closed. This used to be `if (webhookSecret)`, which meant an unset
+  // secret disabled the check entirely rather than blocking the request — and
+  // the secret was never set in production, so the endpoint was open to anyone
+  // with the URL. The caller is a database trigger that signs its request from
+  // the value in Vault; see 20260820000000_sign_recipe_try_webhook.sql.
   const webhookSecret = Deno.env.get('SUPABASE_WEBHOOK_SECRET');
-  if (webhookSecret) {
-    const signature = req.headers.get('x-supabase-signature');
-    if (signature !== webhookSecret) {
-      return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 });
-    }
+  if (!webhookSecret) {
+    console.error('SUPABASE_WEBHOOK_SECRET is not configured — refusing to serve unauthenticated');
+    return new Response(JSON.stringify({ error: 'Server misconfigured' }), { status: 500 });
+  }
+
+  const signature = req.headers.get('x-supabase-signature');
+  if (!signature || signature !== webhookSecret) {
+    return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 });
   }
 
   const payload = (await req.json()) as WebhookPayload;
@@ -95,15 +103,8 @@ Deno.serve(async (req) => {
 
   // Look up the trying user's display name and the recipe author's tokens.
   const [{ data: tryProfile }, { data: tokens }] = await Promise.all([
-    adminClient
-      .from('profiles')
-      .select('display_name')
-      .eq('user_id', tryRow.user_id)
-      .maybeSingle(),
-    adminClient
-      .from('push_tokens')
-      .select('token, platform')
-      .eq('user_id', recipe.user_id),
+    adminClient.from('profiles').select('display_name').eq('user_id', tryRow.user_id).maybeSingle(),
+    adminClient.from('push_tokens').select('token, platform').eq('user_id', recipe.user_id),
   ]);
 
   // Always advance the cooldown — even with zero tokens, we don't want the
@@ -119,7 +120,7 @@ Deno.serve(async (req) => {
   }
 
   const tryAuthorName = tryProfile?.display_name ?? 'Someone';
-  const beanName = ((recipe.bean as unknown) as { name?: string } | null)?.name;
+  const beanName = (recipe.bean as unknown as { name?: string } | null)?.name;
   const methodLabel =
     BREW_METHOD_LABELS[recipe.brew_method as string] ?? (recipe.brew_method as string);
   const recipeLabel = beanName ? `${beanName} ${methodLabel}` : `${methodLabel} recipe`;
