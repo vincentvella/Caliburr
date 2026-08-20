@@ -81,6 +81,7 @@ const config: ExpoConfig = {
     'expo-font',
     'expo-web-browser',
     'expo-system-ui',
+    'expo-status-bar',
     [
       'expo-splash-screen',
       {
