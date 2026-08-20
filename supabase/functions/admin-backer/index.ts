@@ -86,20 +86,27 @@ Deno.serve(async (req) => {
   }
 
   if (body.action === 'grant') {
-    // Look up user by email
-    const {
-      data: { users },
-      error,
-    } = await adminClient.auth.admin.listUsers();
+    // Look up the user by email in SQL against the indexed column.
+    //
+    // This used to call listUsers() with no arguments, which returns only the
+    // first page — about 100 users. Past that, granting backer status to a real
+    // account failed with "No user found with that email". supabase-js v2 has
+    // no admin.getUserByEmail (the admin API is getUserById, listUsers,
+    // createUser, updateUserById, deleteUser), so paging was the only client
+    // option; doing the lookup server-side avoids it entirely. See VEL-69.
+    // The edge-function client is untyped, so name the RPC's shape here.
+    const { data, error } = await adminClient.rpc('admin_find_user_id_by_email', {
+      p_email: body.email,
+    });
+    const targetId = data as string | null;
     if (error) {
-      return new Response(JSON.stringify({ error: 'Failed to list users' }), {
+      return new Response(JSON.stringify({ error: 'Failed to look up user' }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
-    const target = users.find((u) => u.email?.toLowerCase() === body.email.toLowerCase());
-    if (!target) {
+    if (!targetId) {
       return new Response(JSON.stringify({ error: 'No user found with that email' }), {
         status: 404,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -108,7 +115,7 @@ Deno.serve(async (req) => {
 
     await adminClient.from('profiles').upsert(
       {
-        user_id: target.id,
+        user_id: targetId,
         backer_tier: body.tier,
         backer_since: new Date().toISOString(),
         updated_at: new Date().toISOString(),
@@ -116,7 +123,7 @@ Deno.serve(async (req) => {
       { onConflict: 'user_id' },
     );
 
-    return new Response(JSON.stringify({ ok: true, userId: target.id }), {
+    return new Response(JSON.stringify({ ok: true, userId: targetId }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   }

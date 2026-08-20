@@ -58,23 +58,20 @@ function useProfileSummary(): ProfileSummary {
       } = await supabase.auth.getUser();
       if (cancelled || !user) return;
 
-      const [profileRes, recipeIdsRes] = await Promise.all([
+      // Counted server-side. This previously fetched every recipe id and passed
+      // them into an .in() predicate, which PostgREST serialises into the URL —
+      // roughly 38 chars per uuid, so ~250 recipes overflowed common header
+      // limits. The request then failed, `count ?? 0` swallowed the error, and
+      // the tab silently showed 0 tries forever. recipeCount had the same
+      // problem from the other end: it was the length of a list PostgREST caps
+      // at 1000 rows. See VEL-87.
+      const [profileRes, statsRes] = await Promise.all([
         db.from('profiles').select('display_name, avatar_url').eq('user_id', user.id).maybeSingle(),
-        supabase.from('recipes').select('id').eq('user_id', user.id),
+        db.rpc('get_profile_stats', { p_user_id: user.id }),
       ]);
       if (cancelled) return;
 
-      const recipeIds = (recipeIdsRes.data ?? []).map((r) => r.id);
-      let triesReceived = 0;
-      if (recipeIds.length > 0) {
-        const { count } = await db
-          .from('recipe_tries')
-          .select('id', { count: 'exact', head: true })
-          .in('recipe_id', recipeIds)
-          .eq('worked', true);
-        if (cancelled) return;
-        triesReceived = count ?? 0;
-      }
+      const stats = statsRes.data?.[0];
 
       setState({
         email: user.email ?? null,
@@ -82,8 +79,8 @@ function useProfileSummary(): ProfileSummary {
         userId: user.id,
         displayName: profileRes.data?.display_name ?? null,
         avatarUrl: profileRes.data?.avatar_url ?? null,
-        recipeCount: recipeIds.length,
-        triesReceived,
+        recipeCount: stats?.recipe_count ?? 0,
+        triesReceived: stats?.tries_received ?? 0,
         loaded: true,
       });
     }
