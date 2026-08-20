@@ -1,10 +1,18 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { GRINDER_EDIT_FIELDS, MACHINE_EDIT_FIELDS, pickAllowed } from './payload.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
+
+function json(body: unknown, status = 200) {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+  });
+}
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -14,10 +22,7 @@ Deno.serve(async (req) => {
   // Verify caller is admin
   const authHeader = req.headers.get('Authorization');
   if (!authHeader) {
-    return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-      status: 401,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    return json({ error: 'Unauthorized' }, 401);
   }
 
   const userClient = createClient(
@@ -32,10 +37,7 @@ Deno.serve(async (req) => {
   } = await userClient.auth.getUser();
 
   if (userError || !user || user.app_metadata?.is_admin !== true) {
-    return new Response(JSON.stringify({ error: 'Forbidden' }), {
-      status: 403,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    return json({ error: 'Forbidden' }, 403);
   }
 
   const { editId, editType, action } = (await req.json()) as {
@@ -50,17 +52,34 @@ Deno.serve(async (req) => {
     { auth: { autoRefreshToken: false, persistSession: false } },
   );
 
-  const table = editType === 'grinder' ? 'grinder_edits' : 'machine_edits';
+  const isGrinder = editType === 'grinder';
+  const table = isGrinder ? 'grinder_edits' : 'machine_edits';
+  const equipmentTable = isGrinder ? 'grinders' : 'brew_machines';
+  const verificationTable = isGrinder ? 'grinder_verifications' : 'machine_verifications';
+  const verificationKey = isGrinder ? 'grinder_id' : 'brew_machine_id';
 
   if (action === 'reject') {
-    await adminClient
+    // `.select()` so a zero-row result is distinguishable from success: an update
+    // that matches nothing returns no error, and reporting ok would make the
+    // admin UI drop the card while the edit is still pending. Constraining to
+    // `pending` also stops a stale queue from re-reviewing a finished edit.
+    const { data: rejected, error: rejectError } = await adminClient
       .from(table)
       .update({ status: 'rejected', reviewed_at: new Date().toISOString() })
-      .eq('id', editId);
+      .eq('id', editId)
+      .eq('status', 'pending')
+      .select('id');
 
-    return new Response(JSON.stringify({ ok: true }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    if (rejectError) {
+      console.error('reject failed', { editId, editType, error: rejectError.message });
+      return json({ error: 'Could not reject edit', detail: rejectError.message }, 500);
+    }
+
+    if (!rejected || rejected.length === 0) {
+      return json({ error: 'Edit not found, or already reviewed' }, 404);
+    }
+
+    return json({ ok: true });
   }
 
   // Approve: apply the payload, count verification, mark approved
@@ -71,52 +90,84 @@ Deno.serve(async (req) => {
     .single();
 
   if (editError || !edit) {
-    return new Response(JSON.stringify({ error: 'Edit not found' }), {
-      status: 404,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    return json({ error: 'Edit not found' }, 404);
   }
 
-  if (editType === 'grinder') {
-    const payload = { ...edit.payload };
-    // If the edit changes image_url, queue it for image approval
-    if ('image_url' in payload) {
-      (payload as Record<string, unknown>).image_status = payload.image_url ? 'pending' : null;
-    }
-    await adminClient.from('grinders').update(payload).eq('id', edit.grinder_id);
+  if (edit.status !== 'pending') {
+    // Two admins working the same queue — fail before re-applying stale values
+    // over whatever the later edit already wrote.
+    return json({ error: 'Edit already reviewed', status: edit.status }, 409);
+  }
 
-    if (edit.proposed_by) {
-      await adminClient
-        .from('grinder_verifications')
-        .upsert(
-          { grinder_id: edit.grinder_id, user_id: edit.proposed_by },
-          { onConflict: 'grinder_id,user_id', ignoreDuplicates: true },
-        );
-    }
-  } else {
-    const payload = { ...edit.payload };
-    // If the edit changes image_url, queue it for image approval
-    if ('image_url' in payload) {
-      (payload as Record<string, unknown>).image_status = payload.image_url ? 'pending' : null;
-    }
-    await adminClient.from('brew_machines').update(payload).eq('id', edit.machine_id);
+  const equipmentId = isGrinder ? edit.grinder_id : edit.machine_id;
 
-    if (edit.proposed_by) {
-      await adminClient
-        .from('machine_verifications')
-        .upsert(
-          { brew_machine_id: edit.machine_id, user_id: edit.proposed_by },
-          { onConflict: 'brew_machine_id,user_id', ignoreDuplicates: true },
-        );
+  // Needed to tell a real image change from the unchanged image_url the modal
+  // resubmits on every edit — see pickAllowed.
+  const { data: current, error: currentError } = await adminClient
+    .from(equipmentTable)
+    .select('image_url')
+    .eq('id', equipmentId)
+    .single();
+
+  if (currentError || !current) {
+    return json({ error: 'Equipment not found', detail: currentError?.message }, 404);
+  }
+
+  const { payload, dropped } = pickAllowed(
+    edit.payload,
+    isGrinder ? GRINDER_EDIT_FIELDS : MACHINE_EDIT_FIELDS,
+    current.image_url,
+  );
+
+  if (dropped.length > 0) {
+    console.warn('dropped non-allowlisted edit fields', { editId, editType, dropped });
+  }
+
+  if (Object.keys(payload).length === 0) {
+    return json({ error: 'Edit contains no applicable fields', dropped }, 400);
+  }
+
+  // Every write below is checked: the edit must only be marked approved once the
+  // equipment row actually changed, otherwise a failed update would silently
+  // vanish from the moderation queue with nothing applied.
+  const { error: updateError } = await adminClient
+    .from(equipmentTable)
+    .update(payload)
+    .eq('id', equipmentId);
+
+  if (updateError) {
+    console.error('equipment update failed', { editId, editType, error: updateError.message });
+    return json({ error: 'Could not apply edit', detail: updateError.message }, 500);
+  }
+
+  if (edit.proposed_by) {
+    const { error: verifyError } = await adminClient
+      .from(verificationTable)
+      .upsert(
+        { [verificationKey]: equipmentId, user_id: edit.proposed_by },
+        { onConflict: `${verificationKey},user_id`, ignoreDuplicates: true },
+      );
+
+    if (verifyError) {
+      console.error('verification upsert failed', { editId, editType, error: verifyError.message });
+      return json({ error: 'Could not record verification', detail: verifyError.message }, 500);
     }
   }
 
-  await adminClient
+  const { data: approved, error: approveError } = await adminClient
     .from(table)
     .update({ status: 'approved', reviewed_at: new Date().toISOString() })
-    .eq('id', editId);
+    .eq('id', editId)
+    .eq('status', 'pending')
+    .select('id');
 
-  return new Response(JSON.stringify({ ok: true }), {
-    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-  });
+  if (approveError || !approved || approved.length === 0) {
+    // The equipment row is already updated. Leaving the edit pending is the safe
+    // failure: a retry re-applies the same values idempotently.
+    const detail = approveError?.message ?? 'no rows matched';
+    console.error('marking edit approved failed', { editId, error: detail });
+    return json({ error: 'Edit applied but not marked approved', detail }, 500);
+  }
+
+  return json({ ok: true, dropped });
 });
