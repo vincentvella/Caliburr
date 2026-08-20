@@ -13,6 +13,29 @@ const config: ExpoConfig = {
   icon: './assets/images/icon.png',
   scheme: 'caliburr',
   userInterfaceStyle: 'automatic',
+  // OTA updates. `fingerprint` hashes the native inputs and only serves an
+  // update to builds whose native layer matches, so a JS bundle can never land
+  // on a binary it wasn't built against — the failure mode that makes OTA
+  // dangerous. The same hash backs the build-skipping in .eas/workflows.
+  //
+  // Only builds that ship expo-updates can receive updates, so this takes
+  // effect from 1.1.0 onward; earlier installs still need a store release.
+  runtimeVersion: {
+    policy: 'fingerprint',
+  },
+  updates: {
+    url: 'https://u.expo.dev/60b72a75-9e30-4e7f-bd89-ba85a6fcf7db',
+    // Both pinned rather than left to defaults, so the non-blocking launch
+    // behaviour is visible in review. fallbackToCacheTimeout: 0 means the app
+    // never waits on the network at startup — it launches from the embedded
+    // bundle and fetches any update in the background for the next launch.
+    // A nonzero value would block startup on a request, which reads as a hang
+    // to an App Review device on a throttled connection, and would make the app
+    // appear to require a download to function (App Store guideline 2.5.2).
+    // Every build embeds a bundle, so the app is fully functional offline.
+    fallbackToCacheTimeout: 0,
+    checkAutomatically: 'ON_LOAD',
+  },
   ios: {
     supportsTablet: true,
     bundleIdentifier: 'coffee.caliburr.app',
