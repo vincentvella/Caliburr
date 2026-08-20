@@ -11,6 +11,7 @@ import {
   Platform,
   Pressable,
   ScrollView,
+  Alert,
 } from 'react-native';
 import { LegendList } from '@legendapp/list';
 import { useState, useEffect } from 'react';
@@ -137,12 +138,30 @@ export function MachineModal({ visible, onClose, onAdded, existingIds, editMachi
     const {
       data: { user },
     } = await supabase.auth.getUser();
-    if (user) {
-      await supabase
-        .from('user_brew_machines')
-        .insert({ user_id: user.id, brew_machine_id: machine.id });
+
+    // Previously a missing user silently skipped the insert, and a failed insert
+    // was discarded — either way the modal closed and the shelf refreshed as if
+    // the machine had been added.
+    if (!user) {
+      setAdding(false);
+      Alert.alert('Not signed in', 'Sign in to add gear to your shelf.');
+      return;
     }
+
+    const { error } = await supabase
+      .from('user_brew_machines')
+      .insert({ user_id: user.id, brew_machine_id: machine.id });
     setAdding(false);
+
+    if (error) {
+      Sentry.captureException(error, {
+        tags: { feature: 'add-gear', kind: 'machine' },
+        extra: { machineId: machine.id, userId: user.id },
+      });
+      Alert.alert('Could not add machine', 'Please try again.');
+      return;
+    }
+
     onAdded();
     handleClose();
   }

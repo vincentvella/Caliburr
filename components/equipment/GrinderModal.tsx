@@ -11,6 +11,7 @@ import {
   Platform,
   Pressable,
   ScrollView,
+  Alert,
 } from 'react-native';
 import { LegendList } from '@legendapp/list';
 import { useState, useEffect } from 'react';
@@ -137,10 +138,30 @@ export function GrinderModal({ visible, onClose, onAdded, existingIds, editGrind
     const {
       data: { user },
     } = await supabase.auth.getUser();
-    if (user) {
-      await supabase.from('user_grinders').insert({ user_id: user.id, grinder_id: grinder.id });
+
+    // Previously a missing user silently skipped the insert, and a failed insert
+    // was discarded — either way the modal closed and the shelf refreshed as if
+    // the grinder had been added.
+    if (!user) {
+      setAddingId(null);
+      Alert.alert('Not signed in', 'Sign in to add gear to your shelf.');
+      return;
     }
+
+    const { error } = await supabase
+      .from('user_grinders')
+      .insert({ user_id: user.id, grinder_id: grinder.id });
     setAddingId(null);
+
+    if (error) {
+      Sentry.captureException(error, {
+        tags: { feature: 'add-gear', kind: 'grinder' },
+        extra: { grinderId: grinder.id, userId: user.id },
+      });
+      Alert.alert('Could not add grinder', 'Please try again.');
+      return;
+    }
+
     onAdded();
     handleClose();
   }
