@@ -11,7 +11,6 @@ import {
 import { useLocalSearchParams, router } from 'expo-router';
 import { useState, useEffect, useMemo } from 'react';
 import { supabase } from '@/lib/supabase';
-import { db } from '@/lib/db';
 import { computeGrindStats, type GrindStats } from '@/lib/stats';
 import { useScreenshotMode } from '@/lib/useScreenshotMode';
 import {
@@ -157,7 +156,7 @@ function useGrinderDetail(id: string) {
           .eq('grinder_id', id)
           .order('upvotes', { ascending: false })
           .limit(200),
-        db.rpc('get_grinder_stat_rows', { p_grinder_id: id }),
+        supabase.rpc('get_grinder_stat_rows', { p_grinder_id: id }),
       ]);
 
       if (grinderRes.error || !grinderRes.data) {

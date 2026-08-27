@@ -52,6 +52,7 @@ const MOCK_MINE: RecipeWithJoins[] = [
       roast_level: 'light',
       tasting_notes: [],
     },
+    last_try_notification_at: null,
     brew_machine: null,
   },
   {
@@ -82,6 +83,7 @@ const MOCK_MINE: RecipeWithJoins[] = [
       roast_level: 'medium_light',
       tasting_notes: [],
     },
+    last_try_notification_at: null,
     brew_machine: null,
   },
   {
@@ -112,6 +114,7 @@ const MOCK_MINE: RecipeWithJoins[] = [
       roast_level: 'medium',
       tasting_notes: [],
     },
+    last_try_notification_at: null,
     brew_machine: null,
   },
   {
@@ -135,6 +138,7 @@ const MOCK_MINE: RecipeWithJoins[] = [
     updated_at: '',
     grinder: GRINDER,
     bean: null,
+    last_try_notification_at: null,
     brew_machine: null,
   },
 ];
@@ -174,6 +178,7 @@ const MOCK_LIKED: RecipeWithJoins[] = [
       roast_level: 'medium_light',
       tasting_notes: [],
     },
+    last_try_notification_at: null,
     brew_machine: null,
   },
   {
@@ -210,6 +215,7 @@ const MOCK_LIKED: RecipeWithJoins[] = [
       roast_level: 'light',
       tasting_notes: [],
     },
+    last_try_notification_at: null,
     brew_machine: null,
   },
   {
@@ -246,6 +252,7 @@ const MOCK_LIKED: RecipeWithJoins[] = [
       roast_level: 'medium',
       tasting_notes: [],
     },
+    last_try_notification_at: null,
     brew_machine: null,
   },
 ];

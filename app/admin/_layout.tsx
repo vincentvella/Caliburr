@@ -3,7 +3,6 @@ import { useEffect, useState } from 'react';
 import { Platform } from 'react-native';
 import * as Notifications from 'expo-notifications';
 import { supabase } from '@/lib/supabase';
-import { db } from '@/lib/db';
 
 function useAdminGuard() {
   const [checked, setChecked] = useState(false);
@@ -37,7 +36,7 @@ async function registerAdminPushToken() {
   } = await supabase.auth.getUser();
   if (!user) return;
 
-  await db.from('admin_push_tokens').upsert(
+  await supabase.from('admin_push_tokens').upsert(
     {
       user_id: user.id,
       token,

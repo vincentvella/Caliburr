@@ -17,7 +17,6 @@ import { useEffect, useState, useRef, useCallback, useMemo } from 'react';
 import { useFocusEffect, router } from 'expo-router';
 import * as Sentry from '@sentry/react-native';
 import { supabase } from '@/lib/supabase';
-import { db } from '@/lib/db';
 import { haptics } from '@/lib/haptics';
 import { type RecipeWithJoins, type BrewMethod, BREW_METHOD_LABELS } from '@/lib/types';
 import { Constants } from '@/lib/database.types';
@@ -50,14 +49,16 @@ function useBackerIds(recipes: RecipeWithJoins[]) {
   const resolvedRef = useRef<Set<string>>(new Set());
 
   useEffect(() => {
-    const unresolved = [...new Set(recipes.map((r) => r.user_id))].filter(
-      (id) => !resolvedRef.current.has(id),
-    );
+    // user_id is nullable: recipes outlive their author (ON DELETE SET NULL),
+    // so an orphaned recipe has no profile to look up.
+    const authorIds = recipes.flatMap((r) => (r.user_id ? [r.user_id] : []));
+    const unresolved = [...new Set(authorIds)].filter((id) => !resolvedRef.current.has(id));
     if (unresolved.length === 0) return;
     for (const id of unresolved) resolvedRef.current.add(id);
 
     let cancelled = false;
-    db.from('profiles')
+    supabase
+      .from('profiles')
       .select('user_id')
       .in('user_id', unresolved)
       .not('backer_tier', 'is', null)
@@ -617,7 +618,7 @@ export default function ExploreScreen() {
                 recipe={item}
                 upvoted={upvotedIds.has(item.id)}
                 onUpvote={() => toggleUpvote(item.id)}
-                isAuthorBacker={backerIds.has(item.user_id)}
+                isAuthorBacker={item.user_id ? backerIds.has(item.user_id) : false}
               />
             </TouchableOpacity>
           )}

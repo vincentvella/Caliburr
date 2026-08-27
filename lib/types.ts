@@ -1,4 +1,4 @@
-import type { Enums } from './database.types';
+import type { Enums, Tables } from './database.types';
 
 export type BrewMethod = Enums<'brew_method'>;
 export type RoastLevel = Enums<'roast_level'>;
@@ -6,85 +6,30 @@ export type BurrType = Enums<'burr_type'>;
 export type AdjustmentType = Enums<'adjustment_type'>;
 export type MachineType = Enums<'machine_type'>;
 
-export type ImageStatus = 'pending' | 'approved' | 'rejected';
+/**
+ * Row shapes come straight from the generated types.
+ *
+ * They used to be hand-written interfaces alongside the generated file, which
+ * is the same drift problem VEL-71 removed from lib/db.ts — a column added by a
+ * migration would not appear here until someone remembered to add it, with
+ * nothing to catch the gap. Deriving them makes that impossible by
+ * construction. Add a column, regenerate, and it is here.
+ *
+ * Note that `grinders.image_status` and `brew_machines.image_status` are
+ * `text` with a CHECK constraint rather than a Postgres enum, so they derive as
+ * `string | null` and not as a union. The previous hand-written types claimed a
+ * union by pointing at the unrelated `equipment_edit_status` enum, which was
+ * never what the column actually held. Tracked separately.
+ */
+export type Grinder = Tables<'grinders'>;
 
-export interface Grinder {
-  id: string;
-  brand: string;
-  model: string;
-  burr_type: BurrType | null;
-  adjustment_type: AdjustmentType | null;
-  steps_per_unit: number | null;
-  range_min: number | null;
-  range_max: number | null;
-  verified: boolean;
-  image_url: string | null;
-  image_status: ImageStatus | null;
-  created_by: string | null;
-  created_at: string;
-}
+export type BrewMachine = Tables<'brew_machines'>;
 
-export interface BrewMachine {
-  id: string;
-  brand: string;
-  model: string;
-  machine_type: MachineType;
-  verified: boolean;
-  image_url: string | null;
-  image_status: ImageStatus | null;
-  created_by: string | null;
-  created_at: string;
-}
+export type Bean = Tables<'beans'>;
 
-export interface Bean {
-  id: string;
-  name: string;
-  roaster: string;
-  origin: string | null;
-  process: string | null;
-  roast_level: RoastLevel | null;
-  tasting_notes: string[];
-  created_at: string;
-}
+export type Recipe = Tables<'recipes'>;
 
-export interface Recipe {
-  id: string;
-  user_id: string;
-  grinder_id: string;
-  bean_id: string | null;
-  brew_method: BrewMethod;
-  grind_setting: string;
-  dose_g: number | null;
-  yield_g: number | null;
-  brew_time_s: number | null;
-  water_temp_c: number | null;
-  ratio: number | null;
-  brew_machine_id: string | null;
-  roast_date: string | null;
-  roast_level: RoastLevel | null;
-  notes: string | null;
-  upvotes: number;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface RecipeHistory {
-  id: string;
-  recipe_id: string;
-  edited_by: string;
-  edited_at: string;
-  grind_setting: string;
-  dose_g: number | null;
-  yield_g: number | null;
-  brew_time_s: number | null;
-  water_temp_c: number | null;
-  ratio: number | null;
-  roast_level: RoastLevel | null;
-  roast_date: string | null;
-  notes: string | null;
-  bean_id: string | null;
-  brew_machine_id: string | null;
-}
+export type RecipeHistory = Tables<'recipe_history'>;
 
 export interface RecipeWithJoins extends Recipe {
   grinder: Pick<Grinder, 'brand' | 'model' | 'verified' | 'burr_type' | 'adjustment_type'>;
@@ -102,17 +47,7 @@ export interface Profile {
   backer_tier: 'monthly' | 'annual' | null;
 }
 
-export interface RecipeTry {
-  id: string;
-  recipe_id: string;
-  user_id: string;
-  worked: boolean;
-  grind_delta: string | null;
-  yield_delta_g: number | null;
-  notes: string | null;
-  created_at: string;
-  updated_at: string;
-}
+export type RecipeTry = Tables<'recipe_tries'>;
 
 export interface RecipeTryWithAuthor extends RecipeTry {
   profile: Pick<Profile, 'display_name' | 'avatar_url'> | null;

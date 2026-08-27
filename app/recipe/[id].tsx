@@ -13,7 +13,6 @@ import { useLocalSearchParams, router } from 'expo-router';
 import * as Clipboard from 'expo-clipboard';
 import * as Sentry from '@sentry/react-native';
 import { supabase } from '@/lib/supabase';
-import { db } from '@/lib/db';
 import { haptics } from '@/lib/haptics';
 import { promptReport } from '@/lib/report';
 import {
@@ -81,7 +80,7 @@ function useRecipeScreen(id: string) {
               .eq('user_id', user.id)
               .maybeSingle()
           : Promise.resolve({ data: null }),
-        db
+        supabase
           .from('recipe_tries')
           .select('*')
           .eq('recipe_id', id)
@@ -107,7 +106,7 @@ function useRecipeScreen(id: string) {
       );
       const profilesMap = new Map<string, AuthorProfile>();
       if (profileIds.length > 0) {
-        const { data: profilesData } = await db
+        const { data: profilesData } = await supabase
           .from('profiles')
           .select('user_id, display_name, avatar_url')
           .in('user_id', profileIds);

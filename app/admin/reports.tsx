@@ -2,7 +2,6 @@ import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Alert } fr
 import { useState, useEffect, useCallback } from 'react';
 import { router } from 'expo-router';
 import { supabase } from '@/lib/supabase';
-import { db } from '@/lib/db';
 
 type ReportStatus = 'open' | 'resolved' | 'dismissed';
 
@@ -26,7 +25,7 @@ const REASON_LABELS: Record<string, string> = {
 };
 
 async function fetchReports(status: ReportStatus): Promise<Report[]> {
-  const { data } = await db
+  const { data } = await supabase
     .from('reports')
     .select('*')
     .eq('status', status)
@@ -93,7 +92,7 @@ function useAdminReports(filter: ReportStatus) {
 
   async function updateStatus(id: string, status: 'resolved' | 'dismissed') {
     setActioningId(id);
-    const { error } = await db.from('reports').update({ status }).eq('id', id);
+    const { error } = await supabase.from('reports').update({ status }).eq('id', id);
     if (error) {
       Alert.alert('Error', 'Failed to update report.');
     } else {

@@ -2,7 +2,6 @@ import { Platform } from 'react-native';
 import * as Notifications from 'expo-notifications';
 import * as Sentry from '@sentry/react-native';
 import { supabase } from './supabase';
-import { db } from './db';
 
 /**
  * Request notification permission, fetch the device's Expo push token, and
@@ -29,7 +28,7 @@ export async function registerPushToken(): Promise<void> {
     } = await supabase.auth.getUser();
     if (!user) return;
 
-    await db.from('push_tokens').upsert(
+    await supabase.from('push_tokens').upsert(
       {
         user_id: user.id,
         token,

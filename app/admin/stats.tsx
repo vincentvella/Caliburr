@@ -2,7 +2,6 @@ import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator } from 'rea
 import { useState, useEffect } from 'react';
 import { router } from 'expo-router';
 import { supabase } from '@/lib/supabase';
-import { db } from '@/lib/db';
 
 interface Stats {
   totalUsers: number;
@@ -39,7 +38,10 @@ async function fetchStats(): Promise<Stats> {
     supabase.from('recipes').select('*', { count: 'exact', head: true }),
     supabase.from('grinders').select('*', { count: 'exact', head: true }),
     supabase.from('brew_machines').select('*', { count: 'exact', head: true }),
-    db.from('profiles').select('*', { count: 'exact', head: true }).not('backer_tier', 'is', null),
+    supabase
+      .from('profiles')
+      .select('*', { count: 'exact', head: true })
+      .not('backer_tier', 'is', null),
     supabase.from('recipes').select('*', { count: 'exact', head: true }).gte('created_at', since),
     supabase.from('recipes').select('grinder_id, grinder:grinders(brand, model)').limit(500),
     supabase
