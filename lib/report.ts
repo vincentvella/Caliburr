@@ -1,7 +1,6 @@
 import { Alert } from 'react-native';
 import * as Sentry from '@sentry/react-native';
 import { supabase } from '@/lib/supabase';
-import { db } from '@/lib/db';
 
 type TargetType = 'recipe' | 'grinder' | 'machine';
 
@@ -19,7 +18,7 @@ async function submitReport(targetType: TargetType, targetId: string, reason: st
   } = await supabase.auth.getUser();
   if (!user) return;
 
-  const { error } = await db.from('reports').insert({
+  const { error } = await supabase.from('reports').insert({
     reporter_id: user.id,
     target_type: targetType,
     target_id: targetId,

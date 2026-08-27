@@ -2,7 +2,6 @@ import { View, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { LegendList } from '@legendapp/list';
 import { useLocalSearchParams, router } from 'expo-router';
 import { supabase } from '@/lib/supabase';
-import { db } from '@/lib/db';
 import { useQuery } from '@/hooks/useQuery';
 import { BREW_METHOD_LABELS } from '@/lib/types';
 import { AuthorRow } from '@/components/AuthorRow';
@@ -34,7 +33,7 @@ function useUserScreen(userId: string) {
         .eq('user_id', userId)
         .order('created_at', { ascending: false })
         .limit(100),
-      db
+      supabase
         .from('profiles')
         .select('display_name, avatar_url, backer_tier')
         .eq('user_id', userId)
@@ -46,7 +45,7 @@ function useUserScreen(userId: string) {
 
     let triesReceived = 0;
     if (recipeIds.length > 0) {
-      const { count } = await db
+      const { count } = await supabase
         .from('recipe_tries')
         .select('id', { count: 'exact', head: true })
         .in('recipe_id', recipeIds)

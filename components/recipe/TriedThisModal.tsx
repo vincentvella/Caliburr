@@ -14,7 +14,6 @@ import {
 import { useEffect, useState } from 'react';
 import * as Sentry from '@sentry/react-native';
 import { supabase } from '@/lib/supabase';
-import { db } from '@/lib/db';
 import { haptics } from '@/lib/haptics';
 import type { RecipeTry } from '@/lib/types';
 
@@ -110,7 +109,7 @@ export function TriedThisModal({ visible, onClose, recipeId, existing, onSaved }
       notes: notes.trim() || null,
     };
 
-    const { data, error: dbError } = await db
+    const { data, error: dbError } = await supabase
       .from('recipe_tries')
       .upsert(payload, { onConflict: 'recipe_id,user_id' })
       .select()

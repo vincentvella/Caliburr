@@ -2,7 +2,6 @@ import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator } from 'rea
 import { useState, useEffect } from 'react';
 import { router } from 'expo-router';
 import { supabase } from '@/lib/supabase';
-import { db } from '@/lib/db';
 
 interface AdminCounts {
   edits: number;
@@ -39,7 +38,7 @@ function useAdminCounts() {
           .from('brew_machines')
           .select('*', { count: 'exact', head: true })
           .eq('verified', false),
-        db.from('reports').select('*', { count: 'exact', head: true }).eq('status', 'open'),
+        supabase.from('reports').select('*', { count: 'exact', head: true }).eq('status', 'open'),
         supabase
           .from('support_requests')
           .select('*', { count: 'exact', head: true })

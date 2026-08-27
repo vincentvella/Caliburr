@@ -12,7 +12,6 @@ import { router } from 'expo-router';
 import * as Sentry from '@sentry/react-native';
 import * as WebBrowser from 'expo-web-browser';
 import { supabase } from '@/lib/supabase';
-import { db } from '@/lib/db';
 import { useTheme, type ThemePreference } from '@/lib/theme';
 import { useBetaAccess } from '@/hooks/useBetaAccess';
 import { AuthorRow } from '@/components/AuthorRow';
@@ -66,8 +65,12 @@ function useProfileSummary(): ProfileSummary {
       // problem from the other end: it was the length of a list PostgREST caps
       // at 1000 rows. See VEL-87.
       const [profileRes, statsRes] = await Promise.all([
-        db.from('profiles').select('display_name, avatar_url').eq('user_id', user.id).maybeSingle(),
-        db.rpc('get_profile_stats', { p_user_id: user.id }),
+        supabase
+          .from('profiles')
+          .select('display_name, avatar_url')
+          .eq('user_id', user.id)
+          .maybeSingle(),
+        supabase.rpc('get_profile_stats', { p_user_id: user.id }),
       ]);
       if (cancelled) return;
 

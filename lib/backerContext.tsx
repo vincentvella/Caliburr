@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react';
-import { db } from '@/lib/db';
+import { supabase } from '@/lib/supabase';
 
 interface BackerContextValue {
   isBacker: boolean;
@@ -21,12 +21,12 @@ export function BackerProvider({ children }: { children: ReactNode }) {
     try {
       const {
         data: { user },
-      } = await db.auth.getUser();
+      } = await supabase.auth.getUser();
       if (!user) {
         setIsBacker(false);
         return;
       }
-      const { data } = await db
+      const { data } = await supabase
         .from('profiles')
         .select('backer_tier')
         .eq('user_id', user.id)

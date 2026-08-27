@@ -5,7 +5,6 @@ import { useState, useEffect } from 'react';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { supabase } from '@/lib/supabase';
-import { db } from '@/lib/db';
 import { pickAndUploadAvatar } from '@/lib/uploadImage';
 import { GrinderModal } from '@/components/equipment/GrinderModal';
 import { MachineModal } from '@/components/equipment/MachineModal';
@@ -39,7 +38,7 @@ function useOnboardingProfile() {
       if (cancelled || !user) return;
       setUserId(user.id);
       setEmail(user.email ?? null);
-      const { data: profile } = await db
+      const { data: profile } = await supabase
         .from('profiles')
         .select('display_name, avatar_url')
         .eq('user_id', user.id)
@@ -78,7 +77,7 @@ export default function OnboardingScreen() {
     if (normalized.length === 0) return true; // no change → just continue
     setSavingProfile(true);
     setNameError(null);
-    const { error } = await db
+    const { error } = await supabase
       .from('profiles')
       .update({ display_name: normalized })
       .eq('user_id', userId);
@@ -103,7 +102,10 @@ export default function OnboardingScreen() {
     setUploadingAvatar(true);
     const url = await pickAndUploadAvatar();
     if (url) {
-      const { error } = await db.from('profiles').update({ avatar_url: url }).eq('user_id', userId);
+      const { error } = await supabase
+        .from('profiles')
+        .update({ avatar_url: url })
+        .eq('user_id', userId);
       if (!error) setAvatarUrl(url);
     }
     setUploadingAvatar(false);

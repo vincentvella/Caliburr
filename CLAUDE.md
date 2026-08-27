@@ -108,7 +108,18 @@ bun run android                    # run on Android emulator
 bun run web                        # run in browser
 bun run tsc                        # type check
 bunx supabase db push              # push migrations to remote Supabase
+bun run gen:types                  # regenerate lib/database.types.ts from the remote schema
 ```
+
+**Every migration must be followed by `bun run gen:types`.** `lib/database.types.ts`
+is generated and must never be hand-edited — row types in `lib/types.ts` derive from
+it, so a stale or edited file silently misdescribes the database. It had drifted
+before: `recipes.user_id` had been nullable since April and the app still typed it
+as `string`, `last_try_notification_at` was missing entirely, and `image_status` had
+been hand-pointed at an unrelated enum.
+
+Generation reads the remote schema, so push the migration first. Docker is not
+required.
 
 ## Device testing
 
