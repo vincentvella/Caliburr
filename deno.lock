@@ -3,62 +3,62 @@
   "specifiers": {
     "npm:@expo-google-fonts/dm-sans@~0.4.2": "0.4.2",
     "npm:@expo-google-fonts/fraunces@~0.4.1": "0.4.1",
-    "npm:@expo/vector-icons@^15.0.3": "15.1.1_expo-font@57.0.4_react@19.2.3_react-native@0.86.2_@babel+core@7.29.13_@expo+dom-webview@57.0.1_@expo+metro-runtime@57.0.18_@react-native+metro-config@0.88.1_@types+react@19.2.18_expo@57.0.32_expo-linking@57.0.13_expo-router@57.0.30_react-dom@19.2.3_react-native-gesture-handler@3.5.0_react-native-reanimated@4.5.1_react-native-safe-area-context@5.7.0_react-native-screens@4.26.2_react-native-web@0.21.4_react-native-worklets@0.10.1_typescript@6.0.3",
-    "npm:@legendapp/list@^2.0.19": "2.0.19_react@19.2.3_react-native@0.86.2_@babel+core@7.29.13_@react-native+metro-config@0.88.1_@types+react@19.2.18",
-    "npm:@react-native-async-storage/async-storage@2.2.0": "2.2.0_react-native@0.86.2_@babel+core@7.29.13_@react-native+metro-config@0.88.1_@types+react@19.2.18_react@19.2.3",
-    "npm:@react-native-community/datetimepicker@9.1.0": "9.1.0_expo@57.0.32_react@19.2.3_react-native@0.86.2_@babel+core@7.29.13_@expo+dom-webview@57.0.1_@expo+metro-runtime@57.0.18_@react-native+metro-config@0.88.1_@types+react@19.2.18_expo-linking@57.0.13_expo-router@57.0.30_react-dom@19.2.3_react-native-gesture-handler@3.5.0_react-native-reanimated@4.5.1_react-native-safe-area-context@5.7.0_react-native-screens@4.26.2_react-native-web@0.21.4_react-native-worklets@0.10.1_typescript@6.0.3",
-    "npm:@react-native-google-signin/google-signin@^16.1.2": "16.2.0_expo@57.0.32_react@19.2.3_react-native@0.86.2_@babel+core@7.29.13_@expo+dom-webview@57.0.1_@expo+metro-runtime@57.0.18_@react-native+metro-config@0.88.1_@types+react@19.2.18_expo-linking@57.0.13_expo-router@57.0.30_react-dom@19.2.3_react-native-gesture-handler@3.5.0_react-native-reanimated@4.5.1_react-native-safe-area-context@5.7.0_react-native-screens@4.26.2_react-native-web@0.21.4_react-native-worklets@0.10.1_typescript@6.0.3",
-    "npm:@react-navigation/native@^7.1.8": "7.5.1_react@19.2.3_react-native@0.86.2_@babel+core@7.29.13_@react-native+metro-config@0.88.1_@types+react@19.2.18",
+    "npm:@expo/vector-icons@^15.0.3": "15.1.1_expo-font@57.0.4__expo@57.0.32__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@types+react@19.3.0_react@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_@types+react@19.3.0",
+    "npm:@legendapp/list@^2.0.19": "2.0.19_react@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_@types+react@19.3.0",
+    "npm:@react-native-async-storage/async-storage@2.2.0": "2.2.0_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_@types+react@19.3.0_react@19.2.3",
+    "npm:@react-native-community/datetimepicker@9.1.0": "9.1.0_expo@57.0.32__react@19.2.3__react-dom@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__react-native-web@0.21.4__@types+react@19.3.0_react@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_@types+react@19.3.0",
+    "npm:@react-native-google-signin/google-signin@^16.1.2": "16.2.0_expo@57.0.32__react@19.2.3__react-dom@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__react-native-web@0.21.4__@types+react@19.3.0_react@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_@types+react@19.3.0",
+    "npm:@react-navigation/native@^7.1.8": "7.5.1_react@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_@types+react@19.3.0",
     "npm:@revenuecat/purchases-js@^1.34.0": "1.74.0",
-    "npm:@sentry/react-native@7.11": "7.11.0_expo@57.0.32_react@19.2.3_react-native@0.86.2_@babel+core@7.29.13_@expo+dom-webview@57.0.1_@expo+metro-runtime@57.0.18_@react-native+metro-config@0.88.1_@types+react@19.2.18_expo-linking@57.0.13_expo-router@57.0.30_react-dom@19.2.3_react-native-gesture-handler@3.5.0_react-native-reanimated@4.5.1_react-native-safe-area-context@5.7.0_react-native-screens@4.26.2_react-native-web@0.21.4_react-native-worklets@0.10.1_typescript@6.0.3",
+    "npm:@sentry/react-native@7.11": "7.11.0_expo@57.0.32__react@19.2.3__react-dom@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__react-native-web@0.21.4__@types+react@19.3.0_react@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_@types+react@19.3.0",
     "npm:@supabase/supabase-js@^2.101.0": "2.119.0",
-    "npm:@tanstack/react-form@^1.28.6": "1.33.5_react@19.2.3_react-dom@19.2.3",
+    "npm:@tanstack/react-form@^1.28.6": "1.33.5_react@19.2.3",
     "npm:@types/node@25.9.9": "25.9.9",
-    "npm:@types/react@~19.2.10": "19.2.18",
+    "npm:@types/react@19.3": "19.3.0",
     "npm:eslint-config-expo@~57.0.1": "57.0.2_eslint@9.39.5_typescript@6.0.3",
     "npm:eslint-config-prettier@^10.1.8": "10.1.8_eslint@9.39.5",
     "npm:eslint-plugin-prettier@^5.5.5": "5.5.7_eslint@9.39.5_eslint-config-prettier@10.1.8_prettier@3.9.10",
     "npm:eslint-plugin-react-compiler@^19.1.0-rc.2": "19.1.0-rc.2_eslint@9.39.5",
     "npm:eslint@9": "9.39.5",
-    "npm:expo-apple-authentication@~57.0.1": "57.0.2_expo@57.0.32_react@19.2.3_react-native@0.86.2_@babel+core@7.29.13_@expo+dom-webview@57.0.1_@expo+metro-runtime@57.0.18_@react-native+metro-config@0.88.1_@types+react@19.2.18_expo-linking@57.0.13_expo-router@57.0.30_react-dom@19.2.3_react-native-gesture-handler@3.5.0_react-native-reanimated@4.5.1_react-native-safe-area-context@5.7.0_react-native-screens@4.26.2_react-native-web@0.21.4_react-native-worklets@0.10.1_typescript@6.0.3",
-    "npm:expo-build-properties@~57.0.12": "57.0.23_expo@57.0.32_@babel+core@7.29.13_@expo+dom-webview@57.0.1_@expo+metro-runtime@57.0.18_@react-native+metro-config@0.88.1_@types+react@19.2.18_expo-linking@57.0.13_expo-router@57.0.30_react@19.2.3_react-dom@19.2.3_react-native@0.86.2_react-native-gesture-handler@3.5.0_react-native-reanimated@4.5.1_react-native-safe-area-context@5.7.0_react-native-screens@4.26.2_react-native-web@0.21.4_react-native-worklets@0.10.1_typescript@6.0.3",
-    "npm:expo-clipboard@~57.0.1": "57.0.2_expo@57.0.32_react@19.2.3_react-native@0.86.2_@babel+core@7.29.13_@expo+dom-webview@57.0.1_@expo+metro-runtime@57.0.18_@react-native+metro-config@0.88.1_@types+react@19.2.18_expo-linking@57.0.13_expo-router@57.0.30_react-dom@19.2.3_react-native-gesture-handler@3.5.0_react-native-reanimated@4.5.1_react-native-safe-area-context@5.7.0_react-native-screens@4.26.2_react-native-web@0.21.4_react-native-worklets@0.10.1_typescript@6.0.3",
-    "npm:expo-constants@~57.0.12": "57.0.23_expo@57.0.32_react-native@0.86.2_@babel+core@7.29.13_@expo+dom-webview@57.0.1_@expo+metro-runtime@57.0.18_@react-native+metro-config@0.88.1_@types+react@19.2.18_react@19.2.3_react-dom@19.2.3_react-native-web@0.21.4",
-    "npm:expo-crypto@~57.0.1": "57.0.4_expo@57.0.32_@babel+core@7.29.13_@expo+dom-webview@57.0.1_@expo+metro-runtime@57.0.18_@react-native+metro-config@0.88.1_@types+react@19.2.18_expo-linking@57.0.13_expo-router@57.0.30_react@19.2.3_react-dom@19.2.3_react-native@0.86.2_react-native-gesture-handler@3.5.0_react-native-reanimated@4.5.1_react-native-safe-area-context@5.7.0_react-native-screens@4.26.2_react-native-web@0.21.4_react-native-worklets@0.10.1_typescript@6.0.3",
-    "npm:expo-dev-client@~57.0.13": "57.0.21_expo@57.0.32_@babel+core@7.29.13_@expo+dom-webview@57.0.1_@expo+metro-runtime@57.0.18_@react-native+metro-config@0.88.1_@types+react@19.2.18_expo-linking@57.0.13_expo-router@57.0.30_react@19.2.3_react-dom@19.2.3_react-native@0.86.2_react-native-gesture-handler@3.5.0_react-native-reanimated@4.5.1_react-native-safe-area-context@5.7.0_react-native-screens@4.26.2_react-native-web@0.21.4_react-native-worklets@0.10.1_typescript@6.0.3",
-    "npm:expo-font@~57.0.1": "57.0.4_expo@57.0.32_react@19.2.3_react-native@0.86.2_@babel+core@7.29.13_@expo+dom-webview@57.0.1_@expo+metro-runtime@57.0.18_@react-native+metro-config@0.88.1_@types+react@19.2.18_expo-linking@57.0.13_expo-router@57.0.30_react-dom@19.2.3_react-native-gesture-handler@3.5.0_react-native-reanimated@4.5.1_react-native-safe-area-context@5.7.0_react-native-screens@4.26.2_react-native-web@0.21.4_react-native-worklets@0.10.1_typescript@6.0.3",
-    "npm:expo-haptics@~57.0.1": "57.0.3_expo@57.0.32_@babel+core@7.29.13_@expo+dom-webview@57.0.1_@expo+metro-runtime@57.0.18_@react-native+metro-config@0.88.1_@types+react@19.2.18_expo-linking@57.0.13_expo-router@57.0.30_react@19.2.3_react-dom@19.2.3_react-native@0.86.2_react-native-gesture-handler@3.5.0_react-native-reanimated@4.5.1_react-native-safe-area-context@5.7.0_react-native-screens@4.26.2_react-native-web@0.21.4_react-native-worklets@0.10.1_typescript@6.0.3",
-    "npm:expo-image-manipulator@~57.0.11": "57.0.22_expo@57.0.32_@babel+core@7.29.13_@expo+dom-webview@57.0.1_@expo+metro-runtime@57.0.18_@react-native+metro-config@0.88.1_@types+react@19.2.18_expo-linking@57.0.13_expo-router@57.0.30_react@19.2.3_react-dom@19.2.3_react-native@0.86.2_react-native-gesture-handler@3.5.0_react-native-reanimated@4.5.1_react-native-safe-area-context@5.7.0_react-native-screens@4.26.2_react-native-web@0.21.4_react-native-worklets@0.10.1_typescript@6.0.3",
-    "npm:expo-image-picker@~57.0.11": "57.0.21_expo@57.0.32_@babel+core@7.29.13_@expo+dom-webview@57.0.1_@expo+metro-runtime@57.0.18_@react-native+metro-config@0.88.1_@types+react@19.2.18_expo-linking@57.0.13_expo-router@57.0.30_react@19.2.3_react-dom@19.2.3_react-native@0.86.2_react-native-gesture-handler@3.5.0_react-native-reanimated@4.5.1_react-native-safe-area-context@5.7.0_react-native-screens@4.26.2_react-native-web@0.21.4_react-native-worklets@0.10.1_typescript@6.0.3",
-    "npm:expo-insights@~57.0.11": "57.0.22_expo@57.0.32_@babel+core@7.29.13_@expo+dom-webview@57.0.1_@expo+metro-runtime@57.0.18_@react-native+metro-config@0.88.1_@types+react@19.2.18_expo-linking@57.0.13_expo-router@57.0.30_react@19.2.3_react-dom@19.2.3_react-native@0.86.2_react-native-gesture-handler@3.5.0_react-native-reanimated@4.5.1_react-native-safe-area-context@5.7.0_react-native-screens@4.26.2_react-native-web@0.21.4_react-native-worklets@0.10.1_typescript@6.0.3",
-    "npm:expo-linking@~57.0.6": "57.0.13_react@19.2.3_react-native@0.86.2_@babel+core@7.29.13_@expo+dom-webview@57.0.1_@expo+metro-runtime@57.0.18_@react-native+metro-config@0.88.1_@types+react@19.2.18_expo@57.0.32_react-dom@19.2.3_react-native-web@0.21.4",
-    "npm:expo-notifications@~57.0.12": "57.0.25_expo@57.0.32_react@19.2.3_react-native@0.86.2_@babel+core@7.29.13_@expo+dom-webview@57.0.1_@expo+metro-runtime@57.0.18_@react-native+metro-config@0.88.1_@types+react@19.2.18_expo-linking@57.0.13_expo-router@57.0.30_react-dom@19.2.3_react-native-gesture-handler@3.5.0_react-native-reanimated@4.5.1_react-native-safe-area-context@5.7.0_react-native-screens@4.26.2_react-native-web@0.21.4_react-native-worklets@0.10.1_typescript@6.0.3",
-    "npm:expo-router@~57.0.14": "57.0.30_@expo+log-box@57.0.5_@expo+metro-runtime@57.0.18_expo@57.0.32_expo-constants@57.0.23_expo-linking@57.0.13_react@19.2.3_react-dom@19.2.3_react-native@0.86.2_react-native-gesture-handler@3.5.0_react-native-reanimated@4.5.1_react-native-safe-area-context@5.7.0_react-native-screens@4.26.2_react-native-web@0.21.4_@babel+core@7.29.13_@expo+dom-webview@57.0.1_@react-native+metro-config@0.88.1_@types+react@19.2.18_expo-font@57.0.4_react-native-worklets@0.10.1",
-    "npm:expo-screen-orientation@~57.0.1": "57.0.3_expo@57.0.32_react-native@0.86.2_@babel+core@7.29.13_@expo+dom-webview@57.0.1_@expo+metro-runtime@57.0.18_@react-native+metro-config@0.88.1_@types+react@19.2.18_expo-linking@57.0.13_expo-router@57.0.30_react@19.2.3_react-dom@19.2.3_react-native-gesture-handler@3.5.0_react-native-reanimated@4.5.1_react-native-safe-area-context@5.7.0_react-native-screens@4.26.2_react-native-web@0.21.4_react-native-worklets@0.10.1_typescript@6.0.3",
-    "npm:expo-splash-screen@~57.0.7": "57.0.11_expo@57.0.32_@babel+core@7.29.13_@expo+dom-webview@57.0.1_@expo+metro-runtime@57.0.18_@react-native+metro-config@0.88.1_@types+react@19.2.18_expo-linking@57.0.13_expo-router@57.0.30_react@19.2.3_react-dom@19.2.3_react-native@0.86.2_react-native-gesture-handler@3.5.0_react-native-reanimated@4.5.1_react-native-safe-area-context@5.7.0_react-native-screens@4.26.2_react-native-web@0.21.4_react-native-worklets@0.10.1_typescript@6.0.3",
-    "npm:expo-status-bar@~57.0.1": "57.0.1_expo@57.0.32_react@19.2.3_react-native@0.86.2_@babel+core@7.29.13_@expo+dom-webview@57.0.1_@expo+metro-runtime@57.0.18_@react-native+metro-config@0.88.1_@types+react@19.2.18_expo-linking@57.0.13_expo-router@57.0.30_react-dom@19.2.3_react-native-gesture-handler@3.5.0_react-native-reanimated@4.5.1_react-native-safe-area-context@5.7.0_react-native-screens@4.26.2_react-native-web@0.21.4_react-native-worklets@0.10.1_typescript@6.0.3",
-    "npm:expo-system-ui@~57.0.2": "57.0.4_expo@57.0.32_react-native@0.86.2_react-native-web@0.21.4_@babel+core@7.29.13_@expo+dom-webview@57.0.1_@expo+metro-runtime@57.0.18_@react-native+metro-config@0.88.1_@types+react@19.2.18_expo-linking@57.0.13_expo-router@57.0.30_react@19.2.3_react-dom@19.2.3_react-native-gesture-handler@3.5.0_react-native-reanimated@4.5.1_react-native-safe-area-context@5.7.0_react-native-screens@4.26.2_react-native-worklets@0.10.1_typescript@6.0.3",
-    "npm:expo-updates@~57.0.15": "57.0.27_expo@57.0.32_expo-dev-client@57.0.21_react@19.2.3_react-native@0.86.2_@babel+core@7.29.13_@expo+dom-webview@57.0.1_@expo+metro-runtime@57.0.18_@react-native+metro-config@0.88.1_@types+react@19.2.18_expo-linking@57.0.13_expo-router@57.0.30_react-dom@19.2.3_react-native-gesture-handler@3.5.0_react-native-reanimated@4.5.1_react-native-safe-area-context@5.7.0_react-native-screens@4.26.2_react-native-web@0.21.4_react-native-worklets@0.10.1_typescript@6.0.3",
-    "npm:expo-web-browser@~57.0.2": "57.0.3_expo@57.0.32_react-native@0.86.2_@babel+core@7.29.13_@expo+dom-webview@57.0.1_@expo+metro-runtime@57.0.18_@react-native+metro-config@0.88.1_@types+react@19.2.18_expo-linking@57.0.13_expo-router@57.0.30_react@19.2.3_react-dom@19.2.3_react-native-gesture-handler@3.5.0_react-native-reanimated@4.5.1_react-native-safe-area-context@5.7.0_react-native-screens@4.26.2_react-native-web@0.21.4_react-native-worklets@0.10.1_typescript@6.0.3",
-    "npm:expo@^57.0.14": "57.0.32_@expo+dom-webview@57.0.1_@expo+metro-runtime@57.0.18_react@19.2.3_react-dom@19.2.3_react-native@0.86.2_react-native-web@0.21.4_@babel+core@7.29.13_@react-native+metro-config@0.88.1_@types+react@19.2.18_expo-linking@57.0.13_expo-router@57.0.30_react-native-gesture-handler@3.5.0_react-native-reanimated@4.5.1_react-native-safe-area-context@5.7.0_react-native-screens@4.26.2_react-native-worklets@0.10.1_typescript@6.0.3",
+    "npm:expo-apple-authentication@~57.0.1": "57.0.2_expo@57.0.32__react@19.2.3__react-dom@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__react-native-web@0.21.4__@types+react@19.3.0_react@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_@types+react@19.3.0",
+    "npm:expo-build-properties@~57.0.12": "57.0.23_expo@57.0.32__react@19.2.3__react-dom@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__react-native-web@0.21.4__@types+react@19.3.0_@types+react@19.3.0_react@19.2.3",
+    "npm:expo-clipboard@~57.0.1": "57.0.2_expo@57.0.32__react@19.2.3__react-dom@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__react-native-web@0.21.4__@types+react@19.3.0_react@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_@types+react@19.3.0",
+    "npm:expo-constants@~57.0.12": "57.0.23_expo@57.0.32_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_@expo+dom-webview@57.0.1_@expo+metro-runtime@57.0.18_@types+react@19.3.0_react@19.2.3_react-dom@19.2.3_react-native-web@0.21.4",
+    "npm:expo-crypto@~57.0.1": "57.0.4_expo@57.0.32__react@19.2.3__react-dom@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__react-native-web@0.21.4__@types+react@19.3.0_@types+react@19.3.0_react@19.2.3",
+    "npm:expo-dev-client@~57.0.13": "57.0.21_expo@57.0.32__react@19.2.3__react-dom@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__react-native-web@0.21.4__@types+react@19.3.0_@types+react@19.3.0_react@19.2.3",
+    "npm:expo-font@~57.0.1": "57.0.4_expo@57.0.32_react@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_@types+react@19.3.0",
+    "npm:expo-haptics@~57.0.1": "57.0.3_expo@57.0.32__react@19.2.3__react-dom@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__react-native-web@0.21.4__@types+react@19.3.0_@types+react@19.3.0_react@19.2.3",
+    "npm:expo-image-manipulator@~57.0.11": "57.0.22_expo@57.0.32__react@19.2.3__react-dom@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__react-native-web@0.21.4__@types+react@19.3.0_@types+react@19.3.0_react@19.2.3",
+    "npm:expo-image-picker@~57.0.11": "57.0.21_expo@57.0.32__react@19.2.3__react-dom@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__react-native-web@0.21.4__@types+react@19.3.0_@types+react@19.3.0_react@19.2.3",
+    "npm:expo-insights@~57.0.11": "57.0.22_expo@57.0.32__react@19.2.3__react-dom@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__react-native-web@0.21.4__@types+react@19.3.0_@types+react@19.3.0_react@19.2.3",
+    "npm:expo-linking@~57.0.6": "57.0.13_react@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_@expo+dom-webview@57.0.1_@expo+metro-runtime@57.0.18_@types+react@19.3.0_react-dom@19.2.3_react-native-web@0.21.4",
+    "npm:expo-notifications@~57.0.12": "57.0.25_expo@57.0.32__react@19.2.3__react-dom@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__react-native-web@0.21.4__@types+react@19.3.0_react@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_@types+react@19.3.0",
+    "npm:expo-router@~57.0.14": "57.0.30_@expo+log-box@57.0.5_@expo+metro-runtime@57.0.18_expo@57.0.32_expo-constants@57.0.23_expo-linking@57.0.13_react@19.2.3_react-dom@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_react-native-reanimated@4.5.1__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__react-native-worklets@0.10.1___@babel+core@7.29.13___react@19.2.3___react-native@0.86.2____@types+react@19.3.0____react@19.2.3___@types+react@19.3.0__@types+react@19.3.0_react-native-safe-area-context@5.7.0__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@types+react@19.3.0_react-native-screens@4.26.2__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@types+react@19.3.0_react-native-web@0.21.4_@expo+dom-webview@57.0.1_@types+react@19.3.0",
+    "npm:expo-screen-orientation@~57.0.1": "57.0.3_expo@57.0.32__react@19.2.3__react-dom@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__react-native-web@0.21.4__@types+react@19.3.0_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_@types+react@19.3.0_react@19.2.3",
+    "npm:expo-splash-screen@~57.0.7": "57.0.11_expo@57.0.32__react@19.2.3__react-dom@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__react-native-web@0.21.4__@types+react@19.3.0_@types+react@19.3.0_react@19.2.3",
+    "npm:expo-status-bar@~57.0.1": "57.0.1_expo@57.0.32__react@19.2.3__react-dom@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__react-native-web@0.21.4__@types+react@19.3.0_react@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_@types+react@19.3.0",
+    "npm:expo-system-ui@~57.0.2": "57.0.4_expo@57.0.32__react@19.2.3__react-dom@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__react-native-web@0.21.4__@types+react@19.3.0_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_react-native-web@0.21.4_@types+react@19.3.0_react@19.2.3",
+    "npm:expo-updates@~57.0.15": "57.0.27_expo@57.0.32__react@19.2.3__react-dom@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__react-native-web@0.21.4__@types+react@19.3.0_expo-dev-client@57.0.21__expo@57.0.32___react@19.2.3___react-dom@19.2.3___react-native@0.86.2____@types+react@19.3.0____react@19.2.3___react-native-web@0.21.4___@types+react@19.3.0__@types+react@19.3.0__react@19.2.3_react@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_@types+react@19.3.0",
+    "npm:expo-web-browser@~57.0.2": "57.0.3_expo@57.0.32__react@19.2.3__react-dom@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__react-native-web@0.21.4__@types+react@19.3.0_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_@types+react@19.3.0_react@19.2.3",
+    "npm:expo@^57.0.14": "57.0.32_react@19.2.3_react-dom@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_react-native-web@0.21.4_@types+react@19.3.0",
     "npm:js-md5@~0.8.3": "0.8.3",
     "npm:prettier@^3.8.1": "3.9.10",
     "npm:react-dom@19.2.3": "19.2.3_react@19.2.3",
-    "npm:react-native-mmkv@^4.3.0": "4.3.2_react@19.2.3_react-native@0.86.2_react-native-nitro-modules@0.37.2_@babel+core@7.29.13_@react-native+metro-config@0.88.1_@types+react@19.2.18",
-    "npm:react-native-purchases@^9.15.2": "9.15.3_react@19.2.3_react-native@0.86.2_react-native-web@0.21.4_@babel+core@7.29.13_@react-native+metro-config@0.88.1_@types+react@19.2.18_react-dom@19.2.3",
-    "npm:react-native-reanimated@4.5.1": "4.5.1_react@19.2.3_react-native@0.86.2_react-native-worklets@0.10.1_@babel+core@7.29.13_@react-native+metro-config@0.88.1_@types+react@19.2.18",
-    "npm:react-native-safe-area-context@5.7": "5.7.0_react@19.2.3_react-native@0.86.2_@babel+core@7.29.13_@react-native+metro-config@0.88.1_@types+react@19.2.18",
-    "npm:react-native-screens@4.26": "4.26.2_react@19.2.3_react-native@0.86.2_@babel+core@7.29.13_@react-native+metro-config@0.88.1_@types+react@19.2.18",
-    "npm:react-native-url-polyfill@3": "3.0.0_react-native@0.86.2_@babel+core@7.29.13_@react-native+metro-config@0.88.1_@types+react@19.2.18_react@19.2.3",
+    "npm:react-native-mmkv@^4.3.0": "4.3.2_react@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_@types+react@19.3.0",
+    "npm:react-native-purchases@^9.15.2": "9.15.3_react@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_react-native-web@0.21.4_@types+react@19.3.0",
+    "npm:react-native-reanimated@4.5.1": "4.5.1_react@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_react-native-worklets@0.10.1__@babel+core@7.29.13__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@types+react@19.3.0_@types+react@19.3.0",
+    "npm:react-native-safe-area-context@5.7": "5.7.0_react@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_@types+react@19.3.0",
+    "npm:react-native-screens@4.26": "4.26.2_react@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_@types+react@19.3.0",
+    "npm:react-native-url-polyfill@3": "3.0.0_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_@types+react@19.3.0_react@19.2.3",
     "npm:react-native-web@0.21": "0.21.4_react@19.2.3_react-dom@19.2.3",
-    "npm:react-native-worklets@0.10.1": "0.10.1_@babel+core@7.29.13_@react-native+metro-config@0.88.1_react@19.2.3_react-native@0.86.2_@types+react@19.2.18",
-    "npm:react-native@0.86.2": "0.86.2_@types+react@19.2.18_react@19.2.3_@babel+core@7.29.13_@react-native+metro-config@0.88.1",
-    "npm:react-test-renderer@19.1.0": "19.1.0_react@19.2.3",
+    "npm:react-native-worklets@0.10.1": "0.10.1_@babel+core@7.29.13_react@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_@types+react@19.3.0",
+    "npm:react-native@0.86.2": "0.86.2_@types+react@19.3.0_react@19.2.3",
+    "npm:react-test-renderer@19.3.1": "19.3.1_react@19.2.3",
     "npm:react@19.2.3": "19.2.3",
     "npm:sharp@~0.34.5": "0.34.5",
     "npm:tailwindcss@^4.2.2": "4.3.3",
     "npm:typescript@~6.0.3": "6.0.3",
-    "npm:uniwind@^1.6.1": "1.13.2_metro@0.84.5_metro-cache@0.84.5_react@19.2.3_react-native@0.86.2_tailwindcss@4.3.3_@babel+core@7.29.13_@react-native+metro-config@0.88.1_@types+react@19.2.18"
+    "npm:uniwind@^1.6.1": "1.13.2_react@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_tailwindcss@4.3.3_@types+react@19.3.0"
   },
   "npm": {
     "@babel/code-frame@7.29.7": {
@@ -709,7 +709,7 @@
     "@expo-google-fonts/material-symbols@0.4.53": {
       "integrity": "sha512-SgCSm8rUYvwy+5ABvwlV/h7xbJkWAsenChSKlUwMLVyEw/QoUon055QixCOtGCjrSRWqFGDvR0ghVa5nA2OkIg=="
     },
-    "@expo/cli@57.0.33_expo@57.0.32_expo-router@57.0.30_react-native@0.86.2_@babel+core@7.29.13_@expo+dom-webview@57.0.1_@expo+metro-runtime@57.0.18_@react-native+metro-config@0.88.1_@types+react@19.2.18_expo-constants@57.0.23_expo-font@57.0.4_expo-linking@57.0.13_react@19.2.3_react-dom@19.2.3_react-native-gesture-handler@3.5.0_react-native-reanimated@4.5.1_react-native-safe-area-context@5.7.0_react-native-screens@4.26.2_react-native-web@0.21.4_react-native-worklets@0.10.1_typescript@6.0.3": {
+    "@expo/cli@57.0.33_expo@57.0.32__react@19.2.3__react-dom@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__react-native-web@0.21.4__@types+react@19.3.0_expo-router@57.0.30__@expo+log-box@57.0.5__@expo+metro-runtime@57.0.18__expo@57.0.32__expo-constants@57.0.23__expo-linking@57.0.13__react@19.2.3__react-dom@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__react-native-reanimated@4.5.1___react@19.2.3___react-native@0.86.2____@types+react@19.3.0____react@19.2.3___react-native-worklets@0.10.1____@babel+core@7.29.13____react@19.2.3____react-native@0.86.2_____@types+react@19.3.0_____react@19.2.3____@types+react@19.3.0___@types+react@19.3.0__react-native-safe-area-context@5.7.0___react@19.2.3___react-native@0.86.2____@types+react@19.3.0____react@19.2.3___@types+react@19.3.0__react-native-screens@4.26.2___react@19.2.3___react-native@0.86.2____@types+react@19.3.0____react@19.2.3___@types+react@19.3.0__react-native-web@0.21.4__@expo+dom-webview@57.0.1__@types+react@19.3.0_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_@expo+dom-webview@57.0.1__expo@57.0.32__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@babel+core@7.29.13__@expo+metro-runtime@57.0.18__@react-native+metro-config@0.88.1__@types+react@19.2.18__react-dom@19.2.3__react-native-web@0.21.4_@expo+metro-runtime@57.0.18__@expo+log-box@57.0.5__expo@57.0.32__react@19.2.3__react-dom@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@babel+core@7.29.13__@expo+dom-webview@57.0.1__@react-native+metro-config@0.88.1__@types+react@19.2.18__react-native-web@0.21.4_@types+react@19.3.0_react@19.2.3_react-dom@19.2.3_react-native-web@0.21.4": {
       "integrity": "sha512-MyTMZ3PsofTao5CEoUtXG9l9BfVnUxFT/3wSzzkeeR/dD4SVy7KVMAEzIwT1Dh/v72B5k4nBP5rbXgbDXioJ9w==",
       "dependencies": [
         "@expo/code-signing-certificates",
@@ -746,7 +746,7 @@
         "connect",
         "debug@4.4.3",
         "dnssd-advertise",
-        "expo",
+        "expo@57.0.32_react@19.2.3_react-dom@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_react-native-web@0.21.4_@types+react@19.3.0",
         "expo-router",
         "expo-server",
         "fetch-nodeshim",
@@ -761,7 +761,7 @@
         "pretty-format",
         "progress",
         "prompts",
-        "react-native",
+        "react-native@0.86.2_@types+react@19.3.0_react@19.2.3",
         "resolve-from@5.0.0",
         "sandbox-cli-detector",
         "semver@7.8.6",
@@ -776,7 +776,7 @@
       ],
       "optionalPeers": [
         "expo-router",
-        "react-native"
+        "react-native@0.86.2_@types+react@19.3.0_react@19.2.3"
       ],
       "bin": true
     },
@@ -826,24 +826,34 @@
         "debug@3.2.7"
       ]
     },
-    "@expo/devtools@57.0.1_react@19.2.3_react-native@0.86.2_@babel+core@7.29.13_@react-native+metro-config@0.88.1_@types+react@19.2.18": {
+    "@expo/devtools@57.0.1_react@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_@babel+core@7.29.13_@react-native+metro-config@0.88.1_@types+react@19.2.18": {
+      "integrity": "sha512-GyUf+wFNkbttaX0jR7MZa9bm77U0IrLg6d2AjpxdyoXw/w4abHoXG0oFufwLMgP9zLTd5+Ct4X/ffNUTnlzZgg==",
+      "dependencies": [
+        "chalk@4.1.2",
+        "react-native@0.86.2_@types+react@19.2.18_react@19.2.3_@babel+core@7.29.13_@react-native+metro-config@0.88.1"
+      ],
+      "optionalPeers": [
+        "react-native@0.86.2_@types+react@19.2.18_react@19.2.3_@babel+core@7.29.13_@react-native+metro-config@0.88.1"
+      ]
+    },
+    "@expo/devtools@57.0.1_react@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_@types+react@19.3.0": {
       "integrity": "sha512-GyUf+wFNkbttaX0jR7MZa9bm77U0IrLg6d2AjpxdyoXw/w4abHoXG0oFufwLMgP9zLTd5+Ct4X/ffNUTnlzZgg==",
       "dependencies": [
         "chalk@4.1.2",
         "react",
-        "react-native"
+        "react-native@0.86.2_@types+react@19.3.0_react@19.2.3"
       ],
       "optionalPeers": [
         "react",
-        "react-native"
+        "react-native@0.86.2_@types+react@19.3.0_react@19.2.3"
       ]
     },
-    "@expo/dom-webview@57.0.1_expo@57.0.32_react@19.2.3_react-native@0.86.2_@babel+core@7.29.13_@expo+metro-runtime@57.0.18_@react-native+metro-config@0.88.1_@types+react@19.2.18_react-dom@19.2.3_react-native-web@0.21.4": {
+    "@expo/dom-webview@57.0.1_expo@57.0.32_react@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_@expo+metro-runtime@57.0.18_@types+react@19.3.0_react-dom@19.2.3_react-native-web@0.21.4": {
       "integrity": "sha512-lAKsME4SAq+8sf56oN0DX5TBYyruupoRxbWbD2xf9RnKY8y6x8eb9LCE5pxSN0qyWdqnp+0wmyWzDkKboThKAw==",
       "dependencies": [
-        "expo",
+        "expo@57.0.32_react@19.2.3_react-dom@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_react-native-web@0.21.4_@types+react@19.3.0",
         "react",
-        "react-native"
+        "react-native@0.86.2_@types+react@19.3.0_react@19.2.3"
       ]
     },
     "@expo/env@2.4.4": {
@@ -912,18 +922,18 @@
         "chalk@4.1.2"
       ]
     },
-    "@expo/log-box@57.0.5_@expo+dom-webview@57.0.1_expo@57.0.32_react@19.2.3_react-native@0.86.2_@babel+core@7.29.13_@expo+metro-runtime@57.0.18_@react-native+metro-config@0.88.1_@types+react@19.2.18_react-dom@19.2.3_react-native-web@0.21.4": {
+    "@expo/log-box@57.0.5_@expo+dom-webview@57.0.1_expo@57.0.32_react@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_@expo+metro-runtime@57.0.18_@types+react@19.3.0_react-dom@19.2.3_react-native-web@0.21.4": {
       "integrity": "sha512-tXg/remL9gGMr7ZWVbvXBjNfif3rb2l2mNpU4j5XmDPKa9HRbontRGGOy32aErSKq2KLrDyKZkc2iKVVSWo0ow==",
       "dependencies": [
         "@expo/dom-webview",
         "anser",
-        "expo",
+        "expo@57.0.32_react@19.2.3_react-dom@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_react-native-web@0.21.4_@types+react@19.3.0",
         "react",
-        "react-native",
+        "react-native@0.86.2_@types+react@19.3.0_react@19.2.3",
         "stacktrace-parser"
       ]
     },
-    "@expo/metro-config@57.0.14_expo@57.0.32_@expo+dom-webview@57.0.1_@expo+metro-runtime@57.0.18_react@19.2.3_react-dom@19.2.3_react-native@0.86.2_react-native-web@0.21.4_typescript@6.0.3": {
+    "@expo/metro-config@57.0.14_expo@57.0.32__@expo+dom-webview@57.0.1__@expo+metro-runtime@57.0.18__react@19.2.3__react-dom@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__react-native-web@0.21.4__@babel+core@7.29.13__@react-native+metro-config@0.88.1__@types+react@19.2.18__expo-linking@57.0.13__expo-router@57.0.30__react-native-gesture-handler@3.5.0___react@19.2.3___react-native@0.86.2____@types+react@19.3.0____react@19.2.3___@babel+core@7.29.13___@react-native+metro-config@0.88.1___@types+react@19.2.18__react-native-reanimated@4.5.1___react@19.2.3___react-native@0.86.2____@types+react@19.3.0____react@19.2.3___react-native-worklets@0.10.1____@babel+core@7.29.13____@react-native+metro-config@0.88.1____react@19.2.3____react-native@0.86.2_____@types+react@19.3.0_____react@19.2.3____@types+react@19.2.18___@babel+core@7.29.13___@react-native+metro-config@0.88.1___@types+react@19.2.18__react-native-safe-area-context@5.7.0___react@19.2.3___react-native@0.86.2____@types+react@19.3.0____react@19.2.3___@babel+core@7.29.13___@react-native+metro-config@0.88.1___@types+react@19.2.18__react-native-screens@4.26.2___react@19.2.3___react-native@0.86.2____@types+react@19.3.0____react@19.2.3___@babel+core@7.29.13___@react-native+metro-config@0.88.1___@types+react@19.2.18__react-native-worklets@0.10.1___@babel+core@7.29.13___@react-native+metro-config@0.88.1___react@19.2.3___react-native@0.86.2____@types+react@19.3.0____react@19.2.3___@types+react@19.2.18__typescript@6.0.3_@expo+dom-webview@57.0.1__expo@57.0.32__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@babel+core@7.29.13__@expo+metro-runtime@57.0.18__@react-native+metro-config@0.88.1__@types+react@19.2.18__react-dom@19.2.3__react-native-web@0.21.4_@expo+metro-runtime@57.0.18__@expo+log-box@57.0.5__expo@57.0.32__react@19.2.3__react-dom@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@babel+core@7.29.13__@expo+dom-webview@57.0.1__@react-native+metro-config@0.88.1__@types+react@19.2.18__react-native-web@0.21.4_react@19.2.3_react-dom@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_react-native-web@0.21.4_typescript@6.0.3": {
       "integrity": "sha512-kKC1A1W0Xwmdp7VwWxTvKchyPQM5+IZoYjy9iFa0ftq920MYSsPnCONGolOlrIKImfgJH2UIMXvAFmC6HnT+aw==",
       "dependencies": [
         "@babel/code-frame",
@@ -941,7 +951,7 @@
         "browserslist",
         "chalk@4.1.2",
         "debug@4.4.3",
-        "expo",
+        "expo@57.0.32_@expo+dom-webview@57.0.1_@expo+metro-runtime@57.0.18_react@19.2.3_react-dom@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_react-native-web@0.21.4_@babel+core@7.29.13_@react-native+metro-config@0.88.1_@types+react@19.2.18_expo-linking@57.0.13_expo-router@57.0.30_react-native-gesture-handler@3.5.0__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@babel+core@7.29.13__@react-native+metro-config@0.88.1__@types+react@19.2.18_react-native-reanimated@4.5.1__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__react-native-worklets@0.10.1___@babel+core@7.29.13___@react-native+metro-config@0.88.1___react@19.2.3___react-native@0.86.2____@types+react@19.3.0____react@19.2.3___@types+react@19.2.18__@babel+core@7.29.13__@react-native+metro-config@0.88.1__@types+react@19.2.18_react-native-safe-area-context@5.7.0__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@babel+core@7.29.13__@react-native+metro-config@0.88.1__@types+react@19.2.18_react-native-screens@4.26.2__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@babel+core@7.29.13__@react-native+metro-config@0.88.1__@types+react@19.2.18_react-native-worklets@0.10.1__@babel+core@7.29.13__@react-native+metro-config@0.88.1__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@types+react@19.2.18_typescript@6.0.3",
         "getenv",
         "glob@14.0.4",
         "hermes-parser@0.36.1",
@@ -952,7 +962,7 @@
         "resolve-from@5.0.0"
       ],
       "optionalPeers": [
-        "expo"
+        "expo@57.0.32_@expo+dom-webview@57.0.1_@expo+metro-runtime@57.0.18_react@19.2.3_react-dom@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_react-native-web@0.21.4_@babel+core@7.29.13_@react-native+metro-config@0.88.1_@types+react@19.2.18_expo-linking@57.0.13_expo-router@57.0.30_react-native-gesture-handler@3.5.0__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@babel+core@7.29.13__@react-native+metro-config@0.88.1__@types+react@19.2.18_react-native-reanimated@4.5.1__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__react-native-worklets@0.10.1___@babel+core@7.29.13___@react-native+metro-config@0.88.1___react@19.2.3___react-native@0.86.2____@types+react@19.3.0____react@19.2.3___@types+react@19.2.18__@babel+core@7.29.13__@react-native+metro-config@0.88.1__@types+react@19.2.18_react-native-safe-area-context@5.7.0__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@babel+core@7.29.13__@react-native+metro-config@0.88.1__@types+react@19.2.18_react-native-screens@4.26.2__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@babel+core@7.29.13__@react-native+metro-config@0.88.1__@types+react@19.2.18_react-native-worklets@0.10.1__@babel+core@7.29.13__@react-native+metro-config@0.88.1__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@types+react@19.2.18_typescript@6.0.3"
       ]
     },
     "@expo/metro-file-map@57.0.4": {
@@ -965,16 +975,16 @@
         "walker"
       ]
     },
-    "@expo/metro-runtime@57.0.18_@expo+log-box@57.0.5_expo@57.0.32_react@19.2.3_react-dom@19.2.3_react-native@0.86.2_@babel+core@7.29.13_@expo+dom-webview@57.0.1_@react-native+metro-config@0.88.1_@types+react@19.2.18_react-native-web@0.21.4": {
+    "@expo/metro-runtime@57.0.18_@expo+log-box@57.0.5_expo@57.0.32_react@19.2.3_react-dom@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_@expo+dom-webview@57.0.1_@types+react@19.3.0_react-native-web@0.21.4": {
       "integrity": "sha512-cboe2TTHAKHRw/d6/BJi7KPqic1D+P+JbgkqzwMOd+MTWJzqN2ASTDOJQUaVShfgW7cwaidq/AswdIlMA0IYMQ==",
       "dependencies": [
         "@expo/log-box",
         "anser",
-        "expo",
+        "expo@57.0.32_react@19.2.3_react-dom@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_react-native-web@0.21.4_@types+react@19.3.0",
         "pretty-format",
         "react",
         "react-dom",
-        "react-native",
+        "react-native@0.86.2_@types+react@19.3.0_react@19.2.3",
         "stacktrace-parser",
         "whatwg-fetch"
       ],
@@ -1052,14 +1062,14 @@
         "typescript"
       ]
     },
-    "@expo/router-server@57.0.15_@expo+metro-runtime@57.0.18_expo@57.0.32_expo-constants@57.0.23_expo-font@57.0.4_expo-router@57.0.30_expo-server@57.0.3_react@19.2.3_react-dom@19.2.3_@babel+core@7.29.13_@expo+dom-webview@57.0.1_@expo+log-box@57.0.5_@react-native+metro-config@0.88.1_@types+react@19.2.18_expo-linking@57.0.13_react-native@0.86.2_react-native-gesture-handler@3.5.0_react-native-reanimated@4.5.1_react-native-safe-area-context@5.7.0_react-native-screens@4.26.2_react-native-web@0.21.4_react-native-worklets@0.10.1": {
+    "@expo/router-server@57.0.15_@expo+metro-runtime@57.0.18__@expo+log-box@57.0.5__expo@57.0.32__react@19.2.3__react-dom@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@expo+dom-webview@57.0.1__@types+react@19.3.0__react-native-web@0.21.4_expo@57.0.32__@expo+dom-webview@57.0.1__@expo+metro-runtime@57.0.18__react@19.2.3__react-dom@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__react-native-web@0.21.4__@babel+core@7.29.13__@react-native+metro-config@0.88.1__@types+react@19.2.18__expo-linking@57.0.13__expo-router@57.0.30__react-native-gesture-handler@3.5.0___react@19.2.3___react-native@0.86.2____@types+react@19.3.0____react@19.2.3___@babel+core@7.29.13___@react-native+metro-config@0.88.1___@types+react@19.2.18__react-native-reanimated@4.5.1___react@19.2.3___react-native@0.86.2____@types+react@19.3.0____react@19.2.3___react-native-worklets@0.10.1____@babel+core@7.29.13____@react-native+metro-config@0.88.1____react@19.2.3____react-native@0.86.2_____@types+react@19.3.0_____react@19.2.3____@types+react@19.2.18___@babel+core@7.29.13___@react-native+metro-config@0.88.1___@types+react@19.2.18__react-native-safe-area-context@5.7.0___react@19.2.3___react-native@0.86.2____@types+react@19.3.0____react@19.2.3___@babel+core@7.29.13___@react-native+metro-config@0.88.1___@types+react@19.2.18__react-native-screens@4.26.2___react@19.2.3___react-native@0.86.2____@types+react@19.3.0____react@19.2.3___@babel+core@7.29.13___@react-native+metro-config@0.88.1___@types+react@19.2.18__react-native-worklets@0.10.1___@babel+core@7.29.13___@react-native+metro-config@0.88.1___react@19.2.3___react-native@0.86.2____@types+react@19.3.0____react@19.2.3___@types+react@19.2.18__typescript@6.0.3_expo-constants@57.0.23__expo@57.0.32__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@expo+dom-webview@57.0.1__@expo+metro-runtime@57.0.18__@types+react@19.3.0__react@19.2.3__react-dom@19.2.3__react-native-web@0.21.4_expo-font@57.0.4__expo@57.0.32__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@babel+core@7.29.13__@expo+dom-webview@57.0.1__@expo+metro-runtime@57.0.18__@react-native+metro-config@0.88.1__@types+react@19.2.18__expo-linking@57.0.13__expo-router@57.0.30__react-dom@19.2.3__react-native-gesture-handler@3.5.0___react@19.2.3___react-native@0.86.2____@types+react@19.3.0____react@19.2.3___@babel+core@7.29.13___@react-native+metro-config@0.88.1___@types+react@19.2.18__react-native-reanimated@4.5.1___react@19.2.3___react-native@0.86.2____@types+react@19.3.0____react@19.2.3___react-native-worklets@0.10.1____@babel+core@7.29.13____@react-native+metro-config@0.88.1____react@19.2.3____react-native@0.86.2_____@types+react@19.3.0_____react@19.2.3____@types+react@19.2.18___@babel+core@7.29.13___@react-native+metro-config@0.88.1___@types+react@19.2.18__react-native-safe-area-context@5.7.0___react@19.2.3___react-native@0.86.2____@types+react@19.3.0____react@19.2.3___@babel+core@7.29.13___@react-native+metro-config@0.88.1___@types+react@19.2.18__react-native-screens@4.26.2___react@19.2.3___react-native@0.86.2____@types+react@19.3.0____react@19.2.3___@babel+core@7.29.13___@react-native+metro-config@0.88.1___@types+react@19.2.18__react-native-web@0.21.4__react-native-worklets@0.10.1___@babel+core@7.29.13___@react-native+metro-config@0.88.1___react@19.2.3___react-native@0.86.2____@types+react@19.3.0____react@19.2.3___@types+react@19.2.18__typescript@6.0.3_expo-router@57.0.30__@expo+log-box@57.0.5__@expo+metro-runtime@57.0.18__expo@57.0.32__expo-constants@57.0.23__expo-linking@57.0.13__react@19.2.3__react-dom@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__react-native-reanimated@4.5.1___react@19.2.3___react-native@0.86.2____@types+react@19.3.0____react@19.2.3___react-native-worklets@0.10.1____@babel+core@7.29.13____react@19.2.3____react-native@0.86.2_____@types+react@19.3.0_____react@19.2.3____@types+react@19.3.0___@types+react@19.3.0__react-native-safe-area-context@5.7.0___react@19.2.3___react-native@0.86.2____@types+react@19.3.0____react@19.2.3___@types+react@19.3.0__react-native-screens@4.26.2___react@19.2.3___react-native@0.86.2____@types+react@19.3.0____react@19.2.3___@types+react@19.3.0__react-native-web@0.21.4__@expo+dom-webview@57.0.1__@types+react@19.3.0_expo-server@57.0.3_react@19.2.3_react-dom@19.2.3_@expo+dom-webview@57.0.1__expo@57.0.32__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@babel+core@7.29.13__@expo+metro-runtime@57.0.18__@react-native+metro-config@0.88.1__@types+react@19.2.18__react-dom@19.2.3__react-native-web@0.21.4_@types+react@19.3.0_react-native@0.86.2__@types+react@19.2.18__react@19.2.3__@babel+core@7.29.13__@react-native+metro-config@0.88.1_react-native-web@0.21.4": {
       "integrity": "sha512-DPe3FzKU7Kb6jLVprA2BbJADVmVRz1sRG0ASyqeaBOClaWpaHJbkq6zcXXaUIfttt+BNUKBGQLRssPSEF+ZDjg==",
       "dependencies": [
         "@expo/metro-runtime",
         "debug@4.4.3",
-        "expo",
+        "expo@57.0.32_@expo+dom-webview@57.0.1_@expo+metro-runtime@57.0.18_react@19.2.3_react-dom@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_react-native-web@0.21.4_@babel+core@7.29.13_@react-native+metro-config@0.88.1_@types+react@19.2.18_expo-linking@57.0.13_expo-router@57.0.30_react-native-gesture-handler@3.5.0__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@babel+core@7.29.13__@react-native+metro-config@0.88.1__@types+react@19.2.18_react-native-reanimated@4.5.1__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__react-native-worklets@0.10.1___@babel+core@7.29.13___@react-native+metro-config@0.88.1___react@19.2.3___react-native@0.86.2____@types+react@19.3.0____react@19.2.3___@types+react@19.2.18__@babel+core@7.29.13__@react-native+metro-config@0.88.1__@types+react@19.2.18_react-native-safe-area-context@5.7.0__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@babel+core@7.29.13__@react-native+metro-config@0.88.1__@types+react@19.2.18_react-native-screens@4.26.2__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@babel+core@7.29.13__@react-native+metro-config@0.88.1__@types+react@19.2.18_react-native-worklets@0.10.1__@babel+core@7.29.13__@react-native+metro-config@0.88.1__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@types+react@19.2.18_typescript@6.0.3",
         "expo-constants",
-        "expo-font",
+        "expo-font@57.0.4_expo@57.0.32_react@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_@babel+core@7.29.13_@expo+dom-webview@57.0.1_@expo+metro-runtime@57.0.18_@react-native+metro-config@0.88.1_@types+react@19.2.18_expo-linking@57.0.13_expo-router@57.0.30_react-dom@19.2.3_react-native-gesture-handler@3.5.0__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@babel+core@7.29.13__@react-native+metro-config@0.88.1__@types+react@19.2.18_react-native-reanimated@4.5.1__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__react-native-worklets@0.10.1___@babel+core@7.29.13___@react-native+metro-config@0.88.1___react@19.2.3___react-native@0.86.2____@types+react@19.3.0____react@19.2.3___@types+react@19.2.18__@babel+core@7.29.13__@react-native+metro-config@0.88.1__@types+react@19.2.18_react-native-safe-area-context@5.7.0__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@babel+core@7.29.13__@react-native+metro-config@0.88.1__@types+react@19.2.18_react-native-screens@4.26.2__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@babel+core@7.29.13__@react-native+metro-config@0.88.1__@types+react@19.2.18_react-native-web@0.21.4_react-native-worklets@0.10.1__@babel+core@7.29.13__@react-native+metro-config@0.88.1__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@types+react@19.2.18_typescript@6.0.3",
         "expo-router",
         "expo-server",
         "react",
@@ -1086,30 +1096,30 @@
     "@expo/sudo-prompt@9.3.2": {
       "integrity": "sha512-HHQigo3rQWKMDzYDLkubN5WQOYXJJE2eNqIQC2axC2iO3mHdwnIR7FgZVvHWtBwAdzBgAP0ECp8KqS8TiMKvgw=="
     },
-    "@expo/ui@57.0.26_@babel+core@7.29.13_expo@57.0.32_react@19.2.3_react-dom@19.2.3_react-native@0.86.2_react-native-worklets@0.10.1_@expo+dom-webview@57.0.1_@expo+metro-runtime@57.0.18_@react-native+metro-config@0.88.1_@types+react@19.2.18_react-native-web@0.21.4": {
+    "@expo/ui@57.0.26_expo@57.0.32__@expo+dom-webview@57.0.1__@expo+metro-runtime@57.0.18__react@19.2.3__react-dom@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__react-native-web@0.21.4__@babel+core@7.29.13__@react-native+metro-config@0.88.1__@types+react@19.2.18__expo-linking@57.0.13__expo-router@57.0.30__react-native-gesture-handler@3.5.0___react@19.2.3___react-native@0.86.2____@types+react@19.3.0____react@19.2.3___@babel+core@7.29.13___@react-native+metro-config@0.88.1___@types+react@19.2.18__react-native-reanimated@4.5.1___react@19.2.3___react-native@0.86.2____@types+react@19.3.0____react@19.2.3___react-native-worklets@0.10.1____@babel+core@7.29.13____@react-native+metro-config@0.88.1____react@19.2.3____react-native@0.86.2_____@types+react@19.3.0_____react@19.2.3____@types+react@19.2.18___@babel+core@7.29.13___@react-native+metro-config@0.88.1___@types+react@19.2.18__react-native-safe-area-context@5.7.0___react@19.2.3___react-native@0.86.2____@types+react@19.3.0____react@19.2.3___@babel+core@7.29.13___@react-native+metro-config@0.88.1___@types+react@19.2.18__react-native-screens@4.26.2___react@19.2.3___react-native@0.86.2____@types+react@19.3.0____react@19.2.3___@babel+core@7.29.13___@react-native+metro-config@0.88.1___@types+react@19.2.18__react-native-worklets@0.10.1___@babel+core@7.29.13___@react-native+metro-config@0.88.1___react@19.2.3___react-native@0.86.2____@types+react@19.3.0____react@19.2.3___@types+react@19.2.18__typescript@6.0.3_react@19.2.3_react-dom@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_react-native-worklets@0.10.1__@babel+core@7.29.13__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@types+react@19.3.0_@expo+dom-webview@57.0.1__expo@57.0.32__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@babel+core@7.29.13__@expo+metro-runtime@57.0.18__@react-native+metro-config@0.88.1__@types+react@19.2.18__react-dom@19.2.3__react-native-web@0.21.4_@expo+metro-runtime@57.0.18__@expo+log-box@57.0.5__expo@57.0.32__react@19.2.3__react-dom@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@babel+core@7.29.13__@expo+dom-webview@57.0.1__@react-native+metro-config@0.88.1__@types+react@19.2.18__react-native-web@0.21.4_@types+react@19.3.0_react-native-web@0.21.4": {
       "integrity": "sha512-sEvRjKK08nCq4sXo5PjDckA9OBpxFokCXs5MakWlI1wT1gQNvyliWn/Dwic8XC6YPTN/TbnEp2X/SEduD9+I3Q==",
       "dependencies": [
         "@babel/core",
-        "expo",
+        "expo@57.0.32_@expo+dom-webview@57.0.1_@expo+metro-runtime@57.0.18_react@19.2.3_react-dom@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_react-native-web@0.21.4_@babel+core@7.29.13_@react-native+metro-config@0.88.1_@types+react@19.2.18_expo-linking@57.0.13_expo-router@57.0.30_react-native-gesture-handler@3.5.0__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@babel+core@7.29.13__@react-native+metro-config@0.88.1__@types+react@19.2.18_react-native-reanimated@4.5.1__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__react-native-worklets@0.10.1___@babel+core@7.29.13___@react-native+metro-config@0.88.1___react@19.2.3___react-native@0.86.2____@types+react@19.3.0____react@19.2.3___@types+react@19.2.18__@babel+core@7.29.13__@react-native+metro-config@0.88.1__@types+react@19.2.18_react-native-safe-area-context@5.7.0__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@babel+core@7.29.13__@react-native+metro-config@0.88.1__@types+react@19.2.18_react-native-screens@4.26.2__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@babel+core@7.29.13__@react-native+metro-config@0.88.1__@types+react@19.2.18_react-native-worklets@0.10.1__@babel+core@7.29.13__@react-native+metro-config@0.88.1__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@types+react@19.2.18_typescript@6.0.3",
         "react",
         "react-dom",
-        "react-native",
-        "react-native-worklets",
+        "react-native@0.86.2_@types+react@19.3.0_react@19.2.3",
+        "react-native-worklets@0.10.1_@babel+core@7.29.13_react@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_@types+react@19.3.0",
         "sf-symbols-typescript",
         "vaul"
       ],
       "optionalPeers": [
         "@babel/core",
         "react-dom",
-        "react-native-worklets"
+        "react-native-worklets@0.10.1_@babel+core@7.29.13_react@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_@types+react@19.3.0"
       ]
     },
-    "@expo/vector-icons@15.1.1_expo-font@57.0.4_react@19.2.3_react-native@0.86.2_@babel+core@7.29.13_@expo+dom-webview@57.0.1_@expo+metro-runtime@57.0.18_@react-native+metro-config@0.88.1_@types+react@19.2.18_expo@57.0.32_expo-linking@57.0.13_expo-router@57.0.30_react-dom@19.2.3_react-native-gesture-handler@3.5.0_react-native-reanimated@4.5.1_react-native-safe-area-context@5.7.0_react-native-screens@4.26.2_react-native-web@0.21.4_react-native-worklets@0.10.1_typescript@6.0.3": {
+    "@expo/vector-icons@15.1.1_expo-font@57.0.4__expo@57.0.32__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@types+react@19.3.0_react@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_@types+react@19.3.0": {
       "integrity": "sha512-Iu2VkcoI5vygbtYngm7jb4ifxElNVXQYdDrYkT7UCEIiKLeWnQY0wf2ZhHZ+Wro6Sc5TaumpKUOqDRpLi5rkvw==",
       "dependencies": [
-        "expo-font",
+        "expo-font@57.0.4_expo@57.0.32_react@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_@types+react@19.3.0",
         "react",
-        "react-native"
+        "react-native@0.86.2_@types+react@19.3.0_react@19.2.3"
       ]
     },
     "@expo/ws-tunnel@2.0.1_ws@8.22.1": {
@@ -1362,11 +1372,11 @@
         "@jridgewell/sourcemap-codec"
       ]
     },
-    "@legendapp/list@2.0.19_react@19.2.3_react-native@0.86.2_@babel+core@7.29.13_@react-native+metro-config@0.88.1_@types+react@19.2.18": {
+    "@legendapp/list@2.0.19_react@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_@types+react@19.3.0": {
       "integrity": "sha512-zDWg8yg0smKxxk+M7gwAbZAnf5uczohPA+IjqLSkImz7+e9ytxeT0Mq35RBO9RTKODOXfV/aIgm1uqUHLBEdmg==",
       "dependencies": [
         "react",
-        "react-native",
+        "react-native@0.86.2_@types+react@19.3.0_react@19.2.3",
         "use-sync-external-store"
       ]
     },
@@ -1379,7 +1389,7 @@
     "@radix-ui/primitive@1.2.0": {
       "integrity": "sha512-KABY+VMIRPJL+Vyzv/335FEhXXD/xDv8BMb1kl48/aXJZMH0LtHCTx5ga5RnxaEP3nZHtmTLf1P9vanmFX46bw=="
     },
-    "@radix-ui/react-collection@1.2.0_@types+react@19.2.18_react@19.2.3_react-dom@19.2.3": {
+    "@radix-ui/react-collection@1.2.0_@types+react@19.3.0_react@19.2.3_react-dom@19.2.3": {
       "integrity": "sha512-+yiQzqcc7Sy7/5s0jrMCjpPRFB3538VNrXPWdTLZhE/SCfgEws4aI6lHWN/vvcnyhHndROWBzqmqB4QBrITZ9Q==",
       "dependencies": [
         "@radix-ui/react-compose-refs",
@@ -1395,7 +1405,7 @@
         "@types/react"
       ]
     },
-    "@radix-ui/react-compose-refs@1.1.5_@types+react@19.2.18_react@19.2.3": {
+    "@radix-ui/react-compose-refs@1.1.5_@types+react@19.3.0_react@19.2.3": {
       "integrity": "sha512-+48PbAAbq3didjJxa+OaWY2ZwgAKsNiRGyeHKszblZMQ+kcpd9pAaT11cMkGEie0vsOi3QdeTE6d5Fe3Gn61kA==",
       "dependencies": [
         "@types/react",
@@ -1405,7 +1415,7 @@
         "@types/react"
       ]
     },
-    "@radix-ui/react-context@1.3.0_@types+react@19.2.18_react@19.2.3": {
+    "@radix-ui/react-context@1.3.0_@types+react@19.3.0_react@19.2.3": {
       "integrity": "sha512-v5AYEocMISkbJ+1fTXzZpiFv7NRr3D2WiYbLIKf+FkmJ8VkP6d503eV2n34MFussHXY1pcoq3yfJiQH77dc4Mg==",
       "dependencies": [
         "@types/react",
@@ -1415,7 +1425,7 @@
         "@types/react"
       ]
     },
-    "@radix-ui/react-dialog@1.3.1_@types+react@19.2.18_react@19.2.3_react-dom@19.2.3": {
+    "@radix-ui/react-dialog@1.3.1_@types+react@19.3.0_react@19.2.3_react-dom@19.2.3": {
       "integrity": "sha512-+0E4qvVTwjAWra9sEhJ+9BTsvHE00zkUuNw1VGh7S+Gc13dfYk+S1PVQdchWDj+XYHhAai7Z7IpzXVDCGsDplg==",
       "dependencies": [
         "@radix-ui/primitive",
@@ -1441,7 +1451,7 @@
         "@types/react"
       ]
     },
-    "@radix-ui/react-direction@1.2.0_@types+react@19.2.18_react@19.2.3": {
+    "@radix-ui/react-direction@1.2.0_@types+react@19.3.0_react@19.2.3": {
       "integrity": "sha512-FtRA52a/r+LKStFT+neLUm+8vSe7wbzkbQGGeU8ixFiwC8NU14Evoq9ATECqL3eGbcUzJR4fyfA4KkK/q6dfqg==",
       "dependencies": [
         "@types/react",
@@ -1451,7 +1461,7 @@
         "@types/react"
       ]
     },
-    "@radix-ui/react-dismissable-layer@1.2.1_@types+react@19.2.18_react@19.2.3_react-dom@19.2.3": {
+    "@radix-ui/react-dismissable-layer@1.2.1_@types+react@19.3.0_react@19.2.3_react-dom@19.2.3": {
       "integrity": "sha512-KIfDcAsx+oVylFZ4xryVKusJUrLLhTQmfnJW4kwk4Km5myvhHCrj04hnWWUC166+xD4DHdH8tQGylwYX1h6+Pg==",
       "dependencies": [
         "@radix-ui/primitive",
@@ -1467,7 +1477,7 @@
         "@types/react"
       ]
     },
-    "@radix-ui/react-focus-guards@1.2.0_@types+react@19.2.18_react@19.2.3": {
+    "@radix-ui/react-focus-guards@1.2.0_@types+react@19.3.0_react@19.2.3": {
       "integrity": "sha512-MPm5R0iRGUDrDnPNxmLBkv+X7pN4XKzt+MbWJEuJQsH3NFH4omrbpXpucyYCCKTSt+na/ZxGhEWQrWTZ0285cA==",
       "dependencies": [
         "@types/react",
@@ -1477,7 +1487,7 @@
         "@types/react"
       ]
     },
-    "@radix-ui/react-focus-scope@1.3.1_@types+react@19.2.18_react@19.2.3_react-dom@19.2.3": {
+    "@radix-ui/react-focus-scope@1.3.1_@types+react@19.3.0_react@19.2.3_react-dom@19.2.3": {
       "integrity": "sha512-ugeMhbXt4y5S2T1GnIqbWDKEN962PDwnX1fN0eKOOgf5f63Dh2mn8F1FUySlgW0iF6GiVsRF32DzuDIWTUyQJg==",
       "dependencies": [
         "@radix-ui/react-compose-refs",
@@ -1491,7 +1501,7 @@
         "@types/react"
       ]
     },
-    "@radix-ui/react-id@1.1.4_@types+react@19.2.18_react@19.2.3": {
+    "@radix-ui/react-id@1.1.4_@types+react@19.3.0_react@19.2.3": {
       "integrity": "sha512-TMQp2llA+RYn7JcjnrMnz7wN4pcVttPZnRZo52PLQsoLVKzNlVwUeHmfePgTgRluXFvlD3GD5g5MOVVTJCO0qA==",
       "dependencies": [
         "@radix-ui/react-use-layout-effect",
@@ -1502,7 +1512,7 @@
         "@types/react"
       ]
     },
-    "@radix-ui/react-portal@1.2.0_@types+react@19.2.18_react@19.2.3_react-dom@19.2.3": {
+    "@radix-ui/react-portal@1.2.0_@types+react@19.3.0_react@19.2.3_react-dom@19.2.3": {
       "integrity": "sha512-StX7xXnaRU41VvFtMm9zlhVGz8XF6GmWWTXftkQaY+tqVkbs/R9UmAp5mLzHHapk5hM9RMZQvO/3usyIP/g42g==",
       "dependencies": [
         "@radix-ui/react-primitive",
@@ -1515,7 +1525,7 @@
         "@types/react"
       ]
     },
-    "@radix-ui/react-presence@1.1.11_@types+react@19.2.18_react@19.2.3_react-dom@19.2.3": {
+    "@radix-ui/react-presence@1.1.11_@types+react@19.3.0_react@19.2.3_react-dom@19.2.3": {
       "integrity": "sha512-Z7/atlkab36Z8hm+V8zYc79r0W+tiOB1o0tun1By94JyadkekLQmtEAnBSP9XKXBNQsStoStS4+gX10JpS5akA==",
       "dependencies": [
         "@radix-ui/react-use-layout-effect",
@@ -1527,7 +1537,7 @@
         "@types/react"
       ]
     },
-    "@radix-ui/react-primitive@2.2.0_@types+react@19.2.18_react@19.2.3_react-dom@19.2.3": {
+    "@radix-ui/react-primitive@2.2.0_@types+react@19.3.0_react@19.2.3_react-dom@19.2.3": {
       "integrity": "sha512-HCTSPMNqv55Qk0IX4geJbpyXazmqulcimwuyjxTkKi29v+QZbG2Zho9BnbBq4YS2PF+KlNb2CXoLz66uUmblkg==",
       "dependencies": [
         "@radix-ui/react-slot",
@@ -1539,7 +1549,7 @@
         "@types/react"
       ]
     },
-    "@radix-ui/react-roving-focus@1.2.1_@types+react@19.2.18_react@19.2.3_react-dom@19.2.3": {
+    "@radix-ui/react-roving-focus@1.2.1_@types+react@19.3.0_react@19.2.3_react-dom@19.2.3": {
       "integrity": "sha512-UwraORzVUeEPMclhO1p0vz0qI+TbdDLO9i+FiOqhJyHKwdpCRCck9yVEscUnAMIzCiuNoQa8D4A9bIpOPXGt6Q==",
       "dependencies": [
         "@radix-ui/primitive",
@@ -1561,7 +1571,7 @@
         "@types/react"
       ]
     },
-    "@radix-ui/react-slot@1.5.0_@types+react@19.2.18_react@19.2.3": {
+    "@radix-ui/react-slot@1.5.0_@types+react@19.3.0_react@19.2.3": {
       "integrity": "sha512-tyYd9ddPXAysAbdbD9eYxgwpCSv6f3PncqVSNKQFSR5lcJVLz3cb/pANDoYrLiHBpXv7skortyUgGUWsYuPPFQ==",
       "dependencies": [
         "@radix-ui/react-compose-refs",
@@ -1572,7 +1582,7 @@
         "@types/react"
       ]
     },
-    "@radix-ui/react-tabs@1.2.1_@types+react@19.2.18_react@19.2.3_react-dom@19.2.3": {
+    "@radix-ui/react-tabs@1.2.1_@types+react@19.3.0_react@19.2.3_react-dom@19.2.3": {
       "integrity": "sha512-hRoJlode+hg5ZNlR+3tkfkUliIybdTpD5lkAvHQ9yaXseGf7XVO9Ib2GPEIOuaJJbo7YWYbNpDDRfo8Dhf6/xA==",
       "dependencies": [
         "@radix-ui/primitive",
@@ -1591,7 +1601,7 @@
         "@types/react"
       ]
     },
-    "@radix-ui/react-use-callback-ref@1.1.5_@types+react@19.2.18_react@19.2.3": {
+    "@radix-ui/react-use-callback-ref@1.1.5_@types+react@19.3.0_react@19.2.3": {
       "integrity": "sha512-Y5GBf4NKeADoXI1geiMlMuMoURT3k9MizzzKhGb/m55H94aGigZ01PIpkvsO6lML13BA6XYAXSJ6gza7vTn5nw==",
       "dependencies": [
         "@radix-ui/react-use-layout-effect",
@@ -1602,7 +1612,7 @@
         "@types/react"
       ]
     },
-    "@radix-ui/react-use-controllable-state@1.3.0_@types+react@19.2.18_react@19.2.3": {
+    "@radix-ui/react-use-controllable-state@1.3.0_@types+react@19.3.0_react@19.2.3": {
       "integrity": "sha512-TAcBI7bw2ljYCbv4+zuTSd6zICu8pRt6SDN2vJ/Z06K2MXh6I9WYFe/A9ovlFDtR5HVHGm5iDxDoABm/++dbKg==",
       "dependencies": [
         "@radix-ui/primitive",
@@ -1615,7 +1625,7 @@
         "@types/react"
       ]
     },
-    "@radix-ui/react-use-effect-event@0.0.5_@types+react@19.2.18_react@19.2.3": {
+    "@radix-ui/react-use-effect-event@0.0.5_@types+react@19.3.0_react@19.2.3": {
       "integrity": "sha512-7cshFL8HGS/7HEiHH+9kL9HBwp2sa9yX18Knwek6KYWmXwM7pegMgta2AXMQKI+rq3JnfSj9x8wYqFMTdG1Jgg==",
       "dependencies": [
         "@radix-ui/react-use-layout-effect",
@@ -1626,7 +1636,7 @@
         "@types/react"
       ]
     },
-    "@radix-ui/react-use-is-hydrated@0.1.3_@types+react@19.2.18_react@19.2.3": {
+    "@radix-ui/react-use-is-hydrated@0.1.3_@types+react@19.3.0_react@19.2.3": {
       "integrity": "sha512-umO/aJ+82CpOnhDZUTbILCQf7kU/g0iv+oGs/Q8jw7IkhWBzaEP4sA268PhFAJTFetbwp3ICc6ktpI4TqtxcIw==",
       "dependencies": [
         "@types/react",
@@ -1636,7 +1646,7 @@
         "@types/react"
       ]
     },
-    "@radix-ui/react-use-layout-effect@1.1.4_@types+react@19.2.18_react@19.2.3": {
+    "@radix-ui/react-use-layout-effect@1.1.4_@types+react@19.3.0_react@19.2.3": {
       "integrity": "sha512-K20DkRkUwDnxEYMBPcg3Y6voLkEy5p5QQmszZgLngKKiC7dzBR/aEuK3w1qlx2JWDUNH6FluahYdgR3BP+QbYw==",
       "dependencies": [
         "@types/react",
@@ -1646,41 +1656,41 @@
         "@types/react"
       ]
     },
-    "@react-native-async-storage/async-storage@2.2.0_react-native@0.86.2_@babel+core@7.29.13_@react-native+metro-config@0.88.1_@types+react@19.2.18_react@19.2.3": {
+    "@react-native-async-storage/async-storage@2.2.0_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_@types+react@19.3.0_react@19.2.3": {
       "integrity": "sha512-gvRvjR5JAaUZF8tv2Kcq/Gbt3JHwbKFYfmb445rhOj6NUMx3qPLixmDx5pZAyb9at1bYvJ4/eTUipU5aki45xw==",
       "dependencies": [
         "merge-options",
-        "react-native"
+        "react-native@0.86.2_@types+react@19.3.0_react@19.2.3"
       ]
     },
-    "@react-native-community/datetimepicker@9.1.0_expo@57.0.32_react@19.2.3_react-native@0.86.2_@babel+core@7.29.13_@expo+dom-webview@57.0.1_@expo+metro-runtime@57.0.18_@react-native+metro-config@0.88.1_@types+react@19.2.18_expo-linking@57.0.13_expo-router@57.0.30_react-dom@19.2.3_react-native-gesture-handler@3.5.0_react-native-reanimated@4.5.1_react-native-safe-area-context@5.7.0_react-native-screens@4.26.2_react-native-web@0.21.4_react-native-worklets@0.10.1_typescript@6.0.3": {
+    "@react-native-community/datetimepicker@9.1.0_expo@57.0.32__react@19.2.3__react-dom@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__react-native-web@0.21.4__@types+react@19.3.0_react@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_@types+react@19.3.0": {
       "integrity": "sha512-eadbnk+I2vxvW30iTAsm/qlCnMMAadkifIMYNEB2lzhxN/SvlKc7S2V4k5DyrwjdCbqdcMk3t9K6fnUMcAV34w==",
       "dependencies": [
-        "expo",
+        "expo@57.0.32_react@19.2.3_react-dom@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_react-native-web@0.21.4_@types+react@19.3.0",
         "invariant",
         "react",
-        "react-native"
+        "react-native@0.86.2_@types+react@19.3.0_react@19.2.3"
       ],
       "optionalPeers": [
-        "expo"
+        "expo@57.0.32_react@19.2.3_react-dom@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_react-native-web@0.21.4_@types+react@19.3.0"
       ]
     },
-    "@react-native-google-signin/google-signin@16.2.0_expo@57.0.32_react@19.2.3_react-native@0.86.2_@babel+core@7.29.13_@expo+dom-webview@57.0.1_@expo+metro-runtime@57.0.18_@react-native+metro-config@0.88.1_@types+react@19.2.18_expo-linking@57.0.13_expo-router@57.0.30_react-dom@19.2.3_react-native-gesture-handler@3.5.0_react-native-reanimated@4.5.1_react-native-safe-area-context@5.7.0_react-native-screens@4.26.2_react-native-web@0.21.4_react-native-worklets@0.10.1_typescript@6.0.3": {
+    "@react-native-google-signin/google-signin@16.2.0_expo@57.0.32__react@19.2.3__react-dom@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__react-native-web@0.21.4__@types+react@19.3.0_react@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_@types+react@19.3.0": {
       "integrity": "sha512-Rbc7kpvF79hPmRy2C4KLV3BapqXStNxcLKckJv2JWgWqE1CuhNByQTSxT2ixWMZTF25IXcBBwptcRdRvmJSdtg==",
       "dependencies": [
-        "expo",
+        "expo@57.0.32_react@19.2.3_react-dom@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_react-native-web@0.21.4_@types+react@19.3.0",
         "react",
-        "react-native"
+        "react-native@0.86.2_@types+react@19.3.0_react@19.2.3"
       ],
       "optionalPeers": [
-        "expo"
+        "expo@57.0.32_react@19.2.3_react-dom@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_react-native-web@0.21.4_@types+react@19.3.0"
       ]
     },
-    "@react-native-masked-view/masked-view@0.3.2_react@19.2.3_react-native@0.86.2_@babel+core@7.29.13_@react-native+metro-config@0.88.1_@types+react@19.2.18": {
+    "@react-native-masked-view/masked-view@0.3.2_react@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_@types+react@19.3.0": {
       "integrity": "sha512-XwuQoW7/GEgWRMovOQtX3A4PrXhyaZm0lVUiY8qJDvdngjLms9Cpdck6SmGAUNqQwcj2EadHC1HwL0bEyoa/SQ==",
       "dependencies": [
         "react",
-        "react-native"
+        "react-native@0.86.2_@types+react@19.3.0_react@19.2.3"
       ]
     },
     "@react-native/assets-registry@0.86.2": {
@@ -1882,14 +1892,14 @@
     "@react-native/normalize-colors@0.86.3": {
       "integrity": "sha512-Cv3CDkprb67GrzuaS9BGbBJC/6G4lIw3nyKOHRKTqTTum4bn37y5+R0Z04L8mcbQN85eEohNrRwb7IOM4j6uvg=="
     },
-    "@react-native/virtualized-lists@0.86.2_@types+react@19.2.18_react@19.2.3_react-native@0.86.2": {
+    "@react-native/virtualized-lists@0.86.2_@types+react@19.3.0_react@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3": {
       "integrity": "sha512-uO0J72gh3EvE+1/GHRk18QRyBDTRHRB0AraAfojsRjbT7VMuJwKrZYaKGshavoaEud6aw00ZB9/8mTMIKjjcAw==",
       "dependencies": [
         "@types/react",
         "invariant",
         "nullthrows",
         "react",
-        "react-native"
+        "react-native@0.86.2_@types+react@19.3.0_react@19.2.3"
       ],
       "optionalPeers": [
         "@types/react"
@@ -1907,7 +1917,7 @@
         "use-sync-external-store"
       ]
     },
-    "@react-navigation/native@7.5.1_react@19.2.3_react-native@0.86.2_@babel+core@7.29.13_@react-native+metro-config@0.88.1_@types+react@19.2.18": {
+    "@react-navigation/native@7.5.1_react@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_@types+react@19.3.0": {
       "integrity": "sha512-p9xOvhG8q8rq0FPAoh0JC22ALbyRZt7U2uH8XrHRDjvqOEFrumME7szM6LaWW2WctolAVeZAfOTV+pUKULI/kQ==",
       "dependencies": [
         "@react-navigation/core",
@@ -1915,7 +1925,7 @@
         "fast-deep-equal",
         "nanoid",
         "react",
-        "react-native",
+        "react-native@0.86.2_@types+react@19.3.0_react@19.2.3",
         "standard-navigation@0.0.8_react@19.2.3",
         "use-latest-callback"
       ]
@@ -2047,7 +2057,7 @@
     "@sentry/core@10.37.0": {
       "integrity": "sha512-hkRz7S4gkKLgPf+p3XgVjVm7tAfvcEPZxeACCC6jmoeKhGkzN44nXwLiqqshJ25RMcSrhfFvJa/FlBg6zupz7g=="
     },
-    "@sentry/react-native@7.11.0_expo@57.0.32_react@19.2.3_react-native@0.86.2_@babel+core@7.29.13_@expo+dom-webview@57.0.1_@expo+metro-runtime@57.0.18_@react-native+metro-config@0.88.1_@types+react@19.2.18_expo-linking@57.0.13_expo-router@57.0.30_react-dom@19.2.3_react-native-gesture-handler@3.5.0_react-native-reanimated@4.5.1_react-native-safe-area-context@5.7.0_react-native-screens@4.26.2_react-native-web@0.21.4_react-native-worklets@0.10.1_typescript@6.0.3": {
+    "@sentry/react-native@7.11.0_expo@57.0.32__react@19.2.3__react-dom@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__react-native-web@0.21.4__@types+react@19.3.0_react@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_@types+react@19.3.0": {
       "integrity": "sha512-OiDaLCAGpRN18YG/o7IIwLhU0Xpb0tYKQ5QxkGHiwb+L3VHn+MqGCGfITYNdhqr06HHMvu9Lysm+UJxaNmGaJg==",
       "dependencies": [
         "@sentry/babel-plugin-component-annotate",
@@ -2056,12 +2066,12 @@
         "@sentry/core",
         "@sentry/react",
         "@sentry/types",
-        "expo",
+        "expo@57.0.32_react@19.2.3_react-dom@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_react-native-web@0.21.4_@types+react@19.3.0",
         "react",
-        "react-native"
+        "react-native@0.86.2_@types+react@19.3.0_react@19.2.3"
       ],
       "optionalPeers": [
-        "expo"
+        "expo@57.0.32_react@19.2.3_react-dom@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_react-native-web@0.21.4_@types+react@19.3.0"
       ],
       "bin": true
     },
@@ -2230,7 +2240,7 @@
     "@tanstack/pacer-lite@0.1.1": {
       "integrity": "sha512-y/xtNPNt/YeyoVxE/JCx+T7yjEzpezmbb+toK8DDD1P4m7Kzs5YR956+7OKexG3f8aXgC3rLZl7b1V+yNUSy5w=="
     },
-    "@tanstack/react-form@1.33.5_react@19.2.3_react-dom@19.2.3": {
+    "@tanstack/react-form@1.33.5_react@19.2.3": {
       "integrity": "sha512-LlRB28qJwO/QCGaHvWnbdh4haBgTFiZVmzA2uzxSBS3YA7/IqrQ6HOBK70CkFQ+DbflZ7NawsmSln13h5iIdTA==",
       "dependencies": [
         "@tanstack/form-core",
@@ -2281,13 +2291,10 @@
       ]
     },
     "@types/react-test-renderer@19.3.1": {
-      "integrity": "sha512-9AwMfeBOcXsN5kC4oAauNTOKEwqLHtc69tkJC2CihQ5fCELDwzfQvookvtyaxm6i+vc5LLD0V5OLB8arzY8Smw==",
-      "dependencies": [
-        "@types/react"
-      ]
+      "integrity": "sha512-9AwMfeBOcXsN5kC4oAauNTOKEwqLHtc69tkJC2CihQ5fCELDwzfQvookvtyaxm6i+vc5LLD0V5OLB8arzY8Smw=="
     },
-    "@types/react@19.2.18": {
-      "integrity": "sha512-AnzbBERsrLKtk2XSfTbYRLjQPdy116Sty4q+T+Bp3IC4l6jNBvreVPAHmpq9qhXQM7CXZPjLVmGMw9sy+hxQ3w==",
+    "@types/react@19.3.0": {
+      "integrity": "sha512-N0rFCuH9YoxG9/m61l9MfpJKfmLOVU0em7ipIz6TRgSSkvReLB9vL85GB+yr8Bs5leqpvg96JSwF4ZS1s4viQg==",
       "dependencies": [
         "csstype"
       ]
@@ -2750,7 +2757,7 @@
         "@babel/plugin-syntax-flow"
       ]
     },
-    "babel-preset-expo@57.0.17_@babel+runtime@7.29.13_expo@57.0.32_react-refresh@0.14.2_@babel+core@7.29.13_@expo+dom-webview@57.0.1_@expo+metro-runtime@57.0.18_react@19.2.3_react-dom@19.2.3_react-native@0.86.2_react-native-web@0.21.4": {
+    "babel-preset-expo@57.0.17_@babel+runtime@7.29.13_expo@57.0.32__@expo+dom-webview@57.0.1__@expo+metro-runtime@57.0.18__react@19.2.3__react-dom@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__react-native-web@0.21.4__@babel+core@7.29.13__@react-native+metro-config@0.88.1__@types+react@19.2.18__expo-linking@57.0.13__expo-router@57.0.30__react-native-gesture-handler@3.5.0___react@19.2.3___react-native@0.86.2____@types+react@19.3.0____react@19.2.3___@babel+core@7.29.13___@react-native+metro-config@0.88.1___@types+react@19.2.18__react-native-reanimated@4.5.1___react@19.2.3___react-native@0.86.2____@types+react@19.3.0____react@19.2.3___react-native-worklets@0.10.1____@babel+core@7.29.13____@react-native+metro-config@0.88.1____react@19.2.3____react-native@0.86.2_____@types+react@19.3.0_____react@19.2.3____@types+react@19.2.18___@babel+core@7.29.13___@react-native+metro-config@0.88.1___@types+react@19.2.18__react-native-safe-area-context@5.7.0___react@19.2.3___react-native@0.86.2____@types+react@19.3.0____react@19.2.3___@babel+core@7.29.13___@react-native+metro-config@0.88.1___@types+react@19.2.18__react-native-screens@4.26.2___react@19.2.3___react-native@0.86.2____@types+react@19.3.0____react@19.2.3___@babel+core@7.29.13___@react-native+metro-config@0.88.1___@types+react@19.2.18__react-native-worklets@0.10.1___@babel+core@7.29.13___@react-native+metro-config@0.88.1___react@19.2.3___react-native@0.86.2____@types+react@19.3.0____react@19.2.3___@types+react@19.2.18__typescript@6.0.3_react-refresh@0.14.2_@babel+core@7.29.13_@expo+dom-webview@57.0.1__expo@57.0.32__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@babel+core@7.29.13__@expo+metro-runtime@57.0.18__@react-native+metro-config@0.88.1__@types+react@19.2.18__react-dom@19.2.3__react-native-web@0.21.4_@expo+metro-runtime@57.0.18__@expo+log-box@57.0.5__expo@57.0.32__react@19.2.3__react-dom@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@babel+core@7.29.13__@expo+dom-webview@57.0.1__@react-native+metro-config@0.88.1__@types+react@19.2.18__react-native-web@0.21.4_react@19.2.3_react-dom@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_react-native-web@0.21.4": {
       "integrity": "sha512-CNz//B1Ixu+A8SGhwtr86dnhIzPTJ84btxKBsdS9X4HRVYHTq3Lge6S5BArY43KCBlr5nz71bN0WGmfsxZZrqw==",
       "dependencies": [
         "@babel/generator",
@@ -2796,12 +2803,12 @@
         "babel-plugin-syntax-hermes-parser",
         "babel-plugin-transform-flow-enums",
         "debug@4.4.3",
-        "expo",
+        "expo@57.0.32_@expo+dom-webview@57.0.1_@expo+metro-runtime@57.0.18_react@19.2.3_react-dom@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_react-native-web@0.21.4_@babel+core@7.29.13_@react-native+metro-config@0.88.1_@types+react@19.2.18_expo-linking@57.0.13_expo-router@57.0.30_react-native-gesture-handler@3.5.0__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@babel+core@7.29.13__@react-native+metro-config@0.88.1__@types+react@19.2.18_react-native-reanimated@4.5.1__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__react-native-worklets@0.10.1___@babel+core@7.29.13___@react-native+metro-config@0.88.1___react@19.2.3___react-native@0.86.2____@types+react@19.3.0____react@19.2.3___@types+react@19.2.18__@babel+core@7.29.13__@react-native+metro-config@0.88.1__@types+react@19.2.18_react-native-safe-area-context@5.7.0__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@babel+core@7.29.13__@react-native+metro-config@0.88.1__@types+react@19.2.18_react-native-screens@4.26.2__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@babel+core@7.29.13__@react-native+metro-config@0.88.1__@types+react@19.2.18_react-native-worklets@0.10.1__@babel+core@7.29.13__@react-native+metro-config@0.88.1__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@types+react@19.2.18_typescript@6.0.3",
         "react-refresh"
       ],
       "optionalPeers": [
         "@babel/runtime",
-        "expo"
+        "expo@57.0.32_@expo+dom-webview@57.0.1_@expo+metro-runtime@57.0.18_react@19.2.3_react-dom@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_react-native-web@0.21.4_@babel+core@7.29.13_@react-native+metro-config@0.88.1_@types+react@19.2.18_expo-linking@57.0.13_expo-router@57.0.30_react-native-gesture-handler@3.5.0__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@babel+core@7.29.13__@react-native+metro-config@0.88.1__@types+react@19.2.18_react-native-reanimated@4.5.1__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__react-native-worklets@0.10.1___@babel+core@7.29.13___@react-native+metro-config@0.88.1___react@19.2.3___react-native@0.86.2____@types+react@19.3.0____react@19.2.3___@types+react@19.2.18__@babel+core@7.29.13__@react-native+metro-config@0.88.1__@types+react@19.2.18_react-native-safe-area-context@5.7.0__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@babel+core@7.29.13__@react-native+metro-config@0.88.1__@types+react@19.2.18_react-native-screens@4.26.2__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@babel+core@7.29.13__@react-native+metro-config@0.88.1__@types+react@19.2.18_react-native-worklets@0.10.1__@babel+core@7.29.13__@react-native+metro-config@0.88.1__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@types+react@19.2.18_typescript@6.0.3"
       ]
     },
     "badgin@1.2.3": {
@@ -3590,65 +3597,65 @@
     "event-target-shim@5.0.1": {
       "integrity": "sha512-i/2XbnSz/uxRCU6+NdVJgKWDTM427+MqYbkQzD321DuCQJUqOuJKIA0IM2+W2xtYHdKOmZ4dR6fExsd4SXL+WQ=="
     },
-    "expo-apple-authentication@57.0.2_expo@57.0.32_react@19.2.3_react-native@0.86.2_@babel+core@7.29.13_@expo+dom-webview@57.0.1_@expo+metro-runtime@57.0.18_@react-native+metro-config@0.88.1_@types+react@19.2.18_expo-linking@57.0.13_expo-router@57.0.30_react-dom@19.2.3_react-native-gesture-handler@3.5.0_react-native-reanimated@4.5.1_react-native-safe-area-context@5.7.0_react-native-screens@4.26.2_react-native-web@0.21.4_react-native-worklets@0.10.1_typescript@6.0.3": {
+    "expo-apple-authentication@57.0.2_expo@57.0.32__react@19.2.3__react-dom@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__react-native-web@0.21.4__@types+react@19.3.0_react@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_@types+react@19.3.0": {
       "integrity": "sha512-00KnlyRceRKski+ljZz8q8JhJZ4D3ZScU+Y0RqS6ElJ8GaCWfd7Qh5tMr47yIU/dKDrOnkzkFUM+6vyHS5HI7Q==",
       "dependencies": [
-        "expo",
+        "expo@57.0.32_react@19.2.3_react-dom@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_react-native-web@0.21.4_@types+react@19.3.0",
         "react",
-        "react-native"
+        "react-native@0.86.2_@types+react@19.3.0_react@19.2.3"
       ]
     },
-    "expo-application@57.0.3_expo@57.0.32_@babel+core@7.29.13_@expo+dom-webview@57.0.1_@expo+metro-runtime@57.0.18_@react-native+metro-config@0.88.1_@types+react@19.2.18_expo-linking@57.0.13_expo-router@57.0.30_react@19.2.3_react-dom@19.2.3_react-native@0.86.2_react-native-gesture-handler@3.5.0_react-native-reanimated@4.5.1_react-native-safe-area-context@5.7.0_react-native-screens@4.26.2_react-native-web@0.21.4_react-native-worklets@0.10.1_typescript@6.0.3": {
+    "expo-application@57.0.3_expo@57.0.32__react@19.2.3__react-dom@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__react-native-web@0.21.4__@types+react@19.3.0_@types+react@19.3.0_react@19.2.3": {
       "integrity": "sha512-t/CxeLio0NjY9/cOak1tQp62/hAUjzJxmhR4rVUR7K5bb9YoEtfl1ZekTn+Iuh+dYOMYzF0l72ODMSmY3CR1NA==",
       "dependencies": [
-        "expo"
+        "expo@57.0.32_react@19.2.3_react-dom@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_react-native-web@0.21.4_@types+react@19.3.0"
       ]
     },
-    "expo-asset@57.0.21_expo@57.0.32_react@19.2.3_react-native@0.86.2_@babel+core@7.29.13_@expo+dom-webview@57.0.1_@expo+metro-runtime@57.0.18_@react-native+metro-config@0.88.1_@types+react@19.2.18_react-dom@19.2.3_react-native-web@0.21.4_typescript@6.0.3": {
+    "expo-asset@57.0.21_expo@57.0.32__react@19.2.3__react-dom@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__react-native-web@0.21.4__@types+react@19.3.0_react@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_@expo+dom-webview@57.0.1__expo@57.0.32__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@babel+core@7.29.13__@expo+metro-runtime@57.0.18__@react-native+metro-config@0.88.1__@types+react@19.2.18__react-dom@19.2.3__react-native-web@0.21.4_@expo+metro-runtime@57.0.18__@expo+log-box@57.0.5__expo@57.0.32__react@19.2.3__react-dom@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@babel+core@7.29.13__@expo+dom-webview@57.0.1__@react-native+metro-config@0.88.1__@types+react@19.2.18__react-native-web@0.21.4_@types+react@19.3.0_react-dom@19.2.3_react-native-web@0.21.4": {
       "integrity": "sha512-ahwX4MDtIme+ad0AgmNM4SsbysJ7yxuMqWfE121BgnJTP/2qpKeHkdw6jkeO57k0CdJoOxh+W83jK71GbyOSUA==",
       "dependencies": [
         "@expo/image-utils",
-        "expo",
+        "expo@57.0.32_react@19.2.3_react-dom@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_react-native-web@0.21.4_@types+react@19.3.0",
         "expo-constants",
         "react",
-        "react-native"
+        "react-native@0.86.2_@types+react@19.3.0_react@19.2.3"
       ]
     },
-    "expo-build-properties@57.0.23_expo@57.0.32_@babel+core@7.29.13_@expo+dom-webview@57.0.1_@expo+metro-runtime@57.0.18_@react-native+metro-config@0.88.1_@types+react@19.2.18_expo-linking@57.0.13_expo-router@57.0.30_react@19.2.3_react-dom@19.2.3_react-native@0.86.2_react-native-gesture-handler@3.5.0_react-native-reanimated@4.5.1_react-native-safe-area-context@5.7.0_react-native-screens@4.26.2_react-native-web@0.21.4_react-native-worklets@0.10.1_typescript@6.0.3": {
+    "expo-build-properties@57.0.23_expo@57.0.32__react@19.2.3__react-dom@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__react-native-web@0.21.4__@types+react@19.3.0_@types+react@19.3.0_react@19.2.3": {
       "integrity": "sha512-O4N2m2ce4G1p4AvCZHhqpAIfHsQjbKxbvMOEMjuFh+MuAfgoxKyHa6tgsI2BFQxiPIBDL4aVWk8UEqeHXMmDfA==",
       "dependencies": [
         "@expo/schema-utils",
-        "expo",
+        "expo@57.0.32_react@19.2.3_react-dom@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_react-native-web@0.21.4_@types+react@19.3.0",
         "resolve-from@5.0.0",
         "semver@7.8.6"
       ]
     },
-    "expo-clipboard@57.0.2_expo@57.0.32_react@19.2.3_react-native@0.86.2_@babel+core@7.29.13_@expo+dom-webview@57.0.1_@expo+metro-runtime@57.0.18_@react-native+metro-config@0.88.1_@types+react@19.2.18_expo-linking@57.0.13_expo-router@57.0.30_react-dom@19.2.3_react-native-gesture-handler@3.5.0_react-native-reanimated@4.5.1_react-native-safe-area-context@5.7.0_react-native-screens@4.26.2_react-native-web@0.21.4_react-native-worklets@0.10.1_typescript@6.0.3": {
+    "expo-clipboard@57.0.2_expo@57.0.32__react@19.2.3__react-dom@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__react-native-web@0.21.4__@types+react@19.3.0_react@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_@types+react@19.3.0": {
       "integrity": "sha512-VB4Au8X/RbvJKUtJk+87vdtveWSNEa5RzY3ooeO6VNF7Rd49RbQXZOu3/TfEW9p7mU8TCfyTvjyCiAUwSoSJ4w==",
       "dependencies": [
-        "expo",
+        "expo@57.0.32_react@19.2.3_react-dom@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_react-native-web@0.21.4_@types+react@19.3.0",
         "react",
-        "react-native"
+        "react-native@0.86.2_@types+react@19.3.0_react@19.2.3"
       ]
     },
-    "expo-constants@57.0.23_expo@57.0.32_react-native@0.86.2_@babel+core@7.29.13_@expo+dom-webview@57.0.1_@expo+metro-runtime@57.0.18_@react-native+metro-config@0.88.1_@types+react@19.2.18_react@19.2.3_react-dom@19.2.3_react-native-web@0.21.4": {
+    "expo-constants@57.0.23_expo@57.0.32_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_@expo+dom-webview@57.0.1_@expo+metro-runtime@57.0.18_@types+react@19.3.0_react@19.2.3_react-dom@19.2.3_react-native-web@0.21.4": {
       "integrity": "sha512-U+VHchrt7/VcQCgJH5TUTQMon19e5GkB2fkyYJax8miNxoW1wtTIdhYHlF6zCljyWw995Hbcq8IIF9ktC9qxHA==",
       "dependencies": [
         "@expo/env",
-        "expo",
-        "react-native"
+        "expo@57.0.32_react@19.2.3_react-dom@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_react-native-web@0.21.4_@types+react@19.3.0",
+        "react-native@0.86.2_@types+react@19.3.0_react@19.2.3"
       ]
     },
-    "expo-crypto@57.0.4_expo@57.0.32_@babel+core@7.29.13_@expo+dom-webview@57.0.1_@expo+metro-runtime@57.0.18_@react-native+metro-config@0.88.1_@types+react@19.2.18_expo-linking@57.0.13_expo-router@57.0.30_react@19.2.3_react-dom@19.2.3_react-native@0.86.2_react-native-gesture-handler@3.5.0_react-native-reanimated@4.5.1_react-native-safe-area-context@5.7.0_react-native-screens@4.26.2_react-native-web@0.21.4_react-native-worklets@0.10.1_typescript@6.0.3": {
+    "expo-crypto@57.0.4_expo@57.0.32__react@19.2.3__react-dom@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__react-native-web@0.21.4__@types+react@19.3.0_@types+react@19.3.0_react@19.2.3": {
       "integrity": "sha512-LqMMs/N6wvwZyw4deVmcl3AgXgqMwCVQ9WyWf2eaWyrk99TXSKk5da3QspiLOOjnn5Qv9f8C50cDNuoyLThpdw==",
       "dependencies": [
-        "expo"
+        "expo@57.0.32_react@19.2.3_react-dom@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_react-native-web@0.21.4_@types+react@19.3.0"
       ]
     },
-    "expo-dev-client@57.0.21_expo@57.0.32_@babel+core@7.29.13_@expo+dom-webview@57.0.1_@expo+metro-runtime@57.0.18_@react-native+metro-config@0.88.1_@types+react@19.2.18_expo-linking@57.0.13_expo-router@57.0.30_react@19.2.3_react-dom@19.2.3_react-native@0.86.2_react-native-gesture-handler@3.5.0_react-native-reanimated@4.5.1_react-native-safe-area-context@5.7.0_react-native-screens@4.26.2_react-native-web@0.21.4_react-native-worklets@0.10.1_typescript@6.0.3": {
+    "expo-dev-client@57.0.21_expo@57.0.32__react@19.2.3__react-dom@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__react-native-web@0.21.4__@types+react@19.3.0_@types+react@19.3.0_react@19.2.3": {
       "integrity": "sha512-IWsfmUX71DuHJSpKpr7njBPuqNSSlvxTpTlrTVw7DVvIrZTckimI3hZvwGry24d3YTMGedLn+mUQ7nguJqcYkA==",
       "dependencies": [
-        "expo",
+        "expo@57.0.32_react@19.2.3_react-dom@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_react-native-web@0.21.4_@types+react@19.3.0",
         "expo-dev-launcher",
         "expo-dev-menu",
         "expo-dev-menu-interface",
@@ -3656,113 +3663,121 @@
         "expo-updates-interface"
       ]
     },
-    "expo-dev-launcher@57.0.22_expo@57.0.32_react-native@0.86.2_@babel+core@7.29.13_@expo+dom-webview@57.0.1_@expo+metro-runtime@57.0.18_@react-native+metro-config@0.88.1_@types+react@19.2.18_expo-linking@57.0.13_expo-router@57.0.30_react@19.2.3_react-dom@19.2.3_react-native-gesture-handler@3.5.0_react-native-reanimated@4.5.1_react-native-safe-area-context@5.7.0_react-native-screens@4.26.2_react-native-web@0.21.4_react-native-worklets@0.10.1_typescript@6.0.3": {
+    "expo-dev-launcher@57.0.22_expo@57.0.32__react@19.2.3__react-dom@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__react-native-web@0.21.4__@types+react@19.3.0_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_@types+react@19.3.0_react@19.2.3": {
       "integrity": "sha512-6Z9j2ZJNp8gEGkdVBqRtqGqBTaIFvD/q2fsq1PVCHG535RcqsXuSMxMgO1ODBhyimFGucAPOp8SoVo4GlnVmnw==",
       "dependencies": [
         "@expo/schema-utils",
-        "expo",
+        "expo@57.0.32_react@19.2.3_react-dom@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_react-native-web@0.21.4_@types+react@19.3.0",
         "expo-dev-menu",
         "expo-manifests",
-        "react-native"
+        "react-native@0.86.2_@types+react@19.3.0_react@19.2.3"
       ]
     },
-    "expo-dev-menu-interface@57.0.0_expo@57.0.32_@babel+core@7.29.13_@expo+dom-webview@57.0.1_@expo+metro-runtime@57.0.18_@react-native+metro-config@0.88.1_@types+react@19.2.18_expo-linking@57.0.13_expo-router@57.0.30_react@19.2.3_react-dom@19.2.3_react-native@0.86.2_react-native-gesture-handler@3.5.0_react-native-reanimated@4.5.1_react-native-safe-area-context@5.7.0_react-native-screens@4.26.2_react-native-web@0.21.4_react-native-worklets@0.10.1_typescript@6.0.3": {
+    "expo-dev-menu-interface@57.0.0_expo@57.0.32__react@19.2.3__react-dom@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__react-native-web@0.21.4__@types+react@19.3.0_@types+react@19.3.0_react@19.2.3": {
       "integrity": "sha512-F47VdzOHYc19FhI/jBgctpO8a5UskTIxG6a1E5t3W5gF8VImuvBQffdXXfLHhsuCl7dS3v3U0R45cleeVXO1Zg==",
       "dependencies": [
-        "expo"
+        "expo@57.0.32_react@19.2.3_react-dom@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_react-native-web@0.21.4_@types+react@19.3.0"
       ]
     },
-    "expo-dev-menu@57.0.21_expo@57.0.32_react-native@0.86.2_@babel+core@7.29.13_@expo+dom-webview@57.0.1_@expo+metro-runtime@57.0.18_@react-native+metro-config@0.88.1_@types+react@19.2.18_expo-linking@57.0.13_expo-router@57.0.30_react@19.2.3_react-dom@19.2.3_react-native-gesture-handler@3.5.0_react-native-reanimated@4.5.1_react-native-safe-area-context@5.7.0_react-native-screens@4.26.2_react-native-web@0.21.4_react-native-worklets@0.10.1_typescript@6.0.3": {
+    "expo-dev-menu@57.0.21_expo@57.0.32__react@19.2.3__react-dom@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__react-native-web@0.21.4__@types+react@19.3.0_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_@types+react@19.3.0_react@19.2.3": {
       "integrity": "sha512-KJr6KXXR3AUzf5Q5bP3zt/iWNO3Qbk+4IXygX3HGQSjvqHs78X/+p86ak97iotvVAvv0wlbfiEwQ8n0LnefHeA==",
       "dependencies": [
-        "expo",
+        "expo@57.0.32_react@19.2.3_react-dom@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_react-native-web@0.21.4_@types+react@19.3.0",
         "expo-dev-menu-interface",
-        "react-native"
+        "react-native@0.86.2_@types+react@19.3.0_react@19.2.3"
       ]
     },
     "expo-eas-client@57.0.5": {
       "integrity": "sha512-7Ut6TbaYZDURHZkhKRGZdLgq4EE7sHc6VrKAcU0Pzj1Bd+Nsb/XseViYuch2+X/+RvQMlzu8Eyf4YvBVpDCivQ=="
     },
-    "expo-file-system@57.0.7_expo@57.0.32_react-native@0.86.2_@babel+core@7.29.13_@expo+dom-webview@57.0.1_@expo+metro-runtime@57.0.18_@react-native+metro-config@0.88.1_@types+react@19.2.18_react@19.2.3_react-dom@19.2.3_react-native-web@0.21.4": {
+    "expo-file-system@57.0.7_expo@57.0.32__react@19.2.3__react-dom@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__react-native-web@0.21.4__@types+react@19.3.0_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_@expo+dom-webview@57.0.1__expo@57.0.32__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@babel+core@7.29.13__@expo+metro-runtime@57.0.18__@react-native+metro-config@0.88.1__@types+react@19.2.18__react-dom@19.2.3__react-native-web@0.21.4_@expo+metro-runtime@57.0.18__@expo+log-box@57.0.5__expo@57.0.32__react@19.2.3__react-dom@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@babel+core@7.29.13__@expo+dom-webview@57.0.1__@react-native+metro-config@0.88.1__@types+react@19.2.18__react-native-web@0.21.4_@types+react@19.3.0_react@19.2.3_react-dom@19.2.3_react-native-web@0.21.4": {
       "integrity": "sha512-1vkZRadOsIputFDBcclqBa1pO3iXOO6iIsdqJipQWw4V5TSnWgmRTuOF7ro8IzrVue+PHbum++KCG3Tawem4cg==",
       "dependencies": [
-        "expo",
-        "react-native"
+        "expo@57.0.32_react@19.2.3_react-dom@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_react-native-web@0.21.4_@types+react@19.3.0",
+        "react-native@0.86.2_@types+react@19.3.0_react@19.2.3"
       ]
     },
-    "expo-font@57.0.4_expo@57.0.32_react@19.2.3_react-native@0.86.2_@babel+core@7.29.13_@expo+dom-webview@57.0.1_@expo+metro-runtime@57.0.18_@react-native+metro-config@0.88.1_@types+react@19.2.18_expo-linking@57.0.13_expo-router@57.0.30_react-dom@19.2.3_react-native-gesture-handler@3.5.0_react-native-reanimated@4.5.1_react-native-safe-area-context@5.7.0_react-native-screens@4.26.2_react-native-web@0.21.4_react-native-worklets@0.10.1_typescript@6.0.3": {
+    "expo-font@57.0.4_expo@57.0.32_react@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_@babel+core@7.29.13_@expo+dom-webview@57.0.1_@expo+metro-runtime@57.0.18_@react-native+metro-config@0.88.1_@types+react@19.2.18_expo-linking@57.0.13_expo-router@57.0.30_react-dom@19.2.3_react-native-gesture-handler@3.5.0__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@babel+core@7.29.13__@react-native+metro-config@0.88.1__@types+react@19.2.18_react-native-reanimated@4.5.1__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__react-native-worklets@0.10.1___@babel+core@7.29.13___@react-native+metro-config@0.88.1___react@19.2.3___react-native@0.86.2____@types+react@19.3.0____react@19.2.3___@types+react@19.2.18__@babel+core@7.29.13__@react-native+metro-config@0.88.1__@types+react@19.2.18_react-native-safe-area-context@5.7.0__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@babel+core@7.29.13__@react-native+metro-config@0.88.1__@types+react@19.2.18_react-native-screens@4.26.2__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@babel+core@7.29.13__@react-native+metro-config@0.88.1__@types+react@19.2.18_react-native-web@0.21.4_react-native-worklets@0.10.1__@babel+core@7.29.13__@react-native+metro-config@0.88.1__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@types+react@19.2.18_typescript@6.0.3": {
       "integrity": "sha512-7WOMC2oA6xCfOm8bbofqWn2bIqyWFm7YLEnpc/gA1MJH0Ll0TfT/3+CqRkoW2eNRWMS8sxrz5WukUmSvmNquHA==",
       "dependencies": [
-        "expo",
+        "expo@57.0.32_react@19.2.3_react-dom@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_react-native-web@0.21.4_@types+react@19.3.0",
+        "fontfaceobserver",
+        "react-native@0.86.2_@types+react@19.3.0_react@19.2.3"
+      ]
+    },
+    "expo-font@57.0.4_expo@57.0.32_react@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_@types+react@19.3.0": {
+      "integrity": "sha512-7WOMC2oA6xCfOm8bbofqWn2bIqyWFm7YLEnpc/gA1MJH0Ll0TfT/3+CqRkoW2eNRWMS8sxrz5WukUmSvmNquHA==",
+      "dependencies": [
+        "expo@57.0.32_react@19.2.3_react-dom@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_react-native-web@0.21.4_@types+react@19.3.0",
         "fontfaceobserver",
         "react",
-        "react-native"
+        "react-native@0.86.2_@types+react@19.3.0_react@19.2.3"
       ]
     },
-    "expo-glass-effect@57.0.5_expo@57.0.32_react@19.2.3_react-native@0.86.2_@babel+core@7.29.13_@expo+dom-webview@57.0.1_@expo+metro-runtime@57.0.18_@react-native+metro-config@0.88.1_@types+react@19.2.18_react-dom@19.2.3_react-native-web@0.21.4": {
+    "expo-glass-effect@57.0.5_expo@57.0.32__@expo+dom-webview@57.0.1__@expo+metro-runtime@57.0.18__react@19.2.3__react-dom@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__react-native-web@0.21.4__@babel+core@7.29.13__@react-native+metro-config@0.88.1__@types+react@19.2.18__expo-linking@57.0.13__expo-router@57.0.30__react-native-gesture-handler@3.5.0___react@19.2.3___react-native@0.86.2____@types+react@19.3.0____react@19.2.3___@babel+core@7.29.13___@react-native+metro-config@0.88.1___@types+react@19.2.18__react-native-reanimated@4.5.1___react@19.2.3___react-native@0.86.2____@types+react@19.3.0____react@19.2.3___react-native-worklets@0.10.1____@babel+core@7.29.13____@react-native+metro-config@0.88.1____react@19.2.3____react-native@0.86.2_____@types+react@19.3.0_____react@19.2.3____@types+react@19.2.18___@babel+core@7.29.13___@react-native+metro-config@0.88.1___@types+react@19.2.18__react-native-safe-area-context@5.7.0___react@19.2.3___react-native@0.86.2____@types+react@19.3.0____react@19.2.3___@babel+core@7.29.13___@react-native+metro-config@0.88.1___@types+react@19.2.18__react-native-screens@4.26.2___react@19.2.3___react-native@0.86.2____@types+react@19.3.0____react@19.2.3___@babel+core@7.29.13___@react-native+metro-config@0.88.1___@types+react@19.2.18__react-native-worklets@0.10.1___@babel+core@7.29.13___@react-native+metro-config@0.88.1___react@19.2.3___react-native@0.86.2____@types+react@19.3.0____react@19.2.3___@types+react@19.2.18__typescript@6.0.3_react@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_@expo+dom-webview@57.0.1__expo@57.0.32__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@babel+core@7.29.13__@expo+metro-runtime@57.0.18__@react-native+metro-config@0.88.1__@types+react@19.2.18__react-dom@19.2.3__react-native-web@0.21.4_@expo+metro-runtime@57.0.18__@expo+log-box@57.0.5__expo@57.0.32__react@19.2.3__react-dom@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@babel+core@7.29.13__@expo+dom-webview@57.0.1__@react-native+metro-config@0.88.1__@types+react@19.2.18__react-native-web@0.21.4_@types+react@19.3.0_react-dom@19.2.3_react-native-web@0.21.4": {
       "integrity": "sha512-eVKCW0l+RmkyVMoeSd46NR1KWIE9FL/h91tO10Qvd4RLIpK1FgLpH65z3AWPrDLjssDt3mJEBNde31HznJnf0A==",
       "dependencies": [
-        "expo",
+        "expo@57.0.32_@expo+dom-webview@57.0.1_@expo+metro-runtime@57.0.18_react@19.2.3_react-dom@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_react-native-web@0.21.4_@babel+core@7.29.13_@react-native+metro-config@0.88.1_@types+react@19.2.18_expo-linking@57.0.13_expo-router@57.0.30_react-native-gesture-handler@3.5.0__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@babel+core@7.29.13__@react-native+metro-config@0.88.1__@types+react@19.2.18_react-native-reanimated@4.5.1__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__react-native-worklets@0.10.1___@babel+core@7.29.13___@react-native+metro-config@0.88.1___react@19.2.3___react-native@0.86.2____@types+react@19.3.0____react@19.2.3___@types+react@19.2.18__@babel+core@7.29.13__@react-native+metro-config@0.88.1__@types+react@19.2.18_react-native-safe-area-context@5.7.0__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@babel+core@7.29.13__@react-native+metro-config@0.88.1__@types+react@19.2.18_react-native-screens@4.26.2__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@babel+core@7.29.13__@react-native+metro-config@0.88.1__@types+react@19.2.18_react-native-worklets@0.10.1__@babel+core@7.29.13__@react-native+metro-config@0.88.1__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@types+react@19.2.18_typescript@6.0.3",
         "react",
-        "react-native"
+        "react-native@0.86.2_@types+react@19.3.0_react@19.2.3"
       ]
     },
-    "expo-haptics@57.0.3_expo@57.0.32_@babel+core@7.29.13_@expo+dom-webview@57.0.1_@expo+metro-runtime@57.0.18_@react-native+metro-config@0.88.1_@types+react@19.2.18_expo-linking@57.0.13_expo-router@57.0.30_react@19.2.3_react-dom@19.2.3_react-native@0.86.2_react-native-gesture-handler@3.5.0_react-native-reanimated@4.5.1_react-native-safe-area-context@5.7.0_react-native-screens@4.26.2_react-native-web@0.21.4_react-native-worklets@0.10.1_typescript@6.0.3": {
+    "expo-haptics@57.0.3_expo@57.0.32__react@19.2.3__react-dom@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__react-native-web@0.21.4__@types+react@19.3.0_@types+react@19.3.0_react@19.2.3": {
       "integrity": "sha512-qucUXtwtJdtECKSQK5D6TQBc/0SxKj7s5wQ4mrfSxhZsHrS9a4rcxINl/gbruMaY9spTXStco32ST4pV0vXmxw==",
       "dependencies": [
-        "expo"
+        "expo@57.0.32_react@19.2.3_react-dom@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_react-native-web@0.21.4_@types+react@19.3.0"
       ]
     },
-    "expo-image-loader@57.0.1_expo@57.0.32_@babel+core@7.29.13_@expo+dom-webview@57.0.1_@expo+metro-runtime@57.0.18_@react-native+metro-config@0.88.1_@types+react@19.2.18_expo-linking@57.0.13_expo-router@57.0.30_react@19.2.3_react-dom@19.2.3_react-native@0.86.2_react-native-gesture-handler@3.5.0_react-native-reanimated@4.5.1_react-native-safe-area-context@5.7.0_react-native-screens@4.26.2_react-native-web@0.21.4_react-native-worklets@0.10.1_typescript@6.0.3": {
+    "expo-image-loader@57.0.1_expo@57.0.32__react@19.2.3__react-dom@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__react-native-web@0.21.4__@types+react@19.3.0_@types+react@19.3.0_react@19.2.3": {
       "integrity": "sha512-uhrZKLT/cTl2mXyR28kPpVkS5O+PK9N1QA/07IFM4f5T4g0lTW1JHT3NEWwEEsGFldPmVX4j7LwUVVZxE+woug==",
       "dependencies": [
-        "expo"
+        "expo@57.0.32_react@19.2.3_react-dom@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_react-native-web@0.21.4_@types+react@19.3.0"
       ]
     },
-    "expo-image-manipulator@57.0.22_expo@57.0.32_@babel+core@7.29.13_@expo+dom-webview@57.0.1_@expo+metro-runtime@57.0.18_@react-native+metro-config@0.88.1_@types+react@19.2.18_expo-linking@57.0.13_expo-router@57.0.30_react@19.2.3_react-dom@19.2.3_react-native@0.86.2_react-native-gesture-handler@3.5.0_react-native-reanimated@4.5.1_react-native-safe-area-context@5.7.0_react-native-screens@4.26.2_react-native-web@0.21.4_react-native-worklets@0.10.1_typescript@6.0.3": {
+    "expo-image-manipulator@57.0.22_expo@57.0.32__react@19.2.3__react-dom@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__react-native-web@0.21.4__@types+react@19.3.0_@types+react@19.3.0_react@19.2.3": {
       "integrity": "sha512-GXvxbCIMCBk0JruD/lj+fvhSeAvqIoBvgLspx6fZAHOrwE0/mQWSmHb7gNHEEX6pQM10qdacgoio1V3hVYoFrw==",
       "dependencies": [
-        "expo",
+        "expo@57.0.32_react@19.2.3_react-dom@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_react-native-web@0.21.4_@types+react@19.3.0",
         "expo-image-loader"
       ]
     },
-    "expo-image-picker@57.0.21_expo@57.0.32_@babel+core@7.29.13_@expo+dom-webview@57.0.1_@expo+metro-runtime@57.0.18_@react-native+metro-config@0.88.1_@types+react@19.2.18_expo-linking@57.0.13_expo-router@57.0.30_react@19.2.3_react-dom@19.2.3_react-native@0.86.2_react-native-gesture-handler@3.5.0_react-native-reanimated@4.5.1_react-native-safe-area-context@5.7.0_react-native-screens@4.26.2_react-native-web@0.21.4_react-native-worklets@0.10.1_typescript@6.0.3": {
+    "expo-image-picker@57.0.21_expo@57.0.32__react@19.2.3__react-dom@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__react-native-web@0.21.4__@types+react@19.3.0_@types+react@19.3.0_react@19.2.3": {
       "integrity": "sha512-DRAqZyzbAgpBRFIzqsIeGvCVxzEWg0KmqN5nMC8nPca00BLPJ/8ubdMmPFMMuilP4JI5xZV9rKp5H1bjycUyCg==",
       "dependencies": [
-        "expo",
+        "expo@57.0.32_react@19.2.3_react-dom@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_react-native-web@0.21.4_@types+react@19.3.0",
         "expo-image-loader"
       ]
     },
-    "expo-insights@57.0.22_expo@57.0.32_@babel+core@7.29.13_@expo+dom-webview@57.0.1_@expo+metro-runtime@57.0.18_@react-native+metro-config@0.88.1_@types+react@19.2.18_expo-linking@57.0.13_expo-router@57.0.30_react@19.2.3_react-dom@19.2.3_react-native@0.86.2_react-native-gesture-handler@3.5.0_react-native-reanimated@4.5.1_react-native-safe-area-context@5.7.0_react-native-screens@4.26.2_react-native-web@0.21.4_react-native-worklets@0.10.1_typescript@6.0.3": {
+    "expo-insights@57.0.22_expo@57.0.32__react@19.2.3__react-dom@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__react-native-web@0.21.4__@types+react@19.3.0_@types+react@19.3.0_react@19.2.3": {
       "integrity": "sha512-Ze7PBwnc1/QeAaNMVmu7JrkWbVZlC6HQCQTM1EMjIP9RmV5tZgD067IznOAuX6k9px+MK89gn9QZDS90yImpng==",
       "dependencies": [
-        "expo",
+        "expo@57.0.32_react@19.2.3_react-dom@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_react-native-web@0.21.4_@types+react@19.3.0",
         "expo-eas-client"
       ]
     },
     "expo-json-utils@57.0.2": {
       "integrity": "sha512-9kYZECLKE3pYZQs+kt3+ggY83Lfryog9/UEo3HJKGcHUZeKKtlFBIPFjI4LzREubsvjP7AsvG0FdEX9EquIoAQ=="
     },
-    "expo-keep-awake@57.0.2_expo@57.0.32_react@19.2.3_@expo+dom-webview@57.0.1_@expo+metro-runtime@57.0.18_react-dom@19.2.3_react-native@0.86.2_react-native-web@0.21.4": {
+    "expo-keep-awake@57.0.2_expo@57.0.32__react@19.2.3__react-dom@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__react-native-web@0.21.4__@types+react@19.3.0_react@19.2.3_@expo+dom-webview@57.0.1__expo@57.0.32__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@babel+core@7.29.13__@expo+metro-runtime@57.0.18__@react-native+metro-config@0.88.1__@types+react@19.2.18__react-dom@19.2.3__react-native-web@0.21.4_@expo+metro-runtime@57.0.18__@expo+log-box@57.0.5__expo@57.0.32__react@19.2.3__react-dom@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@babel+core@7.29.13__@expo+dom-webview@57.0.1__@react-native+metro-config@0.88.1__@types+react@19.2.18__react-native-web@0.21.4_react-dom@19.2.3_react-native@0.86.2__@types+react@19.2.18__react@19.2.3__@babel+core@7.29.13__@react-native+metro-config@0.88.1_react-native-web@0.21.4": {
       "integrity": "sha512-GqgH746wtJImmsbyHmCQoi7cOslKuWQBbJHXr53S35Bpf5UvxCAztvnitUEd7D0QvFN2rvkOhylbZpgZZfBLlQ==",
       "dependencies": [
-        "expo",
+        "expo@57.0.32_react@19.2.3_react-dom@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_react-native-web@0.21.4_@types+react@19.3.0",
         "react"
       ]
     },
-    "expo-linking@57.0.13_react@19.2.3_react-native@0.86.2_@babel+core@7.29.13_@expo+dom-webview@57.0.1_@expo+metro-runtime@57.0.18_@react-native+metro-config@0.88.1_@types+react@19.2.18_expo@57.0.32_react-dom@19.2.3_react-native-web@0.21.4": {
+    "expo-linking@57.0.13_react@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_@expo+dom-webview@57.0.1_@expo+metro-runtime@57.0.18_@types+react@19.3.0_react-dom@19.2.3_react-native-web@0.21.4": {
       "integrity": "sha512-1cjN7Ely0FZqlZItfPYjl6jjrCFLRevrIE/H5XhA6tgDm9uhTaSyJQXyftgt2FvJZ7liheDft7WMnPB9Uktx+A==",
       "dependencies": [
         "expo-constants",
         "invariant",
         "react",
-        "react-native"
+        "react-native@0.86.2_@types+react@19.3.0_react@19.2.3"
       ]
     },
-    "expo-manifests@57.0.2_expo@57.0.32_@babel+core@7.29.13_@expo+dom-webview@57.0.1_@expo+metro-runtime@57.0.18_@react-native+metro-config@0.88.1_@types+react@19.2.18_expo-linking@57.0.13_expo-router@57.0.30_react@19.2.3_react-dom@19.2.3_react-native@0.86.2_react-native-gesture-handler@3.5.0_react-native-reanimated@4.5.1_react-native-safe-area-context@5.7.0_react-native-screens@4.26.2_react-native-web@0.21.4_react-native-worklets@0.10.1_typescript@6.0.3": {
+    "expo-manifests@57.0.2_expo@57.0.32__react@19.2.3__react-dom@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__react-native-web@0.21.4__@types+react@19.3.0_@types+react@19.3.0_react@19.2.3": {
       "integrity": "sha512-pPIIcKR73OShwlWMg8H90WRzKUd2krDdKlKAwuQV1FtUwE7H3hQEFw0ePFQY9yFoGMF/77ryYwNKfI5umMcCog==",
       "dependencies": [
-        "expo",
+        "expo@57.0.32_react@19.2.3_react-dom@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_react-native-web@0.21.4_@types+react@19.3.0",
         "expo-json-utils"
       ]
     },
@@ -3776,40 +3791,59 @@
       ],
       "bin": true
     },
-    "expo-modules-core@57.0.25_react@19.2.3_react-native@0.86.2_react-native-worklets@0.10.1_@babel+core@7.29.13_@react-native+metro-config@0.88.1_@types+react@19.2.18": {
+    "expo-modules-core@57.0.25_react@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_react-native-worklets@0.10.1__@babel+core@7.29.13__@react-native+metro-config@0.88.1__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@types+react@19.2.18_@babel+core@7.29.13_@react-native+metro-config@0.88.1_@types+react@19.2.18": {
       "integrity": "sha512-q6sueHJD/nIDat66BlHWB/0OZDCOOVZMgKFmdmKYq9vKP3sHmAQX5IPnVVaRwOUvB9SC6x9+PXBbRy81qDt2Yw==",
       "dependencies": [
         "@expo/expo-modules-macros-plugin",
-        "expo-modules-jsi",
+        "expo-modules-jsi@57.1.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_@babel+core@7.29.13_@react-native+metro-config@0.88.1_@types+react@19.2.18_react@19.2.3",
         "invariant",
-        "react",
-        "react-native",
-        "react-native-worklets"
+        "react-native@0.86.2_@types+react@19.2.18_react@19.2.3_@babel+core@7.29.13_@react-native+metro-config@0.88.1",
+        "react-native-worklets@0.10.1_@babel+core@7.29.13_@react-native+metro-config@0.88.1_react@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_@types+react@19.2.18"
       ],
       "optionalPeers": [
-        "react-native-worklets"
+        "react-native-worklets@0.10.1_@babel+core@7.29.13_@react-native+metro-config@0.88.1_react@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_@types+react@19.2.18"
       ]
     },
-    "expo-modules-jsi@57.1.3_react-native@0.86.2_@babel+core@7.29.13_@react-native+metro-config@0.88.1_@types+react@19.2.18_react@19.2.3": {
+    "expo-modules-core@57.0.25_react@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_react-native-worklets@0.10.1__@babel+core@7.29.13__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@types+react@19.3.0_@types+react@19.3.0": {
+      "integrity": "sha512-q6sueHJD/nIDat66BlHWB/0OZDCOOVZMgKFmdmKYq9vKP3sHmAQX5IPnVVaRwOUvB9SC6x9+PXBbRy81qDt2Yw==",
+      "dependencies": [
+        "@expo/expo-modules-macros-plugin",
+        "expo-modules-jsi@57.1.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_@types+react@19.3.0_react@19.2.3",
+        "invariant",
+        "react",
+        "react-native@0.86.2_@types+react@19.3.0_react@19.2.3",
+        "react-native-worklets@0.10.1_@babel+core@7.29.13_react@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_@types+react@19.3.0"
+      ],
+      "optionalPeers": [
+        "react-native-worklets@0.10.1_@babel+core@7.29.13_react@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_@types+react@19.3.0"
+      ]
+    },
+    "expo-modules-jsi@57.1.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_@babel+core@7.29.13_@react-native+metro-config@0.88.1_@types+react@19.2.18_react@19.2.3": {
       "integrity": "sha512-pwVO1gvObX2tpIjfJzGn86yBOmOBhMLxAD81n2SHnfZk6lvbbqQhag64MHEeh29E/8vg23/Dzmf3JTmJSwbQYQ==",
       "dependencies": [
-        "react-native"
+        "react-native@0.86.2_@types+react@19.2.18_react@19.2.3_@babel+core@7.29.13_@react-native+metro-config@0.88.1"
       ]
     },
-    "expo-notifications@57.0.25_expo@57.0.32_react@19.2.3_react-native@0.86.2_@babel+core@7.29.13_@expo+dom-webview@57.0.1_@expo+metro-runtime@57.0.18_@react-native+metro-config@0.88.1_@types+react@19.2.18_expo-linking@57.0.13_expo-router@57.0.30_react-dom@19.2.3_react-native-gesture-handler@3.5.0_react-native-reanimated@4.5.1_react-native-safe-area-context@5.7.0_react-native-screens@4.26.2_react-native-web@0.21.4_react-native-worklets@0.10.1_typescript@6.0.3": {
+    "expo-modules-jsi@57.1.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_@types+react@19.3.0_react@19.2.3": {
+      "integrity": "sha512-pwVO1gvObX2tpIjfJzGn86yBOmOBhMLxAD81n2SHnfZk6lvbbqQhag64MHEeh29E/8vg23/Dzmf3JTmJSwbQYQ==",
+      "dependencies": [
+        "react-native@0.86.2_@types+react@19.3.0_react@19.2.3"
+      ]
+    },
+    "expo-notifications@57.0.25_expo@57.0.32__react@19.2.3__react-dom@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__react-native-web@0.21.4__@types+react@19.3.0_react@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_@types+react@19.3.0": {
       "integrity": "sha512-BcF55wA8JYuCjwbdOegKBsVjwmagzDHWc4IsccMrtboF6Vfk8iO8BRYc8V+1MuqhnJTBgaNbve3ITu4JBuDYfw==",
       "dependencies": [
         "@expo/image-utils",
         "abort-controller",
         "badgin",
-        "expo",
+        "expo@57.0.32_react@19.2.3_react-dom@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_react-native-web@0.21.4_@types+react@19.3.0",
         "expo-application",
         "expo-constants",
         "react",
-        "react-native"
+        "react-native@0.86.2_@types+react@19.3.0_react@19.2.3"
       ]
     },
-    "expo-router@57.0.30_@expo+log-box@57.0.5_@expo+metro-runtime@57.0.18_expo@57.0.32_expo-constants@57.0.23_expo-linking@57.0.13_react@19.2.3_react-dom@19.2.3_react-native@0.86.2_react-native-gesture-handler@3.5.0_react-native-reanimated@4.5.1_react-native-safe-area-context@5.7.0_react-native-screens@4.26.2_react-native-web@0.21.4_@babel+core@7.29.13_@expo+dom-webview@57.0.1_@react-native+metro-config@0.88.1_@types+react@19.2.18_expo-font@57.0.4_react-native-worklets@0.10.1": {
+    "expo-router@57.0.30_@expo+log-box@57.0.5_@expo+metro-runtime@57.0.18_expo@57.0.32_expo-constants@57.0.23_expo-linking@57.0.13_react@19.2.3_react-dom@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_react-native-reanimated@4.5.1__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__react-native-worklets@0.10.1___@babel+core@7.29.13___react@19.2.3___react-native@0.86.2____@types+react@19.3.0____react@19.2.3___@types+react@19.3.0__@types+react@19.3.0_react-native-safe-area-context@5.7.0__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@types+react@19.3.0_react-native-screens@4.26.2__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@types+react@19.3.0_react-native-web@0.21.4_@expo+dom-webview@57.0.1_@types+react@19.3.0": {
       "integrity": "sha512-ia+tNRo6sEKAuaImrunWdcbagY9VJiDi3c76N1keg+sYUWTYmuOnpH9sEnzEsw5qUSDr8wAPxVY43/5o1nCT4w==",
       "dependencies": [
         "@expo/log-box",
@@ -3823,7 +3857,7 @@
         "color",
         "debug@4.4.3",
         "escape-string-regexp@4.0.0",
-        "expo",
+        "expo@57.0.32_@expo+dom-webview@57.0.1_@expo+metro-runtime@57.0.18_react@19.2.3_react-dom@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_react-native-web@0.21.4_@babel+core@7.29.13_@react-native+metro-config@0.88.1_@types+react@19.2.18_expo-linking@57.0.13_expo-router@57.0.30_react-native-gesture-handler@3.5.0__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@babel+core@7.29.13__@react-native+metro-config@0.88.1__@types+react@19.2.18_react-native-reanimated@4.5.1__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__react-native-worklets@0.10.1___@babel+core@7.29.13___@react-native+metro-config@0.88.1___react@19.2.3___react-native@0.86.2____@types+react@19.3.0____react@19.2.3___@types+react@19.2.18__@babel+core@7.29.13__@react-native+metro-config@0.88.1__@types+react@19.2.18_react-native-safe-area-context@5.7.0__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@babel+core@7.29.13__@react-native+metro-config@0.88.1__@types+react@19.2.18_react-native-screens@4.26.2__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@babel+core@7.29.13__@react-native+metro-config@0.88.1__@types+react@19.2.18_react-native-worklets@0.10.1__@babel+core@7.29.13__@react-native+metro-config@0.88.1__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@types+react@19.2.18_typescript@6.0.3",
         "expo-constants",
         "expo-glass-effect",
         "expo-linking",
@@ -3837,7 +3871,7 @@
         "react-dom",
         "react-fast-compare",
         "react-is@19.3.1",
-        "react-native",
+        "react-native@0.86.2_@types+react@19.3.0_react@19.2.3",
         "react-native-drawer-layout",
         "react-native-gesture-handler",
         "react-native-reanimated",
@@ -3857,67 +3891,67 @@
         "react-native-web"
       ]
     },
-    "expo-screen-orientation@57.0.3_expo@57.0.32_react-native@0.86.2_@babel+core@7.29.13_@expo+dom-webview@57.0.1_@expo+metro-runtime@57.0.18_@react-native+metro-config@0.88.1_@types+react@19.2.18_expo-linking@57.0.13_expo-router@57.0.30_react@19.2.3_react-dom@19.2.3_react-native-gesture-handler@3.5.0_react-native-reanimated@4.5.1_react-native-safe-area-context@5.7.0_react-native-screens@4.26.2_react-native-web@0.21.4_react-native-worklets@0.10.1_typescript@6.0.3": {
+    "expo-screen-orientation@57.0.3_expo@57.0.32__react@19.2.3__react-dom@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__react-native-web@0.21.4__@types+react@19.3.0_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_@types+react@19.3.0_react@19.2.3": {
       "integrity": "sha512-hKtTKAoinahalc5nzMmGfVtj1NfVj4pFJycJGy/HUzrBlu+1rOnHdGUKgaSKkMhr5Mr9GxAxcuLvuM+oyFNFLA==",
       "dependencies": [
-        "expo",
-        "react-native"
+        "expo@57.0.32_react@19.2.3_react-dom@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_react-native-web@0.21.4_@types+react@19.3.0",
+        "react-native@0.86.2_@types+react@19.3.0_react@19.2.3"
       ]
     },
     "expo-server@57.0.3": {
       "integrity": "sha512-aK+LdKzauHSGmsOStZtyxdzv0zWssCkxTw3m4QuOhfDSJsZaMRTd9O41d8ixU/QfELTbaJ0oRNcF7JFV/7O9YQ=="
     },
-    "expo-splash-screen@57.0.11_expo@57.0.32_@babel+core@7.29.13_@expo+dom-webview@57.0.1_@expo+metro-runtime@57.0.18_@react-native+metro-config@0.88.1_@types+react@19.2.18_expo-linking@57.0.13_expo-router@57.0.30_react@19.2.3_react-dom@19.2.3_react-native@0.86.2_react-native-gesture-handler@3.5.0_react-native-reanimated@4.5.1_react-native-safe-area-context@5.7.0_react-native-screens@4.26.2_react-native-web@0.21.4_react-native-worklets@0.10.1_typescript@6.0.3": {
+    "expo-splash-screen@57.0.11_expo@57.0.32__react@19.2.3__react-dom@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__react-native-web@0.21.4__@types+react@19.3.0_@types+react@19.3.0_react@19.2.3": {
       "integrity": "sha512-ylU1p37jhszRK5uhnFMmMdW2zlPHUAZkX7QnzHX5HPeN/rus/UiiG00oWUAb2D++2avTw3m6Zm3eqnSThqMCKA==",
       "dependencies": [
         "@expo/config-plugins",
         "@expo/image-utils",
-        "expo",
+        "expo@57.0.32_react@19.2.3_react-dom@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_react-native-web@0.21.4_@types+react@19.3.0",
         "xml2js"
       ]
     },
-    "expo-status-bar@57.0.1_expo@57.0.32_react@19.2.3_react-native@0.86.2_@babel+core@7.29.13_@expo+dom-webview@57.0.1_@expo+metro-runtime@57.0.18_@react-native+metro-config@0.88.1_@types+react@19.2.18_expo-linking@57.0.13_expo-router@57.0.30_react-dom@19.2.3_react-native-gesture-handler@3.5.0_react-native-reanimated@4.5.1_react-native-safe-area-context@5.7.0_react-native-screens@4.26.2_react-native-web@0.21.4_react-native-worklets@0.10.1_typescript@6.0.3": {
+    "expo-status-bar@57.0.1_expo@57.0.32__react@19.2.3__react-dom@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__react-native-web@0.21.4__@types+react@19.3.0_react@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_@types+react@19.3.0": {
       "integrity": "sha512-Xwaq1gAoVRWx5dPG5VhT5RSbnI9OilhZnO5qoPBnUaBAa5VzRzfdS8q0/bsPt0jR2DKLtGuP0bQ6efMJ4RIMDg==",
       "dependencies": [
-        "expo",
+        "expo@57.0.32_react@19.2.3_react-dom@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_react-native-web@0.21.4_@types+react@19.3.0",
         "react",
-        "react-native"
+        "react-native@0.86.2_@types+react@19.3.0_react@19.2.3"
       ]
     },
     "expo-structured-headers@57.0.1": {
       "integrity": "sha512-5VwmitVr2J716pOuHXWmEnHbZhZg63DBOZKH5tj0SR8Sps/3jSAf9wf9+UGTKcKgAxGf1PPwQ0lAQ2bG3RwjAg=="
     },
-    "expo-symbols@57.0.3_expo@57.0.32_expo-font@57.0.4_react@19.2.3_react-native@0.86.2_@babel+core@7.29.13_@expo+dom-webview@57.0.1_@expo+metro-runtime@57.0.18_@react-native+metro-config@0.88.1_@types+react@19.2.18_react-dom@19.2.3_react-native-web@0.21.4": {
+    "expo-symbols@57.0.3_expo@57.0.32__@expo+dom-webview@57.0.1__@expo+metro-runtime@57.0.18__react@19.2.3__react-dom@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__react-native-web@0.21.4__@babel+core@7.29.13__@react-native+metro-config@0.88.1__@types+react@19.2.18__expo-linking@57.0.13__expo-router@57.0.30__react-native-gesture-handler@3.5.0___react@19.2.3___react-native@0.86.2____@types+react@19.3.0____react@19.2.3___@babel+core@7.29.13___@react-native+metro-config@0.88.1___@types+react@19.2.18__react-native-reanimated@4.5.1___react@19.2.3___react-native@0.86.2____@types+react@19.3.0____react@19.2.3___react-native-worklets@0.10.1____@babel+core@7.29.13____@react-native+metro-config@0.88.1____react@19.2.3____react-native@0.86.2_____@types+react@19.3.0_____react@19.2.3____@types+react@19.2.18___@babel+core@7.29.13___@react-native+metro-config@0.88.1___@types+react@19.2.18__react-native-safe-area-context@5.7.0___react@19.2.3___react-native@0.86.2____@types+react@19.3.0____react@19.2.3___@babel+core@7.29.13___@react-native+metro-config@0.88.1___@types+react@19.2.18__react-native-screens@4.26.2___react@19.2.3___react-native@0.86.2____@types+react@19.3.0____react@19.2.3___@babel+core@7.29.13___@react-native+metro-config@0.88.1___@types+react@19.2.18__react-native-worklets@0.10.1___@babel+core@7.29.13___@react-native+metro-config@0.88.1___react@19.2.3___react-native@0.86.2____@types+react@19.3.0____react@19.2.3___@types+react@19.2.18__typescript@6.0.3_expo-font@57.0.4__expo@57.0.32__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@babel+core@7.29.13__@expo+dom-webview@57.0.1__@expo+metro-runtime@57.0.18__@react-native+metro-config@0.88.1__@types+react@19.2.18__expo-linking@57.0.13__expo-router@57.0.30__react-dom@19.2.3__react-native-gesture-handler@3.5.0___react@19.2.3___react-native@0.86.2____@types+react@19.3.0____react@19.2.3___@babel+core@7.29.13___@react-native+metro-config@0.88.1___@types+react@19.2.18__react-native-reanimated@4.5.1___react@19.2.3___react-native@0.86.2____@types+react@19.3.0____react@19.2.3___react-native-worklets@0.10.1____@babel+core@7.29.13____@react-native+metro-config@0.88.1____react@19.2.3____react-native@0.86.2_____@types+react@19.3.0_____react@19.2.3____@types+react@19.2.18___@babel+core@7.29.13___@react-native+metro-config@0.88.1___@types+react@19.2.18__react-native-safe-area-context@5.7.0___react@19.2.3___react-native@0.86.2____@types+react@19.3.0____react@19.2.3___@babel+core@7.29.13___@react-native+metro-config@0.88.1___@types+react@19.2.18__react-native-screens@4.26.2___react@19.2.3___react-native@0.86.2____@types+react@19.3.0____react@19.2.3___@babel+core@7.29.13___@react-native+metro-config@0.88.1___@types+react@19.2.18__react-native-web@0.21.4__react-native-worklets@0.10.1___@babel+core@7.29.13___@react-native+metro-config@0.88.1___react@19.2.3___react-native@0.86.2____@types+react@19.3.0____react@19.2.3___@types+react@19.2.18__typescript@6.0.3_react@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_@expo+dom-webview@57.0.1__expo@57.0.32__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@babel+core@7.29.13__@expo+metro-runtime@57.0.18__@react-native+metro-config@0.88.1__@types+react@19.2.18__react-dom@19.2.3__react-native-web@0.21.4_@expo+metro-runtime@57.0.18__@expo+log-box@57.0.5__expo@57.0.32__react@19.2.3__react-dom@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@babel+core@7.29.13__@expo+dom-webview@57.0.1__@react-native+metro-config@0.88.1__@types+react@19.2.18__react-native-web@0.21.4_@types+react@19.3.0_react-dom@19.2.3_react-native-web@0.21.4": {
       "integrity": "sha512-uuK5yHLVR7kExUCrO/ItBvp/kp1maQ9Nkb6KvNy5ZUQnN0NMKwuhJ4GvbfS9N3ACmvCjTT4gKvg4yH5UuKIYNA==",
       "dependencies": [
         "@expo-google-fonts/material-symbols",
-        "expo",
-        "expo-font",
+        "expo@57.0.32_@expo+dom-webview@57.0.1_@expo+metro-runtime@57.0.18_react@19.2.3_react-dom@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_react-native-web@0.21.4_@babel+core@7.29.13_@react-native+metro-config@0.88.1_@types+react@19.2.18_expo-linking@57.0.13_expo-router@57.0.30_react-native-gesture-handler@3.5.0__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@babel+core@7.29.13__@react-native+metro-config@0.88.1__@types+react@19.2.18_react-native-reanimated@4.5.1__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__react-native-worklets@0.10.1___@babel+core@7.29.13___@react-native+metro-config@0.88.1___react@19.2.3___react-native@0.86.2____@types+react@19.3.0____react@19.2.3___@types+react@19.2.18__@babel+core@7.29.13__@react-native+metro-config@0.88.1__@types+react@19.2.18_react-native-safe-area-context@5.7.0__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@babel+core@7.29.13__@react-native+metro-config@0.88.1__@types+react@19.2.18_react-native-screens@4.26.2__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@babel+core@7.29.13__@react-native+metro-config@0.88.1__@types+react@19.2.18_react-native-worklets@0.10.1__@babel+core@7.29.13__@react-native+metro-config@0.88.1__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@types+react@19.2.18_typescript@6.0.3",
+        "expo-font@57.0.4_expo@57.0.32_react@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_@babel+core@7.29.13_@expo+dom-webview@57.0.1_@expo+metro-runtime@57.0.18_@react-native+metro-config@0.88.1_@types+react@19.2.18_expo-linking@57.0.13_expo-router@57.0.30_react-dom@19.2.3_react-native-gesture-handler@3.5.0__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@babel+core@7.29.13__@react-native+metro-config@0.88.1__@types+react@19.2.18_react-native-reanimated@4.5.1__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__react-native-worklets@0.10.1___@babel+core@7.29.13___@react-native+metro-config@0.88.1___react@19.2.3___react-native@0.86.2____@types+react@19.3.0____react@19.2.3___@types+react@19.2.18__@babel+core@7.29.13__@react-native+metro-config@0.88.1__@types+react@19.2.18_react-native-safe-area-context@5.7.0__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@babel+core@7.29.13__@react-native+metro-config@0.88.1__@types+react@19.2.18_react-native-screens@4.26.2__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@babel+core@7.29.13__@react-native+metro-config@0.88.1__@types+react@19.2.18_react-native-web@0.21.4_react-native-worklets@0.10.1__@babel+core@7.29.13__@react-native+metro-config@0.88.1__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@types+react@19.2.18_typescript@6.0.3",
         "react",
-        "react-native",
+        "react-native@0.86.2_@types+react@19.3.0_react@19.2.3",
         "sf-symbols-typescript"
       ]
     },
-    "expo-system-ui@57.0.4_expo@57.0.32_react-native@0.86.2_react-native-web@0.21.4_@babel+core@7.29.13_@expo+dom-webview@57.0.1_@expo+metro-runtime@57.0.18_@react-native+metro-config@0.88.1_@types+react@19.2.18_expo-linking@57.0.13_expo-router@57.0.30_react@19.2.3_react-dom@19.2.3_react-native-gesture-handler@3.5.0_react-native-reanimated@4.5.1_react-native-safe-area-context@5.7.0_react-native-screens@4.26.2_react-native-worklets@0.10.1_typescript@6.0.3": {
+    "expo-system-ui@57.0.4_expo@57.0.32__react@19.2.3__react-dom@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__react-native-web@0.21.4__@types+react@19.3.0_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_react-native-web@0.21.4_@types+react@19.3.0_react@19.2.3": {
       "integrity": "sha512-z//rxQJzhTNA1PcKrUtWmrd21jAS3nEDu1b0n8B/7LTTR933OcsZYP1HnbaZifuo2ZH/h7nce2Ow61WZ1Ig2bg==",
       "dependencies": [
         "@react-native/normalize-colors@0.86.3",
         "debug@4.4.3",
-        "expo",
-        "react-native",
+        "expo@57.0.32_react@19.2.3_react-dom@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_react-native-web@0.21.4_@types+react@19.3.0",
+        "react-native@0.86.2_@types+react@19.3.0_react@19.2.3",
         "react-native-web"
       ],
       "optionalPeers": [
         "react-native-web"
       ]
     },
-    "expo-updates-interface@57.0.2_expo@57.0.32_@babel+core@7.29.13_@expo+dom-webview@57.0.1_@expo+metro-runtime@57.0.18_@react-native+metro-config@0.88.1_@types+react@19.2.18_expo-linking@57.0.13_expo-router@57.0.30_react@19.2.3_react-dom@19.2.3_react-native@0.86.2_react-native-gesture-handler@3.5.0_react-native-reanimated@4.5.1_react-native-safe-area-context@5.7.0_react-native-screens@4.26.2_react-native-web@0.21.4_react-native-worklets@0.10.1_typescript@6.0.3": {
+    "expo-updates-interface@57.0.2_expo@57.0.32__react@19.2.3__react-dom@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__react-native-web@0.21.4__@types+react@19.3.0_@types+react@19.3.0_react@19.2.3": {
       "integrity": "sha512-x3SA5toiHZEkW+5oeNdUM1Rvt6M3ExegQsSwS3Z1+S9gn9utGYTGBkb8MBQivhjIZiRlQYDIhauxA8kySQEWtQ==",
       "dependencies": [
-        "expo"
+        "expo@57.0.32_react@19.2.3_react-dom@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_react-native-web@0.21.4_@types+react@19.3.0"
       ]
     },
-    "expo-updates@57.0.27_expo@57.0.32_expo-dev-client@57.0.21_react@19.2.3_react-native@0.86.2_@babel+core@7.29.13_@expo+dom-webview@57.0.1_@expo+metro-runtime@57.0.18_@react-native+metro-config@0.88.1_@types+react@19.2.18_expo-linking@57.0.13_expo-router@57.0.30_react-dom@19.2.3_react-native-gesture-handler@3.5.0_react-native-reanimated@4.5.1_react-native-safe-area-context@5.7.0_react-native-screens@4.26.2_react-native-web@0.21.4_react-native-worklets@0.10.1_typescript@6.0.3": {
+    "expo-updates@57.0.27_expo@57.0.32__react@19.2.3__react-dom@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__react-native-web@0.21.4__@types+react@19.3.0_expo-dev-client@57.0.21__expo@57.0.32___react@19.2.3___react-dom@19.2.3___react-native@0.86.2____@types+react@19.3.0____react@19.2.3___react-native-web@0.21.4___@types+react@19.3.0__@types+react@19.3.0__react@19.2.3_react@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_@types+react@19.3.0": {
       "integrity": "sha512-v+L9NSMydiphVLDy6bOBPjNuXIy9X9Oekq8aFOtuJtQdHEJl5zSlDxW/awPI559NS4KKlGwMo0KRTtPMU9fiBg==",
       "dependencies": [
         "@expo/code-signing-certificates",
@@ -3926,7 +3960,7 @@
         "arg@4.1.3",
         "chalk@4.1.2",
         "debug@4.4.3",
-        "expo",
+        "expo@57.0.32_react@19.2.3_react-dom@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_react-native-web@0.21.4_@types+react@19.3.0",
         "expo-dev-client",
         "expo-eas-client",
         "expo-manifests",
@@ -3937,7 +3971,7 @@
         "ignore@5.3.2",
         "nullthrows",
         "react",
-        "react-native",
+        "react-native@0.86.2_@types+react@19.3.0_react@19.2.3",
         "resolve-from@5.0.0"
       ],
       "optionalPeers": [
@@ -3945,21 +3979,21 @@
       ],
       "bin": true
     },
-    "expo-web-browser@57.0.3_expo@57.0.32_react-native@0.86.2_@babel+core@7.29.13_@expo+dom-webview@57.0.1_@expo+metro-runtime@57.0.18_@react-native+metro-config@0.88.1_@types+react@19.2.18_expo-linking@57.0.13_expo-router@57.0.30_react@19.2.3_react-dom@19.2.3_react-native-gesture-handler@3.5.0_react-native-reanimated@4.5.1_react-native-safe-area-context@5.7.0_react-native-screens@4.26.2_react-native-web@0.21.4_react-native-worklets@0.10.1_typescript@6.0.3": {
+    "expo-web-browser@57.0.3_expo@57.0.32__react@19.2.3__react-dom@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__react-native-web@0.21.4__@types+react@19.3.0_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_@types+react@19.3.0_react@19.2.3": {
       "integrity": "sha512-+ecvhyS/PdWkpv4ai6FF1Trd6Y/4kn/eQ3O86mie2ecU3w+I8bKZh13kppY/jw1uSL7yikt03L5W/iiHojrFwQ==",
       "dependencies": [
-        "expo",
-        "react-native"
+        "expo@57.0.32_react@19.2.3_react-dom@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_react-native-web@0.21.4_@types+react@19.3.0",
+        "react-native@0.86.2_@types+react@19.3.0_react@19.2.3"
       ]
     },
-    "expo@57.0.32_@expo+dom-webview@57.0.1_@expo+metro-runtime@57.0.18_react@19.2.3_react-dom@19.2.3_react-native@0.86.2_react-native-web@0.21.4_@babel+core@7.29.13_@react-native+metro-config@0.88.1_@types+react@19.2.18_expo-linking@57.0.13_expo-router@57.0.30_react-native-gesture-handler@3.5.0_react-native-reanimated@4.5.1_react-native-safe-area-context@5.7.0_react-native-screens@4.26.2_react-native-worklets@0.10.1_typescript@6.0.3": {
+    "expo@57.0.32_@expo+dom-webview@57.0.1_@expo+metro-runtime@57.0.18_react@19.2.3_react-dom@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_react-native-web@0.21.4_@babel+core@7.29.13_@react-native+metro-config@0.88.1_@types+react@19.2.18_expo-linking@57.0.13_expo-router@57.0.30_react-native-gesture-handler@3.5.0__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@babel+core@7.29.13__@react-native+metro-config@0.88.1__@types+react@19.2.18_react-native-reanimated@4.5.1__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__react-native-worklets@0.10.1___@babel+core@7.29.13___@react-native+metro-config@0.88.1___react@19.2.3___react-native@0.86.2____@types+react@19.3.0____react@19.2.3___@types+react@19.2.18__@babel+core@7.29.13__@react-native+metro-config@0.88.1__@types+react@19.2.18_react-native-safe-area-context@5.7.0__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@babel+core@7.29.13__@react-native+metro-config@0.88.1__@types+react@19.2.18_react-native-screens@4.26.2__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@babel+core@7.29.13__@react-native+metro-config@0.88.1__@types+react@19.2.18_react-native-worklets@0.10.1__@babel+core@7.29.13__@react-native+metro-config@0.88.1__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@types+react@19.2.18_typescript@6.0.3": {
       "integrity": "sha512-1SuRh1bCZfj/nRCUlgySyQ40uJ7Z1geeG1uAjqceVT16S0Ou9yE4U1AMTDWBz3hLPRRvjCneAJkf20630rmjAQ==",
       "dependencies": [
         "@babel/runtime",
         "@expo/cli",
         "@expo/config",
         "@expo/config-plugins",
-        "@expo/devtools",
+        "@expo/devtools@57.0.1_react@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_@babel+core@7.29.13_@react-native+metro-config@0.88.1_@types+react@19.2.18",
         "@expo/dom-webview",
         "@expo/fingerprint",
         "@expo/local-build-cache-provider",
@@ -3972,14 +4006,53 @@
         "expo-asset",
         "expo-constants",
         "expo-file-system",
-        "expo-font",
+        "expo-font@57.0.4_expo@57.0.32_react@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_@babel+core@7.29.13_@expo+dom-webview@57.0.1_@expo+metro-runtime@57.0.18_@react-native+metro-config@0.88.1_@types+react@19.2.18_expo-linking@57.0.13_expo-router@57.0.30_react-dom@19.2.3_react-native-gesture-handler@3.5.0__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@babel+core@7.29.13__@react-native+metro-config@0.88.1__@types+react@19.2.18_react-native-reanimated@4.5.1__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__react-native-worklets@0.10.1___@babel+core@7.29.13___@react-native+metro-config@0.88.1___react@19.2.3___react-native@0.86.2____@types+react@19.3.0____react@19.2.3___@types+react@19.2.18__@babel+core@7.29.13__@react-native+metro-config@0.88.1__@types+react@19.2.18_react-native-safe-area-context@5.7.0__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@babel+core@7.29.13__@react-native+metro-config@0.88.1__@types+react@19.2.18_react-native-screens@4.26.2__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@babel+core@7.29.13__@react-native+metro-config@0.88.1__@types+react@19.2.18_react-native-web@0.21.4_react-native-worklets@0.10.1__@babel+core@7.29.13__@react-native+metro-config@0.88.1__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@types+react@19.2.18_typescript@6.0.3",
         "expo-keep-awake",
         "expo-modules-autolinking",
-        "expo-modules-core",
+        "expo-modules-core@57.0.25_react@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_react-native-worklets@0.10.1__@babel+core@7.29.13__@react-native+metro-config@0.88.1__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@types+react@19.2.18_@babel+core@7.29.13_@react-native+metro-config@0.88.1_@types+react@19.2.18",
+        "pretty-format",
+        "react-dom",
+        "react-native@0.86.2_@types+react@19.3.0_react@19.2.3",
+        "react-native-web",
+        "react-refresh",
+        "whatwg-url-minimum"
+      ],
+      "optionalPeers": [
+        "@expo/dom-webview",
+        "@expo/metro-runtime",
+        "react-dom",
+        "react-native-web"
+      ],
+      "bin": true
+    },
+    "expo@57.0.32_react@19.2.3_react-dom@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_react-native-web@0.21.4_@types+react@19.3.0": {
+      "integrity": "sha512-1SuRh1bCZfj/nRCUlgySyQ40uJ7Z1geeG1uAjqceVT16S0Ou9yE4U1AMTDWBz3hLPRRvjCneAJkf20630rmjAQ==",
+      "dependencies": [
+        "@babel/runtime",
+        "@expo/cli",
+        "@expo/config",
+        "@expo/config-plugins",
+        "@expo/devtools@57.0.1_react@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_@types+react@19.3.0",
+        "@expo/dom-webview",
+        "@expo/fingerprint",
+        "@expo/local-build-cache-provider",
+        "@expo/log-box",
+        "@expo/metro",
+        "@expo/metro-config",
+        "@expo/metro-runtime",
+        "@ungap/structured-clone",
+        "babel-preset-expo",
+        "expo-asset",
+        "expo-constants",
+        "expo-file-system",
+        "expo-font@57.0.4_expo@57.0.32_react@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_@types+react@19.3.0",
+        "expo-keep-awake",
+        "expo-modules-autolinking",
+        "expo-modules-core@57.0.25_react@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_react-native-worklets@0.10.1__@babel+core@7.29.13__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@types+react@19.3.0_@types+react@19.3.0",
         "pretty-format",
         "react",
         "react-dom",
-        "react-native",
+        "react-native@0.86.2_@types+react@19.3.0_react@19.2.3",
         "react-native-web",
         "react-refresh",
         "whatwg-url-minimum"
@@ -5751,92 +5824,92 @@
     "react-is@19.3.1": {
       "integrity": "sha512-RRieF6IyxQBkcK6pP8xOHprLTPW6QjRkbGdImtqNme+/hYVwCZkLQLdlZGOhUqXwkS9IEynaGvPJtv6XB/cz0Q=="
     },
-    "react-native-drawer-layout@4.2.12_react@19.2.3_react-native@0.86.2_react-native-gesture-handler@3.5.0_react-native-reanimated@4.5.1_@babel+core@7.29.13_@react-native+metro-config@0.88.1_@types+react@19.2.18_react-native-worklets@0.10.1": {
+    "react-native-drawer-layout@4.2.12_react@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_react-native-gesture-handler@3.5.0__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@types+react@19.3.0_react-native-reanimated@4.5.1__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__react-native-worklets@0.10.1___@babel+core@7.29.13___react@19.2.3___react-native@0.86.2____@types+react@19.3.0____react@19.2.3___@types+react@19.3.0__@types+react@19.3.0_@types+react@19.3.0": {
       "integrity": "sha512-qYmntEctkMSodN7pnC2llV21nswImLFPHJeT3PJXSJqZdU4jzDATR8iVi66sXkrtoOLJ2+EvXxgd7sMMpV4ViA==",
       "dependencies": [
         "color",
         "react",
-        "react-native",
+        "react-native@0.86.2_@types+react@19.3.0_react@19.2.3",
         "react-native-gesture-handler",
         "react-native-reanimated",
         "use-latest-callback"
       ]
     },
-    "react-native-gesture-handler@3.5.0_react@19.2.3_react-native@0.86.2_@babel+core@7.29.13_@react-native+metro-config@0.88.1_@types+react@19.2.18": {
+    "react-native-gesture-handler@3.5.0_react@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_@types+react@19.3.0": {
       "integrity": "sha512-bm8yepwMBUhEOSeU7WQbNNrstD0Hbv6i+XsApARBJSlb+WlRvyaQsobi+tZ5Uyr5kDVgXzg6kPb+CWY9zvyfEw==",
       "dependencies": [
         "@types/react-test-renderer",
         "invariant",
         "react",
-        "react-native"
+        "react-native@0.86.2_@types+react@19.3.0_react@19.2.3"
       ]
     },
-    "react-native-is-edge-to-edge@1.3.1_react@19.2.3_react-native@0.86.2_@babel+core@7.29.13_@react-native+metro-config@0.88.1_@types+react@19.2.18": {
+    "react-native-is-edge-to-edge@1.3.1_react@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_@types+react@19.3.0": {
       "integrity": "sha512-NIXU/iT5+ORyCc7p0z2nnlkouYKX425vuU1OEm6bMMtWWR9yvb+Xg5AZmImTKoF9abxCPqrKC3rOZsKzUYgYZA==",
       "dependencies": [
         "react",
-        "react-native"
+        "react-native@0.86.2_@types+react@19.3.0_react@19.2.3"
       ]
     },
-    "react-native-mmkv@4.3.2_react@19.2.3_react-native@0.86.2_react-native-nitro-modules@0.37.2_@babel+core@7.29.13_@react-native+metro-config@0.88.1_@types+react@19.2.18": {
+    "react-native-mmkv@4.3.2_react@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_@types+react@19.3.0": {
       "integrity": "sha512-49OAyfkg0/TMWiWELZN6VuVQPZPhizwL4DTmp8b7B1md3dB/s3LH3mGfC3T+lp9W0y/rqxZMEnotLFTIbOAenQ==",
       "dependencies": [
         "react",
-        "react-native",
+        "react-native@0.86.2_@types+react@19.3.0_react@19.2.3",
         "react-native-nitro-modules"
       ]
     },
-    "react-native-nitro-modules@0.37.2_react@19.2.3_react-native@0.86.2_@babel+core@7.29.13_@react-native+metro-config@0.88.1_@types+react@19.2.18": {
+    "react-native-nitro-modules@0.37.2_react@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_@types+react@19.3.0": {
       "integrity": "sha512-Odnrq/p6/q0R01qZlkqeXu9VHHMuGEnZZmyxMvehEu6QiACNHhBCmAHgyBDqOSo9Lb3G0TscFAT+HG0uxsR/GA==",
       "dependencies": [
         "nitro-core",
         "react",
-        "react-native"
+        "react-native@0.86.2_@types+react@19.3.0_react@19.2.3"
       ]
     },
-    "react-native-purchases@9.15.3_react@19.2.3_react-native@0.86.2_react-native-web@0.21.4_@babel+core@7.29.13_@react-native+metro-config@0.88.1_@types+react@19.2.18_react-dom@19.2.3": {
+    "react-native-purchases@9.15.3_react@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_react-native-web@0.21.4_@types+react@19.3.0": {
       "integrity": "sha512-wR0muaUXxDZpdsg8/sxh5Az1YFXJu/4WkQhwqqzc1ULHIpciyA5rZNjpfHLhB0DTJuTe0pLuL8fqkAAZMep5Lg==",
       "dependencies": [
         "@revenuecat/purchases-js-hybrid-mappings",
         "@revenuecat/purchases-typescript-internal",
         "react",
-        "react-native",
+        "react-native@0.86.2_@types+react@19.3.0_react@19.2.3",
         "react-native-web"
       ],
       "optionalPeers": [
         "react-native-web"
       ]
     },
-    "react-native-reanimated@4.5.1_react@19.2.3_react-native@0.86.2_react-native-worklets@0.10.1_@babel+core@7.29.13_@react-native+metro-config@0.88.1_@types+react@19.2.18": {
+    "react-native-reanimated@4.5.1_react@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_react-native-worklets@0.10.1__@babel+core@7.29.13__react@19.2.3__react-native@0.86.2___@types+react@19.3.0___react@19.2.3__@types+react@19.3.0_@types+react@19.3.0": {
       "integrity": "sha512-RnMvtDuR+68ig864gAvZCOdZehqhC5rFmMo0kn+ARfgVSTvFeF6IFLBVgMPUu0KwihaapEyW24WRi6nEyy1kSA==",
       "dependencies": [
         "react",
-        "react-native",
+        "react-native@0.86.2_@types+react@19.3.0_react@19.2.3",
         "react-native-is-edge-to-edge",
-        "react-native-worklets",
+        "react-native-worklets@0.10.1_@babel+core@7.29.13_react@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_@types+react@19.3.0",
         "semver@7.8.6"
       ]
     },
-    "react-native-safe-area-context@5.7.0_react@19.2.3_react-native@0.86.2_@babel+core@7.29.13_@react-native+metro-config@0.88.1_@types+react@19.2.18": {
+    "react-native-safe-area-context@5.7.0_react@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_@types+react@19.3.0": {
       "integrity": "sha512-/9/MtQz8ODphjsLdZ+GZAIcC/RtoqW9EeShf7Uvnfgm/pzYrJ75y3PV/J1wuAV1T5Dye5ygq4EAW20RoBq0ABQ==",
       "dependencies": [
         "react",
-        "react-native"
+        "react-native@0.86.2_@types+react@19.3.0_react@19.2.3"
       ]
     },
-    "react-native-screens@4.26.2_react@19.2.3_react-native@0.86.2_@babel+core@7.29.13_@react-native+metro-config@0.88.1_@types+react@19.2.18": {
+    "react-native-screens@4.26.2_react@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_@types+react@19.3.0": {
       "integrity": "sha512-2XnWsZToKj76trGtEZzx5ELD/qOICFEprEeUntImmitQFVUkea27fiWdUSITArI356Y1qynpXZINW+Unbhky/A==",
       "dependencies": [
         "react",
         "react-freeze",
-        "react-native",
+        "react-native@0.86.2_@types+react@19.3.0_react@19.2.3",
         "warn-once"
       ]
     },
-    "react-native-url-polyfill@3.0.0_react-native@0.86.2_@babel+core@7.29.13_@react-native+metro-config@0.88.1_@types+react@19.2.18_react@19.2.3": {
+    "react-native-url-polyfill@3.0.0_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_@types+react@19.3.0_react@19.2.3": {
       "integrity": "sha512-aA5CiuUCUb/lbrliVCJ6lZ17/RpNJzvTO/C7gC/YmDQhTUoRD5q5HlJfwLWcxz4VgAhHwXKzhxH+wUN24tAdqg==",
       "dependencies": [
-        "react-native",
+        "react-native@0.86.2_@types+react@19.3.0_react@19.2.3",
         "whatwg-url-without-unicode"
       ]
     },
@@ -5855,7 +5928,27 @@
         "styleq"
       ]
     },
-    "react-native-worklets@0.10.1_@babel+core@7.29.13_@react-native+metro-config@0.88.1_react@19.2.3_react-native@0.86.2_@types+react@19.2.18": {
+    "react-native-worklets@0.10.1_@babel+core@7.29.13_@react-native+metro-config@0.88.1_react@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_@types+react@19.2.18": {
+      "integrity": "sha512-62mRM19bDpfpdI8HLkEErcdOsrAPDtE9lA/sw+5lLRpzBHNhxaoj9QyY2KjXqUmirelxkX4zuPGTC3VdA0feJA==",
+      "dependencies": [
+        "@babel/core",
+        "@babel/plugin-transform-arrow-functions",
+        "@babel/plugin-transform-class-properties",
+        "@babel/plugin-transform-classes",
+        "@babel/plugin-transform-nullish-coalescing-operator",
+        "@babel/plugin-transform-optional-chaining",
+        "@babel/plugin-transform-shorthand-properties",
+        "@babel/plugin-transform-template-literals",
+        "@babel/plugin-transform-unicode-regex",
+        "@babel/preset-typescript",
+        "@babel/types",
+        "@react-native/metro-config",
+        "convert-source-map",
+        "react-native@0.86.2_@types+react@19.2.18_react@19.2.3_@babel+core@7.29.13_@react-native+metro-config@0.88.1",
+        "semver@7.8.6"
+      ]
+    },
+    "react-native-worklets@0.10.1_@babel+core@7.29.13_react@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_@types+react@19.3.0": {
       "integrity": "sha512-62mRM19bDpfpdI8HLkEErcdOsrAPDtE9lA/sw+5lLRpzBHNhxaoj9QyY2KjXqUmirelxkX4zuPGTC3VdA0feJA==",
       "dependencies": [
         "@babel/core",
@@ -5872,11 +5965,49 @@
         "@react-native/metro-config",
         "convert-source-map",
         "react",
-        "react-native",
+        "react-native@0.86.2_@types+react@19.3.0_react@19.2.3",
         "semver@7.8.6"
       ]
     },
     "react-native@0.86.2_@types+react@19.2.18_react@19.2.3_@babel+core@7.29.13_@react-native+metro-config@0.88.1": {
+      "integrity": "sha512-zbJXGZpwfZGA79Z9ob6Atvfx4nAQL8yJBa35s58E4Oo+khPykfQP2sTeumkKbjwajFYfVayg8pj7Il9nIfTk7A==",
+      "dependencies": [
+        "@react-native/assets-registry",
+        "@react-native/codegen@0.86.2_@babel+core@7.29.13",
+        "@react-native/community-cli-plugin",
+        "@react-native/gradle-plugin",
+        "@react-native/js-polyfills@0.86.2",
+        "@react-native/normalize-colors@0.86.2",
+        "@react-native/virtualized-lists",
+        "abort-controller",
+        "anser",
+        "ansi-regex@5.0.1",
+        "babel-plugin-syntax-hermes-parser",
+        "base64-js",
+        "commander@12.1.0",
+        "flow-enums-runtime",
+        "hermes-compiler",
+        "invariant",
+        "memoize-one@5.2.1",
+        "metro-runtime@0.84.5",
+        "metro-source-map@0.84.6",
+        "nullthrows",
+        "pretty-format",
+        "promise@8.3.0",
+        "react-devtools-core",
+        "react-refresh",
+        "regenerator-runtime",
+        "scheduler@0.27.0",
+        "semver@7.8.6",
+        "stacktrace-parser",
+        "tinyglobby",
+        "whatwg-fetch",
+        "ws@7.5.13",
+        "yargs"
+      ],
+      "bin": true
+    },
+    "react-native@0.86.2_@types+react@19.3.0_react@19.2.3": {
       "integrity": "sha512-zbJXGZpwfZGA79Z9ob6Atvfx4nAQL8yJBa35s58E4Oo+khPykfQP2sTeumkKbjwajFYfVayg8pj7Il9nIfTk7A==",
       "dependencies": [
         "@react-native/assets-registry",
@@ -5922,7 +6053,7 @@
     "react-refresh@0.14.2": {
       "integrity": "sha512-jCvmsr+1IUSMUyzOkRcvnVbX3ZYC6g9TDrDbFuFmRDq7PD4yaGbLKNQL6k2jnArV8hjYxh7hVhAZB6s9HDGpZA=="
     },
-    "react-remove-scroll-bar@2.3.8_@types+react@19.2.18_react@19.2.3": {
+    "react-remove-scroll-bar@2.3.8_@types+react@19.3.0_react@19.2.3": {
       "integrity": "sha512-9r+yi9+mgU33AKcj6IbT9oRCO78WriSj6t/cF8DWBZJ9aOGPOTEDvdUDz1FwKim7QXWwmHqtdHnRJfhAxEG46Q==",
       "dependencies": [
         "@types/react",
@@ -5934,7 +6065,7 @@
         "@types/react"
       ]
     },
-    "react-remove-scroll@2.7.2_@types+react@19.2.18_react@19.2.3": {
+    "react-remove-scroll@2.7.2_@types+react@19.3.0_react@19.2.3": {
       "integrity": "sha512-Iqb9NjCCTt6Hf+vOdNIZGdTiH1QSqr27H/Ek9sv/a97gfueI/5h1s3yRi1nngzMUaOOToin5dI1dXKdXiF+u0Q==",
       "dependencies": [
         "@types/react",
@@ -5949,7 +6080,7 @@
         "@types/react"
       ]
     },
-    "react-style-singleton@2.2.3_@types+react@19.2.18_react@19.2.3": {
+    "react-style-singleton@2.2.3_@types+react@19.3.0_react@19.2.3": {
       "integrity": "sha512-b6jSvxvVnyptAiLjbkWLE/lOnR4lfTtDAl+eUC7RZy+QQWc6wRzIV2CE6xBuMmDxc2qIihtDCZD5NPOFl7fRBQ==",
       "dependencies": [
         "@types/react",
@@ -5961,12 +6092,12 @@
         "@types/react"
       ]
     },
-    "react-test-renderer@19.1.0_react@19.2.3": {
-      "integrity": "sha512-jXkSl3CpvPYEF+p/eGDLB4sPoDX8pKkYvRl9+rR8HxLY0X04vW7hCm1/0zHoUSjPZ3bDa+wXWNTDVIw/R8aDVw==",
+    "react-test-renderer@19.3.1_react@19.2.3": {
+      "integrity": "sha512-YcNewwmnZMd0wTb2nkb4hQ58NmX/u1hW2OJsNpen8CnV+jNkmEjYd1R6wJrOMSgb8bIF5HAJv4iL+S3PwNptOA==",
       "dependencies": [
         "react",
         "react-is@19.3.1",
-        "scheduler@0.26.0"
+        "scheduler@0.28.0"
       ]
     },
     "react@19.2.3": {
@@ -6108,11 +6239,11 @@
     "sax@1.6.1": {
       "integrity": "sha512-42tBVwLWnaQvW5zc4HbZrTuWccECCZfBi92FDuwtqxasH+JbPB3/FOKb1m222K42R4WxuxzzMsTswfzgtSu64Q=="
     },
-    "scheduler@0.26.0": {
-      "integrity": "sha512-NlHwttCI/l5gCPR3D1nNXtWABUmBwvZpEQiD4IXSbIDq8BzLIK/7Ir5gTFSGZDUu37K5cMNp0hFtzO38sC7gWA=="
-    },
     "scheduler@0.27.0": {
       "integrity": "sha512-eNv+WrVbKu1f3vbYJT/xtiF5syA5HPIMtf9IgY/nKg0sWqzAUEvqY/xm7OcZc/qafLx/iO9FgOmeSAp4v5ti/Q=="
+    },
+    "scheduler@0.28.0": {
+      "integrity": "sha512-juorfCmIkIw8tT+p5BXSm6PJjQF/ycEYmKyzURCIt/RaZIhL+PulbQ9Yu2z1HdOJDdqDTlxA1+xKBmHXJsczAw=="
     },
     "semver@6.3.2": {
       "integrity": "sha512-GYrCADwpu6yV5OAvchkQ27Z5wwMxWAEMg5NNWjyHh/5DboFFqbdbvYNIvZouQpxXyeMPoTOh0vdPYKlf0ZswdQ==",
@@ -6639,17 +6770,15 @@
     "unicode-property-aliases-ecmascript@2.2.0": {
       "integrity": "sha512-hpbDzxUY9BFwX+UeBnxv3Sh1q7HFxj48DTmXchNgRa46lO8uj3/1iEn3MiNUYTg1g9ctIqXCCERn8gYZhHC5lQ=="
     },
-    "uniwind@1.13.2_metro@0.84.5_metro-cache@0.84.5_react@19.2.3_react-native@0.86.2_tailwindcss@4.3.3_@babel+core@7.29.13_@react-native+metro-config@0.88.1_@types+react@19.2.18": {
+    "uniwind@1.13.2_react@19.2.3_react-native@0.86.2__@types+react@19.3.0__react@19.2.3_tailwindcss@4.3.3_@types+react@19.3.0": {
       "integrity": "sha512-9huLBRBtZkVbKG8UZoJEo6ubX/R7oVj8zTORdq8c+lfOpjWlEjAS04FaqShuaecgEfO+oqSraxQ+mWgtsu6BqQ==",
       "dependencies": [
         "@tailwindcss/node",
         "@tailwindcss/oxide",
         "culori",
         "lightningcss@1.30.1",
-        "metro@0.84.5",
-        "metro-cache@0.84.5",
         "react",
-        "react-native",
+        "react-native@0.86.2_@types+react@19.3.0_react@19.2.3",
         "tailwindcss"
       ],
       "bin": true
@@ -6701,7 +6830,7 @@
         "punycode"
       ]
     },
-    "use-callback-ref@1.3.3_@types+react@19.2.18_react@19.2.3": {
+    "use-callback-ref@1.3.3_@types+react@19.3.0_react@19.2.3": {
       "integrity": "sha512-jQL3lRnocaFtu3V00JToYz/4QkNWswxijDaCVNZRiRTO3HQDLsdu1ZtmIUvV4yPp+rvWm5j0y0TG/S61cuijTg==",
       "dependencies": [
         "@types/react",
@@ -6718,7 +6847,7 @@
         "react"
       ]
     },
-    "use-sidecar@1.1.3_@types+react@19.2.18_react@19.2.3": {
+    "use-sidecar@1.1.3_@types+react@19.3.0_react@19.2.3": {
       "integrity": "sha512-Fedw0aZvkhynoPYlA5WXrMCAMm+nSWdZt6lzJQ7Ok8S6Q+VsHmHpRWndVRJ8Be0ZbkfPc5LRYH+5XrzXcEeLRQ==",
       "dependencies": [
         "@types/react",
@@ -6745,7 +6874,7 @@
     "vary@1.1.2": {
       "integrity": "sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg=="
     },
-    "vaul@1.1.2_react@19.2.3_react-dom@19.2.3_@types+react@19.2.18": {
+    "vaul@1.1.2_react@19.2.3_react-dom@19.2.3_@types+react@19.3.0": {
       "integrity": "sha512-ZFkClGpWyI2WUQjdLJ/BaGuV6AVQiJ3uELGk3OYtP+B6yCO7Cmn9vPFXVJkRaGkOJu3m8bQMgtyzNHixULceQA==",
       "dependencies": [
         "@radix-ui/react-dialog",
@@ -6983,7 +7112,7 @@
         "npm:@supabase/supabase-js@^2.101.0",
         "npm:@tanstack/react-form@^1.28.6",
         "npm:@types/node@25.9.9",
-        "npm:@types/react@~19.2.10",
+        "npm:@types/react@19.3",
         "npm:eslint-config-expo@~57.0.1",
         "npm:eslint-config-prettier@^10.1.8",
         "npm:eslint-plugin-prettier@^5.5.5",
@@ -7022,7 +7151,7 @@
         "npm:react-native-web@0.21",
         "npm:react-native-worklets@0.10.1",
         "npm:react-native@0.86.2",
-        "npm:react-test-renderer@19.1.0",
+        "npm:react-test-renderer@19.3.1",
         "npm:react@19.2.3",
         "npm:sharp@~0.34.5",
         "npm:tailwindcss@^4.2.2",
